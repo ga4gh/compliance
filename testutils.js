@@ -27,7 +27,12 @@ function error(runner, message) {
 
 function checkHttpError(runner, json) {
   if (!_.isUndefined(json.status)) {
-    error(runner, 'Http error: ' + json.statusText + ' (' + json.status + ')');
+    var status = json.status;
+    if (status == 0) {
+      status = 'This backend isn\'t callable, it may not support ' +
+        'CORS. See http://enable-cors.org/server.html';
+    }
+    error(runner, 'Http error: ' + json.statusText + ' (' + status + ')');
   }
   runner.json.push(json);
 }
