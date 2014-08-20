@@ -34,7 +34,7 @@ registerTest(
         ['names', 'array'],
         ['lengths', 'array'],
         'md5checksum',
-        ['ncbiTaxonId', 'number'],
+        ['ncbiTaxonId', 'int'],
         'description',
         'assemblyId',
         'sourceURI',

@@ -23,39 +23,57 @@ registerTest(
       data: JSON.stringify({datasetIds: [runner.datasetId]})
     }).always(function(json) {
       checkHttpError(runner, json);
+      assertArrayObject(runner, json, 'readsets', '', [
+        'id',
+        'name',
+        'datasetId',
+        ['created', 'long'],
+        ['readCount', 'long']
+      ]);
 
-      var sets = json.readsets || [];
-      assert(runner, sets.length > 0, 'Field readsets is non-empty');
-
-      var readset = _.first(sets) || {};
+      var readset = _.first(json.readsets) || {};
       var prefix = 'readsets.';
-      assertFields(runner, readset, prefix, ['id', 'name', 'datasetId',
-        ['created', 'long'], ['readCount', 'long']]);
+      assertArrayObject(runner, readset, 'fileData', prefix, [
+        'fileUri',
+        ['comments', 'array']
+      ]);
 
-
-      var filedata = readset.fileData || [];
-      assert(runner, filedata.length > 0, 'Field readsets.fileData is non-empty');
-
-      var data = _.first(filedata) || {};
+      var data = _.first(readset.fileData) || {};
       prefix += 'fileData.';
 
-      assertFields(runner, data, prefix, ['fileUri', ['comments', 'array']]);
+      assertArrayObject(runner, data, 'headers', prefix, [
+        'version',
+        'sortingOrder'
+      ]);
 
-      assertArrayObject(runner, data, 'headers', prefix,
-        ['version', 'sortingOrder']);
+      assertArrayObject(runner, data, 'refSequences', prefix, [
+        'name',
+        ['length', 'int'],
+        'assemblyId',
+        'md5Checksum',
+        'species',
+        'uri'
+      ]);
 
-      assertArrayObject(runner, data, 'refSequences', prefix,
-        ['name', ['length', 'number'], 'assemblyId', 'md5Checksum',
-          'species', 'uri']);
+      assertArrayObject(runner, data, 'readGroups', prefix, [
+        'id',
+        'sequencingCenterName',
+        'description',
+        'date',
+        'flowOrder',
+        'keySequence',
+        'library',
+        'processingProgram',
+        ['predictedInsertSize', 'int'],
+        'sequencingTechnology',
+        'platformUnit',
+        'sample'
+      ]);
 
-      assertArrayObject(runner, data, 'readGroups', prefix,
-        ['id', 'sequencingCenterName', 'description', 'date', 'flowOrder',
-          'keySequence', 'library', 'processingProgram',
-          ['predictedInsertSize', 'number'], 'sequencingTechnology',
-          'platformUnit', 'sample']);
-
-      assertArrayObject(runner, data, 'programs', prefix,
-        ['id', 'name']);
+      assertArrayObject(runner, data, 'programs', prefix, [
+        'id',
+        'name'
+      ]);
 
       runner.testFinished();
     });
@@ -96,14 +114,14 @@ registerTest(
           'id',
           'name',
           'readsetId',
-          ['flags', 'number'],
+          ['flags', 'int'],
           'referenceSequenceName',
-          ['position', 'number'],
-          ['mappingQuality', 'number'],
+          ['position', 'int'],
+          ['mappingQuality', 'int'],
           'cigar',
           'mateReferenceSequenceName',
-          ['matePosition', 'number'],
-          ['templateLength', 'number'],
+          ['matePosition', 'int'],
+          ['templateLength', 'int'],
           'originalBases',
           'alignedBases',
           'baseQuality'
