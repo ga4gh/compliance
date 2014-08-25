@@ -1,0 +1,91 @@
+/**
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+body {
+  color: #2A1506;
+}
+.testInput {
+  margin: 1em;
+}
+.testInput small {
+  color: #aaa;
+}
+
+.result {
+  background-color: #f2e8d5;
+  padding: 1em 0 1em 1em;
+  margin: 1em;
+}
+.result .header {
+  cursor: pointer;
+}
+.result .title {
+  font-size: 1.75em;
+}
+.result .title a {
+  font-size: .75em;
+  color: #0E0077;
+  margin-left: .5em;
+}
+.result .description {
+  font-size: 1.25em;
+  margin-bottom: .5em;
+}
+.result .fatalError {
+  padding-top: .75em;
+  font-weight: bold;
+}
+.result .score {
+  padding: .25em;
+  font-size: 1.75em;
+}
+.result .score.perfect {
+  background-color: #39b54a;
+}
+.result .score.high {
+  background-color: #a8bd04;
+}
+.result .score.low {
+  background-color: #e7c333;
+}
+.result .score.error {
+  background-color: #dd4a38;
+}
+
+#overallScore {
+  text-align: center;
+  color: #aaa;
+  font-size: 2em;
+}
+#overallScore div {
+  display: inline-block;
+  vertical-align: middle;
+}
+#overallScore .perfect, #overallScore .high,
+#overallScore .low, #overallScore .error {
+  font-size: 4.8em;
+  padding: 0 10px;
+}
+#overallScore .perfect {
+  color: #39b54a;
+}
+#overallScore .high {
+  color: #a8bd04;
+}
+#overallScore .low {
+  color: #e7c333;
+}
+#overallScore .error {
+  color: #dd4a38;
+}
