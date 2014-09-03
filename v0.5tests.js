@@ -110,23 +110,69 @@ registerTest(
   }
 );
 
+function getVariantSetIds(runner, callback) {
+  $.ajax({
+    type: 'POST',
+    url: getUrl('/variantsets/search'),
+    data: JSON.stringify({
+      datasetIds: [runner.datasetId]
+    })
+  }).always(function(json) {
+    checkHttpError(runner, json);
+
+    var variantSet = _.first(json.variantSets) || {};
+    callback(variantSet.id);
+  });
+}
+
 registerTest(
   'Search Variants',
   'Fetches variants from the specified dataset.',
   docUrlPrefix + 'org.ga4gh.searchVariants',
   function(runner) {
-    // TODO: Implement this test
-    var body = JSON.stringify({});
+    getVariantSetIds(runner, function(variantSetId) {
+      // TODO: Test other variations on variant searching
+      $.ajax({
+        type: 'POST',
+        url: getUrl('/variants/search'),
+        data: JSON.stringify({
+          variantSetIds: [variantSetId],
+          referenceName: '22',
+          start: 51005354,
+          end: 51015354,
+          maxResults: 1
+        })
+      }).always(function(json) {
+        checkHttpError(runner, json);
 
-    $.ajax({
-      type: 'POST',
-      url: getUrl('/variants/search'),
-      data: body
-    }).always(function(json) {
-      checkHttpError(runner, json);
+        // Basic fields
+        assertArrayObject(runner, json, 'variants', '', [
+          'id',
+          'variantSetId',
+          ['names', 'array'],
+          ['created', 'long'],
+          ['updated', 'long'],
+          'referenceName',
+          ['start', 'long'],
+          ['end', 'long'],
+          'referenceBases',
+          ['alternateBases', 'array'],
+          ['info', 'keyvalue']
+        ]);
 
-      assert(runner, json.readGroupSets, 'Test coming soon!');
-      runner.testFinished();
+        // Calls
+        var variant = _.first(json.variants) || {};
+        assertArrayObject(runner, variant, 'calls', 'variants.', [
+          'callSetId',
+          'callSetName',
+          ['genotype', 'array'],
+          'phaseset',
+          ['genotypeLikelihood', 'array'],
+          ['info', 'keyvalue']
+        ]);
+
+        runner.testFinished();
+      });
     });
   }
 );
@@ -136,18 +182,26 @@ registerTest(
   'Fetches call sets from the specified dataset.',
   docUrlPrefix + 'org.ga4gh.searchCallSets',
   function(runner) {
-    // TODO: Implement this test
-    var body = JSON.stringify({});
+    getVariantSetIds(runner, function(variantSetId) {
+      // TODO: Test other variations on call set searching
+      $.ajax({
+        type: 'POST',
+        url: getUrl('/callsets/search'),
+        data: JSON.stringify({variantSetIds: [variantSetId]})
+      }).always(function(json) {
+        checkHttpError(runner, json);
 
-    $.ajax({
-      type: 'POST',
-      url: getUrl('/callsets/search'),
-      data: body
-    }).always(function(json) {
-      checkHttpError(runner, json);
-
-      assert(runner, json.readGroupSets, 'Test coming soon!');
-      runner.testFinished();
+        assertArrayObject(runner, json, 'callSets', '', [
+          'id',
+          'name',
+          'sampleId',
+          ['variantSetIds', 'array'],
+          ['created', 'long'],
+          ['updated', 'long'],
+          ['info', 'keyvalue']
+        ]);
+        runner.testFinished();
+      });
     });
   }
 );

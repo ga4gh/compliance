@@ -54,9 +54,16 @@ function assertField(runner, fieldValue, fieldName, fieldType) {
       // Longs in json are typically formatted as strings,
       // yet should be parseable as numbers
       test = !_.isNaN(parseInt(fieldValue));
+
     } else if (fieldType == 'array') {
       // typeof doesn't work on arrays
       test = _.isArray(fieldValue);
+
+    } else if (fieldType == 'keyvalue') {
+      // This is the json version of the GAKeyValue object
+      test = _.isObject(fieldValue) && _.every(fieldValue, function(v, k) {
+        return typeof v == 'string' && typeof k == 'string';
+      });
 
     } else {
       if (fieldType == 'int' || fieldType == 'float') {
