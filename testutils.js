@@ -113,7 +113,7 @@ function getUrl(path) {
 
 function addResultDiv(results, test, runner) {
   var div = $('<div/>', {class: 'result'}).appendTo(results);
-  var header = getTestHeader(test).appendTo(div);
+  var header = getTestHeader(test, runner.runningTime).appendTo(div);
 
   var details = $('<div/>', {id: test.id, class: 'collapse'})
     .appendTo(div);
@@ -177,7 +177,7 @@ function scoreColor(total, score) {
   }
 }
 
-function getTestHeader(test) {
+function getTestHeader(test, runningTime) {
   var header = $('<div/>', {class : 'header',
     'data-toggle' : 'collapse', 'data-target': '#' + test.id});
   var title = $('<div/>', {class: 'title'}).text(test.title).appendTo(header);
@@ -189,6 +189,8 @@ function getTestHeader(test) {
     });
 
   $('<div/>', {class: 'description'}).text(test.description).appendTo(header);
+  $('<div/>', {class: 'runningTime'}).text(runningTime + ' milliseconds')
+    .appendTo(header);
 
   return header;
 }
@@ -200,7 +202,8 @@ function getTestHeader(test) {
 
 var tests = [];
 function registerTest(title, description, docLink, testFunction) {
-  tests.push({id: 'test' + tests.length, title: title,
+  var testId = title.replace(/[ \(\)\.]/g, "-");
+  tests.push({id: testId, title: title,
     description: description, docLink: docLink, testFunction: testFunction});
 }
 
@@ -232,8 +235,14 @@ function runTests() {
 
   _.each(tests, function(test) {
     var testRunner = {datasetId: datasetId, fatalErrors: [],
-      tests: [], json: []};
+      tests: [], json: [], startTime: new Date()};
+    // The console gives the most accurate running time, but doesn't
+    // work on all browsers and doesn't actually return a timing result
+    console && console.time && console.time(test.id);
+
     testRunner.testFinished = function() {
+      console && console.timeEnd && console.timeEnd(test.id);
+      testRunner.runningTime = new Date() - testRunner.startTime;
       testFinished(test, testRunner);
     };
     test.testFunction(testRunner);
