@@ -20,26 +20,27 @@ registerTest(
   docUrlPrefix + 'org.ga4gh.searchReferenceSets',
   function(runner) {
     // TODO: Test other variations on reference searching
-    var body = JSON.stringify({assemblyId: 'GCA_000001405'});
+    var assemblyId = 'GCA_000001405';
+    var body = JSON.stringify({assemblyId: assemblyId});
 
     $.ajax({
       type: 'POST',
       url: getUrl('/referencesets/search'),
       data: body
     }).always(function(json) {
-      checkHttpError(runner, json);
+      checkHttpError(runner, json, this);
       assertArrayObject(runner, json, 'referenceSets', '', [
         'id',
         ['referenceIds', 'array'],
         ['names', 'array'],
         ['lengths', 'array'],
         'md5checksum',
-        ['ncbiTaxonId', 'int'],
+        ['ncbiTaxonId', '9606' /* human */],
         'description',
-        'assemblyId',
+        ['assemblyId', assemblyId],
         'sourceURI',
         'sourceAccession',
-        ['isDerived', 'boolean']
+        ['isDerived', false]
       ]);
 
       runner.testFinished();
@@ -60,7 +61,7 @@ registerTest(
       url: getUrl('/references/search'),
       data: body
     }).always(function(json) {
-      checkHttpError(runner, json);
+      checkHttpError(runner, json, this);
 
       assert(runner, json.readGroupSets, 'Test coming soon!');
       runner.testFinished();
@@ -73,17 +74,55 @@ registerTest(
   'Fetches read group sets from the specified dataset',
   docUrlPrefix + 'org.ga4gh.searchReadGroupSets',
   function(runner) {
-    // TODO: Implement this test
-    var body = JSON.stringify({});
-
     $.ajax({
       type: 'POST',
       url: getUrl('/readgroupsets/search'),
-      data: body
+      data: JSON.stringify({datasetIds: [runner.datasetId]})
     }).always(function(json) {
-      checkHttpError(runner, json);
+      checkHttpError(runner, json, this);
 
-      assert(runner, json.readGroupSets, 'Test coming soon!');
+      assertArrayObject(runner, json, 'readGroupSets', '', [
+        'id',
+        ['datasetId', runner.datasetId],
+        'name'
+      ]);
+
+      // ReadGroups
+      var readGroupSet = _.first(json.readGroupSets) || {};
+      var prefix = 'readGroupSets.';
+      assertArrayObject(runner, readGroupSet, 'readGroups', prefix, [
+        'id',
+        ['datasetId', runner.datasetId],
+        'name',
+        'description',
+        'sampleId',
+        ['predictedInsertSize', 'int'],
+        ['created', 'date'],
+        ['updated', 'date'],
+        'referenceSetId', // TODO: Check that the referenceSetId is valid
+        ['info', 'keyvalue']
+      ]);
+
+      var readGroup = _.first(readGroupSet.readGroups) || {};
+      prefix += 'readGroups.';
+
+      // Experiment
+      assertFields(runner, readGroup.experiment || {}, prefix + 'experiment.', [
+        'libraryId',
+        'platformUnit',
+        'sequencingCenter',
+        'instrumentModel'
+      ]);
+
+      // Programs
+      assertArrayObject(runner, readGroup, 'programs', prefix, [
+        'commandLine',
+        'id',
+        'name',
+        'prevProgramId',
+        'version'
+      ]);
+
       runner.testFinished();
     });
   }
@@ -91,21 +130,84 @@ registerTest(
 
 registerTest(
   'Search Reads',
-  'Looks up a readset for NA12878 from the specified dataset, then fetches reads.',
+  'Looks up a read group set for NA12878 from the specified dataset, ' +
+    'then fetches reads.',
   docUrlPrefix + 'org.ga4gh.searchReads',
   function(runner) {
-    // TODO: Implement this test
-    var body = JSON.stringify({});
-
     $.ajax({
       type: 'POST',
-      url: getUrl('/reads/search'),
-      data: body
+      url: getUrl('/readgroupsets/search'),
+      data: JSON.stringify({datasetIds: [runner.datasetId], name: 'NA12878'})
     }).always(function(json) {
-      checkHttpError(runner, json);
+      checkHttpError(runner, json, this);
+      assertArrayObject(runner, json, 'readGroupSets', '', [
+          ['name', 'NA12878']
+      ]);
 
-      assert(runner, json.readGroupSets, 'Test coming soon!');
-      runner.testFinished();
+      var na12878 = _.first(json.readGroupSets) || {};
+      var readGroupIds = _.pluck(na12878, 'id');
+
+      $.ajax({
+        type: 'POST',
+        url: getUrl('/reads/search'),
+        data: JSON.stringify({
+          readGroupIds: readGroupIds,
+          referenceName: '22',
+          start: 51005353,
+          end: 51005353
+        })
+      }).always(function(json) {
+        checkHttpError(runner, json, this);
+        assertArrayObject(runner, json, 'alignments', '', [
+          'id',
+          'readGroupId',
+          'fragmentName',
+          ['properPlacement', 'boolean'],
+          ['duplicateFragment', 'boolean'],
+          ['numberReads', 'int'],
+          ['fragmentLength', 'int'],
+          ['readNumber', 'int'],
+          ['failedVendorQualityChecks', 'boolean'],
+          ['secondaryAlignment', 'boolean'],
+          ['supplementaryAlignment', 'boolean'],
+          'alignedSequence',
+          ['alignedQuality', 'array'],
+          ['info', 'keyvalue']
+        ]);
+
+        var alignment = _.first(json.alignments) || {};
+        var prefix = 'alignments.';
+
+        // Mate position
+        assertFields(runner, alignment.nextMatePosition || {},
+          prefix + 'nextMatePosition.', [
+          ['referenceName', '22'],
+          'position',
+          ['reverseStrand', 'boolean']
+        ]);
+
+        // Linear alignment
+        var la = alignment.alignment || {};
+        prefix += 'alignment.';
+
+        assertFields(runner, la.position || {}, prefix + 'position.', [
+          ['referenceName', '22'],
+          'position',
+          ['reverseStrand', 'boolean']
+        ]);
+
+        assertFields(runner, la, prefix, [
+          ['mappingQuality', 'int'],
+        ]);
+
+        assertArrayObject(runner, la.cigar || [], prefix + 'cigar.', [
+          'operation', // TODO: Check cigar operation enum values
+          ['operationLength', 'long'],
+          'referenceSequence'
+        ]);
+
+        runner.testFinished();
+      });
     });
   }
 );
@@ -118,7 +220,7 @@ function getVariantSetIds(runner, callback) {
       datasetIds: [runner.datasetId]
     })
   }).always(function(json) {
-    checkHttpError(runner, json);
+    checkHttpError(runner, json, this);
 
     var variantSet = _.first(json.variantSets) || {};
     callback(variantSet.id);
@@ -143,16 +245,16 @@ registerTest(
           maxResults: 1
         })
       }).always(function(json) {
-        checkHttpError(runner, json);
+        checkHttpError(runner, json, this);
 
         // Basic fields
         assertArrayObject(runner, json, 'variants', '', [
           'id',
-          'variantSetId',
+          ['variantSetId', variantSetId],
           ['names', 'array'],
-          ['created', 'long'],
-          ['updated', 'long'],
-          'referenceName',
+          ['created', 'date'],
+          ['updated', 'date'],
+          ['referenceName', '22'],
           ['start', 'long'],
           ['end', 'long'],
           'referenceBases',
@@ -189,15 +291,15 @@ registerTest(
         url: getUrl('/callsets/search'),
         data: JSON.stringify({variantSetIds: [variantSetId]})
       }).always(function(json) {
-        checkHttpError(runner, json);
+        checkHttpError(runner, json, this);
 
         assertArrayObject(runner, json, 'callSets', '', [
           'id',
           'name',
           'sampleId',
           ['variantSetIds', 'array'],
-          ['created', 'long'],
-          ['updated', 'long'],
+          ['created', 'date'],
+          ['updated', 'date'],
           ['info', 'keyvalue']
         ]);
         runner.testFinished();

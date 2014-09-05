@@ -22,12 +22,12 @@ registerTest(
       url: getUrl('/readsets/search'),
       data: JSON.stringify({datasetIds: [runner.datasetId]})
     }).always(function(json) {
-      checkHttpError(runner, json);
+      checkHttpError(runner, json, this);
       assertArrayObject(runner, json, 'readsets', '', [
         'id',
         'name',
-        'datasetId',
-        ['created', 'long'],
+        ['datasetId', runner.datasetId],
+        ['created', 'date'],
         ['readCount', 'long']
       ]);
 
@@ -90,14 +90,12 @@ registerTest(
       url: getUrl('/readsets/search'),
       data: JSON.stringify({datasetIds: [runner.datasetId], name: 'NA12878'})
     }).always(function(json) {
-      checkHttpError(runner, json);
+      checkHttpError(runner, json, this);
+      assertArrayObject(runner, json, 'readsets', '', [
+          ['name', 'NA12878']
+      ]);
 
-      var na12878 = '';
-      if (json.readsets) {
-        na12878 = (_.first(json.readsets) || {}).id;
-      } else {
-        error(runner, 'Could not find a readset for NA12878.');
-      }
+      var na12878 = (_.first(json.readsets) || {}).id;
 
       $.ajax({
         type: 'POST',
@@ -109,13 +107,13 @@ registerTest(
           sequenceEnd: 51005354
         })
       }).always(function(json) {
-        checkHttpError(runner, json);
+        checkHttpError(runner, json, this);
         assertArrayObject(runner, json, 'reads', '', [
           'id',
           'name',
-          'readsetId',
+          ['readsetId', na12878],
           ['flags', 'int'],
-          'referenceSequenceName',
+          ['referenceSequenceName', '22'],
           ['position', 'int'],
           ['mappingQuality', 'int'],
           'cigar',
