@@ -25,7 +25,7 @@ function error(runner, message) {
   runner.fatalErrors.push(message);
 }
 
-function checkHttpError(runner, json) {
+function checkHttpError(runner, json, xhr) {
   if (!_.isUndefined(json.status)) {
     var status = json.status;
     if (status == 0) {
@@ -34,7 +34,10 @@ function checkHttpError(runner, json) {
     }
     error(runner, 'Http error: ' + json.statusText + ' (' + status + ')');
   }
-  runner.json.push(json);
+  runner.json.push({
+    url: xhr.type + ' ' + xhr.url,
+    data: xhr.data,
+    json: json});
 }
 
 function assert(runner, test, message) {
@@ -43,17 +46,40 @@ function assert(runner, test, message) {
   return warning;
 }
 
-function assertField(runner, fieldValue, fieldName, fieldType) {
+var fieldTypes = ['string', 'long', 'date', 'array', 'keyvalue', 'int', 'boolean'];
+function assertField(runner, fieldValue, fieldName, expectedFieldValue) {
+  if (_.isUndefined(expectedFieldValue)) {
+    expectedFieldValue = 'string';
+  }
+
+  if (_.contains(fieldTypes, expectedFieldValue)) {
+    // If our expectedFieldValue is just a generic type, then we'll
+    // only check that the type is correct, and missing values are allowed
+    assertFieldType(runner, fieldValue, fieldName, expectedFieldValue);
+  } else {
+    // Otherwise, our fieldValue should exactly equal the expected value
+    assert(runner, fieldValue == expectedFieldValue &&
+      typeof fieldValue == typeof expectedFieldValue,
+      'Field ' + fieldName + ' is ' + expectedFieldValue);
+  }
+}
+
+function assertFieldType(runner, fieldValue, fieldName, fieldType) {
   var valueExists = !_.isUndefined(fieldValue);
 
   if (valueExists) {
-    fieldType = fieldType || 'string';
-
     var test;
     if (fieldType == 'long') {
       // Longs in json are typically formatted as strings,
       // yet should be parseable as numbers
       test = !_.isNaN(parseInt(fieldValue));
+
+    } else if (fieldType == 'date') {
+      // Check that our date is after the year 2000 - and before 2050,
+      // otherwise it's probably malformed
+      var date = new Date(parseInt(fieldValue));
+      test = date.getYear() > 100 && date.getYear() < 150;
+      fieldType += ' in milliseconds since the epoch';
 
     } else if (fieldType == 'array') {
       // typeof doesn't work on arrays
@@ -66,7 +92,7 @@ function assertField(runner, fieldValue, fieldName, fieldType) {
       });
 
     } else {
-      if (fieldType == 'int' || fieldType == 'float') {
+      if (fieldType == 'int') {
         fieldType = 'number';
       }
       test = typeof fieldValue == fieldType;
@@ -77,7 +103,7 @@ function assertField(runner, fieldValue, fieldName, fieldType) {
     // TODO: Distinguish optional fields from required ones
     // For now we will mark the field as successful if it's missing
     assert(runner, true,
-      'Field ' + fieldName + ' is missing and can\'t be tested');
+      'Field ' + fieldName + ' is missing so the type can\'t be tested');
   }
 }
 
@@ -102,7 +128,15 @@ function assertArrayObject(runner, parent, objectName, prefix, fields) {
 function getUrl(path) {
   var l = document.createElement('a');
   l.href = $('#endpoint').val();
-  l.pathname += path;
+
+  // Strip off a trailing `/` if present
+  var lastPathPosition = l.pathname.length - 1;
+  if (l.pathname.lastIndexOf("/") == lastPathPosition) {
+    l.pathname = l.pathname.substring(0, lastPathPosition) + path;
+  } else {
+    l.pathname += path;
+  }
+
   return l.href;
 }
 
@@ -145,7 +179,9 @@ function addResultDiv(results, test, runner) {
       $('#' + test.id + ' .debugJson').toggle();
     });
   _.each(runner.json, function(json) {
-    $('<pre/>', {class: 'debugJson'}).text(JSON.stringify(json, null, 2))
+    $('<pre/>', {class: 'debugJson'}).text(
+        'Request: ' + json.url + '\n' + json.data
+        + '\n\nResponse: ' + JSON.stringify(json.json, null, 2))
       .appendTo(details).hide();
   });
 
