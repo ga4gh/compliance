@@ -62,6 +62,9 @@ body {
 .result .score.error {
   background-color: #dd4a38;
 }
+.result .runningTime {
+  color: #999;
+}
 
 #overallScore {
   text-align: center;
@@ -88,4 +91,9 @@ body {
 }
 #overallScore .error {
   color: #dd4a38;
+}
+
+.footer {
+  color: #aaa;
+  text-align: center;
 }
