@@ -15,13 +15,14 @@
 var docUrlPrefix = 'http://ga4gh.org/documentation/api/v0.5/ga4gh_api.html#/schema/';
 
 registerTest(
-  'Search Reference Sets',
-  'Fetches reference sets',
+  'Reference Sets',
+  'Searches for a reference set matching assembly GCA_000001405 and then ' +
+    'fetches that same reference set by ID',
   docUrlPrefix + 'org.ga4gh.searchReferenceSets',
   function(runner) {
-    // TODO: Test other variations on reference searching
+    // TODO: Test other variations on reference set searching
     var assemblyId = 'GCA_000001405';
-    var body = JSON.stringify({assemblyId: assemblyId});
+    var body = JSON.stringify({assemblyId: assemblyId, pageSize: 1});
 
     $.ajax({
       type: 'POST',
@@ -32,29 +33,42 @@ registerTest(
       assertArrayObject(runner, json, 'referenceSets', '', [
         'id',
         ['referenceIds', 'array'],
-        ['names', 'array'],
-        ['lengths', 'array'],
         'md5checksum',
         ['ncbiTaxonId', '9606' /* human */],
         'description',
         ['assemblyId', assemblyId],
         'sourceURI',
-        'sourceAccession',
+        ['sourceAccessions', 'array'],
         ['isDerived', false]
       ]);
 
-      runner.testFinished();
+
+      // Test getReferenceSet
+      var referenceSet = _.first(json.referenceSets) || {};
+
+      $.ajax({
+        url: getUrl('/referencesets/' + referenceSet.id)
+      }).always(function(json) {
+        checkHttpError(runner, json, this);
+
+        // We already checked the object structure, this assert just makes
+        // sure the get method works.
+        assert(runner, json.id == referenceSet.id,
+          'Get reference set returned a valid result');
+        runner.testFinished();
+      });
     });
   }
 );
 
 registerTest(
-  'Search References',
-  'Fetches references',
+  'References',
+  'Searches for a reference and then fetches that same reference by ID',
   docUrlPrefix + 'org.ga4gh.searchReferences',
   function(runner) {
-    // TODO: Implement this test
-    var body = JSON.stringify({});
+    // TODO: Test other variations on reference searching
+    var md5checksum = 'TODO - find a valid value'; // TODO
+    var body = JSON.stringify({md5checksums: [md5checksum], pageSize: 1});
 
     $.ajax({
       type: 'POST',
@@ -62,9 +76,65 @@ registerTest(
       data: body
     }).always(function(json) {
       checkHttpError(runner, json, this);
+      assertArrayObject(runner, json, 'references', '', [
+        'id',
+        ['length', 'long'],
+        'md5checksum',
+        'name',
+        'sourceURI',
+        ['sourceAccessions', 'array'],
+        ['isDerived', false],
+        ['sourceDivergence', 'float'],
+        ['ncbiTaxonId', '9606' /* human */]
+      ]);
 
-      assert(runner, json.readGroupSets, 'Test coming soon!');
-      runner.testFinished();
+
+      // Test getReference
+      var reference = _.first(json.references) || {};
+
+      $.ajax({
+        url: getUrl('/references/' + reference.id)
+      }).always(function(json) {
+        checkHttpError(runner, json, this);
+
+        // We already checked the object structure, this assert just makes
+        // sure the get method works.
+        assert(runner, json.id == reference.id,
+          'Get reference returned a valid result');
+        runner.testFinished();
+      });
+    });
+  }
+);
+
+registerTest(
+  'Reference bases',
+  'Searches for a reference and then fetches bases for that reference',
+  docUrlPrefix + 'org.ga4gh.getReferenceBases',
+  function(runner) {
+    var md5checksum = 'TODO - find a valid value'; // TODO
+
+    $.ajax({
+      type: 'POST',
+      url: getUrl('/references/search'),
+      data: JSON.stringify({md5checksums: [md5checksum], pageSize: 1})
+    }).always(function(json) {
+      checkHttpError(runner, json, this);
+      var reference = _.first(json.references) || {};
+
+      $.ajax({
+        url: getUrl('/references/' + reference.id + '/bases'),
+        data: {start: 10, end: 20}
+      }).always(function(json) {
+        checkHttpError(runner, json, this);
+
+        assertFields(runner, json, '', [
+          ['offset', '10'],
+          'sequence' // TODO: Specify a specific value for the sequence
+        ]);
+
+        runner.testFinished();
+      });
     });
   }
 );
@@ -137,7 +207,8 @@ registerTest(
     $.ajax({
       type: 'POST',
       url: getUrl('/readgroupsets/search'),
-      data: JSON.stringify({datasetIds: [runner.datasetId], name: 'NA12878'})
+      data: JSON.stringify({datasetIds: [runner.datasetId],
+        name: 'NA12878', pageSize: 1})
     }).always(function(json) {
       checkHttpError(runner, json, this);
       assertArrayObject(runner, json, 'readGroupSets', '', [
@@ -154,7 +225,7 @@ registerTest(
           readGroupIds: readGroupIds,
           referenceName: '22',
           start: 51005353,
-          end: 51005353
+          end: 51005354
         })
       }).always(function(json) {
         checkHttpError(runner, json, this);
@@ -212,6 +283,39 @@ registerTest(
   }
 );
 
+registerTest(
+  'Search Variant Sets',
+  'Fetches variant sets from the specified dataset.',
+  docUrlPrefix + 'org.ga4gh.searchVariantSets',
+  function(runner) {
+    $.ajax({
+      type: 'POST',
+      url: getUrl('/variantsets/search'),
+      data: JSON.stringify({datasetIds: [runner.datasetId]})
+    }).always(function(json) {
+      checkHttpError(runner, json, this);
+      assertArrayObject(runner, json, 'variantSets', '', [
+        'id',
+        'datasetId'
+      ]);
+
+      var variantSet = _.first(json.variantSets) || {};
+
+      assertArrayObject(runner, variantSet, 'metadata', 'variantSets', [
+        'key',
+        'value',
+        'id',
+        'type',
+        'number',
+        'description',
+        ['info', 'keyvalue']
+      ]);
+
+      runner.testFinished();
+    });
+  }
+);
+
 function getVariantSetIds(runner, callback) {
   $.ajax({
     type: 'POST',
@@ -240,9 +344,9 @@ registerTest(
         data: JSON.stringify({
           variantSetIds: [variantSetId],
           referenceName: '22',
-          start: 51005354,
+          start: 51005353,
           end: 51015354,
-          maxResults: 1
+          pageSize: 1
         })
       }).always(function(json) {
         checkHttpError(runner, json, this);

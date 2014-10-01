@@ -10,7 +10,7 @@ This is a work in progress, see [this issue](https://github.com/ga4gh/schemas/is
 
 * Run a simple HTTP server locally using python:
   ```
-  cd api-client-javascript
+  cd compliance
   python -m SimpleHTTPServer 8000
   ```
 
