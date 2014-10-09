@@ -122,13 +122,9 @@ registerTest(
           ['templateLength', 'int'],
           'originalBases',
           'alignedBases',
-          'baseQuality'
+          'baseQuality',
+          ['tags', 'keyvalue']
         ]);
-
-        var read = _.first(json.reads) || {};
-        assert(runner, _.every(read.tags, function(value, key) {
-          return typeof key == 'string' && typeof value[0] == 'string';
-        }), 'Field reads.tags is a map from string to array of strings');
 
         runner.testFinished();
       });

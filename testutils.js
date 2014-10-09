@@ -88,7 +88,7 @@ function assertFieldType(runner, fieldValue, fieldName, fieldType) {
     } else if (fieldType == 'keyvalue') {
       // This is the json version of the GAKeyValue object
       test = _.isObject(fieldValue) && _.every(fieldValue, function(v, k) {
-        return typeof v == 'string' && typeof k == 'string';
+        return _.isArray(v) && typeof v[0] == 'string' && typeof k == 'string';
       });
 
     } else {
