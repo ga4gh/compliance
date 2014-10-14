@@ -16,13 +16,13 @@ var docUrlPrefix = 'http://ga4gh.org/documentation/api/v0.5/ga4gh_api.html#/sche
 
 registerTest(
   'Reference Sets',
-  'Searches for a reference set matching assembly GCA_000001405 and then ' +
-    'fetches that same reference set by ID',
+  'Searches for reference set GRCh37 by accession (GCA_000001405.15) and ' +
+    'then fetches that same reference set by ID',
   docUrlPrefix + 'org.ga4gh.searchReferenceSets',
   function(runner) {
     // TODO: Test other variations on reference set searching
-    var assemblyId = 'GCA_000001405';
-    var body = JSON.stringify({assemblyId: assemblyId, pageSize: 1});
+    var accession = 'GCA_000001405.15';
+    var body = JSON.stringify({accessions: [accession], pageSize: 1});
 
     $.ajax({
       type: 'POST',
@@ -34,12 +34,12 @@ registerTest(
         'id',
         ['referenceIds', 'array'],
         'md5checksum',
-        ['ncbiTaxonId', '9606' /* human */],
+        ['ncbiTaxonId', 9606 /* human */],
         'description',
-        ['assemblyId', assemblyId],
+        ['assemblyId', 'GRCh38'],
         'sourceURI',
         ['sourceAccessions', 'array'],
-        ['isDerived', false]
+        ['isDerived', 'boolean']
       ]);
 
 
@@ -63,13 +63,15 @@ registerTest(
 
 registerTest(
   'References',
-  'Searches for a reference and then fetches that same reference by ID',
+  'Searches for chr1 of GRCh37 by MD5 checksum and then fetches that same ' +
+    'reference by ID',
   docUrlPrefix + 'org.ga4gh.searchReferences',
   function(runner) {
     // TODO: Test other variations on reference searching
-    var md5checksum = 'TODO - find a valid value'; // TODO
+    var md5checksum = '1b22b98cdeb4a9304cb5d48026a85128';
     var body = JSON.stringify({md5checksums: [md5checksum], pageSize: 1});
 
+    // chr 1 of GRCh37. See http://www.ncbi.nlm.nih.gov/nuccore/NC_000001.10
     $.ajax({
       type: 'POST',
       url: getUrl('/references/search'),
@@ -78,14 +80,14 @@ registerTest(
       checkHttpError(runner, json, this);
       assertArrayObject(runner, json, 'references', '', [
         'id',
-        ['length', 'long'],
-        'md5checksum',
+        ['length', '249250621'],
+        ['md5checksum', md5checksum],
         'name',
         'sourceURI',
         ['sourceAccessions', 'array'],
-        ['isDerived', false],
-        ['sourceDivergence', 'float'],
-        ['ncbiTaxonId', '9606' /* human */]
+        ['isDerived', 'boolean'],
+        ['sourceDivergence', 'string'],
+        ['ncbiTaxonId', 9606 /* human */]
       ]);
 
 
@@ -109,11 +111,12 @@ registerTest(
 
 registerTest(
   'Reference bases',
-  'Searches for a reference and then fetches bases for that reference',
+  'Searches for chr1 of GRCh37 by MD5 checksum and then fetches 10 bases for ' +
+      'that reference at offset 15000',
   docUrlPrefix + 'org.ga4gh.getReferenceBases',
   function(runner) {
-    var md5checksum = 'TODO - find a valid value'; // TODO
-
+    // chr 1 of GRCh37. See http://www.ncbi.nlm.nih.gov/nuccore/NC_000001.10
+    var md5checksum = '1b22b98cdeb4a9304cb5d48026a85128';
     $.ajax({
       type: 'POST',
       url: getUrl('/references/search'),
@@ -124,13 +127,13 @@ registerTest(
 
       $.ajax({
         url: getUrl('/references/' + reference.id + '/bases'),
-        data: {start: 10, end: 20}
+        data: {start: 15000, end: 15010}
       }).always(function(json) {
         checkHttpError(runner, json, this);
 
         assertFields(runner, json, '', [
-          ['offset', '10'],
-          'sequence' // TODO: Specify a specific value for the sequence
+          ['offset', '15000'],
+          ['sequence', 'ATCCGACATC']
         ]);
 
         runner.testFinished();
@@ -216,7 +219,7 @@ registerTest(
       ]);
 
       var na12878 = _.first(json.readGroupSets) || {};
-      var readGroupIds = _.pluck(na12878, 'id');
+      var readGroupIds = _.pluck(na12878.readGroups, 'id');
 
       $.ajax({
         type: 'POST',
@@ -271,7 +274,7 @@ registerTest(
           ['mappingQuality', 'int'],
         ]);
 
-        assertArrayObject(runner, la.cigar || [], prefix + 'cigar.', [
+        assertArrayObject(runner, la, 'cigar', prefix, [
           'operation', // TODO: Check cigar operation enum values
           ['operationLength', 'long'],
           'referenceSequence'
