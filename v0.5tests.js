@@ -304,7 +304,7 @@ registerTest(
 
       var variantSet = _.first(json.variantSets) || {};
 
-      assertArrayObject(runner, variantSet, 'metadata', 'variantSets', [
+      assertArrayObject(runner, variantSet, 'metadata', 'variantSets.', [
         'key',
         'value',
         'id',
@@ -355,7 +355,7 @@ registerTest(
         checkHttpError(runner, json, this);
 
         // Basic fields
-        assertArrayObject(runner, json, 'variants', '', [
+        var variant = assertArrayObject(runner, json, 'variants', '', [
           'id',
           ['variantSetId', variantSetId],
           ['names', 'array'],
@@ -370,8 +370,7 @@ registerTest(
         ]);
 
         // Calls
-        var variant = _.first(json.variants) || {};
-        assertArrayObject(runner, variant, 'calls', 'variants.', [
+        var call = assertArrayObject(runner, variant, 'calls', 'variants.', [
           'callSetId',
           'callSetName',
           ['genotype', 'array'],
@@ -379,6 +378,12 @@ registerTest(
           ['genotypeLikelihood', 'array'],
           ['info', 'keyvalue']
         ]);
+
+        // Genotype
+        _.each(call.genotype || [], function(genotype) {
+          assertField(runner, genotype, 'variants.calls.genotype', 'int');
+        });
+
 
         runner.testFinished();
       });

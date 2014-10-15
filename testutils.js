@@ -122,7 +122,9 @@ function assertArrayObject(runner, parent, objectName, prefix, fields) {
   var objects = parent[objectName] || [];
   var field = prefix + objectName;
   assert(runner, objects.length > 0, 'Field ' + field + ' is non-empty');
-  assertFields(runner, _.first(objects) || {}, field + '.', fields);
+  var first = _.first(objects) || {};
+  assertFields(runner, first, field + '.', fields);
+  return first;
 }
 
 function getUrl(path) {
