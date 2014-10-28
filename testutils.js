@@ -107,6 +107,7 @@ function assertFieldType(runner, fieldValue, fieldName, fieldType) {
   }
 }
 
+// Use assertObject and assertArrayObject rather than this method
 function assertFields(runner, object, prefix, fields) {
   _.each(fields, function(name) {
     var type = 'string';
@@ -116,15 +117,23 @@ function assertFields(runner, object, prefix, fields) {
     }
     assertField(runner, object[name], prefix + name, type);
   });
+  object.prefix = prefix;
+  return object;
 }
 
-function assertArrayObject(runner, parent, objectName, prefix, fields) {
+function assertArrayObject(runner, parent, objectName, fields) {
   var objects = parent[objectName] || [];
-  var field = prefix + objectName;
-  assert(runner, objects.length > 0, 'Field ' + field + ' is non-empty');
-  var first = _.first(objects) || {};
-  assertFields(runner, first, field + '.', fields);
-  return first;
+  var objectPrefix = (parent.prefix || '') + objectName;
+  assert(runner, objects.length > 0, 'Field ' + objectPrefix + ' is non-empty');
+
+  return assertFields(runner, _.first(objects) || {}, objectPrefix + '.', fields);
+}
+
+function assertObject(runner, parent, objectName, fields) {
+  var object = parent[objectName] || {};
+  var objectPrefix = (parent.prefix || '') + objectName + '.';
+
+  return assertFields(runner, object, objectPrefix, fields);
 }
 
 function getUrl(path) {
