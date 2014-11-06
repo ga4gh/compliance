@@ -84,7 +84,7 @@ registerTest(
         'sourceURI',
         ['sourceAccessions', 'array'],
         ['isDerived', 'boolean'],
-        ['sourceDivergence', 'string'],
+        ['sourceDivergence', 'float'],
         ['ncbiTaxonId', 9606 /* human */]
       ]);
 

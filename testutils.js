@@ -46,7 +46,8 @@ function assert(runner, test, message) {
   return warning;
 }
 
-var fieldTypes = ['string', 'long', 'date', 'array', 'keyvalue', 'int', 'boolean'];
+var fieldTypes = ['string', 'float', 'long', 'date', 'array',
+    'keyvalue', 'int', 'boolean'];
 function assertField(runner, fieldValue, fieldName, expectedFieldValue) {
   if (_.isUndefined(expectedFieldValue)) {
     expectedFieldValue = 'string';
@@ -92,7 +93,7 @@ function assertFieldType(runner, fieldValue, fieldName, fieldType) {
       });
 
     } else {
-      if (fieldType == 'int') {
+      if (fieldType == 'int' || fieldType == 'float') {
         fieldType = 'number';
       }
       test = typeof fieldValue == fieldType;
