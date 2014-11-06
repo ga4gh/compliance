@@ -30,7 +30,7 @@ registerTest(
       data: body
     }).always(function(json) {
       checkHttpError(runner, json, this);
-      assertArrayObject(runner, json, 'referenceSets', '', [
+      var referenceSet = assertArrayObject(runner, json, 'referenceSets', [
         'id',
         ['referenceIds', 'array'],
         'md5checksum',
@@ -44,8 +44,6 @@ registerTest(
 
 
       // Test getReferenceSet
-      var referenceSet = _.first(json.referenceSets) || {};
-
       $.ajax({
         url: getUrl('/referencesets/' + referenceSet.id)
       }).always(function(json) {
@@ -78,7 +76,7 @@ registerTest(
       data: body
     }).always(function(json) {
       checkHttpError(runner, json, this);
-      assertArrayObject(runner, json, 'references', '', [
+      var reference = assertArrayObject(runner, json, 'references', [
         'id',
         ['length', '249250621'],
         ['md5checksum', md5checksum],
@@ -92,8 +90,6 @@ registerTest(
 
 
       // Test getReference
-      var reference = _.first(json.references) || {};
-
       $.ajax({
         url: getUrl('/references/' + reference.id)
       }).always(function(json) {
@@ -154,16 +150,14 @@ registerTest(
     }).always(function(json) {
       checkHttpError(runner, json, this);
 
-      assertArrayObject(runner, json, 'readGroupSets', '', [
+      var readGroupSet = assertArrayObject(runner, json, 'readGroupSets', [
         'id',
         ['datasetId', runner.datasetId],
         'name'
       ]);
 
       // ReadGroups
-      var readGroupSet = _.first(json.readGroupSets) || {};
-      var prefix = 'readGroupSets.';
-      assertArrayObject(runner, readGroupSet, 'readGroups', prefix, [
+      var readGroup = assertArrayObject(runner, readGroupSet, 'readGroups', [
         'id',
         ['datasetId', runner.datasetId],
         'name',
@@ -176,11 +170,8 @@ registerTest(
         ['info', 'keyvalue']
       ]);
 
-      var readGroup = _.first(readGroupSet.readGroups) || {};
-      prefix += 'readGroups.';
-
       // Experiment
-      assertFields(runner, readGroup.experiment || {}, prefix + 'experiment.', [
+      assertObject(runner, readGroup, 'experiment', [
         'libraryId',
         'platformUnit',
         'sequencingCenter',
@@ -188,7 +179,7 @@ registerTest(
       ]);
 
       // Programs
-      assertArrayObject(runner, readGroup, 'programs', prefix, [
+      assertArrayObject(runner, readGroup, 'programs', [
         'commandLine',
         'id',
         'name',
@@ -214,11 +205,10 @@ registerTest(
         name: 'NA12878', pageSize: 1})
     }).always(function(json) {
       checkHttpError(runner, json, this);
-      assertArrayObject(runner, json, 'readGroupSets', '', [
+      var na12878 = assertArrayObject(runner, json, 'readGroupSets', [
           ['name', 'NA12878']
       ]);
 
-      var na12878 = _.first(json.readGroupSets) || {};
       var readGroupIds = _.pluck(na12878.readGroups, 'id');
 
       $.ajax({
@@ -232,7 +222,7 @@ registerTest(
         })
       }).always(function(json) {
         checkHttpError(runner, json, this);
-        assertArrayObject(runner, json, 'alignments', '', [
+        var alignment = assertArrayObject(runner, json, 'alignments', [
           'id',
           'readGroupId',
           'fragmentName',
@@ -249,32 +239,26 @@ registerTest(
           ['info', 'keyvalue']
         ]);
 
-        var alignment = _.first(json.alignments) || {};
-        var prefix = 'alignments.';
 
         // Mate position
-        assertFields(runner, alignment.nextMatePosition || {},
-          prefix + 'nextMatePosition.', [
+        assertObject(runner, alignment, 'nextMatePosition', [
           ['referenceName', '22'],
           'position',
           ['reverseStrand', 'boolean']
         ]);
 
         // Linear alignment
-        var la = alignment.alignment || {};
-        prefix += 'alignment.';
+        var la = assertObject(runner, alignment, 'alignment', [
+          ['mappingQuality', 'int'],
+        ]);
 
-        assertFields(runner, la.position || {}, prefix + 'position.', [
+        assertObject(runner, la, 'position', [
           ['referenceName', '22'],
           'position',
           ['reverseStrand', 'boolean']
         ]);
 
-        assertFields(runner, la, prefix, [
-          ['mappingQuality', 'int'],
-        ]);
-
-        assertArrayObject(runner, la, 'cigar', prefix, [
+        assertArrayObject(runner, la, 'cigar', [
           'operation', // TODO: Check cigar operation enum values
           ['operationLength', 'long'],
           'referenceSequence'
@@ -297,14 +281,12 @@ registerTest(
       data: JSON.stringify({datasetIds: [runner.datasetId]})
     }).always(function(json) {
       checkHttpError(runner, json, this);
-      assertArrayObject(runner, json, 'variantSets', '', [
+      var variantSet = assertArrayObject(runner, json, 'variantSets', [
         'id',
         'datasetId'
       ]);
 
-      var variantSet = _.first(json.variantSets) || {};
-
-      assertArrayObject(runner, variantSet, 'metadata', 'variantSets.', [
+      assertArrayObject(runner, variantSet, 'metadata', [
         'key',
         'value',
         'id',
@@ -319,7 +301,7 @@ registerTest(
   }
 );
 
-function getVariantSetIds(runner, callback) {
+function getVariantSetId(runner, callback) {
   $.ajax({
     type: 'POST',
     url: getUrl('/variantsets/search'),
@@ -339,7 +321,7 @@ registerTest(
   'Fetches variants from the specified dataset.',
   docUrlPrefix + 'org.ga4gh.searchVariants',
   function(runner) {
-    getVariantSetIds(runner, function(variantSetId) {
+    getVariantSetId(runner, function(variantSetId) {
       // TODO: Test other variations on variant searching
       $.ajax({
         type: 'POST',
@@ -355,7 +337,7 @@ registerTest(
         checkHttpError(runner, json, this);
 
         // Basic fields
-        var variant = assertArrayObject(runner, json, 'variants', '', [
+        var variant = assertArrayObject(runner, json, 'variants', [
           'id',
           ['variantSetId', variantSetId],
           ['names', 'array'],
@@ -370,7 +352,7 @@ registerTest(
         ]);
 
         // Calls
-        var call = assertArrayObject(runner, variant, 'calls', 'variants.', [
+        var call = assertArrayObject(runner, variant, 'calls', [
           'callSetId',
           'callSetName',
           ['genotype', 'array'],
@@ -381,7 +363,7 @@ registerTest(
 
         // Genotype
         _.each(call.genotype || [], function(genotype) {
-          assertField(runner, genotype, 'variants.calls.genotype', 'int');
+          assertField(runner, genotype, call.prefix + 'genotype', 'int');
         });
 
 
@@ -396,7 +378,7 @@ registerTest(
   'Fetches call sets from the specified dataset.',
   docUrlPrefix + 'org.ga4gh.searchCallSets',
   function(runner) {
-    getVariantSetIds(runner, function(variantSetId) {
+    getVariantSetId(runner, function(variantSetId) {
       // TODO: Test other variations on call set searching
       $.ajax({
         type: 'POST',
@@ -405,7 +387,7 @@ registerTest(
       }).always(function(json) {
         checkHttpError(runner, json, this);
 
-        assertArrayObject(runner, json, 'callSets', '', [
+        assertArrayObject(runner, json, 'callSets', [
           'id',
           'name',
           'sampleId',

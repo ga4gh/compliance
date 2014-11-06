@@ -71,10 +71,6 @@ body {
   color: #aaa;
   font-size: 2em;
 }
-#overallScore div {
-  display: inline-block;
-  vertical-align: middle;
-}
 #overallScore .perfect, #overallScore .high,
 #overallScore .low, #overallScore .error {
   font-size: 4.8em;
