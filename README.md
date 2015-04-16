@@ -13,6 +13,12 @@ This is a work in progress, see [this issue](https://github.com/ga4gh/schemas/is
   cd compliance
   python -m SimpleHTTPServer 8000
   ```
+  
+  If you get an error message such as `No module named SimpleHTTPServer` you can try the following instead:
+ 
+  ```
+  python3 -m http.server
+  ```
 
 * This will start a local server. Visit `http://localhost:8000/compliance.html`
   to see the running tests.
