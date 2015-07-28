@@ -2,6 +2,18 @@
 
 Thank you for taking the time to contribute. We appreciate it!
 
+This project is being run in close coordination with the 
+[GA4GH schemas](https://github.com/ga4gh/schemas) and associated
+[reference server](https://github.com/ga4gh/server) projects.
+As a result, contributions to this project should be tied to corresponding
+contributions in the other two projects. Please see the
+[GA4GH schemas contribution document](https://github.com/ga4gh/schemas/blob/master/CONTRIBUTING.md)
+for details on contributing to the overall effort.
+
+Not all changes to this repository will necessarily be tied to changes in schemas or server.
+Simple bugfixes and minor documentation updates to the compliance repository should follow
+the below contribution guidelines: 
+
 There are two ways to contribute to this effort. The first way is to use this 
 project's [Issues Page](https://github.com/ga4gh/compliance/issues), which we 
 use as a forum to discuss both major and minor issues related to developing 
