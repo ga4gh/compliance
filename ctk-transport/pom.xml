@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.ga4gh</groupId>
+        <artifactId>ctk-parent</artifactId>
+        <version>0.5.1-SNAPSHOT</version>
+        <relativePath>../parent</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>CTK Transport to Server</name>
+    <description>GA4GH Server api, communications and tightly-coupled test support (Asserts etc)</description>
+
+    <artifactId>ctk-transport</artifactId>
+    <packaging>jar</packaging>
+
+    <developers>
+        <developer>
+            <id>wstidolph</id>
+            <name>Wayne Stidolph</name>
+            <email>wayne@stidolph.com</email>
+            <url>http://wayne.stidolph.com</url>
+        </developer>
+    </developers>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <!-- junittoolbox gives us improved JUnit - things like wildcards in @SuiteClasses -->
+        <dependency>
+            <groupId>com.googlecode.junit-toolbox</groupId>
+            <artifactId>junit-toolbox</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>pl.pragmatists</groupId>
+            <artifactId>JUnitParams</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.skyscreamer</groupId>
+            <artifactId>jsonassert</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpasyncclient</artifactId>
+            <version>${httpasyncclient.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>${httpmime.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>${org.json.json.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mashape.unirest</groupId>
+            <artifactId>unirest-java</artifactId>
+            <version>${unirest-java.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.fge</groupId>
+            <artifactId>json-patch</artifactId>
+            <version>${json-patch.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-avro</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ga4gh</groupId>
+            <artifactId>ctk-schemas</artifactId>
+            <version>${ga4gh.schema.local.version}</version>
+            <!-- example if you want to build with link to a local schema jar file -->
+            <!--
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/ga4gh-format-${ga4gh.schema.local.version}.jar
+            </systemPath>
+            -->
+        </dependency>
+        <dependency>
+            <groupId>org.ga4gh</groupId>
+            <artifactId>ctk-domain</artifactId>
+            <version>0.5.1-SNAPSHOT</version>
+        </dependency>
+
+        <!-- do we want to put slf4j-log4j12.jar on the path? or is OK it's supplied at runtime?-->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </dependency>
+
+        <!-- need BCEL during site build -->
+        <dependency>
+            <groupId>org.apache.bcel</groupId>
+            <artifactId>bcel</artifactId>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.9.1</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.basedir}/src/main/assertj-assertions</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-assertions-generator-maven-plugin</artifactId>
+                <version>${assertj.generator.version}</version>
+                <executions>
+                    <execution>
+                        <!-- empty phase to prevent this from running automatically -->
+                        <phase/>
+                        <goals>
+                            <goal>generate-assertions</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <packages>
+                        <param>org.ga4gh.ctk.transport</param>
+                    </packages>
+                    <includes>
+                        <!-- assert about the state of a wire transaction -->
+                        <param>org\.ga4gh\.ctk\.transport\.WireTracker.*</param>
+                        <param>org\.ga4gh\.ctk\.transport\.RespCode.*</param>
+                    </includes>
+                    <entryPointClassPackage>org.ga4gh.ctk.asserts</entryPointClassPackage>
+
+                    <targetDir>${project.basedir}/src/main/assertj-assertions</targetDir>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <includes>
+                        <include>org/ga4gh/**/*</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
