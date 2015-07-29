@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>ctk-parent</artifactId>
+        <groupId>org.ga4gh</groupId>
+        <version>0.5.1-SNAPSHOT</version>
+        <relativePath>../parent</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>CTS Java Server Tests</name>
+    <description>Tests of the GA4GH Server API Compliance</description>
+    <artifactId>cts-java</artifactId>
+    <packaging>jar</packaging>
+
+    <dependencies>
+  <!--      <dependency>
+            <groupId>org.ga4gh</groupId>
+            <artifactId>ctk-schemas</artifactId>
+            <version>${ga4gh.schema.local.version}</version>
+        </dependency>-->
+
+        <!-- asserts, conditions, etc for the schema -->
+        <dependency>
+            <groupId>org.ga4gh</groupId>
+            <artifactId>ctk-domain</artifactId>
+            <version>0.5.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ga4gh</groupId>
+            <artifactId>ctk-transport</artifactId>
+            <version>0.5.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ga4gh</groupId>
+            <artifactId>ctk-schemas</artifactId>
+            <version>${ga4gh.schema.local.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>pl.pragmatists</groupId>
+            <artifactId>JUnitParams</artifactId>
+        </dependency>
+        <!-- use tap4j to get Test Anything Protocol support -->
+        <dependency>
+            <groupId>org.tap4j</groupId>
+            <artifactId>tap4j-ext</artifactId>
+            <version>${tap4j-ext.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.surefire</groupId>
+            <artifactId>surefire-junit4</artifactId>
+            <version>2.18.1</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.junit-toolbox</groupId>
+            <artifactId>junit-toolbox</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.skyscreamer</groupId>
+            <artifactId>jsonassert</artifactId>
+        </dependency>
+
+        <!-- need BCEL during site build -->
+        <dependency>
+            <groupId>org.apache.bcel</groupId>
+            <artifactId>bcel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mashape.unirest</groupId>
+            <artifactId>unirest-java</artifactId>
+            <version>${unirest-java.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin> <!-- spring boot brings this in, too, but I need to exclude the systests -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.18.1</version>
+                <configuration>
+                    <useFile>false</useFile>
+                                        <includes>
+                        <include>**/*Spec.java</include>
+                        <include>**/*Test.java</include>
+                    </includes>
+                    <excludes>
+                        <!-- surefire for unit tests, so skip the integration tests -->
+                        <!-- they will be run by the 'failsafe' plugin -->
+                        <exclude>**/*IT.*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.18.1</version>
+                <!-- accept default config naming patterns, *IT || IT* -->
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <argLine>-Dctk.tgt.urlRoot=${ctk.tgt.urlRoot}</argLine>
+                            <properties>
+                                <property>
+                                    <!-- hook in the TAP framework for future reporting integration -->
+                                    <name>listener</name>
+                                    <value>
+                                        org.tap4j.ext.junit.listener.TapListenerClass,org.tap4j.ext.junit.listener.TapListenerSuite
+                                    </value>
+                                </property>
+                                <systemPropertyVariables>
+                                    <tap.junit.results>target/tap4j/</tap.junit.results>
+                                </systemPropertyVariables>
+                            </properties>
+                            <encoding>UTF-8</encoding>
+                            <!-- disable forking for easy debugging -->
+                            <!-- TODO make a mvn profile 'devel' for this, enable parallel in prod -->
+                            <forkCount>0</forkCount>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>2.18.1</version>
+                <reportSets>
+                    <reportSet>
+                        <!-- report on the 'failsafe' integration tests -->
+                        <!-- assembles the reports, doesn't run the tests! -->
+                        <id>integration-tests</id>
+                        <reports>
+                            <report>
+                                failsafe-report-only
+                            </report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
+
+</project>

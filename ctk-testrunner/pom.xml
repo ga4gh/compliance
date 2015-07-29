@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.ga4gh</groupId>
+    <artifactId>ctk-testrunner</artifactId>
+    <version>0.5.1-SNAPSHOT</version>
+    <name>CTK Test Runner</name>
+    <description>Test-running module (not self-excutable, requires a launcher)</description>
+    <parent>
+        <groupId>org.ga4gh</groupId>
+        <artifactId>ctk-parent</artifactId>
+        <version>0.5.1-SNAPSHOT</version>
+        <relativePath>../parent</relativePath>
+    </parent>
+
+    <developers>
+        <developer>
+            <id>wstidolph</id>
+            <name>Wayne Stidolph</name>
+            <email>wayne@stidolph.com</email>
+            <url>http://wayne.stidolph.com</url>
+        </developer>
+    </developers>
+
+    <dependencies>
+        <dependency>
+            <!-- The core Spring Boot starter, including
+            auto-configuration support, logging and YAML -->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <!-- std logging for Spring Boot is logback, but I
+            want to use log4j2 in the CTK so we exclude the default logging
+            here and add in log4j2 later -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <!-- Support for common test dependencies, including JUnit, Hamcrest
+            and Mockito along with the spring-test module. -->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+
+        <!-- CTK uses log4j2, some of the tooling is more common than Logback -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <!-- seems like we need the junit3 ant-junit, as well as the junit4! -->
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant-junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant-junit4</artifactId>
+        </dependency>
+
+        <!-- give ant the Log4jListener  -->
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant-apache-log4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+
+        <!-- route ant's log4j into the main app logging, slf4j -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
+        </dependency>
+
+        <!-- use tap4j to get Test Anything Protocol support -->
+        <dependency>
+            <groupId>org.tap4j</groupId>
+            <artifactId>tap4j-ext</artifactId>
+            <version>${tap4j-ext.version}</version>
+        </dependency>
+
+        <!-- lots of utility stuff! -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <!-- provide the google JSON support, easier than
+            Jackson for handling the 'normal' JSON to Avro class
+            deserialization -->
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
+        </dependency>
+        <!-- need BCEL during site build -->
+        <dependency>
+            <groupId>org.apache.bcel</groupId>
+            <artifactId>bcel</artifactId>
+        </dependency>
+
+        <dependency> <!-- also provides ga4gh schema we run against -->
+            <groupId>org.ga4gh</groupId>
+            <artifactId>ctk-transport</artifactId>
+            <version>${ga4gh.schema.local.version}</version>
+        </dependency>
+        <!-- lombok saves us some typing in the COnfig class -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.4</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
