@@ -45,6 +45,18 @@
 <!--    <version>0.5.1-SNAPSHOT</version>-->
     <packaging>pom</packaging>
 
+    <organization>
+        <name>Global Alliance for Genomics and Health</name>
+        <url>http://genomicsandhealth.org</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
     <developers>
         <developer>
             <id>wstidolph</id>
@@ -52,7 +64,13 @@
             <email>wayne@stidolph.com</email>
             <url>http://wayne.stidolph.com</url>
         </developer>
+        <developer>
+            <id>hjellinek</id>
+            <name>Herb Jellinek</name>
+            <email>hjelline@ucsc.edu</email>
+        </developer>
     </developers>
+
     <contributors>
         <contributor>
             <name>Jeltje van Baren</name>

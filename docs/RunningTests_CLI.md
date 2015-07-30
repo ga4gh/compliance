@@ -10,7 +10,7 @@ The unzip will place a jar file(ctk-cli-*.jar) and a runnable bash script ('ctk'
 
 There are two ways to run the CTK you just unzipped from the command line: you can use the '`java`' command, or you can use the '`ctk`' script. The `ctk` script will run the java command for you, and do a little support work to avoid overwriting test results when you run the tests multiple times.
 
-When the tests are done, the reports will be in the `target/` directory. There are normal ant-junit reports in txt and XML in `target`, and HTML versions in `target/report/html/`
+When the tests are done, the reports will be in the `target/` directory. There are normal Ant-JUnit reports in txt and XML in `target`, and HTML versions in `target/report/html/`
 
 ### To use 'java' to run the tests:
 

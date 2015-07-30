@@ -1,11 +1,5 @@
 package org.ga4gh.cts.core;
 
-/**
- * <p>This test fetches the target server landing page as evidence of connectivity;
- * the test also scrapes the supplied HTML as fodder for the eventual report.</p>
- * <p>Created by Wayne Stidolph on 6/7/2015.</p>
- */
-
 import com.mashape.unirest.http.Headers;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
@@ -14,7 +8,7 @@ import com.mashape.unirest.request.GetRequest;
 import junitparams.JUnitParamsRunner;
 import org.ga4gh.ctk.CtkLogs;
 import org.ga4gh.ctk.testcategories.CoreTests;
-import org.ga4gh.ctk.transport.*;
+import org.ga4gh.ctk.transport.URLMAPPING;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -24,10 +18,15 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * This test fetches the target server landing page as evidence of connectivity.
+ * It also scrapes the supplied HTML as fodder for the eventual report.
+ *
+ * <p>Created by Wayne Stidolph on 6/7/2015.</p>
+ */
 @Category(CoreTests.class)
 @RunWith(JUnitParamsRunner.class)
 public class LandingPageIT implements CtkLogs {
-    // private static org.slf4j.Logger log = getLogger(LandingPageIT.class);
 
     /**
      * <p>The landing page should exist.</p>

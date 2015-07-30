@@ -11,7 +11,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>CTK Transport to Server</name>
-    <description>GA4GH Server api, communications and tightly-coupled test support (Asserts etc)</description>
+    <description>GA4GH Server API, communications and tightly-coupled test support (Asserts etc.)</description>
 
     <artifactId>ctk-transport</artifactId>
     <packaging>jar</packaging>

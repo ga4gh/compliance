@@ -1,9 +1,9 @@
 package org.ga4gh.ctk.transport;
 
-import java.util.*;
+import java.util.Map;
 
 /**
- * Created by Wayne Stidolph on 7/16/2015.
+ * This interface provides access to all of the URL paths we need to talk to the server.
  */
 public interface URLMAPPING {
 
@@ -18,6 +18,22 @@ public interface URLMAPPING {
      * @param urlRoot URL to be used to reach the target server
      */
     void setUrlRoot(String urlRoot);
+
+    String getGetReadGroupSet();
+
+    void setGetReadGroupSet(String getReadGroupSet);
+
+    String getGetReadGroup();
+
+    void setGetReadGroup(String getReadGroup);
+
+    String getSearchDatasets();
+
+    void setSearchDatasets(String searchDatasets);
+
+    String getGetDataset();
+
+    void setGetDataset(String getDataset);
 
     String getSearchReads();
 
@@ -55,9 +71,21 @@ public interface URLMAPPING {
 
     void setSearchVariants(String searchVariants);
 
+    String getGetVariant();
+
+    void setGetVariant(String getVariant);
+
+    String getGetVariantSet();
+
+    void setGetVariantSet(String getVariantSet);
+
     String getSearchCallsets();
 
     void setSearchCallsets(String searchCallsets);
+
+    String getGetCallset();
+
+    void setGetCallset(String getCallset);
 
     Map<String, String> getEndpoints();
 
@@ -90,8 +118,7 @@ public interface URLMAPPING {
      * @return an URLMAPPINGImpl
      */
     static URLMAPPING getInstance(){
-        URLMAPPING u = new URLMAPPINGImpl();
-        //u.doInit(); the URLMAPPINGImpl constructor does this
-        return u;}
+        return new URLMAPPINGImpl();
+    }
 
 }

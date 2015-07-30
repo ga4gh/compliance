@@ -1,25 +1,36 @@
 package org.ga4gh.cts.api.reads;
 
-import junitparams.*;
-import org.assertj.core.api.*;
-import org.ga4gh.*;
-import org.ga4gh.ctk.*;
-import org.ga4gh.ctk.transport.*;
-import org.ga4gh.ctk.transport.protocols.*;
-import org.junit.*;
-import org.junit.experimental.categories.*;
-import org.junit.runner.*;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+import org.assertj.core.api.JUnitSoftAssertions;
+import org.ga4gh.ctk.CtkLogs;
+import org.ga4gh.ctk.transport.RespCode;
+import org.ga4gh.ctk.transport.URLMAPPING;
+import org.ga4gh.ctk.transport.WireTracker;
+import org.ga4gh.ctk.transport.WireTrackerAssert;
+import org.ga4gh.ctk.transport.protocols.Client;
+import org.ga4gh.methods.SearchReadGroupSetsRequest;
+import org.ga4gh.methods.SearchReadGroupSetsResponse;
+import org.ga4gh.methods.SearchReadsRequest;
+import org.ga4gh.methods.SearchReadsResponse;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.ga4gh.cts.api.Utils.aSingle;
 
 /**
  * <p>Verifies basic sanity of the reads/search API.</p>
  * <p>The {@code READS} API methods (as defined by the {@code readmethods.avdl}) are:</p>
  * <ul>
- * <li>POST reads/search of GASearchReadsRequest yields GASearchReadsResponse</li>
- * <li>POST /readgroupsets/search of GASearchReadGroupSetsRequest yields GASearchReadGroupSetsResponse</li>
+ * <li>POST reads/search of SearchReadsRequest yields SearchReadsResponse</li>
+ * <li>POST /readgroupsets/search of SearchReadGroupSetsRequest yields SearchReadGroupSetsResponse</li>
  * </ul>
  *
  * <p>The test invokes a search request with null, default, and error parameters
@@ -36,46 +47,43 @@ import static org.assertj.core.api.Assertions.*;
 @RunWith(JUnitParamsRunner.class)
 public class ReadMethodsEndpointAliveIT implements CtkLogs {
 
-   // private static org.slf4j.Logger log = getLogger(ReadMethodsEndpointAliveIT.class);
-
-    private static Client client;
+    private static Client client = new Client(URLMAPPING.getInstance());
 
     @Rule
     public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
 
     /**
-     * <p>Show that a GASearchReadsRequest is accepted and
-     * returns a parseable Response.</p>
+     * Show that a SearchReadsRequest is accepted and
+     * returns a parseable Response.
      *
      * @throws Exception the exception
      */
     @Test
     public void defaultReadsRequestGetsNullAlignments() throws Exception {
-        // do a readsearch
-        GASearchReadsRequest gsrr = GASearchReadsRequest.newBuilder()
-                .build();
-        GASearchReadsResponse grtn = client.reads.searchReads(gsrr);
-        assertThat(grtn.getAlignments()).isNullOrEmpty();
+        // do a read search
+        SearchReadsRequest srr = SearchReadsRequest.newBuilder()
+                                                    .build();
+        SearchReadsResponse rtn = client.reads.searchReads(srr);
+        assertThat(rtn.getAlignments()).isNullOrEmpty();
     }
 
-
     /**
-     * <p>Show that a GASearchReadGroupSetsRequest is accepted and
-     * returns a parseable Response.</p>
+     * Show that a SearchReadGroupSetsRequest is accepted and
+     * returns a parseable Response.
      *
      * @throws Exception the exception
      */
     @Test
     public void defaultReadgroupsetsRequestGetsResponse() throws Exception {
-        GASearchReadGroupSetsRequest gsrgs = GASearchReadGroupSetsRequest.newBuilder()
-                .build();
-        GASearchReadGroupSetsResponse grtn = client.reads.searchReadGroupSets(gsrgs);
+        SearchReadGroupSetsRequest srgs =
+                SearchReadGroupSetsRequest.newBuilder().build();
+        SearchReadGroupSetsResponse rtn = client.reads.searchReadGroupSets(srgs);
 
-        assertThat(grtn).isNotNull();
+        assertThat(rtn).isNotNull();
     }
 
     /**
-     * Unmatched GASearchReadsRequest elicits error msg.
+     * Unmatched SearchReadsRequest elicits error msg.
      *
      * @param rgid the rgid
      * @throws Exception the exception
@@ -85,18 +93,19 @@ public class ReadMethodsEndpointAliveIT implements CtkLogs {
             "myNonsenseId", "foo", ""
     })
     public void unmatchedReadgroupidElicitsErrorMsg(String rgid) throws Exception {
-        GASearchReadsRequest gsrr = GASearchReadsRequest.newBuilder()
-                .setReadGroupIds(Collections.singletonList(rgid))
-                .build();
+        SearchReadsRequest srr =
+                SearchReadsRequest.newBuilder()
+                                  .setReadGroupIds(aSingle(rgid))
+                                  .build();
         WireTracker mywt = new WireTracker();
-        GASearchReadsResponse grtn = client.reads.searchReads(gsrr, mywt);
+        SearchReadsResponse rtn = client.reads.searchReads(srr, mywt);
 
         WireTrackerAssert.assertThat(mywt)
-                .hasResponseStatus(RespCode.NOT_FOUND);
+                         .hasResponseStatus(RespCode.NOT_FOUND);
     }
 
     /**
-     * <p>Shows that attempting to supply more than 1 readgroup IDs in a GASearchReadsRequest are not accepted.</p>
+     * <p>Shows that attempting to supply more than 1 readgroup IDs in a SearchReadsRequest are not accepted.</p>
      * <p>This is tested with:</p>
      * <ul>
      *     <li>a pair of valid readgroups (which returns a <b>NOT IMPLEMENTED</b>)</li>
@@ -124,13 +133,14 @@ public class ReadMethodsEndpointAliveIT implements CtkLogs {
     })
     public void multipleReadGroupsNotSupported(String rgid, RespCode expStatus) throws Exception {
         String replacedRgid = rgidMap.get(rgid);
-        GASearchReadsRequest gsrr = GASearchReadsRequest.newBuilder()
-                .setReadGroupIds(Arrays.asList(replacedRgid.split(";")))
-                .build();
+        SearchReadsRequest srr =
+                SearchReadsRequest.newBuilder()
+                                  .setReadGroupIds(Arrays.asList(replacedRgid.split(";")))
+                                  .build();
         WireTracker mywt = new WireTracker();
-        GASearchReadsResponse grtn = client.reads.searchReads(gsrr, mywt);
+        SearchReadsResponse rtn = client.reads.searchReads(srr, mywt);
         WireTrackerAssert.assertThat(mywt)
-                .hasResponseStatus(expStatus);
+                         .hasResponseStatus(expStatus);
         assertThat(mywt.gotParseableGAE()).isTrue();
     }
 
@@ -149,31 +159,19 @@ public class ReadMethodsEndpointAliveIT implements CtkLogs {
     }
 
     /**
-     * <p>Shows that attempting to supply 0 readgroup IDs in a GASearchReadsRequest is sanely NOT_FOUND.</p>
+     * <p>Shows that attempting to supply 0 readgroup IDs in a SearchReadsRequest is sanely NOT_FOUND.</p>
      * @throws Exception the exception
      */
     @Test
     public void emptyReadGroupIdIsNotFound() throws Exception {
-        GASearchReadsRequest gsrr = GASearchReadsRequest.newBuilder()
-                .setReadGroupIds(Collections.singletonList(""))
-                .build();
+        SearchReadsRequest srr =
+                SearchReadsRequest.newBuilder()
+                                  .setReadGroupIds(aSingle(""))
+                                  .build();
         WireTracker mywt = new WireTracker();
-        GASearchReadsResponse grtn = client.reads.searchReads(gsrr, mywt);
+        SearchReadsResponse rtn = client.reads.searchReads(srr, mywt);
         WireTrackerAssert.assertThat(mywt)
-                .hasResponseStatus(RespCode.NOT_FOUND);
-    }
-
-    @BeforeClass
-    public static void setupTransport() throws Exception {
-        URLMAPPING urls = URLMAPPING.getInstance();
-        log.info("ReadMethodsEndpointAliveIT set up urls.getUrlRoot of " + urls.getUrlRoot());
-        log.trace("ReadMethodsEndpointAliveIT set up urls of " + String.valueOf(urls.getEndpoints()));
-        client = new Client(urls);
-    }
-
-    @AfterClass
-    public static void shutdownTransport() throws Exception {
-
+                         .hasResponseStatus(RespCode.NOT_FOUND);
     }
 
 }

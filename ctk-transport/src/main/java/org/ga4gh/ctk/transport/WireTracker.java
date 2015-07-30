@@ -1,7 +1,7 @@
 package org.ga4gh.ctk.transport;
 
 import com.google.gson.Gson;
-import org.ga4gh.GAException;
+import org.ga4gh.methods.GAException;
 import org.slf4j.Logger;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -19,29 +19,35 @@ public class WireTracker {
      * <p>The target url with which this WireTracker communicated.</p>
      */
     public String theUrl;
+
     /**
      * <p>The string BODY sent to the target.</p>
      */
     public String bodySent;
+
     /**
      * <p>The string BODY received from the target</p>
      */
     public String bodyReceived;
+
     private GAException gae;
+
     private String gaeMessage; // convenience and in case non-parseable
+
     private int gaeErrorCode; // convenience and in case non-parseable
 
     /**
-     * <p>Returns true if and only if a GAE was received on this interaction,
+     * <p>Returns true if and only if a {@link GAException} was received on this interaction,
      * AND it was parsable.</p>
      * <p>If it's non-parseable then the gaeMessage field
      * will hold the returned BODY (same as the bodyReceived field) and the
      * gaeErrorCode will be set to -1</p>
      *
-     * @return boolean that an error body is parsed
+     * @return true if we received a {@link GAException} on this interaction
      */
-    public boolean gotParseableGAE(){
-        return getGae() instanceof GAException;
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
+    public boolean gotParseableGAE() {
+        return getGae() != null;
     }
 
     private boolean parseableGae = false;
@@ -64,8 +70,9 @@ public class WireTracker {
                 gae = gson.fromJson(bodyReceived, GAException.class);
                 gaeMessage = gae.getMessage();
                 gaeErrorCode = gae.getErrorCode();
-            }catch (Exception e){
-                log.warn("Parse failure on GAException: BODY < " + bodyReceived + " > " + e.toString());
+            } catch (Exception e) {
+                log.warn("Parse failure on GAException: BODY < " + bodyReceived + " > " + e
+                        .toString());
                 gaeErrorCode = -1;
                 gaeMessage = bodyReceived;
                 parseableGae = false;

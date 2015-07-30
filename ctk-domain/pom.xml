@@ -93,9 +93,11 @@
                     </packages>
                     <includes>
                         <!-- assert about the GA4GH data exchanged -->
-                        <param>org\.ga4gh\.GA*.*</param>
-                        <param>org\.ga4gh\.BEACON*.*</param>
+                        <param>org\.ga4gh\..*</param>
                     </includes>
+                    <excludes>
+                        <param>org\.ga4gh\.models\.Common.*</param>
+                    </excludes>
                     <entryPointClassPackage>org.ga4gh.ctk.asserts</entryPointClassPackage>
 
                     <targetDir>${project.basedir}/src/main/assertj-assertions</targetDir>

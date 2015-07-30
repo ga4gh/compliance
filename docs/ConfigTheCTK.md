@@ -11,7 +11,7 @@ You configure the CTK via the properties used by the:
 - `cts-java` has its own copy of `defaulttransport.properties` to support running stand-alone tests under IDEs, this is still experimental and may be removed.
 
 
-If you're working with CTK/CTS source (in an IDE or for a maven build) it's easiest to just edit `ctk-cli/src/main/resources/application.properties` and `ctk-cli/src/main/resources/application.properties` but these changes will have no effect until you rebuild (because the rebuild copies the files from `src/main/resources/` into `target/` which is where the code runs from). But, you can make temporary changes to the text properties files directly in the output build `target` tree.
+If you're working with CTK/CTS source (in an IDE or for a Maven build) it's easiest to just edit `ctk-cli/src/main/resources/application.properties` and `ctk-cli/src/main/resources/application.properties` but these changes will have no effect until you rebuild (because the rebuild copies the files from `src/main/resources/` into `target/` which is where the code runs from). But, you can make temporary changes to the text properties files directly in the output build `target` tree.
 
 If you're working with the CTK/CTS at the command line, you can extract that file from the packaged jar file and have it in the dir where the jar runs from
 (`jar xvf ctk-cli-v.0.5.1-SNAPSHOT.jar application.properties`) ... if you're using the ZIP distribution, it will already have extracted that properties file (and other control files) for you.
@@ -37,7 +37,7 @@ The Properties list is available by looking at the javadoc for the `transport/sr
 
 ### Debugging URLMAPPER Initialization
 
-Because URLMAPPING initialization is a static action which might happen without logs being available, the URLMAPPING class has a special java system property property to cause it to dump all the static initialization actions directly to stdout:
+Because URLMAPPING initialization is a static action which might happen without logs being available, the URLMAPPING class has a special Java system property property to cause it to dump all the static initialization actions directly to stdout:
 
 `java -Dctk.tgt.urlmapper.dump=true -jar ctk-cli-0.5.1-SNAPSHOT.jar`
 
@@ -48,7 +48,7 @@ Properties can be set on the command line, from a properties file (in various lo
 
 1. Command line arguments when running the `ctk-cli` jar from the command line: anything starting with "--" becomes a system property, so `--ctk.testpackage=...` will set the property "`ctk.testpackage`" (this works with the bash script, as
 	- `./ctk --ctk.tgt.urlRoot=http://localhost:8000/v0.5.1"` or,
-	- from a java launch line as `java -jar ... --ctk.tgt.urlRoot=...`
+	- from a Java launch line as `java -jar ... --ctk.tgt.urlRoot=...`
 1. Operating System/shell environment variables
 1. Application properties files outside of the packaged jar (`application.properties` and YAML variants); the highest priority would be a `/config` subdir of the current directory, and next would be in the current directory when the test is launched. (The Spring documentation describes other locations, and even ways to change the properties files names if you want.) 
 1. Application properties packaged inside the jar to provide defaults (`application.properties` and YAML variants).
@@ -61,7 +61,7 @@ xxx
 
 ### Configuring Maven
 
-To set properties as a command line variable (the highest priority) for a maven invocation from a command line, just use the normal Maven invocation model of `-Dprop_name=prop_value` before the goal name, like this:
+To set properties as a command line variable (the highest priority) for a Maven invocation from a command line, just use the normal Maven invocation model of `-Dprop_name=prop_value` before the goal name, like this:
 
     mvn -Dctk.tgt.urlRoot=http://localhost:8000/v0.5.1/ install 
 

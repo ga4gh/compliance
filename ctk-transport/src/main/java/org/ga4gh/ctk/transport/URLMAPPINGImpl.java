@@ -1,9 +1,13 @@
 package org.ga4gh.ctk.transport;
 
-import java.io.*;
-import java.util.*;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
-import static org.slf4j.LoggerFactory.*;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * <p>Mapping support to get from an IDL endpoint to an implementation endpoint.</p>
@@ -59,6 +63,14 @@ public class URLMAPPINGImpl implements URLMAPPING {
         defaultEndpoints.put("ctk.tgt.getReferences", "references/{id}");
         defaultEndpoints.put("ctk.tgt.getReferencesets", "referencesets/{id}");
         defaultEndpoints.put("ctk.tgt.getReferencesBases", "references/{id}/bases");
+
+        defaultEndpoints.put("ctk.tgt.getReadGroupSet", "/readgroupsets/{id}");
+        defaultEndpoints.put("ctk.tgt.getReadGroup", "/readgroups/{id}");
+        defaultEndpoints.put("ctk.tgt.searchDatasets", "/datasets/search");
+        defaultEndpoints.put("ctk.tgt.getDataset", "/datasets/{id}");
+        defaultEndpoints.put("ctk.tgt.getVariant", "/variants/{id}");
+        defaultEndpoints.put("ctk.tgt.getVariantSet", "/variantsets/{id}");
+        defaultEndpoints.put("ctk.tgt.getCallset", "/callsets/{id}");
 
         dumpToStdOut = Boolean.getBoolean("ctk.tgt.urlmapper.dump"); // so, -Dctk.urlmapper.dump= true
 
@@ -233,10 +245,45 @@ public class URLMAPPINGImpl implements URLMAPPING {
         }
     }
 
-    // Syntactic sugar, mostly to help IDEs autocomplete
-    // These methods are an incomplete list, I just added them when
-    // I needed them. You can always just do
-    // URLMAPPING.endpoints.get("mykey") etc.
+    @Override
+    public String getGetReadGroupSet() {
+        return endpoints.get("ctk.tgt.getReadGroupSet");
+    }
+
+    @Override
+    public void setGetReadGroupSet(String getReadGroupSet) {
+        endpoints.put("ctk.tgt.getReadGroupSet", getReadGroupSet);
+    }
+
+    @Override
+    public String getGetReadGroup() {
+        return endpoints.get("ctk.tgt.getReadGroup");
+    }
+
+    @Override
+    public void setGetReadGroup(String getReadGroup) {
+        endpoints.put("ctk.tgt.getReadGroup", getReadGroup);
+    }
+
+    @Override
+    public String getSearchDatasets() {
+        return endpoints.get("ctk.tgt.searchDatasets");
+    }
+
+    @Override
+    public void setSearchDatasets(String searchDatasets) {
+        endpoints.put("ctk.tgt.searchDatasets", searchDatasets);
+    }
+
+    @Override
+    public String getGetDataset() {
+        return endpoints.get("ctk.tgt.getDataset");
+    }
+
+    @Override
+    public void setGetDataset(String getDataset) {
+        endpoints.put("ctk.tgt.getDataset", getDataset);
+    }
 
     @Override
     public String getSearchReads() {
@@ -329,6 +376,26 @@ public class URLMAPPINGImpl implements URLMAPPING {
     }
 
     @Override
+    public String getGetVariant() {
+        return endpoints.get("ctk.tgt.getVariant");
+    }
+
+    @Override
+    public void setGetVariant(String getVariant) {
+        endpoints.put("ctk.tgt.getVariant", getVariant);
+    }
+
+    @Override
+    public String getGetVariantSet() {
+        return endpoints.get("ctk.tgt.getVariantSet");
+    }
+
+    @Override
+    public void setGetVariantSet(String getVariantSet) {
+        endpoints.put("ctk.tgt.getVariantSet", getVariantSet);
+    }
+
+    @Override
     public String getSearchCallsets() {
         return endpoints.get("ctk.tgt.searchCallsets");
     }
@@ -336,6 +403,16 @@ public class URLMAPPINGImpl implements URLMAPPING {
     @Override
     public void setSearchCallsets(String searchCallsets) {
         endpoints.put("ctk.tgt.searchCallsets", searchCallsets);
+    }
+
+    @Override
+    public String getGetCallset() {
+        return endpoints.get("ctk.tgt.getCallset");
+    }
+
+    @Override
+    public void setGetCallset(String getCallset) {
+        endpoints.put("ctk.tgt.getCallset", getCallset);
     }
 
     @Override

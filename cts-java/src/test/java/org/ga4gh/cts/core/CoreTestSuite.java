@@ -7,9 +7,8 @@ import org.ga4gh.ctk.testcategories.CoreTests;
 import org.junit.runner.RunWith;
 
 /**
- * Created by Wayne Stidolph on 6/7/2015.
+ * This suite runs tests of the core API.
  */
-
 @RunWith(WildcardPatternSuite.class)
 @IncludeCategories(CoreTests.class)
 @SuiteClasses({"**/*IT.class", "**/*Test.class"})

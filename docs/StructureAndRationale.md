@@ -10,19 +10,19 @@ The CTK is structured as a set of Maven modules:
 ```
                                                              +-----------------------------+
 ctk bash script, raw java invoke +--------------------------->ctk-cli                      |
-                                                             |(command line java app runs  |
-                           +-----------------------------+   |ant, generates junit reports)|
-                           | ctk-core (maven)            |   |                             |
+                                                             |(command line 'java' app runs|
+                           +-----------------------------+   |Ant, generates JUnit reports)|
+                           | ctk-core (Maven)            |   |                             |
 command line 'mvn'+--------> (build env, run tests as    |   +--------+--------------^-----+
                            | 'integration test', makes   |            |              |      
-IDE with maven runner+-----> 'site' of code, javadoc)    |            |              |      
+IDE with Maven runner+-----> 'site' of code, javadoc)    |            |              |
                            +-----------------------------+            |              |      
                                                                       |              |      
                                                   +-------------------v----+    +----+-----+
 IDE with JUnit runner +--------------------------->                        |    |dist      |
                                                   |                        |    |(build zip|
               +-----------------------------------+      cts-java          |    |for CLI)  |
-              |                                   |      (junit tests)     |    +----------+
+              |                                   |      (JUnit tests)     |    +----------+
               |                        +----------+                        |                
               |                        |          |                        |    +----------+            
               |                        |           +-----------------+-----+    |cts-demo  |            
@@ -33,7 +33,7 @@ IDE with JUnit runner +--------------------------->                        |    
               |                        |                             |                      
         +-----v--------+     +---------v------------+       +--------v------+               
         |cts-schemas   |     | ctk-domain           |       | ctk-transport |         
-        |(java classes)|     | (asserts, predicates,|       | to/from JSON, /-------\ target
+        |(Java classes)|     | (asserts, predicates,|       | to/from JSON, /-------\ target
 IDL <---+              <-----+ test support)        <-------+ logging       \-------/ server       
 avro    |              |     |                      |       |               |               
         +--------------+     +----------------------+       +---------------+               
@@ -50,15 +50,26 @@ avro    |              |     |                      |       |               |
 - **ctk-cli** is the command-line runner 
 - **cts-java** is the tests of the server (all in the src/test tree, treated as integration tests)
 - **cts-demo--java** is a module of examples test techniques (using the custom asserts, etc)
-- **dist** is a maven assembly module, to build the distributions of the CTK (22 June 2015 builds a single ZIP which unpacks to be the command-line tool)
+- **dist** is a Maven assembly module, to build the distributions of the CTK (22 June 2015
+builds a single ZIP which unpacks to be the command-line tool)
 
-The design intent is that the central value (the tests) be independent of the launchers so that tests can be run from command lines, build processes, IDEs, web servers or other environments. The test framework itself should be stable and well-documented (hence JUnit 4).
+The design intent is that the central value (the tests) be independent of the launchers so that
+tests can be run from command lines, build processes, IDEs, web servers or other environments. The
+test framework itself should be stable and well-documented (hence JUnit 4).
 
-Therefore, while the launchers have sophisticated backing software such as Maven, or Spring Framework, the tests themselves are organized as ant-runnable JUnit with output to JUnit listeners and normal java logging.
+Therefore, while the launchers have sophisticated backing software such as Maven, or Spring Framework,
+the tests themselves are organized as Ant-runnable JUnit with output to JUnit listeners and normal
+Java logging.
 
-The tests intentionally do not use dependency injection, aspect orientation, or other support mechanisms which may themselves increase the mental or maintenance workload for test writers, or limit future migration of the tests to improved environments.
+The tests intentionally do not use dependency injection, aspect orientation, or other support
+mechanisms which may themselves increase the mental or maintenance workload for test writers,
+or limit future migration of the tests to improved environments.
 
-The simple environment for the tests (environment properties and normal junit environment, with server-specific communications delegated to the ctk-transport module) should help when the team starts using different JVM languages (groovy, javascript, jython, etc); as long as each language delivers a jar
-file of test classes that are JUnit-invocable, the tests should mix into the CTK reasonably well.
+The simple environment for the tests (environment properties and normal JUnit environment, with
+server-specific communications delegated to the ctk-transport module) should help when the team
+starts using different JVM languages (Groovy, Javascript, Jython, etc.); as long as each
+language delivers a JAR file of test classes that are JUnit-invocable, the tests should mix into the
+CTK reasonably well.
 
-(7/13/2015 Wayne S: This has not yet been tried, and it isn't clear how the test documentation and source get knotted together across languages.)
+(7/13/2015 Wayne S: This has not yet been tried, and it isn't clear how the test documentation and
+source get knotted together across languages.)

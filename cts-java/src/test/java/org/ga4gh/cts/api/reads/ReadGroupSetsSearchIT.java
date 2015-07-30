@@ -1,152 +1,139 @@
 package org.ga4gh.cts.api.reads;
 
-import junitparams.*;
+import junitparams.JUnitParamsRunner;
 import org.apache.avro.AvroRemoteException;
-import org.ga4gh.*;
-import org.ga4gh.ctk.*;
-import org.ga4gh.ctk.transport.*;
-import org.ga4gh.ctk.transport.protocols.*;
-import org.junit.*;
-import org.junit.experimental.categories.*;
-import org.junit.runner.*;
+import org.ga4gh.ctk.CtkLogs;
+import org.ga4gh.ctk.transport.URLMAPPING;
+import org.ga4gh.ctk.transport.protocols.Client;
+import org.ga4gh.cts.api.TestData;
+import org.ga4gh.cts.api.Utils;
+import org.ga4gh.methods.SearchReadGroupSetsRequest;
+import org.ga4gh.methods.SearchReadGroupSetsResponse;
+import org.ga4gh.methods.SearchReadGroupSetsResponseAssert;
+import org.ga4gh.models.Program;
+import org.ga4gh.models.ReadGroup;
+import org.ga4gh.models.ReadGroupSet;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * <p>Validates data returned by readgroupsets/search.</p>
- * <p>Created by Wayne Stidolph on 6/7/2015.</p>
+ * <p>Validates the data returned by /readgroupsets/search.</p>
  */
-//@Loggable(name="TESTLOG", value=Loggable.INFO)
 @Category(ReadsTests.class)
 @RunWith(JUnitParamsRunner.class)
 public class ReadGroupSetsSearchIT implements CtkLogs {
-    // private static org.slf4j.Logger log = getLogger(ReadGroupSetsSearchIT.class);
 
-    private static Client client;
+    private static final String BAD_DATASET_ID = "foobar";
 
-    private static Map<String, String> stringMap;
-    static {
-        stringMap = new HashMap<>();
-        stringMap.put("EMPTY", "");
-        stringMap.put("foo", "foo");
-        stringMap.put("LO_COV_533_CHS","low-coverage:HG00533.mapped.ILLUMINA.bwa.CHS.low_coverage.20120522");
-        stringMap.put("LO_COV_096_GBR","low-coverage:HG00096.mapped.ILLUMINA.bwa.GBR.low_coverage.20120522");
-        stringMap.put("LO_COV_534_CHS","low-coverage:HG00534.mapped.ILLUMINA.bwa.CHS.low_coverage.20120522");
+    private static Client client = new Client(URLMAPPING.getInstance());
+
+    private static String BAD_READGROUPSET_NAME = "xyzzy";
+
+    /**
+     * Returrn the number of Strings that match the possible substring.
+     * @param possibleSubstring the substring we're searching for
+     * @param matchWithin the {@link String[]} we're searching within
+     * @return the number of elements of <tt>matchWithin</tt> that contain <tt>possibleSubstring</tt>
+     */
+    private static int countMatches(String possibleSubstring, String[] matchWithin) {
+         return (int)Arrays.stream(matchWithin).filter(name -> name.contains(possibleSubstring)).count();
     }
 
     /**
-     * <p>Good readgroup sets name should retrieve only matching read group sets.</p>
-     * <p>IDL says a GASearchReadGroupSetsRequest should match based on a substring:</p>
-     * <cite>"Only return read group sets for which a substring of the name matches this string.</cite>
-     * <p>This test accepts a key, looks up the long readgroup name for a static map,
-     * extracts a substring from that valid name, and uses the subsctring in a search then verifies that
-     * all the returned ReadGroupSets match the substring.</p>
+     * <p>When we supply a name to {@link SearchReadGroupSetsRequest}, the
+     * returned objects must all have names that match.</p>
+     * <p>The Schemas documentation says
+     * that a {@link SearchReadGroupSetsRequest} always matches names exactly.</p>
      *
-     * @param rgName the readgroup name key
      * @throws AvroRemoteException the exception thrown
      */
-    @Ignore("ReadGroupSets not yet supported, and returned 'name' is null")
     @Test
-    @Parameters({ // key into the 'stringMap' variable
-            "LO_COV_533_CHS",
-            "LO_COV_096_GBR",
-            "LO_COV_534_CHS"
-    })
-    public void goodReadgroupSetsNameShouldRetrieveOnlyMatchingReadGroupSets(String rgName) throws AvroRemoteException {
-        // IDL: "Only return read group sets for which a substring of the name
-        // matches this string.
-
-        String replacedRgName = stringMap.get(rgName);
-        // build a substring of the input name
-        String substr = replacedRgName.substring(3, 9);
-        GASearchReadGroupSetsRequest reqb = GASearchReadGroupSetsRequest.newBuilder()
-                .setName(substr)
-                .build();
-
-        log.debug("SearchReadGroupSetsRequest: " + reqb.toString());
-        GASearchReadGroupSetsResponse rtnVal = client.reads.searchReadGroupSets(reqb);
-        log.debug("searchReadGroupSets " + rgName + " returned: " + String.valueOf(rtnVal));
-
-        for (GAReadGroupSet rgs : rtnVal.getReadGroupSets()) {
-                org.assertj.core.api.Assertions.assertThat(rgs.getName())
-                        .matches(".*"+substr+".*");
+    public void readgroupSetsNameShouldRetrieveOnlyMatchingReadGroupSets() throws
+            AvroRemoteException {
+        for (String rgSetName : TestData.EXPECTED_READGROUPSETS_NAMES) {
+            final SearchReadGroupSetsRequest goodReq =
+                    SearchReadGroupSetsRequest.newBuilder().
+                            setDatasetId(TestData.DATASET_ID).setName(rgSetName).build();
+            SearchReadGroupSetsResponse goodResp = client.reads.searchReadGroupSets(goodReq);
+            final List<ReadGroupSet> rgSets = goodResp.getReadGroupSets();
+            assertThat(rgSets).hasSize(1);
+            assertThat(rgSets.get(0).getName()).isEqualTo(rgSetName);
         }
     }
 
     /**
-     * <p>Readgroup set response for a dumb datasetid should be empty.</p>
-     *
-     * <p>Pass in a syntactically valid but non-matching datasetID to a GASearchReadGroupSetsRequest
-     * expect a valid GASearchReadGroupSetsResponse with no ReadGroupSets in it.</p>
+     * <p>When we supply a bogus name to {@link SearchReadGroupSetsRequest}, because the
+     * returned objects must all have names that match, we expect an empty result.</p>
+     * <p>The Schemas documentation says
+     * that a {@link SearchReadGroupSetsRequest} always matches names exactly.</p>
      *
      * @throws AvroRemoteException the exception thrown
      */
-    /* ****************************************** */
-    // DATASETID tests
-    /* ****************************************** */
-    @Ignore("datasetId not yet supported in v0.5.1 server")
     @Test
-    public void readgroupSetResponseForDumbDatasetidShouldBeEmpty() throws AvroRemoteException {
-        GASearchReadGroupSetsRequest reqb = GASearchReadGroupSetsRequest.newBuilder()
-                .setName(null)
-                .setDatasetIds(Collections.singletonList("realyUnlikelyQQQ"))
-                .build();
-        GASearchReadGroupSetsResponse rtnVal = client.reads.searchReadGroupSets(reqb);
-        // avro says always get a 200
-        GASearchReadGroupSetsResponseAssert.assertThat(rtnVal)
-                .isNotNull()
-                .hasNoReadGroupSets();
+    public void readGroupSetsNonexistentNameShouldMatchNothing() throws AvroRemoteException {
+        // try to fetch a read group set with a name the server can't match
+        final SearchReadGroupSetsRequest badReq =
+                SearchReadGroupSetsRequest.newBuilder().
+                        setDatasetId(TestData.DATASET_ID).setName(BAD_READGROUPSET_NAME).build();
+        SearchReadGroupSetsResponse badResp = client.reads.searchReadGroupSets(badReq);
+        final List<ReadGroupSet> emptyRgSets = badResp.getReadGroupSets();
+        assertThat(emptyRgSets).isEmpty();
     }
-
 
     /**
-     * <p>Bad datasetID should return errors.</p>
-     * <p>This test verifies the Server returns an expected error (NOT_FOUND)
-     * for a syntactically valid but unused dataset ID</p>
-     * <p>Test using an empty String, and an unused String</p>
+     * <p>Readgroup set response for a nonexistent dataset ID should be empty.</p>
      *
+     * <p>Pass in a well-formed but non-matching dataset ID to a SearchReadGroupSetsRequest
+     * expect a valid SearchReadGroupSetsResponse with no ReadGroupSets in it.</p>
      *
-     * @param datasetid the datasetid (actually, a key to the static 'stringMap')
-     * @throws AvroRemoteException a possible exception, keep compiler happy
+     * @throws AvroRemoteException the exception thrown
      */
-    @Ignore("datasetId not supported in v0.5.1 server")
     @Test
-    @Parameters({
-            "EMPTY",
-            "foo"
-    })
-    public void badDatasetidInSearchReadGroupSetsRequestShouldReturnErrors(String datasetid) throws AvroRemoteException {
-        log.info("testing searchReadGroupSets");
-
-        //  Builder does validation and sets defaults
-        // this is based on  the example from the demo writeup:
-        // curl --data '{"datasetIds":[], "name":null}' --header 'Content-Type: application/json' \
-        //       http://localhost:8000/v0.5.1/readgroupsets/search
-        String replacedDatasetid = stringMap.get(datasetid);
-        GASearchReadGroupSetsRequest reqb = GASearchReadGroupSetsRequest.newBuilder()
-                                                                        .setName(null)
-                                                                        .setDatasetIds(Arrays.asList(datasetid
-                                                                                                             .split(":")))
-                                                                        .build();
-
-        log.debug("SearchReadGroupSetsRequest: " + reqb.toString());
-        GASearchReadGroupSetsResponse rtnVal = client.reads.searchReadGroupSets(reqb);
-        log.debug("searchReadGroupSets " + datasetid + " returned: " + String.valueOf(rtnVal));
-        GASearchReadGroupSetsResponseAssert.assertThat(rtnVal)
-                                           .isNotNull();
-
-        List<GAReadGroupSet> rgs = rtnVal.getReadGroupSets();
-
-        org.ga4gh.GAReadGroupSetAssert.assertThat(rgs.get(0)).hasDatasetId(datasetid);
+    public void readgroupSetResponseForNonexistentDatasetIdShouldReturnEmptyList() throws AvroRemoteException {
+        SearchReadGroupSetsRequest reqb =
+                SearchReadGroupSetsRequest.newBuilder().
+                        setDatasetId(BAD_DATASET_ID).
+                        build();
+        SearchReadGroupSetsResponse rtnVal = client.reads.searchReadGroupSets(reqb);
+        // avro says always get a 200
+        SearchReadGroupSetsResponseAssert.assertThat(rtnVal).isNotNull().hasNoReadGroupSets();
     }
 
-    @BeforeClass
-    public static void setupTransport() throws Exception {
-        client = new Client(URLMAPPING.getInstance());
-    }
+    /**
+     * Search read group sets.  Fetches read group sets from the specified dataset.
+     * <ul>
+     * <li>Query 1: <pre>/readgroupsets/search &lt;dataset ID&gt;</pre>
+     * <li>Test 1: assert that we received a result of type {@link SearchReadGroupSetsResponse},
+     * and that every {@link ReadGroupSet} it contains has field datasetId == &lt;dataset ID&gt;</li>
+     * <li>Test 2: every {@link ReadGroup} in that {@link ReadGroupSet} has: an 'experiment'
+     * of type Experiment; datasetId == &lt;dataset ID&gt;; a program of type {@link Program}
+     * which is not empty.
+     * </ul>
+     * @throws AvroRemoteException if there's a communication problem
+     */
+    @Test
+    public void requestForAllReadGroupSetsShouldReturnAllWellFormed() throws AvroRemoteException {
+        final SearchReadGroupSetsRequest req =
+                SearchReadGroupSetsRequest.newBuilder()
+                                          .setDatasetId(TestData.DATASET_ID)
+                                          .build();
+        final SearchReadGroupSetsResponse resp = client.reads.searchReadGroupSets(req);
+        final List<ReadGroupSet> readGroupSets = resp.getReadGroupSets();
+        readGroupSets.stream().forEach(rgs -> assertThat(rgs.getDatasetId()).isEqualTo(TestData.DATASET_ID));
 
-    @AfterClass
-    public static void shutdownTransport() throws Exception {
-
+        for (ReadGroupSet readGroupSet : readGroupSets) {
+            for (ReadGroup readGroup : readGroupSet.getReadGroups()) {
+                assertThat(readGroup).isNotNull();
+                assertThat(readGroup.getDatasetId()).isEqualTo(TestData.DATASET_ID);
+                assertThat(readGroup.getPrograms()).isNotEmpty();
+                assertThat(readGroup.getPrograms()).doesNotContain(Utils.nullProgram);
+            }
+        }
     }
 }

@@ -183,7 +183,7 @@
         <dependency> <!-- also provides ga4gh schema we run against -->
             <groupId>org.ga4gh</groupId>
             <artifactId>ctk-transport</artifactId>
-            <version>${ga4gh.schema.local.version}</version>
+            <version>0.5.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.ga4gh</groupId>
