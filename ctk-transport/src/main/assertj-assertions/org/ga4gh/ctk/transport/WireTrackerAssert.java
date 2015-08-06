@@ -55,7 +55,7 @@ public class WireTrackerAssert extends AbstractAssert<WireTrackerAssert, WireTra
    * @return this assertion object.
    * @throws AssertionError - if the actual WireTracker's gae is not equal to the given one.
    */
-  public WireTrackerAssert hasGae(org.ga4gh.GAException gae) {
+  public WireTrackerAssert hasGae(org.ga4gh.methods.GAException gae) {
     // check that actual WireTracker we want to make assertions on is not null.
     isNotNull();
 
@@ -63,7 +63,7 @@ public class WireTrackerAssert extends AbstractAssert<WireTrackerAssert, WireTra
     String assertjErrorMessage = "\nExpecting gae of:\n  <%s>\nto be:\n  <%s>\nbut was:\n  <%s>";
     
     // null safe check
-    org.ga4gh.GAException actualGae = actual.getGae();
+    org.ga4gh.methods.GAException actualGae = actual.getGae();
     if (!Objects.areEqual(actualGae, gae)) {
       failWithMessage(assertjErrorMessage, actual, gae, actualGae);
     }

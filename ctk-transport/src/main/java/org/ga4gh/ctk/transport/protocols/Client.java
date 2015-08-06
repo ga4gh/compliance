@@ -1,20 +1,25 @@
 package org.ga4gh.ctk.transport.protocols;
 
 import org.apache.avro.AvroRemoteException;
-import org.ga4gh.*;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.WireTracker;
 import org.ga4gh.ctk.transport.avrojson.AvroJson;
+import org.ga4gh.methods.*;
+import org.ga4gh.models.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class provides an interface to/facade for the GA4GH server we're testing.
  * <p>
- *     Methods are categorized by functional area:
- *     <ul>
- *         <li>{@link #reads reads}</li>
- *         <li>{@link #variants variants}</li>
- *         <li>{@link #references references}</li>
- *     </ul>
+ * Methods are categorized by functional area:
+ * <ul>
+ * <li>{@link #reads reads}</li>
+ * <li>{@link #variants variants}</li>
+ * <li>{@link #references references}</li>
+ * </ul>
+ *
  * @author Herb Jellinek
  */
 public class Client {
@@ -67,350 +72,480 @@ public class Client {
         wireTracker = wt;
     }
 
-    ///
-    //// From VariantsProtocolClient.
-    ///
-
-    public class Variants implements org.ga4gh.GAVariantMethods {
+    /**
+     * Inner class holding all variants-related methods.  Gathering them in an inner class like this
+     * makes it a little easier for someone writing tests to use their IDE's auto-complete
+     * to type method names.
+     */
+    public class Variants implements VariantMethods {
 
         /**
-         * Gets a list of `GAVariantSet` matching the search criteria.
-         * <p>
-         * `POST /variantsets/search` must accept a JSON version of
-         * `GASearchVariantSetsRequest` as the post body and will return a JSON version
-         * of `GASearchVariantSetsResponse`.
+         * Gets a list of {@link VariantSet} matching the search criteria via
+         * <tt>POST /variantsets/search</tt>.
          *
-         * @param request the GASearchVariantSetsRequest we're issuing
+         * @param request the {@link SearchVariantSetsRequest} we'll issue
          */
         @Override
-        public GASearchVariantSetsResponse searchVariantSets(GASearchVariantSetsRequest request)
+        public SearchVariantSetsResponse searchVariantSets(SearchVariantSetsRequest request)
                 throws AvroRemoteException {
             String path = urls.getSearchVariantSets();
-            GASearchVariantSetsResponse response = new GASearchVariantSetsResponse();
+            SearchVariantSetsResponse response = new SearchVariantSetsResponse();
             final AvroJson aj =
                     new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (GASearchVariantSetsResponse)aj.doPostResp();
+            response = (SearchVariantSetsResponse)aj.doPostResp();
             return response;
         }
 
         /**
-         * Gets a list of `GAVariantSet` matching the search criteria.
-         * <p>
-         * `POST /variantsets/search` must accept a JSON version of
-         * `GASearchVariantSetsRequest` as the post body and will return a JSON version
-         * of `GASearchVariantSetsResponse`.
+         * Gets a {@link VariantSet} by ID.
+         * <tt>GET /variantsets/{id}</tt> will return a JSON version of {@link VariantSet}.
          *
-         * @param request the GASearchVariantSetsRequest we're issuing
+         * @param id the ID of the variant set
+         */
+        @Override
+        public VariantSet getVariantSet(String id) throws AvroRemoteException {
+            String path = urls.getGetVariantSet();
+            VariantSet response = new VariantSet();
+            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
+            response = (VariantSet)aj.doGetResp(id);
+            return response;
+        }
+
+        /**
+         * Gets a list of {@link VariantSet} matching the search criteria.
+         * <p>
+         * <tt>POST /variantsets/search</tt> accepts a {@link SearchVariantSetsRequest}
+         * as the post body and returns a {@link SearchVariantSetsResponse}.
+         *
+         * @param request the SearchVariantSetsRequest we'll issue
          * @param wt      If supplied, captures the data going across the wire
          */
-        public GASearchVariantSetsResponse searchVariantSets(GASearchVariantSetsRequest request,
-                                                             WireTracker wt)
+        public SearchVariantSetsResponse searchVariantSets(SearchVariantSetsRequest request,
+                                                           WireTracker wt)
                 throws AvroRemoteException {
             wireTracker = wt;
             return searchVariantSets(request);
         }
 
         /**
-         * Gets a list of `GAVariant` matching the search criteria.
+         * Gets a list of {@link Variant} matching the search criteria.
          * <p>
-         * `POST /variants/search` must accept a JSON version of `GASearchVariantsRequest`
-         * as the post body and will return a JSON version of `GASearchVariantsResponse`.
+         * <tt>POST /variants/search</tt> accepts a {@link SearchVariantsRequest}
+         * and returns a {@link SearchVariantsResponse}.
          *
-         * @param request the GASearchVariantsRequest we're issuing
+         * @param request the {@link SearchVariantsRequest} we'll issue
          */
         @Override
-        public GASearchVariantsResponse searchVariants(GASearchVariantsRequest request)
+        public SearchVariantsResponse searchVariants(SearchVariantsRequest request)
                 throws AvroRemoteException {
             String path = urls.getSearchVariants();
-            GASearchVariantsResponse response = new GASearchVariantsResponse();
+            SearchVariantsResponse response = new SearchVariantsResponse();
             final AvroJson aj =
                     new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (GASearchVariantsResponse)aj.doPostResp();
+            response = (SearchVariantsResponse)aj.doPostResp();
             return response;
         }
 
         /**
-         * Gets a list of `GAVariant` matching the search criteria.
-         * <p>
-         * `POST /variants/search` must accept a JSON version of `GASearchVariantsRequest`
-         * as the post body and will return a JSON version of `GASearchVariantsResponse`.
+         * Gets a {@link Variant} by ID.
+         * <tt>GET /variants/{id}</tt> will return a {@link Variant}.
          *
-         * @param request the GASearchVariantsRequest we're issuing
+         * @param id the ID of the variant
+         */
+        @Override
+        public Variant getVariant(String id) throws AvroRemoteException {
+            String path = urls.getGetVariant();
+            Variant response = new Variant();
+            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
+            response = (Variant)aj.doGetResp(id);
+            return response;
+        }
+
+        /**
+         * Gets a list of {@link Variant} matching the search criteria.
+         * <p>
+         * <tt>POST /variants/search</tt> accepts a {@link SearchVariantsRequest}
+         * and returns a {@link SearchVariantsResponse}.
+         *
+         * @param request the SearchVariantsRequest we'll issue
          * @param wt      If supplied, captures the data going across the wire
          */
 
-        public GASearchVariantsResponse searchVariants(GASearchVariantsRequest request,
-                                                       WireTracker wt)
+        public SearchVariantsResponse searchVariants(SearchVariantsRequest request,
+                                                     WireTracker wt)
                 throws AvroRemoteException {
             wireTracker = wt;
             return searchVariants(request);
         }
 
         /**
-         * Gets a list of `GACallSet` matching the search criteria.
+         * Gets a list of {@link CallSet} matching the search criteria.
          * <p>
-         * `POST /callsets/search` must accept a JSON version of `GASearchCallSetsRequest`
-         * as the post body and will return a JSON version of `GASearchCallSetsResponse`.
+         * <tt>POST /callsets/search</tt> accepts a {@link SearchCallSetsRequest}
+         * and returns a {@link SearchCallSetsResponse}.
          *
-         * @param request the GASearchCallSetsRequest we're issuing
+         * @param request the SearchCallSetsRequest we'll issue
          */
         @Override
-        public GASearchCallSetsResponse searchCallSets(GASearchCallSetsRequest request)
+        public SearchCallSetsResponse searchCallSets(SearchCallSetsRequest request)
                 throws AvroRemoteException {
             String path = urls.getSearchCallsets();
-            GASearchCallSetsResponse response = new GASearchCallSetsResponse();
+            SearchCallSetsResponse response = new SearchCallSetsResponse();
             final AvroJson aj =
                     new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (GASearchCallSetsResponse)aj.doPostResp();
+            response = (SearchCallSetsResponse)aj.doPostResp();
             return response;
         }
 
         /**
-         * Gets a list of `GACallSet` matching the search criteria.
-         * <p>
-         * `POST /callsets/search` must accept a JSON version of `GASearchCallSetsRequest`
-         * as the post body and will return a JSON version of `GASearchCallSetsResponse`.
+         * Gets a {@link CallSet} by ID.
+         * <tt>GET /callsets/{id}</tt> will return a {@link CallSet}.
          *
-         * @param request the GASearchVariantsRequest we're issuing
+         * @param id the ID of the call set
+         */
+        @Override
+        public CallSet getCallSet(String id) throws AvroRemoteException {
+            String path = urls.getGetCallset();
+            CallSet response = new CallSet();
+            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
+            response = (CallSet)aj.doGetResp(id);
+            return response;
+        }
+
+        /**
+         * Gets a list of {@link CallSet} objects matching the search criteria.
+         * <p>
+         * <tt>POST /callsets/search</tt> accepts a {@link SearchCallSetsRequest} and
+         * returns a {@link SearchCallSetsResponse}.
+         *
+         * @param request the SearchVariantsRequest we'll issue
          * @param wt      If supplied, captures the data going across the wire
          */
-        public GASearchCallSetsResponse searchCallSets(GASearchCallSetsRequest request,
-                                                       WireTracker wt)
+        public SearchCallSetsResponse searchCallSets(SearchCallSetsRequest request,
+                                                     WireTracker wt)
                 throws AvroRemoteException {
             wireTracker = wt;
             return searchCallSets(request);
         }
     }
 
-    ///
-    //// From ReadsProtocolClient.
-    ///
-
-    public class Reads implements org.ga4gh.GAReadMethods {
+    /**
+     * Inner class holding all reads-related methods.  Gathering them in an inner class like this
+     * makes it a little easier for someone writing tests to use their IDE's auto-complete
+     * to type method names.
+     */
+    public class Reads implements ReadMethods {
 
         /**
-         * Gets a list of `GAReadAlignment` matching the search criteria.
+         * Gets a list of {@link ReadAlignment} matching the search criteria.
          * <p>
-         * `POST /reads/search` must accept a JSON version of `GASearchReadsRequest` as
-         * the post body and will return a JSON version of `GASearchReadsResponse`.</p>
+         * <tt>POST /reads/search</tt> accepts a {@link SearchReadsRequest} and returns
+         * a {@link SearchReadsResponse}.</p>
          *
          * @param request filled-in Avro object to be serialized as JSON to the server
-         * @throws AvroRemoteException
-         * @throws GAException
+         * @throws AvroRemoteException if there's a communication problem
          */
         @Override
-        public GASearchReadsResponse searchReads(GASearchReadsRequest request)
+        public SearchReadsResponse searchReads(SearchReadsRequest request)
                 throws AvroRemoteException {
             String path = urls.getSearchReads();
-            GASearchReadsResponse response = new GASearchReadsResponse();
+            SearchReadsResponse response = new SearchReadsResponse();
             final AvroJson aj =
                     new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (GASearchReadsResponse)aj.doPostResp();
+            response = (SearchReadsResponse)aj.doPostResp();
             return response;
         }
 
         /**
-         * Gets a list of `GAReadAlignment` matching the search criteria.
+         * Gets a list of {@link ReadAlignment} matching the search criteria.
          * <p>
-         * `POST /reads/search` must accept a JSON version of `GASearchReadsRequest` as
-         * the post body and will return a JSON version of `GASearchReadsResponse`.</p>
+         * <tt>POST /reads/search</tt> accepts a {@link SearchReadsRequest} and returns
+         * a {@link SearchReadsResponse}.</p>
          *
          * @param request filled-in Avro object to be serialized as JSON to the server
          * @param wt      If supplied, captures the data going across the wire
          * @return the server's response (deserialized into an Avro-defined object)
-         * @throws AvroRemoteException
-         * @throws GAException
+         * @throws AvroRemoteException if there's a communication problem
          */
-        public GASearchReadsResponse searchReads(GASearchReadsRequest request, WireTracker wt)
+        public SearchReadsResponse searchReads(SearchReadsRequest request, WireTracker wt)
                 throws AvroRemoteException {
             wireTracker = wt;
             return searchReads(request);
         }
 
         /**
-         * Gets a list of `GAReadGroupSet` matching the search criteria.
+         * Gets a list of {@link ReadGroupSet} matching the search criteria.
          * <p>
-         * `POST /readgroupsets/search` must accept a JSON version of
-         * `GASearchReadGroupSetsRequest` as the post body and will return a JSON
-         * version of `GASearchReadGroupSetsResponse`.</p>
+         * <tt>POST /readgroupsets/search</tt> accepts a {@link SearchReadGroupSetsRequest}
+         * and returns a {@link SearchReadGroupSetsResponse}.</p>
          *
          * @param request filled-in Avro object to be serialized as JSON to the server
-         * @throws AvroRemoteException
-         * @throws GAException
+         * @throws AvroRemoteException if there's a communication problem
          */
         @Override
-        public GASearchReadGroupSetsResponse searchReadGroupSets(GASearchReadGroupSetsRequest
-                                                                                 request)
+        public SearchReadGroupSetsResponse searchReadGroupSets(SearchReadGroupSetsRequest request)
 
                 throws AvroRemoteException {
             String path = urls.getSearchReadGroupSets();
             // we use an empty concrete response class to pass into the Parameterized AvroJson
             // as a quick way to get the class name and such; this object actually gets replaced
             // with the filled-in Response object constructed in AvroJson and passed back
-            GASearchReadGroupSetsResponse response = new GASearchReadGroupSetsResponse();
+            SearchReadGroupSetsResponse response = new SearchReadGroupSetsResponse();
             final AvroJson aj =
                     new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
             //aj.setDeserMode(AvroJson.DESER_MODE.AVRO_DIRECT);
-            response = (GASearchReadGroupSetsResponse)aj.doPostResp();
+            response = (SearchReadGroupSetsResponse)aj.doPostResp();
 
             return response;
         }
 
         /**
-         * Gets a list of `GAReadGroupSet` matching the search criteria.
+         * Gets a {@link ReadGroupSet} by ID.
+         * <tt>GET /readgroupsets/{id}</tt> will return a JSON version of {@link ReadGroupSet}.
+         *
+         * @param id the ID of the read group set
+         * @throws AvroRemoteException if there's a communication problem
+         */
+        @Override
+        public ReadGroupSet getReadGroupSet(String id) throws AvroRemoteException {
+            String path = urls.getGetReadGroupSet();
+            ReadGroupSet response = new ReadGroupSet();
+            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
+            response = (ReadGroupSet)aj.doGetResp(id);
+            return response;
+        }
+
+        /**
+         * Gets a {@link ReadGroup} by ID.
+         * <tt>GET /readgroups/{id}</tt> will return a JSON version of {@link ReadGroup}.
+         *
+         * @param id the ID of the read group
+         * @throws AvroRemoteException if there's a communication problem
+         */
+        @Override
+        public ReadGroup getReadGroup(String id) throws AvroRemoteException {
+            String path = urls.getGetReadGroup();
+            ReadGroup response = new ReadGroup();
+            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
+            response = (ReadGroup)aj.doGetResp(id);
+            return response;
+        }
+
+        /**
+         * Gets a list of datasets accessible through the API.
+         * <tt>POST /datasets/search</tt> accepts a {@link SearchDatasetsRequest}
+         * and returns a {@link SearchDatasetsResponse}.
+         *
+         * @param request the {@link SearchDatasetsRequest} request
+         * @throws AvroRemoteException if there's a communication problem
+         */
+        @Override
+        public SearchDatasetsResponse searchDatasets(SearchDatasetsRequest request) throws
+                AvroRemoteException {
+            String path = urls.getSearchDatasets();
+            SearchDatasetsResponse response = new SearchDatasetsResponse();
+            final AvroJson aj =
+                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
+            response = (SearchDatasetsResponse)aj.doPostResp();
+
+            return response;
+        }
+
+        /**
+         * Gets a {@link Dataset} by ID.
+         * <tt>GET /datasets/{id}</tt> returns a {@link Dataset}.
+         *
+         * @param id the ID of the dataset
+         * @throws AvroRemoteException if there's a communication problem
+         */
+        @Override
+        public Dataset getDataset(String id) throws AvroRemoteException {
+            String path = urls.getGetDataset();
+            Dataset response = new Dataset();
+            final AvroJson aj =
+                    new AvroJson<>(response, urls.getUrlRoot(), path, wireTracker);
+            response = (Dataset)aj.doGetResp(id);
+            return response;
+        }
+
+        /**
+         * Gets a list of {@link ReadGroupSet} matching the search criteria.
          * <p>
-         * `POST /readgroupsets/search` must accept a JSON version of
-         * `GASearchReadGroupSetsRequest` as the post body and will return a JSON
-         * version of `GASearchReadGroupSetsResponse`.</p>
+         * <tt>POST /readgroupsets/search</tt> accepts a {@link SearchReadGroupSetsRequest}
+         * and returns a {@link SearchReadGroupSetsResponse}.</p>
          *
          * @param request filled-in Avro object to be serialized as JSON to the server
          * @param wt      If supplied, captures the data going across the wire
-         * @throws AvroRemoteException
-         * @throws GAException
+         * @throws AvroRemoteException if there's a communication problem
          */
-        public GASearchReadGroupSetsResponse searchReadGroupSets(GASearchReadGroupSetsRequest
-                                                                         request, WireTracker wt)
+        public SearchReadGroupSetsResponse searchReadGroupSets(SearchReadGroupSetsRequest
+                                                                       request, WireTracker wt)
                 throws AvroRemoteException {
             wireTracker = wt;
             return searchReadGroupSets(request);
         }
     }
 
-    ///
-    //// Reference methods.
-    ///
-    public class References implements org.ga4gh.GAReferenceMethods {
+    /**
+     * Inner class holding all references-related methods.  Gathering them in an inner class like
+     * this
+     * makes it a little easier for someone writing tests to use their IDE's auto-complete
+     * to type method names.
+     */
+    public class References implements ReferenceMethods {
 
         /**
-         * Gets a list of `GAReferenceSet` matching the search criteria.
+         * Gets a list of {@link ReferenceSet} matching the search criteria.
          * <p>
-         * `POST /referencesets/search` must accept a JSON version of
-         * `GASearchReferenceSetsRequest` as the post body and will return a JSON
-         * version of `GASearchReferenceSetsResponse`.
+         * <tt>POST /referencesets/search</tt> accepts a {@link SearchReferenceSetsRequest}
+         * and returns a {@link SearchReferenceSetsResponse}.
          *
          * @param request Avro object to be serialized as JSON to the server
+         * @throws AvroRemoteException if there's a communication problem
          */
         @Override
-        public GASearchReferenceSetsResponse searchReferenceSets(GASearchReferenceSetsRequest
-                                                                                 request)
+        public SearchReferenceSetsResponse searchReferenceSets(SearchReferenceSetsRequest request)
                 throws AvroRemoteException {
             String path = urls.getSearchReferencesets();
             // we use an empty concrete response class to pass into the Parameterized AvroJson
             // as a quick way to get the class name and such; this object actually gets replaced
             // with the filled-in Response object constructed in AvroJson and passed back
-            GASearchReferenceSetsResponse response = new GASearchReferenceSetsResponse();
+            SearchReferenceSetsResponse response = new SearchReferenceSetsResponse();
             final AvroJson aj =
                     new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (GASearchReferenceSetsResponse)aj.doPostResp();
+            response = (SearchReferenceSetsResponse)aj.doPostResp();
 
             return response;
         }
 
         /**
-         * Gets a `GAReferenceSet` by ID.
-         * `GET /referencesets/{id}` will return a JSON version of `GAReferenceSet`.
+         * Gets a {@link ReferenceSet} by ID.
+         * <tt>GET /referencesets/{id}</tt> returns a {@link ReferenceSet}.
          *
          * @param id the reference set ID
+         * @throws AvroRemoteException if there's a communication problem
          */
         @Override
-        public GAReferenceSet getReferenceSet(String id) throws AvroRemoteException {
+        public ReferenceSet getReferenceSet(String id) throws AvroRemoteException {
             String path = urls.getReferenceSets();
-            GAReferenceSet response = new GAReferenceSet();
+            ReferenceSet response = new ReferenceSet();
             final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
-            response = (GAReferenceSet)aj.doGetResp(id);
+            response = (ReferenceSet)aj.doGetResp(id);
             return response;
         }
 
         /**
-         * Gets a list of `GAReferenceSet` matching the search criteria.
+         * Gets a list of {@link ReferenceSet} matching the search criteria.
          * <p>
-         * `POST /referencesets/search` must accept a JSON version of
-         * `GASearchReferenceSetsRequest` as the post body and will return a JSON
-         * version of `GASearchReferenceSetsResponse`.
+         * <tt>POST /referencesets/search</tt> accepts a
+         * {@link SearchReferenceSetsRequest} and returns a {@link SearchReferenceSetsResponse}.
          *
          * @param request Avro object to be serialized as JSON to the server
          * @param wt      If supplied, captures the data going across the wire
+         * @throws AvroRemoteException if there's a communication problem
          */
-        public GASearchReferenceSetsResponse searchReferenceSets(GASearchReferenceSetsRequest
-                                                                         request, WireTracker wt)
+        public SearchReferenceSetsResponse searchReferenceSets(SearchReferenceSetsRequest request,
+                                                               WireTracker wt)
                 throws AvroRemoteException {
             wireTracker = wt;
             return searchReferenceSets(request);
         }
 
         /**
-         * Gets a `GAReferenceSet` by ID.
-         * `GET /referencesets/{id}` will return a JSON version of `GAReferenceSet`.
+         * Gets a {@link ReferenceSet} by ID.
+         * <tt>GET /referencesets/{id}</tt> returns a {@link ReferenceSet}.
          *
          * @param id the reference set ID
          * @param wt If supplied, captures the data going across the wire
+         * @throws AvroRemoteException if there's a communication problem
          */
-        public GAReferenceSet getReferenceSet(String id, WireTracker wt) throws AvroRemoteException {
+        public ReferenceSet getReferenceSet(String id, WireTracker wt) throws AvroRemoteException {
             wireTracker = wt;
             return getReferenceSet(id);
         }
 
         /**
-         * Gets a list of `GAReference` matching the search criteria.
+         * Gets a list of {@link Reference} matching the search criteria.
          * <p>
-         * `POST /references/search` must accept a JSON version of
-         * `GASearchReferencesRequest` as the post body and will return a JSON
-         * version of `GASearchReferencesResponse`.
+         * <tt>POST /references/search</tt> accepts a {@link SearchReferencesRequest}
+         * and returns a {@link SearchReferencesResponse}.
          *
          * @param request Avro object to be serialized as JSON to the server
+         * @throws AvroRemoteException if there's a communication problem
          */
         @Override
-        public GASearchReferencesResponse searchReferences(GASearchReferencesRequest request)
+        public SearchReferencesResponse searchReferences(SearchReferencesRequest request)
                 throws AvroRemoteException {
 
             String path = urls.getSearchReferences();
-            GASearchReferencesResponse response = new GASearchReferencesResponse();
+            SearchReferencesResponse response = new SearchReferencesResponse();
             final AvroJson aj =
                     new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (GASearchReferencesResponse)aj.doPostResp();
+            response = (SearchReferencesResponse)aj.doPostResp();
 
             return response;
         }
 
         /**
-         * Gets a `GAReference` by ID.
-         * `GET /references/{id}` will return a JSON version of `GAReference`.
+         * Gets a {@link Reference} by ID.
+         * <tt>GET /references/{id}</tt> returns a {@link Reference}.
          *
          * @param id the reference set ID
+         * @throws AvroRemoteException if there's a communication problem
          */
         @Override
-        public GAReference getReference(String id) throws AvroRemoteException {
+        public Reference getReference(String id) throws AvroRemoteException {
             String path = urls.getReference();
             // we use an empty concrete response class to pass into the Parameterized AvroJson
             // as a quick way to get the class name and such; this object actually gets replaced
             // with the filled-in Response object constructed in AvroJson and passed back
-            GAReference response = new GAReference();
+            Reference response = new Reference();
             final AvroJson aj =
                     new AvroJson<>(response, urls.getUrlRoot(), path, wireTracker);
-            response = (GAReference)aj.doGetResp(id);
+            response = (Reference)aj.doGetResp(id);
 
             return response;
         }
 
         /**
-         * Lists `GAReference` bases by ID and optional range.
-         * `GET /references/{id}/bases` will return a JSON version of
-         * `GAListReferenceBasesResponse`.
+         * Add <tt>key</tt> = <tt>value</tt> to the {@link Map} if <tt>value</tt> is not <tt>null</tt>.
+         * @param map the Map into which we might insert
+         * @param key the key
+         * @param value the value
+         */
+        private void putInMapIfValueNotNull(Map<String, Object> map,
+                                            String key,
+                                            Object value) {
+            if (value != null) {
+                map.put(key, value);
+            }
+        }
+
+        /**
+         * Lists {@link Reference} bases by ID and optional range.
+         * <tt>GET /references/{id}/bases</tt> returns a {@link ListReferenceBasesResponse}.
          *
          * @param id      the reference set ID
          * @param request Avro object to be serialized as JSON to the server
+         * @throws AvroRemoteException if there's a communication problem
          */
         @Override
-        public GAListReferenceBasesResponse getReferenceBases(String id,
-                                                              GAListReferenceBasesRequest request)
+        public ListReferenceBasesResponse getReferenceBases(String id,
+                                                            ListReferenceBasesRequest request)
                 throws AvroRemoteException {
             String path = urls.getSearchReferenceBases();
-            GAListReferenceBasesResponse response = new GAListReferenceBasesResponse();
+            ListReferenceBasesResponse response = new ListReferenceBasesResponse();
             final AvroJson aj =
                     new AvroJson<>(response, urls.getUrlRoot(), path, wireTracker);
-            response = (GAListReferenceBasesResponse)aj.doGetResp(id);
+            // collect query params from request
+            final Map<String, Object> params = new HashMap<>();
+            putInMapIfValueNotNull(params, "start", request.getStart());
+            putInMapIfValueNotNull(params, "end", request.getEnd());
+            putInMapIfValueNotNull(params, "pageToken", request.getPageToken());
+            response = (ListReferenceBasesResponse)aj.doGetResp(id, params);
 
             return response;
         }
     }
+
 }

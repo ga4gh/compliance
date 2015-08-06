@@ -1,19 +1,25 @@
 package org.ga4gh.ctk.transport.avrojson;
 
-import com.google.common.base.*;
-import com.google.common.collect.*;
+import com.google.common.base.CharMatcher;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.*;
-import com.mashape.unirest.http.exceptions.*;
-import org.apache.avro.*;
-import org.apache.avro.io.*;
-import org.apache.avro.specific.*;
-import org.apache.http.*;
-import org.apache.http.message.*;
-import org.ga4gh.ctk.transport.*;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import org.apache.avro.Schema;
+import org.apache.avro.io.DatumWriter;
+import org.apache.avro.specific.SpecificDatumWriter;
+import org.apache.avro.specific.SpecificRecordBase;
+import org.apache.http.HttpStatus;
+import org.apache.http.HttpVersion;
+import org.apache.http.message.BasicStatusLine;
+import org.ga4gh.ctk.transport.WireTracker;
 
-import static org.ga4gh.ctk.transport.RespCode.*;
-import static org.slf4j.LoggerFactory.*;
+import java.util.Map;
+
+import static org.ga4gh.ctk.transport.RespCode.fromInt;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * <p>Provide Avro/Json communications layer specific to GA4GH and with extensive logging in support of CTK use.</p>
@@ -103,7 +109,7 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
      * @param req     an instance of the avro *Request method object
      * @param resp    an instance of the avro *Response method object
      * @param urlRoot String the server base (often includes a version number)
-     * @param path    String the request target path as identified in the avdl
+     * @param path    String the request target path as identified in the schemas
      */
     public AvroJson(Q req, P resp, String urlRoot, String path) {
         this.theAvroReq = req;
@@ -126,7 +132,7 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
      * <p>Construct an AvroJson for an interaction which requires no request object.</p>
      * @param resp    an instance of the avro *Response method object
      * @param urlRoot String the server base (often includes a version number)
-     * @param path    String the request target path as identified in the avdl
+     * @param path    String the request target path as identified in the schemas
      */
     public AvroJson(P resp, String urlRoot, String path) {
         this.theAvroReq = null;
@@ -149,7 +155,7 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
      * <p>Construct an AvroJson for an interaction which requires no request object.</p>
      * @param resp    an instance of the avro *Response method object
      * @param urlRoot String the server base (often includes a version number)
-     * @param path    String the request target path as identified in the avdl
+     * @param path    String the request target path as identified in the schemas
      * @param wt If supplied, captures the data going across the wire
      */
     public AvroJson(P resp, String urlRoot, String path, WireTracker wt) {
@@ -164,7 +170,7 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
      * @param req      an instance of the avro *Request method object
      * @param resp     an instance of the avro *Response method object
      * @param urlRoot  String the server base (often includes a version number)
-     * @param path     String the request target path as identified in the avdl
+     * @param path     String the request target path as identified in the schemas
      * @param wireTracker If supplied, captures the data going across the wire
      */
     public AvroJson(Q req, P resp, String urlRoot, String path, WireTracker wireTracker) {
@@ -245,18 +251,30 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
     /**
      * Perform GET (according the data stored in this object at construction).
      * <p>If this object has a WireTracker then the return JSON (if any) is copied into that.
-     * This method also tracks all message types sent and received, in the 'messages' Table. The
-     * 'sent' message type (the Request type) is meaningless, except that it sets the target URL
-     * during object construction - the Request type avro object isn't actually serialized.</p>
+     * This method also tracks all message types sent and received, in the 'messages' Table.</p>
      *
      * @param id string to be used as route param to the URL
      *
      * @return an instance of the response type (as set during object construction), can be null.
      */
     public P doGetResp(String id) {
+        return doGetResp(id, null);
+    }
+
+    /**
+     * Perform GET (according the data stored in this object at construction).
+     * <p>If this object has a WireTracker then the return JSON (if any) is copied into that.
+     * This method also tracks all message types sent and received, in the 'messages' Table.</p>
+     *
+     * @param id string to be used as route param to the URL
+     * @param queryParams optional query parameters to add to the GET request.  May be null.
+     *
+     * @return an instance of the response type (as set during object construction), can be null.
+     */
+    public P doGetResp(String id, Map<String, Object> queryParams) {
 
         // no request object to build, just GET from the endpoint with route param
-        httpResp = shouldDoComms? jsonGet(urlRoot + path, id) : NO_COMM_RESP;
+        httpResp = shouldDoComms? jsonGet(urlRoot + path, id, queryParams) : NO_COMM_RESP;
 
         updateTheRespAndLogMessages("GET");
 
@@ -298,7 +316,7 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
         return jsonResponse;
     }
 
-    HttpResponse<JsonNode> jsonGet(String theUrl, String id) {
+    HttpResponse<JsonNode> jsonGet(String theUrl, String id, Map<String, Object> queryParams) {
         if (log.isDebugEnabled()) {
             log.debug("begin jsonGet to " + theUrl + " id=" + id);
         }
@@ -308,6 +326,7 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
             jsonResponse = Unirest.get(theUrl)
                     .header("accept", "application/json")
                     .routeParam("id", id)
+                    .queryString(queryParams)
                     .asJson();
         } catch (UnirestException e) {
             log.warn("stubbing future comms due to problem communicating JSON with " + theUrl + " id: " + id, e);

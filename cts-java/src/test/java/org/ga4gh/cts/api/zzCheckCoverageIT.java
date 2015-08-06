@@ -1,19 +1,26 @@
 package org.ga4gh.cts.api;
 
-import org.ga4gh.ctk.*;
-import org.ga4gh.ctk.transport.*;
-import org.junit.*;
+import org.ga4gh.ctk.CtkLogs;
+import org.ga4gh.ctk.transport.URLMAPPING;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * <p>Stupidly named 'zz...' so it runs last, this test class will evaluate
- * integration test completeness (are all messages, data type,and endpoints exercised)</p>
+ * integration test completeness (are all messages, data type, and endpoints exercised)</p>
  * <p>Created by Wayne Stidolph on 5/30/2015.</p>
  */
 public class zzCheckCoverageIT implements CtkLogs {
 
-    static URLMAPPING urls;
+    private static URLMAPPING urls;
+
+    @BeforeClass
+    public static void setUpTransport() throws Exception {
+        urls = URLMAPPING.getInstance(); // reload defaults
+    }
 
     @Ignore("Unimplemented")
     @Test
@@ -42,11 +49,4 @@ public class zzCheckCoverageIT implements CtkLogs {
 
     }
 
-    @BeforeClass
-    public static void setupTransport() throws Exception {
-        //InetSocketAddress endpointAddress = new InetSocketAddress("127.0.0.1", 8000);
-        // service = new SimpleOrderServiceEndpoint(endpointAddress);
-        urls = URLMAPPING.getInstance(); // reload defaults
-        //client = new VariantsProtocolClient();
-    }
 }

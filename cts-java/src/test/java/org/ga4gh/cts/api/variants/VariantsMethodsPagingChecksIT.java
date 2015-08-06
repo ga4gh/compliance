@@ -1,10 +1,11 @@
 package org.ga4gh.cts.api.variants;
 
-import org.ga4gh.ctk.*;
-import org.ga4gh.ctk.transport.*;
-import org.ga4gh.ctk.transport.protocols.*;
-import org.junit.*;
-import org.junit.experimental.categories.*;
+import org.ga4gh.ctk.CtkLogs;
+import org.ga4gh.ctk.transport.URLMAPPING;
+import org.ga4gh.ctk.transport.protocols.Client;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /**
  * <p>Verify the paging behavior of the /variants endpoint</p>
@@ -12,16 +13,15 @@ import org.junit.experimental.categories.*;
  */
 @Category(VariantsTests.class)
 public class VariantsMethodsPagingChecksIT implements CtkLogs {
-    // private static org.slf4j.Logger log = getLogger(VariantsMethodsPagingChecksIT.class);
 
-    private static Client client;
+    private static Client client = new Client(URLMAPPING.getInstance());
 
     /**
      * <p>Page through big variants response.</p>
      *
-     * <p>  The continuation token, which is used to page through large result sets.
-     To get the next page of results, set this parameter to the value of
-     `nextPageToken` from the previous response.</p>
+     * <p>The continuation token, which is used to page through large result sets.
+     * To get the next page of results, set this parameter to the value of
+     * `nextPageToken` from the previous response.</p>
      *
      * @throws Exception the exception
      */
@@ -31,9 +31,4 @@ public class VariantsMethodsPagingChecksIT implements CtkLogs {
         //TODO write the test :)
     }
 
-    @BeforeClass
-    public static void setupTransport() throws Exception {
-        client = new Client(URLMAPPING.getInstance());
-
-    }
 }

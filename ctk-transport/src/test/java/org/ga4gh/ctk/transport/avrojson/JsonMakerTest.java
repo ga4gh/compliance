@@ -1,18 +1,26 @@
 package org.ga4gh.ctk.transport.avrojson;
 
-import org.apache.avro.*;
-import org.apache.avro.generic.*;
-import org.apache.avro.io.*;
-import org.ga4gh.*;
-import org.ga4gh.ctk.transport.testcategories.*;
-import org.junit.*;
-import org.junit.experimental.categories.*;
-import org.skyscreamer.jsonassert.*;
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericDatumWriter;
+import org.apache.avro.io.DatumWriter;
+import org.ga4gh.ctk.transport.testcategories.AvroTests;
+import org.ga4gh.ctk.transport.testcategories.TransportTests;
+import org.ga4gh.methods.SearchReadsRequest;
+import org.ga4gh.methods.SearchVariantsRequest;
+import org.ga4gh.models.Experiment;
+import org.ga4gh.models.ReadGroup;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.skyscreamer.jsonassert.JSONAssert;
 
-import java.io.*;
-import java.util.*;
+import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
+import java.util.Collections;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * JsonMaker Tester.
@@ -39,7 +47,7 @@ public class JsonMakerTest {
     // not really an Avro-specific test so no Category here
     public void NullAvroMeansEmptyJsonBytes() throws Exception {
         //JsonMaker av = new JsonMaker();
-        Schema sampleSchema = GAReadGroup.SCHEMA$;
+        Schema sampleSchema = ReadGroup.SCHEMA$;
         DatumWriter dw = new GenericDatumWriter<>(sampleSchema);
 
         // this generates a log warning in JsonMaker, but not
@@ -54,10 +62,10 @@ public class JsonMakerTest {
 
     //@Test
     public void AvroBuildsDefaultObject() throws Exception {
-        GASearchReadsRequest gsrr = GASearchReadsRequest.newBuilder()
+        SearchReadsRequest srr = SearchReadsRequest.newBuilder()
                 .setStart(0L)
                 .build();
-        assertNotNull(gsrr);
+        assertNotNull(srr);
     }
 
     /**
@@ -74,15 +82,15 @@ public class JsonMakerTest {
     @Category(AvroTests.class)
     public void AvroGeneratesJsonBytesForDefaultGA() throws Exception {
         //JsonMaker av = new JsonMaker();
-        GASearchReadsRequest gsrr = GASearchReadsRequest.newBuilder()
+        SearchReadsRequest srr = SearchReadsRequest.newBuilder()
                 .setStart(0L)
                 .build();
-        assertNotNull("test data is default GaSearchReadsRequest", gsrr);
-        Schema sampleSchema = GASearchReadsRequest.SCHEMA$;
+        assertNotNull("test data is default GaSearchReadsRequest", srr);
+        Schema sampleSchema = SearchReadsRequest.SCHEMA$;
         DatumWriter dw = new GenericDatumWriter<>(sampleSchema);
 
         String actual =
-                JsonMaker.avroToJsonBytes(dw, sampleSchema, gsrr).toString();
+                JsonMaker.avroToJsonBytes(dw, sampleSchema, srr).toString();
 
         String expected = "{\n" +
                 "  \"readGroupIds\" : [ ],\n" +
@@ -95,22 +103,21 @@ public class JsonMakerTest {
                 "  \"pageSize\" : null,\n" +
                 "  \"pageToken\" : null\n" +
                 "}";
-        boolean strictCompare = true;
-        JSONAssert.assertEquals(expected, actual, strictCompare);
+        JSONAssert.assertEquals(expected, actual, true);
     }
 
     @Category(AvroTests.class)
     public void JacksonGeneratesJsonBytesForDefaultGA() throws Exception {
         //JsonMaker av = new JsonMaker();
-        GASearchReadsRequest gsrr = GASearchReadsRequest.newBuilder()
+        SearchReadsRequest srr = SearchReadsRequest.newBuilder()
                 .setStart(0L)
                 .build();
-        assertNotNull("test data is default GaSearchReadsRequest", gsrr);
-        Schema sampleSchema = GASearchReadsRequest.SCHEMA$;
+        assertNotNull("test data is default GaSearchReadsRequest", srr);
+        Schema sampleSchema = SearchReadsRequest.SCHEMA$;
         DatumWriter dw = new GenericDatumWriter<>(sampleSchema);
 
         String actual =
-                JsonMaker.JacksonToJsonBytes(gsrr).toString();
+                JsonMaker.JacksonToJsonBytes(srr).toString();
 
         String expected = "{\n" +
                 "  \"readGroupIds\" : [ ],\n" +
@@ -121,40 +128,43 @@ public class JsonMakerTest {
                 "  \"pageSize\" : null,\n" +
                 "  \"pageToken\" : null\n" +
                 "}";
-        boolean strictCompare = true;
-        JSONAssert.assertEquals(expected, actual, strictCompare);
+        JSONAssert.assertEquals(expected, actual, true);
     }
 
     @Test
     public void GsonGenerateSimpleJSONSearchVariantsRequest() throws Exception {
 
-        GASearchVariantsRequest gsvr = GASearchVariantsRequest.newBuilder()
+        SearchVariantsRequest svr = SearchVariantsRequest.newBuilder()
                 .setCallSetIds(Arrays.asList("foo", "bar"))
                 .setReferenceName("I.Am.The.Walrus")
                 .setStart(500L)
                 .setEnd(7654L)
                 .setPageToken("snuffle.bunny")
                 .setVariantName("garble")
+                .setVariantSetId("great_variant_set_id")
                 .build();
-        String actual = JsonMaker.GsonToJsonBytes(gsvr);
+        String actual = JsonMaker.GsonToJsonBytes(svr);
 
         JSONAssert.assertEquals("{variantName:garble}", actual, false);
         JSONAssert.assertEquals("{referenceName:I.Am.The.Walrus}", actual, false);
         JSONAssert.assertEquals("{callSetIds:[\"foo\", \"bar\"]}", actual, false);
         JSONAssert.assertEquals("{callSetIds:[\"bar\", \"foo\"]}", actual, false);
+        JSONAssert.assertEquals("{variantSetId:\"great_variant_set_id\"}", actual, false);
     }
 
     @Test
     @Category(TransportTests.class)
     public void GsonGeneratesSimpleJSONSearchReadsRequest() throws Exception {
-        GASearchReadsRequest gsrr = GASearchReadsRequest.newBuilder()
+        SearchReadsRequest srr = SearchReadsRequest.newBuilder()
+                .setReadGroupIds(Collections.<String>emptyList())
                 .setStart(0L)
                 .setPageSize(32)
                 .setEnd(4321L)
                 .build();
-        String actual = JsonMaker.GsonToJsonBytes(gsrr);
+        String actual = JsonMaker.GsonToJsonBytes(srr);
 
         JSONAssert.assertEquals("{start:0}", actual, false);
+        JSONAssert.assertEquals("{readGroupIds:[]}", actual, false);
         JSONAssert.assertEquals("{pageSize:32}", actual, false);
         JSONAssert.assertEquals("{end:4321}", actual, false);
     }
@@ -170,14 +180,14 @@ public class JsonMakerTest {
     @Category(AvroTests.class)
     public void AvroNoticeMismatchObjSchema() throws Exception {
         //JsonMaker av = new JsonMaker();
-        GASearchReadsRequest gsrr = GASearchReadsRequest.newBuilder()
+        SearchReadsRequest srr = SearchReadsRequest.newBuilder()
                 .setStart(0L) // must set, even to default
                 .build();
-        Schema wrongSchema = GAExperiment.SCHEMA$;
+        Schema wrongSchema = Experiment.SCHEMA$;
         DatumWriter dw = new GenericDatumWriter<>(wrongSchema);
 
         // using the DatumWriter should trigger an exception
-        String actual = JsonMaker.avroToJsonBytes(dw, wrongSchema, gsrr).toString();
+        String actual = JsonMaker.avroToJsonBytes(dw, wrongSchema, srr).toString();
     }
 
 }

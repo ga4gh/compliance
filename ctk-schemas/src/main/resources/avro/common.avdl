@@ -1,47 +1,64 @@
-@namespace("org.ga4gh")
+@namespace("org.ga4gh.models")
 /**
 This protocol defines common types used in the other GA4GH protocols. It does
 not have any methods; it is merely a library of types.
 */
-protocol GACommon {
+protocol Common {
 
 /**
-A general exception type.
+Indicates the DNA strand associate for some data item.
+* `NEG_STRAND`: The negative (-) strand.
+* `POS_STRAND`:  The postive (+) strand.
 */
-error GAException {
-  /** The error message */
-  string message;
-
-  /** The numerical error code */
-  int errorCode = -1;
+enum Strand {
+  NEG_STRAND,
+  POS_STRAND
 }
 
 /**
-An abstraction for referring to a genomic position, in relation to some
-already known reference. For now, represents a genomic position as a reference
-name, a base number on that reference (0-based), and a flag to say if it's the
-forward or reverse strand that we're talking about.
+A `Position` is an unoriented base in some `Reference`. A `Position` is
+represented by a `Reference` name, and a base number on that `Reference`
+(0-based).
 */
-// TODO: Add support here for universally unique base IDs.
-record GAPosition {
+record Position {
   /**
-  The name of the reference (or, more technically, the scaffold) in whatever
-  reference set is being used. Does not generally include a "chr" prefix, so for
-  example "X" would be used for the X chromosome.
+  The name of the `Reference` on which the `Position` is located.
   */
   string referenceName;
 
   /**
-  The 0-based offset from the start of the forward strand for that reference.
-  Genomic positions are non-negative integers less than reference length.
+  The 0-based offset from the start of the forward strand for that `Reference`.
+  Genomic positions are non-negative integers less than `Reference` length.
   */
   long position;
 
   /**
-  A flag to indicate if we are on the forward strand (`false`) or reverse
-  strand (`true`).
+  Strand the position is associated with.
   */
-  boolean reverseStrand;
+  Strand strand;
+}
+
+/**
+Identifier from a public database
+*/
+record ExternalIdentifier {
+  /**
+  The source of the identifier.
+  (e.g. `Ensembl`)
+  */
+  string database;
+
+  /**
+  The ID defined by the external database.
+  (e.g. `ENST00000000000`)
+  */
+  string identifier;
+
+  /**
+  The version of the object or the database
+  (e.g. `78`)
+  */
+  string version;
 }
 
 /**
@@ -85,7 +102,7 @@ have the following usage:
   mismatch (e.g., the bases are not equal to the reference). This can
   indicate a SNP or a read error. This operator is equivalent to SAM's 'X'.
 */
-enum GACigarOperation {
+enum CigarOperation {
   ALIGNMENT_MATCH,
   INSERT,
   DELETE,
@@ -100,9 +117,9 @@ enum GACigarOperation {
 /**
 A structure for an instance of a CIGAR operation.
 */
-record GACigarUnit {
+record CigarUnit {
   /** The operation type. */
-  GACigarOperation operation;
+  CigarOperation operation;
 
   /** The number of bases that the operation runs for. */
   long operationLength;

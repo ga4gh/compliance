@@ -13,10 +13,11 @@
     <artifactId>ctk-schemas</artifactId>
 
     <name>CTK Schemas</name>
-    <description>CTK-embedded GA4GH Schemas, v0.5.1+fixes (no semantic change, is 'stable' branch)</description>
+    <description>CTK-embedded GA4GH Schemas, master branch commit
+        da6f2286f7378002c2182398b444f3f424f82837 of 7/24/2015</description>
 
     <!-- TODO adopt the 'release' plugin to control the version numbering -->
-    <version>0.5.1-SNAPSHOT</version>
+    <version>${ga4gh.schema.local.version}</version>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
@@ -65,5 +66,5 @@
             </plugin>
         </plugins>
     </build>
-    
+
 </project>

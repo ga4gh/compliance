@@ -2,7 +2,7 @@
 
 - `git clone https://github.com/wstidolph/ctk-core.git` (checkout this project)
 - `cd ctk-core`
-- `mvn clean install` (this will run the `clean` and `install` maven goals from the aggregator POM in
+- `mvn clean install` (this will run the `clean` and `install` Maven goals from the aggregator POM in
 `ctk-core` to puts the resulting artifacts into your local Maven repository. When those goals run
 they will pick up dependency and plugin information from the `parent` module's `pom.xml` file.)
 
@@ -27,7 +27,7 @@ the version/branch of Schema you care about. If you do this (or otherwise edit t
 - `cd ../ctk-domain`
 - `mvn assertj:generate-assertions`
 
-(Or just run the `ctk-domain` modules assertj:generate-assertions goal using your IDE's maven runner)
+(Or just run the `ctk-domain` modules assertj:generate-assertions goal using your IDE's Maven runner)
 
 You now have custom assertions, as source, in `ctk-domain/src/main/assertj-assertions` - you
 manage these in your local git branch, or push them to your remotes like any other source.

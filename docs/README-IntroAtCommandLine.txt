@@ -17,13 +17,13 @@ and create `lib/` and `target/`directories; the tests jar and a couple control f
 in the `lib/`.
 
 There are two ways to run the CTK you just unzipped from the command line: you can use the 'java'
-command, or you can use the 'ctk' script. The `ctk` script will run the java command for you, and
+command, or you can use the 'ctk' script. The `ctk` script will run the `java` command for you, and
 do a little support work to avoid overwriting test results when you run the tests multiple times.
 
-When the tests are done, the reports will be in the `target/` directory. There are normal ant-junit reports
+When the tests are done, the reports will be in the `target/` directory. There are normal Ant-JUnit reports
 in txt and XML in `target`, and HTML versions in `target/report/html/`
 
-** To use 'java' to run the tests:
+** To use `java` to run the tests:
 
   java -jar ctk-cli-0.5.1-SNAPSHOT.jar --ctk.tgt.urlRoot=<your server URL base>
 
@@ -68,7 +68,7 @@ target/report/html/index.html
 
 If you set environment variables (or property file properties) those will still get picked up
 when you run via the `ctk` script; all `ctk` does about properties is give you a shortcut to
-setting a couple common properties and then run the same java program you get running the
+setting a couple common properties and then run the same program invoked by the
 `java` command.
 
 #### Previous Results
@@ -173,7 +173,7 @@ To make this work, the CTK/CTS  has a naming convention for tests:
 
 **Test classes end in "IT"**
 
-For example, the CTS test suite package includes the java package
+For example, the CTS test suite package includes the Java package
 
     org.ga4gh.cts.api.reads
 
