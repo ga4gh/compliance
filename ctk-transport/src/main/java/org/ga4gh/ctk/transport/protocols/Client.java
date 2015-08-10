@@ -179,7 +179,7 @@ public class Client {
         }
 
         /**
-         * Gets a list of {@link CallSet} matching the search criteria.
+         * Gets a list of {@link CallSet}s matching the search criteria.
          * <p>
          * <tt>POST /callsets/search</tt> accepts a {@link SearchCallSetsRequest}
          * and returns a {@link SearchCallSetsResponse}.

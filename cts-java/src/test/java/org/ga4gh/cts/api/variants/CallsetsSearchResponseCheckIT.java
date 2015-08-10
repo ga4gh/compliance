@@ -155,4 +155,41 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
         }
     }
 
+    /**
+     * Test getting a call set by ID.
+     * @throws AvroRemoteException if there's a communication problem
+     */
+    @Test
+    public void getCallSetWithValidIDShouldSucceed() throws AvroRemoteException {
+        final SearchVariantSetsRequest vReq =
+                SearchVariantSetsRequest.newBuilder()
+                                        .setDatasetId(TestData.DATASET_ID)
+                                        .build();
+        final SearchVariantSetsResponse vResp = client.variants.searchVariantSets(vReq);
+
+        Assertions.assertThat(vResp.getVariantSets()).isNotEmpty();
+
+        // grab the first VariantSet and use it as source of ReadSets
+        final VariantSet variantSet = vResp.getVariantSets().get(0);
+        final String variantSetId = variantSet.getId();
+
+        final SearchCallSetsRequest callSetsSearchRequest =
+                SearchCallSetsRequest.newBuilder()
+                                     .setVariantSetId(variantSetId)
+                                     .build();
+        final SearchCallSetsResponse csResp = client.variants.searchCallSets(callSetsSearchRequest);
+
+        // grab one of the CallSets returned from the search
+        Assertions.assertThat(csResp.getCallSets()).isNotEmpty();
+        final CallSet callSetFromSearch = csResp.getCallSets().get(0);
+        final String callSetId = callSetFromSearch.getId();
+        assertThat(callSetId).isNotNull();
+
+        // fetch the CallSet with that ID and compare with the one from the search
+        final CallSet callSetFromGet = client.variants.getCallSet(callSetId);
+        assertThat(callSetFromGet).isNotNull();
+        assertThat(callSetFromGet.getId()).isEqualTo(callSetId);
+        assertThat(callSetFromGet).isEqualTo(callSetFromSearch);
+    }
+
 }
