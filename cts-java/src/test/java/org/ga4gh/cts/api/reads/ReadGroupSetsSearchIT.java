@@ -97,9 +97,9 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
     @Test
     public void readgroupSetResponseForNonexistentDatasetIdShouldReturnEmptyList() throws AvroRemoteException {
         SearchReadGroupSetsRequest reqb =
-                SearchReadGroupSetsRequest.newBuilder().
-                        setDatasetId(BAD_DATASET_ID).
-                        build();
+                SearchReadGroupSetsRequest.newBuilder()
+                                          .setDatasetId(BAD_DATASET_ID)
+                                          .build();
         SearchReadGroupSetsResponse rtnVal = client.reads.searchReadGroupSets(reqb);
         // avro says always get a 200
         SearchReadGroupSetsResponseAssert.assertThat(rtnVal).isNotNull().hasNoReadGroupSets();
