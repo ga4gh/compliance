@@ -5,7 +5,6 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.apache.avro.AvroRemoteException;
-import org.assertj.core.api.Assertions;
 import org.ga4gh.ctk.CtkLogs;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
@@ -16,13 +15,15 @@ import org.ga4gh.methods.SearchVariantSetsRequest;
 import org.ga4gh.methods.SearchVariantSetsResponse;
 import org.ga4gh.models.CallSet;
 import org.ga4gh.models.VariantSet;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import java.net.HttpURLConnection;
+import java.util.UUID;
 
-import static org.assertj.core.api.StrictAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * <p>
@@ -61,8 +62,11 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
         // send some malformed requests and expect status == HTTP_BAD_REQUEST
         final String[] badJson = {"", "JSON", "<xml/>", "{", "}", "{\"bad:\"", "{]"};
         for (String datum : badJson) {
-            assertThat(Unirest.post(fullUrl).header("Content-type", "application/json").
-                    body(datum).asBinary().getStatus()).isEqualTo(HttpURLConnection.HTTP_BAD_REQUEST);
+            assertThat(Unirest.post(fullUrl)
+                              .header("Content-type", "application/json")
+                              .body(datum)
+                              .asBinary()
+                              .getStatus()).isEqualTo(HttpURLConnection.HTTP_BAD_REQUEST);
         }
     }
 
@@ -141,7 +145,7 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
                                         .build();
         final SearchVariantSetsResponse vResp = client.variants.searchVariantSets(vReq);
 
-        Assertions.assertThat(vResp.getVariantSets()).isNotEmpty();
+        assertThat(vResp.getVariantSets()).isNotEmpty();
         for (VariantSet set : vResp.getVariantSets()) {
             final String id = set.getId();
 
@@ -151,12 +155,12 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
                                          .build();
             final SearchCallSetsResponse csResp = client.variants.searchCallSets(csReq);
 
-            Assertions.assertThat(csResp.getCallSets()).isNotEmpty();
+            assertThat(csResp.getCallSets()).isNotEmpty();
         }
     }
 
     /**
-     * Test getting a call set by ID.
+     * Test getting a call set with a valid ID.
      * @throws AvroRemoteException if there's a communication problem
      */
     @Test
@@ -167,7 +171,7 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
                                         .build();
         final SearchVariantSetsResponse vResp = client.variants.searchVariantSets(vReq);
 
-        Assertions.assertThat(vResp.getVariantSets()).isNotEmpty();
+        assertThat(vResp.getVariantSets()).isNotEmpty();
 
         // grab the first VariantSet and use it as source of ReadSets
         final VariantSet variantSet = vResp.getVariantSets().get(0);
@@ -180,7 +184,7 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
         final SearchCallSetsResponse csResp = client.variants.searchCallSets(callSetsSearchRequest);
 
         // grab one of the CallSets returned from the search
-        Assertions.assertThat(csResp.getCallSets()).isNotEmpty();
+        assertThat(csResp.getCallSets()).isNotEmpty();
         final CallSet callSetFromSearch = csResp.getCallSets().get(0);
         final String callSetId = callSetFromSearch.getId();
         assertThat(callSetId).isNotNull();
@@ -191,5 +195,20 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
         assertThat(callSetFromGet.getId()).isEqualTo(callSetId);
         assertThat(callSetFromGet).isEqualTo(callSetFromSearch);
     }
+
+    /**
+     * Test getting a call set with an invalid ID.
+     * @throws AvroRemoteException if there's a communication problem
+     */
+    @Test
+    @Ignore("Docs don't specify return value of getCallSet(bogusCallSetId)")
+    public void getCallSetWithInvalidIDShouldFail() throws AvroRemoteException {
+        final String bogusCallSetId = UUID.randomUUID().toString();
+
+        // fetch the CallSet with that ID
+        final CallSet callSetFromGet = client.variants.getCallSet(bogusCallSetId);
+        assertThat(callSetFromGet).isNull();
+    }
+
 
 }
