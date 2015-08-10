@@ -22,6 +22,12 @@ public class ReadGroupSetsGetByIdIT {
 
     private static Client client = new Client(URLMAPPING.getInstance());
 
+    /**
+     * Check that the {@link ReadGroupSet}s we get via search (1) have valid IDs in them; (2)
+     * those IDs can be used to fetch identical {@link ReadGroupSet}s.
+     *
+     * @throws AvroRemoteException if there's a communication problem
+     */
     @Test
     public void testGetByIdMatchesSearch() throws AvroRemoteException {
         final SearchReadGroupSetsRequest request =
