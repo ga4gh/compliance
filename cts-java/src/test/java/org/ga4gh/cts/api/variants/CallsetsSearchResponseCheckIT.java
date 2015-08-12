@@ -9,6 +9,7 @@ import org.ga4gh.ctk.CtkLogs;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
+import org.ga4gh.cts.api.Utils;
 import org.ga4gh.methods.SearchCallSetsRequest;
 import org.ga4gh.methods.SearchCallSetsResponse;
 import org.ga4gh.methods.SearchVariantSetsRequest;
@@ -20,7 +21,6 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import java.net.HttpURLConnection;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -201,10 +201,10 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
      */
     @Test
     public void getCallSetWithInvalidIDShouldFail() throws AvroRemoteException {
-        final String bogusCallSetId = UUID.randomUUID().toString();
+        final String nonexistentCallSetId = Utils.randomId();
 
         // fetch the CallSet with that ID
-        final CallSet callSetFromGet = client.variants.getCallSet(bogusCallSetId);
+        final CallSet callSetFromGet = client.variants.getCallSet(nonexistentCallSetId);
         assertThat(callSetFromGet).isNull();
     }
 
