@@ -5,6 +5,7 @@ import org.ga4gh.models.ReadAlignment;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Handy test-related static methods and data.
@@ -71,6 +72,15 @@ public class Utils {
     public static boolean looksLikeValidMd5(String possibleMd5) {
         return (possibleMd5 != null) && possibleMd5.length() == MD5_LENGTH &&
                 possibleMd5.chars().allMatch(c -> isHex((char)c));
+    }
+
+    /**
+     * Create and return an ID that's (virtually) guaranteed not to name a real object on a
+     * GA4GH server.  It uses {@link UUID#randomUUID()} to do it.
+     * @return an ID that's (virtually) guaranteed not to name a real object
+     */
+    public static String randomId() {
+        return UUID.randomUUID().toString();
     }
 
 }

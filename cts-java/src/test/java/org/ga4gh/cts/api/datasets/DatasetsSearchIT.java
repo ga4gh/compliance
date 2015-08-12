@@ -4,6 +4,7 @@ import org.apache.avro.AvroRemoteException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
+import org.ga4gh.cts.api.Utils;
 import org.ga4gh.methods.SearchDatasetsRequest;
 import org.ga4gh.methods.SearchDatasetsResponse;
 import org.ga4gh.models.Dataset;
@@ -12,7 +13,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.List;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,7 +51,7 @@ public class DatasetsSearchIT {
     @Test
     @Ignore("The server doesn't implement GET /datasets/{id} yet")
     public void fetchDatasetWithBogusName() throws AvroRemoteException {
-        final String nonexistentDatasetId = UUID.randomUUID().toString();
+        final String nonexistentDatasetId = Utils.randomId();
         final Dataset dataset = client.reads.getDataset(nonexistentDatasetId);
         assertThat(dataset).isNull();
     }
