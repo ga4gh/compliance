@@ -15,7 +15,6 @@ import org.ga4gh.methods.SearchVariantSetsRequest;
 import org.ga4gh.methods.SearchVariantSetsResponse;
 import org.ga4gh.models.CallSet;
 import org.ga4gh.models.VariantSet;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -201,7 +200,6 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem
      */
     @Test
-    @Ignore("Docs don't specify return value of getCallSet(bogusCallSetId)")
     public void getCallSetWithInvalidIDShouldFail() throws AvroRemoteException {
         final String bogusCallSetId = UUID.randomUUID().toString();
 

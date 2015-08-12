@@ -272,29 +272,6 @@ public class SearchVariantsRequestAssert extends AbstractAssert<SearchVariantsRe
   }
 
   /**
-   * Verifies that the actual SearchVariantsRequest's variantName is equal to the given one.
-   * @param variantName the given variantName to compare the actual SearchVariantsRequest's variantName to.
-   * @return this assertion object.
-   * @throws AssertionError - if the actual SearchVariantsRequest's variantName is not equal to the given one.
-   */
-  public SearchVariantsRequestAssert hasVariantName(String variantName) {
-    // check that actual SearchVariantsRequest we want to make assertions on is not null.
-    isNotNull();
-
-    // overrides the default error message with a more explicit one
-    String assertjErrorMessage = "\nExpecting variantName of:\n  <%s>\nto be:\n  <%s>\nbut was:\n  <%s>";
-    
-    // null safe check
-    String actualVariantName = actual.getVariantName();
-    if (!Objects.areEqual(actualVariantName, variantName)) {
-      failWithMessage(assertjErrorMessage, actual, variantName, actualVariantName);
-    }
-
-    // return the current assertion for method chaining
-    return this;
-  }
-
-  /**
    * Verifies that the actual SearchVariantsRequest's variantSetId is equal to the given one.
    * @param variantSetId the given variantSetId to compare the actual SearchVariantsRequest's variantSetId to.
    * @return this assertion object.
@@ -316,7 +293,6 @@ public class SearchVariantsRequestAssert extends AbstractAssert<SearchVariantsRe
     // return the current assertion for method chaining
     return this;
   }
-
 
 
 

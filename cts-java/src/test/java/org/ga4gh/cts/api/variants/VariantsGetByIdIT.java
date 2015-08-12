@@ -30,6 +30,11 @@ public class VariantsGetByIdIT {
 
     private static Client client = new Client(URLMAPPING.getInstance());
 
+    /**
+     * Verify that Variants that we obtain by way of {@link SearchVariantsRequest} match the ones
+     * we get via <tt>GET /variants/{id}</tt>.
+     * @throws AvroRemoteException if there's a communication problem
+     */
     @Test
     public void checkVariantsGetResultsMatchSearchResults() throws AvroRemoteException {
         final long start = 60156;
