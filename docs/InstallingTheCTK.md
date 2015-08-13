@@ -1,7 +1,7 @@
 # Installing The CTK/CTS
 
-- `git clone https://github.com/wstidolph/ctk-core.git` (checkout this project)
-- `cd ctk-core`
+- `git clone https://github.com/ga4gh/compliance.git` (checkout this project)
+- `cd compliance`
 - `mvn clean install` (this will run the `clean` and `install` Maven goals from the aggregator POM in
 `ctk-core` to puts the resulting artifacts into your local Maven repository. When those goals run
 they will pick up dependency and plugin information from the `parent` module's `pom.xml` file.)
@@ -11,7 +11,7 @@ to point to your available GA4GH server, to save yourself having to add it to
 command lines and module POMs.
 
 ## Installing your Schema Version
-The project as it sits in https://github.com/wstidolph/ctk-core.git loads schema
+The project as it sits in https://github.com/ga4gh/compliance.git loads schema
 from a particular version of schemas. This version of the schemas has some minor non-semantic changes
 (like using String instead of CharSequence for the strings, and swapping the order
 of some union fields to meet Avro/Java requirements). 
