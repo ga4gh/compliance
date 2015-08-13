@@ -18,7 +18,7 @@ When the tests are done, the reports will be in the `target/` directory. There a
 
 so, for example,
 
-    java -jar ctk-cli-0.5.1-SNAPSHOT.jar -Dctk.tgt.urlRoot=http://myserver:8000/v0.5.1
+    java -jar ctk-cli-0.5.1-SNAPSHOT.jar --ctk.tgt.urlRoot=http://myserver:8000/v0.5.1
 
 Tip - if you're regularly testing against the same server, you can set an operating system environment variable "`ctk_tgt_urlRoot`" (or "`ctk.tgt.urlRoot`" if your environment prefers that) to avoid having to re-enter that URL all the time on the command line. How you set environment variables varies with your shell, but a common example would be to add to your ~/.bashrc a line like"
 
@@ -135,7 +135,7 @@ If you want to alter which tests get run, you can do that on the command line
     ...
 ```
 
-To make this work, the CTK/CTS  has a naming convention for tests:
+To make this work, the CTK/CTS has a naming convention for tests:
 
 **Test classes end in "IT"**
 

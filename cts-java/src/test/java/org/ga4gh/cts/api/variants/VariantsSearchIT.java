@@ -52,7 +52,7 @@ public class VariantsSearchIT implements CtkLogs {
 
         final SearchVariantSetsRequest req =
                 SearchVariantSetsRequest.newBuilder()
-                                        .setDatasetId(TestData.DATASET_ID)
+                                        .setDatasetId(TestData.getDatasetId())
                                         .build();
         final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
 

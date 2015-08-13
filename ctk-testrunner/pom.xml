@@ -6,7 +6,7 @@
 
     <groupId>org.ga4gh</groupId>
     <artifactId>ctk-testrunner</artifactId>
-    <version>0.6.0-PRE</version>
+    <version>0.5.1-SNAPSHOT</version>
     <name>CTK Test Runner</name>
     <description>Test-running module (not self-executable, requires a launcher)</description>
     <parent>

@@ -6,7 +6,6 @@ import org.ga4gh.ctk.CtkLogs;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
-import org.ga4gh.cts.api.reads.ReadsTests;
 import org.ga4gh.methods.SearchVariantSetsRequest;
 import org.ga4gh.methods.SearchVariantSetsResponse;
 import org.ga4gh.models.VariantSet;
@@ -24,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Herb Jellinek
  */
-@Category(ReadsTests.class)
+@Category(VariantsTests.class)
 @RunWith(JUnitParamsRunner.class)
 public class VariantSetsSearchIT implements CtkLogs {
 
@@ -44,7 +43,7 @@ public class VariantSetsSearchIT implements CtkLogs {
     @Test
     public void searchVariantSets() throws AvroRemoteException {
         final SearchVariantSetsRequest req =
-                SearchVariantSetsRequest.newBuilder().setDatasetId(TestData.DATASET_ID).build();
+                SearchVariantSetsRequest.newBuilder().setDatasetId(TestData.getDatasetId()).build();
         final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
 
         final List<VariantSet> sets = resp.getVariantSets();

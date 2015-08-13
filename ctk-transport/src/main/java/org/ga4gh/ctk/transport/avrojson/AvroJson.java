@@ -234,6 +234,8 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
             String json = httpResp.getBody().toString();
 
             theResp = new AvroMaker<>(theResp).makeAvroFromJson(json, urlRoot + path); // URL just for logging
+        } else {
+            theResp = null;
         }
         // track all message types sent/received for simple "test coverage" indication
         String respName = theResp != null ? theResp.getClass().getSimpleName()  : "null";
@@ -274,7 +276,7 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
     public P doGetResp(String id, Map<String, Object> queryParams) {
 
         // no request object to build, just GET from the endpoint with route param
-        httpResp = shouldDoComms? jsonGet(urlRoot + path, id, queryParams) : NO_COMM_RESP;
+        httpResp = shouldDoComms ? jsonGet(urlRoot + path, id, queryParams) : NO_COMM_RESP;
 
         updateTheRespAndLogMessages("GET");
 

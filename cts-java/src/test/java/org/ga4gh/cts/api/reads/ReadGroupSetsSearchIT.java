@@ -59,7 +59,7 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
         for (String rgSetName : TestData.EXPECTED_READGROUPSETS_NAMES) {
             final SearchReadGroupSetsRequest goodReq =
                     SearchReadGroupSetsRequest.newBuilder().
-                            setDatasetId(TestData.DATASET_ID).setName(rgSetName).build();
+                            setDatasetId(TestData.getDatasetId()).setName(rgSetName).build();
             SearchReadGroupSetsResponse goodResp = client.reads.searchReadGroupSets(goodReq);
             final List<ReadGroupSet> rgSets = goodResp.getReadGroupSets();
             assertThat(rgSets).hasSize(1);
@@ -80,7 +80,7 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
         // try to fetch a read group set with a name the server can't match
         final SearchReadGroupSetsRequest badReq =
                 SearchReadGroupSetsRequest.newBuilder().
-                        setDatasetId(TestData.DATASET_ID).setName(BAD_READGROUPSET_NAME).build();
+                        setDatasetId(TestData.getDatasetId()).setName(BAD_READGROUPSET_NAME).build();
         SearchReadGroupSetsResponse badResp = client.reads.searchReadGroupSets(badReq);
         final List<ReadGroupSet> emptyRgSets = badResp.getReadGroupSets();
         assertThat(emptyRgSets).isEmpty();
@@ -97,9 +97,9 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
     @Test
     public void readgroupSetResponseForNonexistentDatasetIdShouldReturnEmptyList() throws AvroRemoteException {
         SearchReadGroupSetsRequest reqb =
-                SearchReadGroupSetsRequest.newBuilder().
-                        setDatasetId(BAD_DATASET_ID).
-                        build();
+                SearchReadGroupSetsRequest.newBuilder()
+                                          .setDatasetId(BAD_DATASET_ID)
+                                          .build();
         SearchReadGroupSetsResponse rtnVal = client.reads.searchReadGroupSets(reqb);
         // avro says always get a 200
         SearchReadGroupSetsResponseAssert.assertThat(rtnVal).isNotNull().hasNoReadGroupSets();
@@ -121,16 +121,16 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
     public void requestForAllReadGroupSetsShouldReturnAllWellFormed() throws AvroRemoteException {
         final SearchReadGroupSetsRequest req =
                 SearchReadGroupSetsRequest.newBuilder()
-                                          .setDatasetId(TestData.DATASET_ID)
+                                          .setDatasetId(TestData.getDatasetId())
                                           .build();
         final SearchReadGroupSetsResponse resp = client.reads.searchReadGroupSets(req);
         final List<ReadGroupSet> readGroupSets = resp.getReadGroupSets();
-        readGroupSets.stream().forEach(rgs -> assertThat(rgs.getDatasetId()).isEqualTo(TestData.DATASET_ID));
+        readGroupSets.stream().forEach(rgs -> assertThat(rgs.getDatasetId()).isEqualTo(TestData.getDatasetId()));
 
         for (ReadGroupSet readGroupSet : readGroupSets) {
             for (ReadGroup readGroup : readGroupSet.getReadGroups()) {
                 assertThat(readGroup).isNotNull();
-                assertThat(readGroup.getDatasetId()).isEqualTo(TestData.DATASET_ID);
+                assertThat(readGroup.getDatasetId()).isEqualTo(TestData.getDatasetId());
                 assertThat(readGroup.getPrograms()).isNotEmpty();
                 assertThat(readGroup.getPrograms()).doesNotContain(Utils.nullProgram);
             }

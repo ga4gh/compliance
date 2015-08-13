@@ -140,12 +140,10 @@ public class JsonMakerTest {
                 .setStart(500L)
                 .setEnd(7654L)
                 .setPageToken("snuffle.bunny")
-                .setVariantName("garble")
                 .setVariantSetId("great_variant_set_id")
                 .build();
         String actual = JsonMaker.GsonToJsonBytes(svr);
 
-        JSONAssert.assertEquals("{variantName:garble}", actual, false);
         JSONAssert.assertEquals("{referenceName:I.Am.The.Walrus}", actual, false);
         JSONAssert.assertEquals("{callSetIds:[\"foo\", \"bar\"]}", actual, false);
         JSONAssert.assertEquals("{callSetIds:[\"bar\", \"foo\"]}", actual, false);
