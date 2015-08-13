@@ -4,7 +4,7 @@ In this mode you are simply executing the CTS tests - not writing tests. (Writin
 
 ## Quickstart
 
-Get the `ga4gh-ctk-cli.zip` distribution ZIP from github (the [repository's releases page](https://github.com/wstidolph/ctk-core/releases)) and just unzip in the directory you want to run from.
+Get the `ga4gh-ctk-cli.zip` distribution ZIP from github (the [repository's releases page](https://github.com/ga4gh/compliance/releases)) and just unzip in the directory you want to run from.
 
 The unzip will place a jar file(ctk-cli-*.jar) and a runnable bash script ('ctk') in this directory, and create `lib/` and `target/`directories; the tests jar and a couple control files will already be in the `lib/`.
 

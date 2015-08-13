@@ -10,7 +10,7 @@ so that will take place in your dev environment, under Maven.)
 Quickstart
 
 Get the `ga4gh-ctk-cli.zip` distribution ZIP from github; the repository's releases page is at
-https://github.com/wstidolph/ctk-core/releases). Unzip in the directory you want to run from.
+https://github.com/ga4gh/compliance/releases). Unzip in the directory you want to run from.
 
 The unzip will place a jar file(ctk-cli-*.jar) and a runnable bash script ('ctk') in this directory,
 and create `lib/` and `target/`directories; the tests jar and a couple control files will already be
