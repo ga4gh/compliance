@@ -43,7 +43,7 @@ public class VariantSetsSearchIT implements CtkLogs {
     @Test
     public void searchVariantSets() throws AvroRemoteException {
         final SearchVariantSetsRequest req =
-                SearchVariantSetsRequest.newBuilder().setDatasetId(TestData.DATASET_ID).build();
+                SearchVariantSetsRequest.newBuilder().setDatasetId(TestData.getDatasetId()).build();
         final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
 
         final List<VariantSet> sets = resp.getVariantSets();

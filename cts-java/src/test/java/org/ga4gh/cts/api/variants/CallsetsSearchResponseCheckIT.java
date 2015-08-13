@@ -140,7 +140,7 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
     public void searchForExpectedCallSets() throws AvroRemoteException {
         final SearchVariantSetsRequest vReq =
                 SearchVariantSetsRequest.newBuilder()
-                                        .setDatasetId(TestData.DATASET_ID)
+                                        .setDatasetId(TestData.getDatasetId())
                                         .build();
         final SearchVariantSetsResponse vResp = client.variants.searchVariantSets(vReq);
 
@@ -166,7 +166,7 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
     public void getCallSetWithValidIDShouldSucceed() throws AvroRemoteException {
         final SearchVariantSetsRequest vReq =
                 SearchVariantSetsRequest.newBuilder()
-                                        .setDatasetId(TestData.DATASET_ID)
+                                        .setDatasetId(TestData.getDatasetId())
                                         .build();
         final SearchVariantSetsResponse vResp = client.variants.searchVariantSets(vReq);
 

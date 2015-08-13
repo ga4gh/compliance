@@ -37,15 +37,15 @@ public class DatasetsSearchIT {
 
         final Dataset dataset = datasets.get(0);
         assertThat(dataset).isNotNull();
-        assertThat(dataset.getId()).isEqualTo(TestData.DATASET_ID);
+        assertThat(dataset.getId()).isEqualTo(TestData.getDatasetId());
     }
 
     @Test
     @Ignore("The server doesn't implement GET /datasets/{id} yet")
     public void fetchDatasetByName() throws AvroRemoteException {
-        final Dataset dataset = client.reads.getDataset(TestData.DATASET_ID);
+        final Dataset dataset = client.reads.getDataset(TestData.getDatasetId());
         assertThat(dataset).isNotNull();
-        assertThat(dataset.getId()).isEqualTo(TestData.DATASET_ID);
+        assertThat(dataset.getId()).isEqualTo(TestData.getDatasetId());
     }
 
     @Test

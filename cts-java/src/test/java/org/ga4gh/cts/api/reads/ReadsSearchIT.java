@@ -61,7 +61,7 @@ public class ReadsSearchIT implements CtkLogs {
 
         final SearchReadGroupSetsRequest req =
                 SearchReadGroupSetsRequest.newBuilder()
-                                          .setDatasetId(TestData.DATASET_ID)
+                                          .setDatasetId(TestData.getDatasetId())
                                           .setName(expectedReadGroupSetName)
                                           .build();
         final SearchReadGroupSetsResponse resp = client.reads.searchReadGroupSets(req);

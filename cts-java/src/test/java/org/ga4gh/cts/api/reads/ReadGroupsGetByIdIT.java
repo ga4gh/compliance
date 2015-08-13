@@ -33,7 +33,7 @@ public class ReadGroupsGetByIdIT {
     public void testGetByIdMatchesSearch() throws AvroRemoteException {
         final SearchReadGroupSetsRequest request =
                 SearchReadGroupSetsRequest.newBuilder()
-                                          .setDatasetId(TestData.DATASET_ID)
+                                          .setDatasetId(TestData.getDatasetId())
                                           .build();
 
         // search for all ReadGroupSets

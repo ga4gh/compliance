@@ -18,12 +18,18 @@ public class TestData {
     }
 
     /**
-     * The ID of the dataset that holds the test data.
+     * The default ID of the dataset that holds the test data.
      */
-    public static final String DATASET_ID = "compliance-dataset1";
+    public static final String DEFAULT_DATASET_ID = "compliance-dataset1";
 
     /**
-     * The names of the readgroup sets in {@link #DATASET_ID}.
+     * The name of the Java system property that sets the name of the compliance dataset,
+     * if the default (<tt>compliance-dataset1</tt>) is not correct.
+     */
+    private static final String DATASET_PROP_NAME = "cfg.tgt.dataset_id";
+
+    /**
+     * The names of the readgroup sets in the standard compliance dataset.
      */
     public static final String[] EXPECTED_READGROUPSETS_NAMES = {
             "compliance-dataset1:1kg-low-coverage",
@@ -54,5 +60,19 @@ public class TestData {
     public static final String[] EXPECTED_REFERENCE_NAMES = {
             "example_1:simple",
     };
+
+    /**
+     * Return the ID of the compliance dataset on the server being tested.
+     * By default this is the value of {@link #DEFAULT_DATASET_ID}, <tt>compliance-dataset1</tt>, but
+     * it can be overridden by setting the Java property <tt>-Dcfg.tgt.dataset_id</tt>.
+     */
+    public static String getDatasetId() {
+        final String propValue = System.getProperty(DATASET_PROP_NAME);
+        if (propValue != null) {
+            return propValue;
+        } else {
+            return DEFAULT_DATASET_ID;
+        }
+    }
 
 }

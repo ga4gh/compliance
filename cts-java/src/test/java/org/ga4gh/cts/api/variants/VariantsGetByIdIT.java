@@ -44,7 +44,7 @@ public class VariantsGetByIdIT {
         // first get a variant set ID
         final SearchVariantSetsRequest searchVariantSetsReq =
                 SearchVariantSetsRequest.newBuilder()
-                                        .setDatasetId(TestData.DATASET_ID)
+                                        .setDatasetId(TestData.getDatasetId())
                                         .build();
         final SearchVariantSetsResponse searchVariantSetsResp =
                 client.variants.searchVariantSets(searchVariantSetsReq);

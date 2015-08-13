@@ -6,14 +6,15 @@ package org.ga4gh.ctk;
  */
 
 import org.apache.tools.ant.*;
-import org.ga4gh.ctk.config.*;
-import org.ga4gh.ctk.transport.*;
-import org.springframework.beans.factory.annotation.*;
+import org.ga4gh.ctk.config.Props;
+import org.ga4gh.ctk.transport.URLMAPPING;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.*;
+import org.springframework.stereotype.Component;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.util.Properties;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -119,7 +120,7 @@ public class AntExecutor {
         Project project = new Project();
         try {
             File buildFile = antFile;
-            project.setUserProperty("basedir",System.getProperty("user.dir"));
+            project.setUserProperty("basedir", System.getProperty("user.dir"));
             project.setUserProperty("ant.file", buildFile.getName());
             project.setUserProperty("ctk.testjar", testjar);
             project.setUserProperty("ctk.matchstr", matchstr);
@@ -127,8 +128,9 @@ public class AntExecutor {
             project.setUserProperty("ctk.todir", toDir);
             project.addBuildListener(antExecListener);
             // if there's an interested listener, hook them up
-            if(theBoss != null)
+            if (theBoss != null) {
                 project.addBuildListener(theBoss);
+            }
 
             project.fireBuildStarted();
             project.init();
