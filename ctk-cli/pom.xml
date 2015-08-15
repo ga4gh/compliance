@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>CTK CLI driver</name>
+    <description>CLI app to drive tests of GA4GH data server v0.5.1</description>
+
+    <artifactId>ctk-cli</artifactId>
+    <version>0.5.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <parent>
+        <groupId>org.ga4gh</groupId>
+        <artifactId>ctk-parent</artifactId>
+        <version>0.5.1-SNAPSHOT</version>
+        <relativePath>../parent</relativePath>
+    </parent>
+    <!--
+    <scm>
+        <connection>scm:git:https://github.com/ga4gh/...</connection>
+        <developerConnection>scm:git:https://github.com/ga4gh/schemas</developerConnection>
+        <url>https://github.com/ga4gh/schemas</url>
+    </scm>
+    -->
+
+    <properties>
+
+    </properties>
+
+    <developers>
+        <developer>
+            <id>wstidolph</id>
+            <name>Wayne Stidolph</name>
+            <email>wayne@stidolph.com</email>
+            <url>http://wayne.stidolph.com</url>
+        </developer>
+    </developers>
+    <contributors>
+        <contributor>
+            <name>Jeltje van Baren</name>
+            <email>jeltje.van.baren@gmail.com</email>
+        </contributor>
+    </contributors>
+
+    <dependencies>
+
+        <dependency>
+            <!-- The core Spring Boot starter, including
+            auto-configuration support, logging and YAML -->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <!-- std logging for Spring Boot is logback, but I
+            want to use log4j2 in the CTK so we exclude the default logging
+            here and add in log4j2 later -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <!-- Support for common test dependencies, including JUnit, Hamcrest
+            and Mockito along with the spring-test module. -->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+        <!-- turn on @ConfigurationProcessor so we can have ctk.* automatic naming -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- CTK uses log4j2, some of the tooling is more common than Logback -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+            <version>${avro.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro-ipc</artifactId>
+            <version>${avro.version}</version>
+        </dependency>
+
+        <!-- seems like we need the junit3 ant-junit, as well as the junit4! -->
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant-junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant-junit4</artifactId>
+        </dependency>
+
+        <!-- give ant the Log4jListener  -->
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant-apache-log4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+
+        <!-- route ant's log4j into the main app logging, slf4j -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
+        </dependency>
+
+        <!-- use tap4j to get Test Anything Protocol support -->
+        <dependency>
+            <groupId>org.tap4j</groupId>
+            <artifactId>tap4j-ext</artifactId>
+            <version>${tap4j-ext.version}</version>
+        </dependency>
+
+        <!-- lots of utility stuff! -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <!-- provide the google JSON support, easier than
+            Jackson for handling the 'normal' JSON to Avro class
+            deserialization -->
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
+        </dependency>
+
+        <!-- lombok saves us some typing in the Config class -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.4</version>
+        </dependency>
+
+        <dependency>
+            <!-- transitively brings in jackson-databind, so this
+            triggers log4j2 support for hide_log4j2.json and log4j2.jsm config,
+            as well as providing Jackson-based JSON processing if we want it -->
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+        </dependency>
+
+        <!-- need BCEL during site build -->
+        <dependency>
+            <groupId>org.apache.bcel</groupId>
+            <artifactId>bcel</artifactId>
+        </dependency>
+
+        <dependency> <!-- also provides ga4gh schema we run against -->
+            <groupId>org.ga4gh</groupId>
+            <artifactId>ctk-transport</artifactId>
+            <version>0.5.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ga4gh</groupId>
+            <artifactId>ctk-testrunner</artifactId>
+            <version>0.5.1-SNAPSHOT</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <defaultGoal>install</defaultGoal>
+        <plugins>
+
+            <!-- make the jar executable -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.version}</version>
+                <configuration>
+                    <!-- add the test classes to the config so that mvn spring-boot:run
+                         finds them without having to build the jars and use that loader! -->
+                    <folders>
+                        <folder>${project.build.testOutputDirectory}</folder>
+                    </folders>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <!-- this happens during the 'package' phase -->
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                        <configuration>
+                            <!-- ZIP layout uses the PropertiesLauncher
+                            so the launcher looks wherever the 'loader.path' property points
+                            for jars or resource
+
+                            loader.path: a comma-separated list of directories to
+                            append to the classpath (containing file resources
+                            and/or nested archives in *.jar or *.zip) -->
+                            <layout>ZIP</layout>
+                            <!-- <classifier>exec</classifier> -->
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin> <!-- spring boot brings this in, too, but I need to exclude the systests -->
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.18.1</version>
+                <configuration>
+                    <useFile>false</useFile>
+                    <includes>
+                        <include>**/*Spec.java</include>
+                        <include>**/*Test.java</include>
+                    </includes>
+                    <excludes>
+                        <!-- surefire for unit tests, so skip the integration tests -->
+                        <!-- they will be run by the 'failsafe' plugin,
+                        actually in another module now (cts-java) so this might be useless -->
+                        <exclude>%regex[.*.org.ga4gh.cts.*]</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+
+    </build>
+
+</project>

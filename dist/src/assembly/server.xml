@@ -1,0 +1,63 @@
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3 http://maven.apache.org/xsd/assembly-1.1.3.xsd
+http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3 ">
+    <!-- don't set formats here, leave to the maven plugin configuration element -->
+    <id>server</id>
+    <!-- unpack directy, no extra root layer -->
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <!-- use dependencySet, not moduleSet, because we aren't in the top-level
+         (aggregating) module; this lets us concentrate distro processing
+         in 'dist' module, not in each module -->
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>org.ga4gh:cts-java:jar:tests</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>org.ga4gh:ctk-server:jar
+                </include>
+            </includes>
+            <!-- user can can read and execute this, other can read (copy) -->
+            <fileMode>0544</fileMode>
+        </dependencySet>
+    </dependencySets>
+
+    <files>
+        <file>
+            <source>../docs/README-Server.txt</source>
+        </file>
+        <file>
+            <source>../ctk-server/src/main/resources/ctk</source>
+            <!-- user can can read, write, and execute this; other can read (copy) -->
+            <fileMode>0744</fileMode>
+        </file>
+        <file>
+            <source>../ctk-server/src/main/resources/application.properties</source>
+            <outputDirectory>/</outputDirectory>
+        </file>
+        <file>
+            <source>../ctk-server/src/main/resources/log4j2.xml</source>
+            <outputDirectory>lib</outputDirectory>
+        </file>
+        <file>
+            <source>../ctk-testrunner/src/main/resources/antRunTests.xml</source>
+            <outputDirectory>lib</outputDirectory>
+        </file>
+    </files>
+    <fileSets>
+        <!-- somewhat convoluted way to ensure the 'target' dir is there -->
+        <fileSet>
+            <directory>./</directory>
+            <outputDirectory>testresults</outputDirectory>
+            <excludes>
+                <exclude>*/**</exclude>
+            </excludes>
+        </fileSet>
+    </fileSets>
+</assembly>
