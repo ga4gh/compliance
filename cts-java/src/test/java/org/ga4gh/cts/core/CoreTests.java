@@ -1,4 +1,4 @@
-package org.ga4gh.ctk.testcategories;
+package org.ga4gh.cts.core;
 
 /**
  * Marker interface for tests related to the core operations of the CTK itself

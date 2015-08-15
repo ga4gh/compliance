@@ -92,8 +92,17 @@ public class Props {
     @Value("${ctk.antlog.clearstats}")
     public String ctk_antlog_clearstats;
 
+    @Value("${ctk.domaintypesfile}")
+    public String ctk_domaintypesfile;
+
     @Value("${ctk.testjar}")
     public String ctk_testjar;
+
+    @Value("${ctk.testclassroots}")
+    public String ctk_testclassroots;
+
+    @Value("${ctk.defaulttransportfile}")
+    public String ctk_defaulttransportfile;
 
     @Value("${ctk.reporttitle}")
     public String ctk_report_title;

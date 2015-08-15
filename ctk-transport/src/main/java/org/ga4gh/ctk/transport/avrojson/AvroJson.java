@@ -1,25 +1,22 @@
 package org.ga4gh.ctk.transport.avrojson;
 
-import com.google.common.base.CharMatcher;
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
+import com.google.common.base.*;
 import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
-import org.apache.avro.Schema;
-import org.apache.avro.io.DatumWriter;
-import org.apache.avro.specific.SpecificDatumWriter;
-import org.apache.avro.specific.SpecificRecordBase;
-import org.apache.http.HttpStatus;
-import org.apache.http.HttpVersion;
-import org.apache.http.message.BasicStatusLine;
-import org.ga4gh.ctk.transport.WireTracker;
+import com.mashape.unirest.http.*;
+import com.mashape.unirest.http.exceptions.*;
+import org.apache.avro.*;
+import org.apache.avro.io.*;
+import org.apache.avro.specific.*;
+import org.apache.http.*;
+import org.apache.http.message.*;
+import org.ga4gh.ctk.domain.*;
+import org.ga4gh.ctk.services.*;
+import org.ga4gh.ctk.transport.*;
 
-import java.util.Map;
+import java.util.*;
 
-import static org.ga4gh.ctk.transport.RespCode.fromInt;
-import static org.slf4j.LoggerFactory.getLogger;
+import static org.ga4gh.ctk.transport.RespCode.*;
+import static org.slf4j.LoggerFactory.*;
 
 /**
  * <p>Provide Avro/Json communications layer specific to GA4GH and with extensive logging in support of CTK use.</p>
@@ -29,7 +26,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  *     <li>invokes the serializer/deserializer,</li>
  *     <li>invokes the HTTP interaction,</li>
  *     <li>tracks the data sent/received (via a WireTracker), and</li>
- *     <li>captures the traffic summary in a static table named 'messages'</li>
+ *     <li>captures the traffic summary by storing TrafflicLogMsg objects in the TestActivityDataService</li>
  * </ul>
  * <p>The class accepts the request and response objects, the URL root and path strings, and
  * an (optional) WireTracker (which will collect the JSON as sent/received on the wire).</p>
@@ -47,16 +44,10 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase> {
     private static org.slf4j.Logger log;
-
-    /**
-     * <p>Holds the message traffic sent/received by AvroJson during the entire test run.
-     * Intended to support test quality/coverage reporting.</p>
-     */
-    private static Table<String, String, Integer> messages;
+    private TestActivityDataService testActivityDataService = TestActivityDataService.getService();
 
     static {
         log = getLogger(AvroJson.class);
-        messages = HashBasedTable.create();
     }
 
     final DatumWriter<Q> dw;
@@ -179,16 +170,6 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
     }
 
     /**
-     * <p>Access the message-traffic recording Table.</p>
-     * <p>Each target endpoint/parameter string becomes a key to a row in the table,
-     * and the row cells are:</p>
-     * <p>| request (class, post/get, body/id) | response class (msg type) | HTTP status code |</p>
-     */
-    public static Table<String, String, Integer> getMessages() {
-        return messages;
-    }
-
-    /**
      * Getter for the WireTracker (if present, triggers JSON collection).
      *
      * @return the {@code WireTracker}
@@ -234,20 +215,19 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
             String json = httpResp.getBody().toString();
 
             theResp = new AvroMaker<>(theResp).makeAvroFromJson(json, urlRoot + path); // URL just for logging
-        } else {
-            theResp = null;
         }
         // track all message types sent/received for simple "test coverage" indication
-        String respName = theResp != null ? theResp.getClass().getSimpleName()  : "null";
-        if (theAvroReq == null) {
-            // it's a GET request, so no request object
-            messages.put(postOrGet + " <" + jsonStr + ">", respName,
-                         httpResp != null ? httpResp.getStatus() : 0);
-        } else {
-            messages.put(theAvroReq.getClass()
-                                   .getSimpleName() + postOrGet + " <" + jsonStr + ">", respName,
-                         httpResp != null ? httpResp.getStatus() : 0);
-        }
+        String respName = theResp != null ? theResp.getClass().getCanonicalName()  : "null";
+        TrafficLog tlm = testActivityDataService.getTrafficLogBuilder()
+                .setClassSent(theAvroReq.getClass().getCanonicalName())
+                .setActionType(postOrGet)
+                .setJsonSent(jsonStr)
+                .setClassReceived(respName)
+                .setResponseStatus(httpResp != null ? httpResp.getStatus() : 0)
+                .setEndpoint(path)
+                .setRunKey(Long.parseLong(System.getProperty("ctk.runkey","-1")))
+                .build();
+        tlm.save();
     }
 
     /**

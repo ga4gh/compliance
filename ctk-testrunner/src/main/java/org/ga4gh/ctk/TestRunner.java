@@ -1,18 +1,18 @@
 package org.ga4gh.ctk;
 
-import com.google.common.collect.*;
 import org.apache.tools.ant.*;
 import org.ga4gh.ctk.config.*;
+import org.ga4gh.ctk.services.*;
 import org.ga4gh.ctk.transport.*;
 import org.ga4gh.ctk.transport.avrojson.*;
+import org.ga4gh.ctk.utility.ResultsSupport;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.*;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.*;
 
 import java.util.concurrent.*;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import static org.slf4j.LoggerFactory.*;
 
 /**
  * <p>This class runs the tests; it can be invoked from the command line runner,
@@ -20,11 +20,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * Created by Wayne Stidolph on 7/11/2015.
  */
 @Component
-@Scope("prototype")
 public class TestRunner implements BuildListener {
-    static String SYSTEST = "TESTLOG";
-    static String TRAFFICLOG=SYSTEST + ".TRAFFIC";
-    private static org.slf4j.Logger trafficlog = getLogger(TRAFFICLOG);
     private static Logger log = getLogger(TestRunner.class);
 
     @Autowired
@@ -45,6 +41,9 @@ public class TestRunner implements BuildListener {
     @Value("${ctk.tgt.urlRoot}")
     String urlroot;
 
+    TestActivityDataService testActivityDataService;
+    long runkey; // = testActivityDataService.createTestRunKey();
+
     // this is the object we use to pass final result status back
     CompletableFuture<String> result;
 
@@ -62,7 +61,7 @@ public class TestRunner implements BuildListener {
     public CompletableFuture<String> doTestRun() {
 
         String matchStr = props.ctk_matchstr;
-        CtkLogs.log.debug("matchStr: " + matchStr);
+        log.debug("matchStr: " + matchStr);
         String resultDir = ResultsSupport.getResultsDir(urlroot);
 
         return doTestRun(urlroot,matchStr,props.ctk_testjar,resultDir);
@@ -83,6 +82,7 @@ public class TestRunner implements BuildListener {
                                                String testJar,
                                                String toDir){
         URLMAPPING urls = URLMAPPING.getInstance();
+        testActivityDataService = TestActivityDataService.getService();
         urls.setUrlRoot(urlRoot);
 
         AvroJson.shouldDoComms = true; // always start from assumption of goodness!
@@ -92,6 +92,8 @@ public class TestRunner implements BuildListener {
                 ((null == toDir || toDir.isEmpty()) ? "target/" : toDir);
         // TODO ensure the toDir exists, create here
 
+        runkey = testActivityDataService.createTestRunKey();
+
                     /* ****** MAIN RUN-THE-TESTS *********** */
 
         result = new CompletableFuture<String>();
@@ -99,6 +101,7 @@ public class TestRunner implements BuildListener {
                 matchStr,
                 urls,
                 acceptedTargetDir,
+                runkey,
                 this); // "this" registers this for the BuildListener callbacks
         if(!goodLaunch){
             log.warn("bad test run for " + acceptedTargetDir + " " + testJar + " " + matchStr + " urls: " + urls);
@@ -124,7 +127,7 @@ public class TestRunner implements BuildListener {
      */
     @Override
     public void buildStarted(BuildEvent event) {
-
+        log.trace("{} got build event {}",this, event.toString());
     }
 
     /**
@@ -140,13 +143,19 @@ public class TestRunner implements BuildListener {
        /* ******* post-Test reporting ********* */
         // ant file runs junitreporter, so those reports are done
         // just log the traffic, until we write the coverage-tests
-        for (Table.Cell<String, String, Integer> cell : AvroJson.getMessages().cellSet()) {
-            trafficlog.info(cell.getRowKey() + " " + cell.getColumnKey() + " " + cell.getValue());
-        }
+        long reportedRunKey = Long.parseLong(event.getProject().getUserProperty("ctk.runkey"));
+        if(reportedRunKey != runkey)
+            log.warn("mismatched runKey detected; ant say " + reportedRunKey + " but TestRunner has " + runkey);
+        testActivityDataService.logTraffic(CtkLogs.TRAFFICLOG, reportedRunKey);
         String todir = event.getProject().getUserProperty("ctk.todir");
         log.debug("buildFinished for " + todir);
         // signal the listener to proceed
-        result.complete(todir +"report/html/index.html");
+        String results;
+        if(todir.endsWith("/")){
+            results = todir +"report/html/index.html";}
+         else {
+            results = todir +"/report/html/index.html";}
+        result.complete(results);
     }
 
     /**
@@ -158,7 +167,7 @@ public class TestRunner implements BuildListener {
      */
     @Override
     public void targetStarted(BuildEvent event) {
-
+        log.trace("{} got build event {}",this, event.toString());
     }
 
     /**
@@ -171,7 +180,7 @@ public class TestRunner implements BuildListener {
      */
     @Override
     public void targetFinished(BuildEvent event) {
-
+        log.trace("{} got build event {}",this, event.toString());
     }
 
     /**
@@ -183,7 +192,7 @@ public class TestRunner implements BuildListener {
      */
     @Override
     public void taskStarted(BuildEvent event) {
-
+        log.trace("{} got build event {}",this, event.toString());
     }
 
     /**
@@ -196,6 +205,7 @@ public class TestRunner implements BuildListener {
      */
     @Override
     public void taskFinished(BuildEvent event) {
+        log.trace("{} got build event {}",this, event.toString());
     }
 
     /**
@@ -209,6 +219,6 @@ public class TestRunner implements BuildListener {
      */
     @Override
     public void messageLogged(BuildEvent event) {
-
+        log.trace("{} got build event {}",this, event.toString());
     }
 }

@@ -1,6 +1,9 @@
 package org.ga4gh.ctk;
 
 import org.apache.tools.ant.*;
+import org.slf4j.*;
+
+import static org.slf4j.LoggerFactory.*;
 
 /**
  * <p>Bridge ant-generated events to CTK logs</p>
@@ -8,9 +11,13 @@ import org.apache.tools.ant.*;
  * "build" file, and puts those events into the class log and the TESTLOG
  * so the information is available to the SLF4J logging framework.</p>
  *
- * <p>Created by Wayne Stidolph on 6/30/2015.</p>
+ * <p>Created by Wayne Stidolph on 6/30/2015.</p>l
  */
-public class AntExecListener implements BuildListener, CtkLogs {
+public class AntExecListener implements BuildListener {
+    private static Logger log = getLogger(AntExecListener.class);
+
+    private static Logger testlog = LoggerFactory.getLogger(CtkLogs.SYSTEST);
+
     /**
      * Signals that a build has started. This event
      * is fired before any targets have started.
@@ -24,8 +31,8 @@ public class AntExecListener implements BuildListener, CtkLogs {
      */
     @Override
     public void buildStarted(BuildEvent event) {
-        CtkLogs.testlog.debug(eventToString(event) + " ant build start");
-        CtkLogs.log.info(eventToString(event)+ " ant build start");
+        testlog.debug(eventToString(event) + " ant build start");
+        log.info(eventToString(event)+ " ant build start");
     }
 
     /**
@@ -38,8 +45,8 @@ public class AntExecListener implements BuildListener, CtkLogs {
      */
     @Override
     public void buildFinished(BuildEvent event) {
-        CtkLogs.testlog.debug(eventToString(event) + " ant build finish");
-        CtkLogs.log.info(eventToString(event)+ " ant build finish");
+        testlog.debug(eventToString(event) + " ant build finish");
+        log.info(eventToString(event)+ " ant build finish");
     }
 
     /**
@@ -51,7 +58,7 @@ public class AntExecListener implements BuildListener, CtkLogs {
      */
     @Override
     public void targetStarted(BuildEvent event) {
-        CtkLogs.log.trace(eventToString(event)+ " ant target start");
+        log.trace(eventToString(event)+ " ant target start");
 
     }
 
@@ -65,7 +72,7 @@ public class AntExecListener implements BuildListener, CtkLogs {
      */
     @Override
     public void targetFinished(BuildEvent event) {
-        CtkLogs.log.trace(eventToString(event)+ " ant target finish");
+        log.trace(eventToString(event)+ " ant target finish");
 
     }
 
@@ -78,7 +85,7 @@ public class AntExecListener implements BuildListener, CtkLogs {
      */
     @Override
     public void taskStarted(BuildEvent event) {
-        CtkLogs.log.trace(eventToString(event)+ " ant task start");
+        log.trace(eventToString(event)+ " ant task start");
 
     }
 
@@ -92,7 +99,7 @@ public class AntExecListener implements BuildListener, CtkLogs {
      */
     @Override
     public void taskFinished(BuildEvent event) {
-        CtkLogs.log.trace(eventToString(event)+ " ant task finish");
+        log.trace(eventToString(event)+ " ant task finish");
 
     }
 
@@ -109,21 +116,21 @@ public class AntExecListener implements BuildListener, CtkLogs {
     public void messageLogged(BuildEvent event) {
         switch (event.getPriority()){
             case Project.MSG_VERBOSE:
-                CtkLogs.log.trace(eventToString(event) + " msg: " + event.getMessage());
+                log.trace(eventToString(event) + " msg: " + event.getMessage());
                 break;
             case Project.MSG_DEBUG:
-                CtkLogs.log.debug(eventToString(event) + " msg: " + event.getMessage());
+                log.debug(eventToString(event) + " msg: " + event.getMessage());
                 break;
             case Project.MSG_INFO:
-                CtkLogs.log.info(eventToString(event) + " msg: " + event.getMessage());
+                log.info(eventToString(event) + " msg: " + event.getMessage());
                 break;
             case Project.MSG_ERR:
-                CtkLogs.log.error(eventToString(event) + " msg: " + event.getMessage());
-                CtkLogs.testlog.error(eventToString(event) + " msg: " + event.getMessage());
+                log.error(eventToString(event) + " msg: " + event.getMessage());
+                testlog.error(eventToString(event) + " msg: " + event.getMessage());
                 break;
             case Project.MSG_WARN:
-                CtkLogs.log.warn(eventToString(event) + " msg: " + event.getMessage());
-                CtkLogs.testlog.warn(eventToString(event) + " msg: " + event.getMessage());
+                log.warn(eventToString(event) + " msg: " + event.getMessage());
+                testlog.warn(eventToString(event) + " msg: " + event.getMessage());
                 break;
         }
     }

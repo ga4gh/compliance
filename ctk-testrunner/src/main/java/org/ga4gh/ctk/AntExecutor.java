@@ -6,17 +6,17 @@ package org.ga4gh.ctk;
  */
 
 import org.apache.tools.ant.*;
-import org.ga4gh.ctk.config.Props;
-import org.ga4gh.ctk.transport.URLMAPPING;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import org.ga4gh.ctk.config.*;
+import org.ga4gh.ctk.transport.*;
+import org.slf4j.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.context.annotation.*;
+import org.springframework.stereotype.*;
 
-import java.io.File;
-import java.util.Properties;
+import java.io.*;
+import java.util.*;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import static org.slf4j.LoggerFactory.*;
 
 /**
  * <p>This class executes ant (ver 1.9.5 in the initial CTK) to do
@@ -71,7 +71,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Scope("prototype")
 public class AntExecutor {
 
-    private static org.slf4j.Logger log = getLogger(AntExecutor.class);
+    private static Logger log = getLogger(AntExecutor.class);
+    private static Logger testlog = LoggerFactory.getLogger(CtkLogs.SYSTEST);
 
     @Value("${ctk.antfile}")
     private File antFile; // use direct injection; let Spring convert the String to a File
@@ -86,6 +87,7 @@ public class AntExecutor {
     }
 
 
+    DefaultLogger consoleLogger;
     /**
      * To execute the default target specified in the Ant antRunTests.xml file
      *
@@ -97,6 +99,7 @@ public class AntExecutor {
                         props.ctk_matchstr,
                         URLMAPPING.getInstance(),
                         "testresults/target/",
+                        -1, // default runkey
                         null
                     );
     }
@@ -106,31 +109,41 @@ public class AntExecutor {
      *
      * @param testjar tests jar to unpack/run in Ant
      */
-    public boolean executeAntTask(String testjar, String matchstr, URLMAPPING urls, String toDir, BuildListener theBoss) {
+    public boolean executeAntTask(String testjar,
+                                  String matchstr,
+                                  URLMAPPING urls,
+                                  String toDir,
+                                  long runkey,
+                                  BuildListener theBoss) {
 
         log.trace("passed-in urls has " + urls.getEndpoints());
         log.info("passed-in urls.getUrlRoot " + urls.getUrlRoot());
 
-        String expandedReportTitle = props.ctk_report_title + " " + urls.getUrlRoot();
+        String expandedReportTitle = props.ctk_report_title + " " + urls.getUrlRoot() + " runkey: " + runkey ;
 
         boolean success = false;
-        DefaultLogger consoleLogger = getConsoleLogger();
         AntExecListener antExecListener = new AntExecListener();
         // Prepare Ant project
         Project project = new Project();
         try {
             File buildFile = antFile;
-            project.setUserProperty("basedir", System.getProperty("user.dir"));
+            // pass properties to Ant not only for ant file, but also to
+            // be avail for CTK tests which ant runs, possibly in a different JVM
+            // or classloader
+            project.setUserProperty("basedir",System.getProperty("user.dir"));
             project.setUserProperty("ant.file", buildFile.getName());
             project.setUserProperty("ctk.testjar", testjar);
+            project.setUserProperty("ctk.testclassroots", props.ctk_testclassroots);
             project.setUserProperty("ctk.matchstr", matchstr);
             project.setUserProperty("ctk.reporttitle", expandedReportTitle);
             project.setUserProperty("ctk.todir", toDir);
+            project.setUserProperty("ctk.runkey", ""+runkey);
+            project.setUserProperty("ctk.domaintypesfile", props.ctk_domaintypesfile);
+            project.setUserProperty("ctk.defaulttransportfile",props.ctk_defaulttransportfile);
             project.addBuildListener(antExecListener);
             // if there's an interested listener, hook them up
-            if (theBoss != null) {
+            if(theBoss != null)
                 project.addBuildListener(theBoss);
-            }
 
             project.fireBuildStarted();
             project.init();
@@ -138,13 +151,14 @@ public class AntExecutor {
             project.addReference("ant.projectHelper", projectHelper);
             projectHelper.parse(project, buildFile);
         } catch (Exception e) {
-            CtkLogs.log.warn("Exception setting up ant project based on " + antFile, e.getCause());
+            log.warn("Exception setting up ant project based on " + antFile, e.getCause());
             e.printStackTrace();
         }
 
-        CtkLogs.log.debug("ctk.antlog.consolelogger is " + props.ctk_antlog_consolelogger);
+        log.debug("ctk.antlog.consolelogger is " + props.ctk_antlog_consolelogger);
         if("ON".equals(props.ctk_antlog_consolelogger)) {
-            CtkLogs.log.debug("enabling ConsoleLogger");
+            consoleLogger = getConsoleLogger();
+            log.debug("enabling ConsoleLogger");
             project.addBuildListener(consoleLogger);
         }
         String targetToExecute = "";
@@ -173,15 +187,15 @@ public class AntExecutor {
                     + System.getProperty("ctk.tgt.urlRoot"));
 
             project.fireBuildFinished(null);
-            CtkLogs.testlog.info("Overall: " + TestExecListener.getTestReport());
+            testlog.info("Overall: " + TestExecListener.getTestReport());
         } catch (BuildException buildException) {
             // NOTE just because we get a BuildException doesn't mean the
             // build (the test run) halted, since we have haltonerror=false
             // in theantTestRun.xml file for the junit task
             project.fireBuildFinished(buildException);
             success = false;
-            CtkLogs.log.warn("Got BuildException starting from ant task " + targetToExecute
-                    + " from location " + buildException.getLocation() + " due to " + buildException.getMessage());
+            log.warn("Got BuildException " + buildException.toString());
+            buildException.printStackTrace();
         }
         if ("ON".equals(props.ctk_antlog_clearstats))
             TestExecListener.resetStats(); // these are static fields which accumulate results
@@ -199,7 +213,7 @@ public class AntExecutor {
         DefaultLogger consoleLogger = new DefaultLogger();
         consoleLogger.setErrorPrintStream(System.err);
         consoleLogger.setOutputPrintStream(System.out);
-        consoleLogger.setMessageOutputLevel(Project.MSG_INFO);
+        consoleLogger.setMessageOutputLevel(Project.MSG_INFO); // TODO pick up a property for this level-set
 
         return consoleLogger;
     }

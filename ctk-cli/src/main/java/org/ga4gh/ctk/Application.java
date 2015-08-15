@@ -1,13 +1,18 @@
 package org.ga4gh.ctk;
 
 import org.ga4gh.ctk.config.*;
+import org.ga4gh.ctk.domain.*;
+import org.ga4gh.ctk.services.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.boot.*;
 import org.springframework.boot.autoconfigure.*;
 import org.springframework.context.*;
 
+import javax.annotation.*;
 import java.net.*;
 import java.util.*;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * <p>The Application - this is the main entry point for the CTK for running the entire CTK
@@ -34,9 +39,9 @@ import java.util.*;
 @SpringBootApplication
 public class Application implements CtkLogs,CommandLineRunner {
 
-   // private static org.slf4j.Logger log = getLogger(Application.class);
+    private static org.slf4j.Logger log = getLogger(Application.class);
 
-    //private static org.slf4j.Logger testlog = getLogger(SYSTEST);
+    private static org.slf4j.Logger testlog = getLogger(SYSTEST);
 
 
     @Autowired
@@ -68,5 +73,16 @@ public class Application implements CtkLogs,CommandLineRunner {
         log.debug("command line args: " + Arrays.toString(args));
 
         testrunner.doTestRun(); // does a single run
+    }
+
+    @Autowired
+    TrafficLogRepository trafficLogRepository;
+
+    @PostConstruct
+    void setTheTrafficRepo() {
+        // manually set the repo, rather than letting Spring autowire it into
+        // TestActivityDataService
+        log.debug("setTheTrafficRepo wiring TestActivityDataService with {}",trafficLogRepository);
+        TestActivityDataService.getService().setTrafficLogRepository(trafficLogRepository);
     }
 }

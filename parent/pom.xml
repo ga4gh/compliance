@@ -36,13 +36,14 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <ant.version>1.9.5</ant.version>
+        <ant.version>1.9.6</ant.version>
         <assertj.core.version>3.1.0</assertj.core.version>
         <assertj.generator.version>1.6.0</assertj.generator.version>
         <avro.version>1.7.7</avro.version>
         <bcel.version>6.0-SNAPSHOT</bcel.version>
         <gson.version>2.3.1</gson.version>
         <guava.version>18.0</guava.version>
+        <h2.version>1.4.187</h2.version>
         <httpasyncclient.version>4.1</httpasyncclient.version>
         <httpclient.version>4.4.1</httpclient.version>
         <httpmime.version>4.4.1</httpmime.version>
@@ -115,6 +116,11 @@
                 and Mockito along with the spring-test module. -->
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-jpa</artifactId>
                 <version>${spring.boot.version}</version>
             </dependency>
             <dependency>
@@ -243,6 +249,13 @@
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
                 <version>${gson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
+                <scope>compile</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

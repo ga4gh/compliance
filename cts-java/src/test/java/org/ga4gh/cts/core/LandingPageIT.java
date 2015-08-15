@@ -7,7 +7,6 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.GetRequest;
 import junitparams.JUnitParamsRunner;
 import org.ga4gh.ctk.CtkLogs;
-import org.ga4gh.ctk.testcategories.CoreTests;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;

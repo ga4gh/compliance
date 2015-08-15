@@ -3,10 +3,11 @@ package org.ga4gh.ctk;
 import junit.framework.*;
 import org.apache.tools.ant.*;
 import org.apache.tools.ant.taskdefs.optional.junit.*;
+import org.junit.runner.Description;
 import org.junit.runner.*;
 import org.junit.runner.notification.*;
 import org.slf4j.*;
-import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.*;
 import org.springframework.stereotype.*;
 
 import java.io.*;
@@ -26,8 +27,9 @@ public class TestExecListener extends RunListener implements JUnitResultFormatte
     static long errorCount = 0L;
     static long skipCount  = 0L;
     static float ms = 0.0f;
+    private static Logger log = LoggerFactory.getLogger(TestExecListener.class);
 
-    private static org.slf4j.Logger testlog = LoggerFactory.getLogger("TESTLOG");
+    private static Logger testlog = LoggerFactory.getLogger(CtkLogs.SYSTEST);
 
     /**
      * <p>Gets test report summary string.</p>
@@ -56,43 +58,43 @@ public class TestExecListener extends RunListener implements JUnitResultFormatte
     /**
      * Called before any tests have been run.
      */
-    public void testRunStarted(Description description) throws java.lang.Exception {
-        testlog.info("Number of testcases to execute : " + description.testCount());
+    public void testRunStarted(Description description) throws Exception {
+//        testlog.info("Number of testcases to execute : " + description.testCount());
     }
 
     /**
      * Called when all tests have finished
      */
-    public void testRunFinished(Result result) throws java.lang.Exception {
+    public void testRunFinished(Result result) throws Exception {
         testlog.info("Number of testcases executed : " + result.getRunCount());
     }
 
     /**
      * Called when an atomic test is about to be started.
      */
-    public void testStarted(Description description) throws java.lang.Exception {
-        testlog.info("Starting test case : " + description.getMethodName());
+    public void testStarted(Description description) throws Exception {
+ //       testlog.info("Starting test case : " + description.getMethodName());
     }
 
     /**
      * Called when an atomic test has finished, whether the test succeeds or fails.
      */
-    public void testFinished(Description description) throws java.lang.Exception {
-        testlog.debug("Finished test case : " + description.getMethodName());
+    public void testFinished(Description description) throws Exception {
+ //       testlog.debug("Finished test case : " + description.getMethodName());
     }
 
     /**
      * Called when an atomic test fails.
      */
-    public void testFailure(Failure failure) throws java.lang.Exception {
-        testlog.warn("FAILED test case : " + failure.getMessage());
+    public void testFailure(Failure failure) throws Exception {
+//        testlog.warn("FAILED test case : " + failure.getMessage());
     }
 
     /**
      * Called when a test will not be run, generally because a test method is annotated with Ignore.
      */
-    public void testIgnored(Description description) throws java.lang.Exception {
-        testlog.info("Ignoring test case : " + description.getMethodName());
+    public void testIgnored(Description description) throws Exception {
+ //       testlog.info("Ignoring test case : " + description.getMethodName());
     }
 
     /****** JUnitResultFormatter methods, for listening to ant <junit> run ***/
@@ -104,7 +106,7 @@ public class TestExecListener extends RunListener implements JUnitResultFormatte
      */
     @Override
     public void startTestSuite(JUnitTest suite) throws BuildException {
-        testlog.info("Suite start " + suite.getName());
+//        testlog.info("Suite start " + suite.getName());
     }
 
     /**
@@ -174,7 +176,7 @@ public class TestExecListener extends RunListener implements JUnitResultFormatte
      */
     @Override
     public void addError(Test test, Throwable e) {
-        testlog.error("ERROR: " + test.toString() + " due to " + e.getMessage());
+ //       testlog.error("ERROR: " + test.toString() + " due to " + e.getMessage());
     }
 
     /**
@@ -185,7 +187,7 @@ public class TestExecListener extends RunListener implements JUnitResultFormatte
      */
     @Override
     public void addFailure(Test test, AssertionFailedError e) {
-        testlog.warn("FAILED " + test.toString() + " due to " + e.getMessage());
+//        testlog.warn("FAILED " + test.toString() + " due to " + e.getMessage());
     }
 
     /**
@@ -205,6 +207,6 @@ public class TestExecListener extends RunListener implements JUnitResultFormatte
      */
     @Override
     public void startTest(Test test) {
-        testlog.trace("start test: " + test.toString());
+//        testlog.trace("start test: " + test.toString());
     }
 }

@@ -49,6 +49,14 @@ http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3 ">
             <source>../ctk-testrunner/src/main/resources/antRunTests.xml</source>
             <outputDirectory>lib</outputDirectory>
         </file>
+        <file>
+            <source>../ctk-domain/src/main/resources/avro-types.json</source>
+            <outputDirectory>lib</outputDirectory>
+        </file>
+        <file>
+            <source>../ctk-transport/src/main/resources/defaulttransport.properties</source>
+            <outputDirectory>lib</outputDirectory>
+        </file>
     </files>
     <fileSets>
         <!-- somewhat convoluted way to ensure the 'target' dir is there -->
