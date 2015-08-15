@@ -32,6 +32,10 @@
         <ga4gh.schema.local.version>0.5.1-SNAPSHOT</ga4gh.schema.local.version>
         <ctk.tgt.urlRoot>http://localhost:8000/v0.5.1</ctk.tgt.urlRoot>
 
+        <!-- cause skip of cts-java IT tests during build; run the tests by passing
+             a command line para,. e.g., mvn install -Dckts.skipITs=false -->
+        <cts.skipITs>false</cts.skipITs>
+
         <java.version>1.8</java.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
