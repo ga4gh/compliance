@@ -9,6 +9,7 @@ public class TrafficLogBuilder {
     private String idParam;
     private int responseStatus;
     private long runKey;
+    private int testMethodKey;
 
     public TrafficLogBuilder setClassSent(String classSent) {
         this.classSent = classSent;
@@ -45,13 +46,18 @@ public class TrafficLogBuilder {
         return this;
     }
 
+    public TrafficLogBuilder setTestMEthodKey(int testMethodKey){
+        this.testMethodKey = testMethodKey;
+        return this;
+    }
+
     public TrafficLogBuilder setIdParam(String idParam){
         this.idParam = idParam;
         return this;
     }
 
     public TrafficLog build() {
-        return new TrafficLog(classSent, actionType, jsonSent, classReceived, endpoint, idParam, responseStatus, runKey);
+        return new TrafficLog(classSent, actionType, jsonSent, classReceived, endpoint, idParam, responseStatus, runKey, testMethodKey);
     }
 
 }

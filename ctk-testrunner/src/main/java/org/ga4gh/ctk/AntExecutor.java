@@ -100,6 +100,7 @@ public class AntExecutor {
                         URLMAPPING.getInstance(),
                         "testresults/target/",
                         -1, // default runkey
+                        -1, // default testmethodkey
                         null
                     );
     }
@@ -114,6 +115,7 @@ public class AntExecutor {
                                   URLMAPPING urls,
                                   String toDir,
                                   long runkey,
+                                  int testmethodkey,
                                   BuildListener theBoss) {
 
         log.trace("passed-in urls has " + urls.getEndpoints());
@@ -138,6 +140,7 @@ public class AntExecutor {
             project.setUserProperty("ctk.reporttitle", expandedReportTitle);
             project.setUserProperty("ctk.todir", toDir);
             project.setUserProperty("ctk.runkey", ""+runkey);
+            project.setUserProperty("ctk.testmethodkey", ""+testmethodkey);
             project.setUserProperty("ctk.domaintypesfile", props.ctk_domaintypesfile);
             project.setUserProperty("ctk.defaulttransportfile",props.ctk_defaulttransportfile);
             project.addBuildListener(antExecListener);

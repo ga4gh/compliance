@@ -9,25 +9,25 @@ import java.util.function.*;
 import java.util.stream.*;
 
 /**
- * <p>Manage persistance and query on test activity data for coverage checks</p>
+ * <p>Manage persistance and query on test's TrafficLog data for coverage checks</p>
  * <p>Uses a Spring-supplied embedded DB if avail (as under the Server), or a
  * local-storage option if no Springrepos supplied (as when run under IDE JUnit
  * test runner.</p>
  * Created by Wayne Stidolph on 7/28/2015.
  */
-public class TestActivityDataService {
-    private static Logger log = LoggerFactory.getLogger(TestActivityDataService.class);
+public class TrafficLogService {
+    private static Logger log = LoggerFactory.getLogger(TrafficLogService.class);
 
-    private static TestActivityDataService instance;
+    private static TrafficLogService instance;
     /* Why not use a FactoryBean with a dependency on the trafficLogRepository
-   to generate one of two implementations of TestActivityDataService? Because
+   to generate one of two implementations of TrafficLogService? Because
    this seems clearer (to me) for reading the code, and clarity in reading is
    important here. But, if someone prefers doing it one of the other ways
    (a ConditionalBean, etc) then this is pretty much the starting place.
  */
-    public synchronized  static TestActivityDataService getService() {
+    public synchronized  static TrafficLogService getService() {
         if(instance == null) {
-            instance = new TestActivityDataService();
+            instance = new TrafficLogService();
             log.debug("getService created service {}", instance);
         }
         log.trace("getService returning {}", instance);

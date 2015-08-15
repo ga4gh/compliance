@@ -25,7 +25,7 @@ public class CtkServerApplication {
     @PostConstruct
     void setTheTrafficRepo() {
         // manually set the repo, rather than letting Spring do it
-        TestActivityDataService.getService().setTrafficLogRepository(trafficLogRepository);
+        TrafficLogService.getService().setTrafficLogRepository(trafficLogRepository);
     }
 
 }

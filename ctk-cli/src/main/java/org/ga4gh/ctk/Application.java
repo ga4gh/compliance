@@ -81,8 +81,8 @@ public class Application implements CtkLogs,CommandLineRunner {
     @PostConstruct
     void setTheTrafficRepo() {
         // manually set the repo, rather than letting Spring autowire it into
-        // TestActivityDataService
-        log.debug("setTheTrafficRepo wiring TestActivityDataService with {}",trafficLogRepository);
-        TestActivityDataService.getService().setTrafficLogRepository(trafficLogRepository);
+        // TrafficLogService
+        log.debug("setTheTrafficRepo wiring TrafficLogService with {}",trafficLogRepository);
+        TrafficLogService.getService().setTrafficLogRepository(trafficLogRepository);
     }
 }

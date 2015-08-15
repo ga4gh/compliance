@@ -4,8 +4,8 @@
  * a simple data access object, with fields to track the various
  * aspects of a single CTK/target Request/Response interaction.
  * The data element is then stored and retrieved by the
- * TestActivityDataService; this way, a test can "look back" over
- * the activity by querying the TestActivityDataService.</p>
+ * TrafficLogService; this way, a test can "look back" over
+ * the activity by querying the TrafficLogService.</p>
  * <p>This package also provides the:</p>
  * <ul>
  * <li>TrafficLogBuilder (for a builder-style

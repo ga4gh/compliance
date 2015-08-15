@@ -26,7 +26,7 @@ import static org.slf4j.LoggerFactory.*;
  *     <li>invokes the serializer/deserializer,</li>
  *     <li>invokes the HTTP interaction,</li>
  *     <li>tracks the data sent/received (via a WireTracker), and</li>
- *     <li>captures the traffic summary by storing TrafflicLogMsg objects in the TestActivityDataService</li>
+ *     <li>captures the traffic summary by storing TrafflicLogMsg objects in the TrafficLogService</li>
  * </ul>
  * <p>The class accepts the request and response objects, the URL root and path strings, and
  * an (optional) WireTracker (which will collect the JSON as sent/received on the wire).</p>
@@ -44,7 +44,7 @@ import static org.slf4j.LoggerFactory.*;
  */
 public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase> {
     private static org.slf4j.Logger log;
-    private TestActivityDataService testActivityDataService = TestActivityDataService.getService();
+    private TrafficLogService trafficLogService = TrafficLogService.getService();
 
     static {
         log = getLogger(AvroJson.class);
@@ -218,7 +218,7 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
         }
         // track all message types sent/received for simple "test coverage" indication
         String respName = theResp != null ? theResp.getClass().getCanonicalName()  : "null";
-        TrafficLog tlm = testActivityDataService.getTrafficLogBuilder()
+        TrafficLog tlm = trafficLogService.getTrafficLogBuilder()
                 .setClassSent(theAvroReq.getClass().getCanonicalName())
                 .setActionType(postOrGet)
                 .setJsonSent(jsonStr)
@@ -226,6 +226,7 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
                 .setResponseStatus(httpResp != null ? httpResp.getStatus() : 0)
                 .setEndpoint(path)
                 .setRunKey(Long.parseLong(System.getProperty("ctk.runkey","-1")))
+                .setTestMEthodKey(Integer.parseInt(System.getProperty("ctk.testmethodkey", "-1")))
                 .build();
         tlm.save();
     }

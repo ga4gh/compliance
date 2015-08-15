@@ -41,9 +41,6 @@ public class PropsTest {
     public void after() throws Exception {
     }
 
-    /**
-     * Method: aPropertyCanBeRead()
-     */
     @Test
     public void aPropertyCanBeRead() throws Exception {
         assertThat(props.ctk_testpackage).isNotNull();

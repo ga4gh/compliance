@@ -122,6 +122,23 @@
 
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>eu.numberfour.maven.plugins</groupId>
+                <artifactId>file-list-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <configuration>
+                    <baseDir>${basedir}/../ctk-schemas/target/generated-sources/avro</baseDir>
+                    <outputFile>${basedir}/src/main/resources/avro-types.json</outputFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>list</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

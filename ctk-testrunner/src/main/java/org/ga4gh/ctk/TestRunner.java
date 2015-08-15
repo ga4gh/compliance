@@ -41,8 +41,8 @@ public class TestRunner implements BuildListener {
     @Value("${ctk.tgt.urlRoot}")
     String urlroot;
 
-    TestActivityDataService testActivityDataService;
-    long runkey; // = testActivityDataService.createTestRunKey();
+    TrafficLogService trafficLogService;
+    long runkey; // = trafficLogService.createTestRunKey();
 
     // this is the object we use to pass final result status back
     CompletableFuture<String> result;
@@ -82,7 +82,7 @@ public class TestRunner implements BuildListener {
                                                String testJar,
                                                String toDir){
         URLMAPPING urls = URLMAPPING.getInstance();
-        testActivityDataService = TestActivityDataService.getService();
+        trafficLogService = TrafficLogService.getService();
         urls.setUrlRoot(urlRoot);
 
         AvroJson.shouldDoComms = true; // always start from assumption of goodness!
@@ -92,7 +92,8 @@ public class TestRunner implements BuildListener {
                 ((null == toDir || toDir.isEmpty()) ? "target/" : toDir);
         // TODO ensure the toDir exists, create here
 
-        runkey = testActivityDataService.createTestRunKey();
+        runkey = trafficLogService.createTestRunKey();
+        int DEFAULT_TESTMETHODKEY = -1;
 
                     /* ****** MAIN RUN-THE-TESTS *********** */
 
@@ -102,6 +103,7 @@ public class TestRunner implements BuildListener {
                 urls,
                 acceptedTargetDir,
                 runkey,
+                DEFAULT_TESTMETHODKEY, // TODO placeholder we get mechanism to create per-test method keys
                 this); // "this" registers this for the BuildListener callbacks
         if(!goodLaunch){
             log.warn("bad test run for " + acceptedTargetDir + " " + testJar + " " + matchStr + " urls: " + urls);
@@ -146,7 +148,7 @@ public class TestRunner implements BuildListener {
         long reportedRunKey = Long.parseLong(event.getProject().getUserProperty("ctk.runkey"));
         if(reportedRunKey != runkey)
             log.warn("mismatched runKey detected; ant say " + reportedRunKey + " but TestRunner has " + runkey);
-        testActivityDataService.logTraffic(CtkLogs.TRAFFICLOG, reportedRunKey);
+        trafficLogService.logTraffic(CtkLogs.TRAFFICLOG, reportedRunKey);
         String todir = event.getProject().getUserProperty("ctk.todir");
         log.debug("buildFinished for " + todir);
         // signal the listener to proceed

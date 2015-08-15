@@ -20,6 +20,9 @@ public class TrafficLog {
     private Long runKey;
 
     @Column
+    private int testMethodKey;
+
+    @Column
     private String classSent;
 
     @Column
@@ -54,7 +57,8 @@ public class TrafficLog {
                       String endpoint,
                       String idParam,
                       int responseStatus,
-                      long runKey) {
+                      long runKey,
+                      int testMethodKey) {
         this();
         this.classSent = classSent;
         this.actionType = actionType;
@@ -64,6 +68,7 @@ public class TrafficLog {
         this.endpoint = endpoint;
         this.idParam = idParam;
         this.runKey = runKey;
+        this.testMethodKey = testMethodKey;
     }
 
     /**
@@ -81,14 +86,15 @@ public class TrafficLog {
                 pieces[5],
                 pieces[6],
                 Integer.parseInt(pieces[3]),
-                Long.parseLong(pieces[7]));
+                Long.parseLong(pieces[7]),
+                Integer.parseInt(pieces[8]));
     }
 
     @Override
     public String toString() {
         return String.join(" ", classSent, actionType, "<"+jsonReq+">",
                             ""+responseStatus, classReceived, endpoint,
-                            idParam, ""+runKey);
+                            idParam, ""+runKey, ""+testMethodKey);
     }
 
     public String getClassSent() {
@@ -131,16 +137,18 @@ public class TrafficLog {
         return runKey;
     }
 
-    private static TestActivityDataService testActivityDataService;
+    public int getTestMethodKey() { return testMethodKey;}
 
-    public static void setTestActivityDataService(TestActivityDataService testActivityDataService) {
-        TrafficLog.testActivityDataService = testActivityDataService;
+    private static TrafficLogService trafficLogService;
+
+    public static void setTrafficLogService(TrafficLogService trafficLogService) {
+        TrafficLog.trafficLogService = trafficLogService;
     }
 
     public void save() {
-        if (testActivityDataService == null)
-            testActivityDataService = testActivityDataService.getService();
-        testActivityDataService.save(this);
+        if (trafficLogService == null)
+            trafficLogService = trafficLogService.getService();
+        trafficLogService.save(this);
     }
 
 }
