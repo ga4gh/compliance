@@ -3,7 +3,7 @@ package org.ga4gh.ctk.domain;
 public class TrafficLogBuilder {
     private String classSent;
     private String actionType;
-    private String jsonSent;
+    private String jsonReq;
     private String endpoint;
     private String classReceived;
     private String idParam;
@@ -21,8 +21,8 @@ public class TrafficLogBuilder {
         return this;
     }
 
-    public TrafficLogBuilder setJsonSent(String jsonSent) {
-        this.jsonSent = jsonSent;
+    public TrafficLogBuilder setJsonReq(String jsonReq) {
+        this.jsonReq = jsonReq;
         return this;
     }
 
@@ -46,7 +46,7 @@ public class TrafficLogBuilder {
         return this;
     }
 
-    public TrafficLogBuilder setTestMEthodKey(int testMethodKey){
+    public TrafficLogBuilder setTestMethodKey(int testMethodKey){
         this.testMethodKey = testMethodKey;
         return this;
     }
@@ -57,7 +57,7 @@ public class TrafficLogBuilder {
     }
 
     public TrafficLog build() {
-        return new TrafficLog(classSent, actionType, jsonSent, classReceived, endpoint, idParam, responseStatus, runKey, testMethodKey);
+        return new TrafficLog(classSent, actionType, jsonReq, classReceived, endpoint, idParam, responseStatus, runKey, testMethodKey);
     }
 
 }

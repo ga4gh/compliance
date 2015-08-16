@@ -2,6 +2,7 @@ package org.ga4gh.ctk;
 
 import org.apache.tools.ant.*;
 import org.ga4gh.ctk.config.*;
+import org.ga4gh.ctk.domain.*;
 import org.ga4gh.ctk.services.*;
 import org.ga4gh.ctk.transport.*;
 import org.ga4gh.ctk.transport.avrojson.*;
@@ -10,6 +11,7 @@ import org.slf4j.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
 
+import java.util.*;
 import java.util.concurrent.*;
 
 import static org.slf4j.LoggerFactory.*;
@@ -22,6 +24,7 @@ import static org.slf4j.LoggerFactory.*;
 @Component
 public class TestRunner implements BuildListener {
     private static Logger log = getLogger(TestRunner.class);
+    private static Logger trafficlog = getLogger(CtkLogs.TRAFFICLOG);
 
     @Autowired
     private Props props;
@@ -148,7 +151,8 @@ public class TestRunner implements BuildListener {
         long reportedRunKey = Long.parseLong(event.getProject().getUserProperty("ctk.runkey"));
         if(reportedRunKey != runkey)
             log.warn("mismatched runKey detected; ant say " + reportedRunKey + " but TestRunner has " + runkey);
-        trafficLogService.logTraffic(CtkLogs.TRAFFICLOG, reportedRunKey);
+        List<TrafficLog> msgs = trafficLogService.getTrafficLogs(reportedRunKey);
+        msgs.forEach((tlm) -> trafficlog.info(tlm.toString()));
         String todir = event.getProject().getUserProperty("ctk.todir");
         log.debug("buildFinished for " + todir);
         // signal the listener to proceed

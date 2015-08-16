@@ -221,12 +221,12 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
         TrafficLog tlm = trafficLogService.getTrafficLogBuilder()
                 .setClassSent(theAvroReq.getClass().getCanonicalName())
                 .setActionType(postOrGet)
-                .setJsonSent(jsonStr)
+                .setJsonReq(jsonStr)
                 .setClassReceived(respName)
                 .setResponseStatus(httpResp != null ? httpResp.getStatus() : 0)
                 .setEndpoint(path)
                 .setRunKey(Long.parseLong(System.getProperty("ctk.runkey","-1")))
-                .setTestMEthodKey(Integer.parseInt(System.getProperty("ctk.testmethodkey", "-1")))
+                .setTestMethodKey(Integer.parseInt(System.getProperty("ctk.testmethodkey", "-1")))
                 .build();
         tlm.save();
     }

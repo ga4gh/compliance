@@ -11,8 +11,11 @@ import java.util.stream.*;
 /**
  * <p>Manage persistance and query on test's TrafficLog data for coverage checks</p>
  * <p>Uses a Spring-supplied embedded DB if avail (as under the Server), or a
- * local-storage option if no Springrepos supplied (as when run under IDE JUnit
- * test runner.</p>
+ * local-storage option if no Spring repos supplied (as when run under IDE JUnit
+ * test runner. This leads to an unfortunate "if repo then ... else ... " structure
+ * in many methods, but this seems faster/easier than spinning up a DB
+ * for every unit test run. (A design alternative of using a ServiceFactory, seems
+ * too heavyweight for this size of service.</p>
  * Created by Wayne Stidolph on 7/28/2015.
  */
 public class TrafficLogService {
@@ -138,16 +141,22 @@ public class TrafficLogService {
         return collectDistinctLoggedValues(runkey, TrafficLog::getClassReceived);
     }
 
-    public void logTraffic(String logname, long runkey) {
+    public List<TrafficLog> getTrafficLogs(long runkey) {
 
-        Logger outlog = LoggerFactory.getLogger(logname);
-        if (trafficLogRepository != null) {
-            log.debug("logTraffic (dump DB) from {} to {} for runkey {}", this, logname, runkey);
-            trafficLogRepository.findByRunKey(runkey).forEach((tlm) -> outlog.info(tlm.toString()));
-        } else {
-            log.debug("logTraffic (dump local store) from {} to {} for runkey {}", this, logname, runkey);
-            trafficLogMap.get(runkey).stream().filter(tl -> tl.getRunKey() == runkey).forEach(tlm -> outlog.info(tlm.toString()));
+        List<TrafficLog> msgs;
+        if(!isKnownRunkey(runkey)) {
+            log.info("getTrafficLogs asked for logs of unknown runkey {}", runkey);
+            return new LinkedList<>();
         }
+        if (trafficLogRepository != null) {
+            msgs = trafficLogRepository.findByRunKey(runkey);
+            log.debug("getTrafficLogs {} entries from {} (dump DB)  for runkey {} ", msgs.size(), this, runkey);
+            // msgs.forEach((tlm) -> outlog.info(tlm.toString()));
+        } else {
+            msgs = trafficLogMap.get(runkey).stream().filter(tl -> tl.getRunKey() == runkey).collect(Collectors.toList());
+            log.debug("getTrafficLogs {} entries from {} (dump local store) for runkey {}", this, msgs.size(), runkey);
+        }
+        return msgs;
     }
 
     static Random randomno = new Random();

@@ -1,10 +1,6 @@
 package org.ga4gh.ctk.services;
-import org.apache.logging.log4j.*;
 import org.ga4gh.ctk.domain.*;
-import org.ga4gh.ctk.utility.*;
 import org.junit.*;
-import org.slf4j.Logger;
-import org.slf4j.*;
 
 import java.util.*;
 
@@ -32,7 +28,7 @@ public class TrafficLogServiceTest {
         assertThat(tls1).isNotNull().isSameAs(tls2);
     }
 
-    @Ignore
+    @Ignore()
     @Test
     public void testSetTrafficLogRepository() throws Exception {
 
@@ -40,8 +36,49 @@ public class TrafficLogServiceTest {
 
     @Ignore
     @Test
-    public void testSave() throws Exception {
+    public void testSavePassesToRepoIfPresent() throws Exception {
 
+    }
+
+    @Ignore
+    @Test
+    public void testSaveStoresLocalIfNoRepo() throws Exception {
+        TrafficLogBuilder builder = svc.getTrafficLogBuilder();
+
+        TrafficLog tl = builder.setRunKey(1).setTestMethodKey(1).setClassSent("Req1")
+                .setActionType("POST").setJsonReq("").setClassReceived("Resp1")
+                .setEndpoint("an/endpoint/1").setResponseStatus(200)
+                .build();
+
+        svc.setTrafficLogRepository(null);
+        svc.clearStaticTrafficLog(); // clear all
+        assertThat(svc.getUsedEndpoints(1L)).hasSize(0);
+        svc.save(tl);
+
+        assertThat(svc.getUsedEndpoints(1L)).hasSize(1);
+        svc.clearStaticTrafficLog(); // clear all
+        assertThat(svc.getUsedEndpoints(1L)).hasSize(0);
+    }
+
+    @Ignore
+    @Test
+    public void testSaveLocalHandlesUnknownRunkey() throws Exception {
+        long knownRunKey = svc.createTestRunKey();
+        long unknownRunKey = knownRunKey + 1;
+
+        TrafficLogBuilder builder = svc.getTrafficLogBuilder();
+
+        TrafficLog tl = builder.setRunKey(unknownRunKey).setTestMethodKey(1).setClassSent("Req1")
+                .setActionType("POST").setJsonReq("").setClassReceived("Resp1")
+                .setEndpoint("an/endpoint/1").setResponseStatus(200)
+                .build();
+
+        svc.setTrafficLogRepository(null);
+        svc.clearStaticTrafficLog(); // clear all
+        svc.save(tl); // with unknown key
+
+        assertThat(svc.getUsedEndpoints(unknownRunKey)).hasSize(1);
+        assertThat(svc.getUsedEndpoints(knownRunKey)).hasSize(0);
     }
 
     @Test
@@ -105,22 +142,34 @@ public class TrafficLogServiceTest {
     }
 
     @Test
-    public void testLogTraffic() throws Exception {
-        // attach a custom Appender to the logger, to get the log output
-        // but this is getting a NOP logger
-        Logger logger  = LoggerFactory.getLogger("testLogTraffic");
+    public void testGetTrafficLogs() throws Exception {
+        TrafficLogBuilder builder = svc.getTrafficLogBuilder();
 
-        // Create a String Appender to capture log output
-        StringAppender appender = StringAppender.createStringAppender("[ HI ] %m");
-        appender.addToLogger(logger.getName(), Level.INFO);
-        appender.start();
+        builder.setRunKey(1).setTestMethodKey(1).setClassSent("Req1")
+                .setActionType("POST").setJsonReq("").setClassReceived("Resp1")
+                .setEndpoint("an/endpoint/1").setResponseStatus(200);
+        builder.build().save();
 
-        // Log to the string appender
-        logger.error("Test");
+        builder.setClassSent("Req2").setClassReceived("Resp2").setEndpoint("an/endpoint/2");
+        builder.build().save();
 
-        String output = appender.getOutput();
-        assertThat(output).isEqualTo(String.format("[%s] Test", "HI"));
-        appender.removeFromLogger(LogManager.getRootLogger().getName());
+        builder.setClassSent("Req3").setClassReceived("Resp3").setEndpoint("an/endpoint/3");
+        builder.build().save();
+
+        builder.setRunKey(2L);
+        builder.setClassSent("Req1").setClassReceived("Resp1").setEndpoint("an/endpoint/3");
+        builder.build().save();
+
+        builder.setRunKey(2L);
+        builder.setClassSent("Req4").setClassReceived("Resp4").setEndpoint("an/endpoint/4");
+        builder.build().save();
+
+        List<TrafficLog> mr1 = svc.getTrafficLogs(1L);
+        List<TrafficLog> mr2 = svc.getTrafficLogs(2L);
+
+        assertThat(mr1).hasSize(3);
+        assertThat(mr1).extracting("classReceived").containsOnly("Resp1","Resp2","Resp3");
+        assertThat(mr2).hasSize(2);
     }
 
     @Test
@@ -136,18 +185,11 @@ public class TrafficLogServiceTest {
 
     @Test
     public void testIsKnownRunkey() throws Exception {
-        TrafficLog tl_133 = new TrafficLog();
-        tl_133.setRunKey(133L);
-        svc.save(tl_133);
-
-        TrafficLog tl_134 = new TrafficLog();
-        tl_134.setRunKey(134L);
-        svc.save(tl_134);
-
-        assertThat(svc.isKnownRunkey(133)).isTrue();
-        assertThat(svc.isKnownRunkey(134)).isTrue();
-        assertThat(svc.isKnownRunkey(0)).isFalse();
-        assertThat(svc.isKnownRunkey(1)).isFalse();
+        svc.setTrafficLogRepository(null);
+        svc.clearStaticTrafficLog();
+        long rk = svc.createTestRunKey();
+        assertThat(svc.isKnownRunkey(rk)).isTrue();
+        assertThat(svc.isKnownRunkey(-1 * rk)).isFalse();
     }
 
     @Test
