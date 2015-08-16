@@ -7,6 +7,16 @@ import javax.persistence.*;
 
 /**
  * <p>DAO for moving transport events to/from persistence</p>
+ * <ul>
+ *     <li>id: entity identifier</li>
+ *     <li>runkey: group logs from same "CTS run"</li>
+ *     <li>testMethodKey: group interactions from same test method execution, for multi-interaction tests</li>
+ *     <li>classSent: the IDL class sent from CTK to target (the request)</li>
+ *     <li>actionType: HTTP verb used</li>
+ *     <li>jsonReq: the JSON stringbody sent to the target server</li>
+ *     <li>classReceived: the IDL-generated class into which the response was deserialized</li>
+ *     <li>the endpoint on the target server (after the URL root)</li>>
+ * </ul>
  * Created by Wayne Stidolph on 7/24/2015.
  */
 @Entity
@@ -38,6 +48,7 @@ public class TrafficLog {
     /**
      * Provide an empty, default constructor for conventional JPA requirements.
      * And for easier test setup. Mark as Deprecated so people don't just use it
+     * (but leave it public so the unit tests can make a quick dumb TrafficLog)
      */
     @Deprecated
     public TrafficLog() {
