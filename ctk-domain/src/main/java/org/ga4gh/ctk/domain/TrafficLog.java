@@ -12,42 +12,35 @@ import javax.persistence.*;
 @Entity
 public class TrafficLog {
 
+    private static TrafficLogService trafficLogService;
     @Id
     @GeneratedValue
     private Long id;
-
     @Column
     private Long runKey;
-
     @Column
     private int testMethodKey;
-
     @Column
     private String classSent;
-
     @Column
     private String actionType;
-
     @Column
     private String jsonReq; // as sent to server
-
     @Column
     private String classReceived;
-
     @Column
     private String endpoint;
-
     @Column(nullable = true)
     private String idParam;
-
     @Column
     private int responseStatus;
 
     /**
      * Provide an empty, default constructor for conventional JPA requirements.
-     * Set its visibility to private in order to discourage using it directly.
+     * And for easier test setup. Mark as Deprecated so people don't just use it
      */
-    private TrafficLog() {
+    @Deprecated
+    public TrafficLog() {
     }
 
     public TrafficLog(String classSent,
@@ -90,35 +83,59 @@ public class TrafficLog {
                 Integer.parseInt(pieces[8]));
     }
 
+    public static TrafficLogService getTrafficLogService() {
+        return trafficLogService;
+    }
+
+    public static void setTrafficLogService(TrafficLogService trafficLogService) {
+        TrafficLog.trafficLogService = trafficLogService;
+    }
+
     @Override
     public String toString() {
-        return String.join(" ", classSent, actionType, "<"+jsonReq+">",
-                            ""+responseStatus, classReceived, endpoint,
-                            idParam, ""+runKey, ""+testMethodKey);
+        return String.join(" ", classSent, actionType, "<" + jsonReq + ">",
+                "" + responseStatus, classReceived, endpoint,
+                idParam, "" + runKey, "" + testMethodKey);
     }
 
     public String getClassSent() {
         return classSent;
     }
 
+    public void setClassSent(String classSent) {
+        this.classSent = classSent;
+    }
+
     public String getActionType() {
         return actionType;
+    }
+
+    public void setActionType(String actionType) {
+        this.actionType = actionType;
     }
 
     public String getJsonReq() {
         return jsonReq;
     }
 
+    public void setJsonReq(String jsonReq) {
+        this.jsonReq = jsonReq;
+    }
+
     public String getClassReceived() {
         return classReceived;
     }
 
-    public void setEndpoint(String endpoint) {
-        this.endpoint = endpoint;
+    public void setClassReceived(String classReceived) {
+        this.classReceived = classReceived;
     }
 
     public String getEndpoint() {
         return this.endpoint;
+    }
+
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
     }
 
     public String getIdParam() {
@@ -133,16 +150,28 @@ public class TrafficLog {
         return responseStatus;
     }
 
+    public void setResponseStatus(int responseStatus) {
+        this.responseStatus = responseStatus;
+    }
+
     public long getRunKey() {
         return runKey;
     }
 
-    public int getTestMethodKey() { return testMethodKey;}
+    public void setRunKey(Long runKey) {
+        this.runKey = runKey;
+    }
 
-    private static TrafficLogService trafficLogService;
+    public void setRunKey(long runKey) {
+        this.runKey = runKey;
+    }
 
-    public static void setTrafficLogService(TrafficLogService trafficLogService) {
-        TrafficLog.trafficLogService = trafficLogService;
+    public int getTestMethodKey() {
+        return testMethodKey;
+    }
+
+    public void setTestMethodKey(int testMethodKey) {
+        this.testMethodKey = testMethodKey;
     }
 
     public void save() {
@@ -151,4 +180,11 @@ public class TrafficLog {
         trafficLogService.save(this);
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

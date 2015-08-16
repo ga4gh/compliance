@@ -68,7 +68,12 @@ public class TrafficLogService {
             log.trace("save to DB for runkey {}", trafficLogMsg.getRunKey());
         } else {
             // no Spring init, so just run local, each run its own LinkedList
-            trafficLogMap.get(trafficLogMsg.getRunKey()).add(trafficLogMsg);
+            long rk = trafficLogMsg.getRunKey();
+            if(!isKnownRunkey(rk)){
+                log.warn("TrafficLog msg has unknown runKey {}, creating new local Map entry", rk);
+                trafficLogMap.put(rk, new LinkedList<TrafficLog>());
+            }
+            trafficLogMap.get(rk).add(trafficLogMsg);
             log.trace("save to static Map for runkey {}", trafficLogMsg.getRunKey());
         }
     }
@@ -179,5 +184,10 @@ public class TrafficLogService {
     public void clearStaticTrafficLog(long runkey) {
         log.debug("clearTrafficLog dropping static activity data for runkey {}", runkey);
         trafficLogMap.remove(runkey);
+    }
+
+    public void clearStaticTrafficLog() {
+        log.debug("clearTrafficLog dropping ALL static activity data");
+        trafficLogMap = new HashMap<>();
     }
 }
