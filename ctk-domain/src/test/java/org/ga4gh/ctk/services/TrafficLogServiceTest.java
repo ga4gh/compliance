@@ -1,11 +1,16 @@
 package org.ga4gh.ctk.services;
-
+import org.apache.logging.log4j.*;
 import org.ga4gh.ctk.domain.*;
+import org.ga4gh.ctk.utility.*;
 import org.junit.*;
+import org.slf4j.Logger;
+import org.slf4j.*;
 
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.*;
+
+
 
 /**
  * Created by Wayne Stidolph on 8/15/2015.
@@ -101,11 +106,31 @@ public class TrafficLogServiceTest {
 
     @Test
     public void testLogTraffic() throws Exception {
+        // attach a custom Appender to the logger, to get the log output
+        // but this is getting a NOP logger
+        Logger logger  = LoggerFactory.getLogger("testLogTraffic");
 
+        // Create a String Appender to capture log output
+        StringAppender appender = StringAppender.createStringAppender("[ HI ] %m");
+        appender.addToLogger(logger.getName(), Level.INFO);
+        appender.start();
+
+        // Log to the string appender
+        logger.error("Test");
+
+        String output = appender.getOutput();
+        assertThat(output).isEqualTo(String.format("[%s] Test", "HI"));
+        appender.removeFromLogger(LogManager.getRootLogger().getName());
     }
 
     @Test
     public void testCreateTestRunKey() throws Exception {
+        long rk = svc.createTestRunKey();
+        assertThat(svc.isKnownRunkey(rk)).isTrue();
+    }
+
+    @Ignore
+    @Test public void testCreatedRunKeyIsUnique() throws Exception {
 
     }
 

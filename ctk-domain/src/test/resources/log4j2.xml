@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- see http://logging.apache.org/log4j/2.x/manual/configuration.html -->
+<Configuration status="INFO">
+
+
+    <!-- levels are TRACE, DEBUG, INFO, WARN, ERROR, FATAL, and OFF in decreasing verbosity-->
+    <Loggers>
+        <Root level="warn">
+        </Root>
+        <Logger name="testLogTraffic" level="info" additivity="false">
+        </Logger>
+    </Loggers>
+</Configuration>
