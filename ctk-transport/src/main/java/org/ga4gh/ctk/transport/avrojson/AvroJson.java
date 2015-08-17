@@ -218,8 +218,9 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
         }
         // track all message types sent/received for simple "test coverage" indication
         String respName = theResp != null ? theResp.getClass().getCanonicalName()  : "null";
+        String reqName = theAvroReq != null? theAvroReq.getClass().getCanonicalName() : "null";
         TrafficLog tlm = trafficLogService.getTrafficLogBuilder()
-                .setClassSent(theAvroReq.getClass().getCanonicalName())
+                .setClassSent(reqName)
                 .setActionType(postOrGet)
                 .setJsonReq(jsonStr)
                 .setClassReceived(respName)
