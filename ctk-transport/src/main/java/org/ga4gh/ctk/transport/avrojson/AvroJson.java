@@ -7,6 +7,7 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.shopobot.util.URL;
 import org.apache.avro.Schema;
 import org.apache.avro.io.DatumWriter;
 import org.apache.avro.specific.SpecificDatumWriter;
@@ -22,7 +23,8 @@ import static org.ga4gh.ctk.transport.RespCode.fromInt;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * <p>Provide Avro/Json communications layer specific to GA4GH and with extensive logging in support of CTK use.</p>
+ * <p>Provide Avro/Json communications layer specific to GA4GH and with extensive logging in
+ * support of CTK use.</p>
  * <p>This class is parameterized on the Avro reQuest (Q) and resPonse (P) type it handles.
  * Each instance handles one interaction, issuing a request and returning the response.</p>
  * <p>This class:<ul>
@@ -59,32 +61,42 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
         messages = HashBasedTable.create();
     }
 
-    final DatumWriter<Q> dw;
-    final Q theAvroReq;
+    private final DatumWriter<Q> dw;
+
+    private final Q theAvroReq;
+
     /**
      * url root to system-under-test; e.g., "http://localhost:8000"
      */
     String urlRoot;
+
     /**
      * url root to live comparison server
      */
     String refRoot;
+
     /**
      * if true, duplicate request to refserver and compare results
      */
     boolean compareToRef = false;
 
     /**
-     * Cause comms to be skipped and NO_COMM_RESP returned when false.
+     * Cause communications to be skipped and NO_COMM_RESP returned when false.
      */
     static public boolean shouldDoComms = true;
 
-    String path;
-    Schema reqSchema;
-    Schema respSchema;
-    String jsonStr;
-    HttpResponse<JsonNode> httpResp;
+    private String path;
+
+    private Schema reqSchema;
+
+    private Schema respSchema;
+
+    private String jsonStr;
+
+    private HttpResponse<JsonNode> httpResp;
+
     private P theResp;
+
     private WireTracker wireTracker;
 
     /**
@@ -106,10 +118,10 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
      * <p>Construct an AvroJson for a particular request/response interaction.</p>
      * <p>The req and resp types parameterize this generic interaction object.</p>
      *
-     * @param req     an instance of the avro *Request method object
-     * @param resp    an instance of the avro *Response method object
-     * @param urlRoot String the server base (often includes a version number)
-     * @param path    String the request target path as identified in the schemas
+     * @param req     an instance of the Avro *Request method object
+     * @param resp    an instance of the Avro *Response method object
+     * @param urlRoot the server URL base
+     * @param path    the request target path
      */
     public AvroJson(Q req, P resp, String urlRoot, String path) {
         this.theAvroReq = req;
@@ -117,22 +129,14 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
         this.dw = new SpecificDatumWriter<>();
         this.wireTracker = null;
 
-        // neither urlRoot nor path should have spaces,
-        // the urlRoot should end with exactly one slash
-        String tsRoot = CharMatcher.WHITESPACE.removeFrom(urlRoot);
-        this.urlRoot = CharMatcher.is('/').trimTrailingFrom(tsRoot) + "/";
-
-        // and that the path does not begin or end with a slash
-        String tsPath = CharMatcher.WHITESPACE.removeFrom(path);
-        this.path = CharMatcher.is('/').trimFrom(tsPath);
-        log.info("create interaction for " + this.toString());
+        setCleanRootUrl(urlRoot, path);
     }
 
     /**
      * <p>Construct an AvroJson for an interaction which requires no request object.</p>
-     * @param resp    an instance of the avro *Response method object
-     * @param urlRoot String the server base (often includes a version number)
-     * @param path    String the request target path as identified in the schemas
+     * @param resp    an instance of the Avro *Response method object
+     * @param urlRoot the server base
+     * @param path    the request target path
      */
     public AvroJson(P resp, String urlRoot, String path) {
         this.theAvroReq = null;
@@ -142,13 +146,7 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
 
         // neither urlRoot nor path should have spaces,
         // the urlRoot should end with exactly one slash
-        String tsRoot = CharMatcher.WHITESPACE.removeFrom(urlRoot);
-        this.urlRoot = CharMatcher.is('/').trimTrailingFrom(tsRoot) + "/";
-
-        // and that the path does not begin or end with a slash
-        String tsPath = CharMatcher.WHITESPACE.removeFrom(path);
-        this.path = CharMatcher.is('/').trimFrom(tsPath);
-        log.info(toString());
+        setCleanRootUrl(urlRoot, path);
     }
 
     /**
@@ -176,6 +174,48 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
     public AvroJson(Q req, P resp, String urlRoot, String path, WireTracker wireTracker) {
         this(req, resp, urlRoot, path);
         this.wireTracker = wireTracker;
+    }
+
+    /**
+     * Clean the root URL and endpoint path and store them.
+     *
+     * @param urlRoot the server base URL
+     * @param path the request/endpoint target path
+     */
+    private void setCleanRootUrl(String urlRoot, String path) {
+        // neither urlRoot nor path should have leading or trailing spaces.
+        this.urlRoot = urlRoot.trim();
+        String tsPath = path.trim();
+
+        // the path does not begin or end with a slash
+        this.path = CharMatcher.is('/').trimFrom(tsPath);
+
+        log.info(toString());
+    }
+
+    /**
+     * Create a new URL (as a string) based on a server root (which may include path components
+     * and query parameters) and a path that's relative to the server root.
+     * <p>For instance, if we have <tt>baseUrl</tt> = <tt>https://locahost:8000/v1.0?param1=foo&param2=bar</tt>
+     * and <tt>path</tt> = "datasets/search", the result should be
+     * <tt>https://locahost:8000/v1.0/datasets/search?param1=foo&param2=bar</tt>.
+     * </p>
+     * @param baseUrl a server root URL
+     * @param path relative path
+     * @return the result of merging the root and path, accounting for path components and query parameters
+     * in baseUrl
+     */
+    private static String makeUrl(String baseUrl, String path) {
+        final URL baseAsUrl = new URL(baseUrl);
+        String baseUrlPathPortion = baseAsUrl.getPath();
+
+        if (!baseUrlPathPortion.endsWith("/")) {
+            baseUrlPathPortion += "/";
+        }
+
+        final URL constructed = new URL(baseAsUrl.toJavaURL());
+        constructed.setPath(baseUrlPathPortion+path);
+        return constructed.toString();
     }
 
     /**
@@ -221,7 +261,7 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
         //jsonBytes = JsonMaker.JacksonToJsonBytes(theAvroReq);
         jsonStr = JsonMaker.GsonToJsonBytes(theAvroReq);
 
-        httpResp = shouldDoComms ? jsonPost(urlRoot + path): NO_COMM_RESP;
+        httpResp = shouldDoComms ? jsonPost(makeUrl(urlRoot, path)): NO_COMM_RESP;
 
         updateTheRespAndLogMessages("POST");
 
@@ -233,7 +273,7 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
         if (httpResp != null && httpResp.getStatus() == HttpStatus.SC_OK) {
             String json = httpResp.getBody().toString();
 
-            theResp = new AvroMaker<>(theResp).makeAvroFromJson(json, urlRoot + path); // URL just for logging
+            theResp = new AvroMaker<>(theResp).makeAvroFromJson(json, makeUrl(urlRoot, path));
         } else {
             theResp = null;
         }
@@ -276,7 +316,7 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
     public P doGetResp(String id, Map<String, Object> queryParams) {
 
         // no request object to build, just GET from the endpoint with route param
-        httpResp = shouldDoComms ? jsonGet(urlRoot + path, id, queryParams) : NO_COMM_RESP;
+        httpResp = shouldDoComms ? jsonGet(makeUrl(urlRoot, path), id, queryParams) : NO_COMM_RESP;
 
         updateTheRespAndLogMessages("GET");
 
@@ -287,7 +327,7 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
      * Do actual post with logging/tracking
      *
      * @param theURL the the uRL
-     * @return the http response (can be null, if Unirest throws exception)
+     * @return the HTTP response (can be null, if Unirest throws exception)
      */
     HttpResponse<JsonNode> jsonPost(String theURL) {
         if (log.isDebugEnabled()) {
@@ -320,7 +360,7 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
 
     HttpResponse<JsonNode> jsonGet(String theUrl, String id, Map<String, Object> queryParams) {
         if (log.isDebugEnabled()) {
-            log.debug("begin jsonGet to " + theUrl + " id=" + id);
+            log.debug("begin jsonGet to " + theUrl + " id = " + id);
         }
         HttpResponse<JsonNode> jsonResponse = null;
 
@@ -335,7 +375,7 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
             shouldDoComms = false;
         }
         if (log.isDebugEnabled()) {
-            log.debug("exit jsonGet to " + theUrl + " id=" + id + " with status "
+            log.debug("exit jsonGet to " + theUrl + " id = " + id + " with status "
                     + jsonResponse != null ? jsonResponse.getStatusText() : "FAILED");
         }
         if (wireTracker != null) {
@@ -350,6 +390,6 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
     public String toString(){
         String reqName = theAvroReq == null ? "null" : theAvroReq.getClass().getSimpleName();
         String respName = theResp == null? "null" : theResp.getClass().getSimpleName();
-        return urlRoot+path + " " + reqName + " " + respName;
+        return makeUrl(urlRoot, path) + " " + reqName + " " + respName;
     }
 }
