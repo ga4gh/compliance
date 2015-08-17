@@ -6,7 +6,6 @@ import org.ga4gh.ctk.utility.*;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.*;
 
-import java.io.*;
 import java.util.*;
 
 /**
@@ -20,10 +19,41 @@ public class DomainInformationService {
 
     private static boolean initialized = false;
 
+    /**
+     * Gets service with information extracted from file identified by
+     * 'ctk.domaintypesfile' property.
+     *
+     * @return the service
+     */
     public static DomainInformationService getService() {
         if (!initialized) {
             log.debug("getService finds service un-initialized");
-            initialized = me.readInDomainTypes();
+            String fileContents = me.getContentsFromProperty();
+            initialized = me.extractDomainTypes(fileContents);
+        }
+        return me;
+    }
+
+    /**
+     * Gets service with information extracted from the JSON string
+     * passed as argument. String is JSON array of strings, each string
+     * is a domain class type:
+     * <pre>
+     *     [
+             "org\\ga4gh\\methods\\GAException.java",
+             "org\\ga4gh\\methods\\ListReferenceBasesRequest.java",
+             "org\\ga4gh\\methods\\ListReferenceBasesResponse.java",
+             ...
+           ]
+     * </pre>
+     *
+     * @param fileContents the file contents (as would be in the domain types file)
+     * @return the service
+     */
+    public static DomainInformationService getService(String fileContents) {
+        if (!initialized) {
+            log.debug("getService finds service un-initialized");
+            initialized = me.extractDomainTypes(fileContents);
         }
         return me;
     }
@@ -33,6 +63,14 @@ public class DomainInformationService {
     private static List<String> methods = new LinkedList<>();
     private static List<String> dataObjTypes = new LinkedList<>();
     private static List<String> otherTypes = new LinkedList<>();
+
+    public void clearTypes() {
+        requestTypes = new LinkedList<>();
+        responseTypes = new LinkedList<>();
+        methods = new LinkedList<>();
+        dataObjTypes = new LinkedList<>();
+        otherTypes = new LinkedList<>();
+    }
 
     public List<String> getRequestTypes() {
         return requestTypes;
@@ -64,27 +102,33 @@ public class DomainInformationService {
     public String ctk_domaintypesfile;
 
     /**
-     * Read in domain types file and parse to extract generated data
-     * type (messages, types, methods). Types not fitting the convention
-     * are considered "data object" types.
-     * <p>
-     * The domain types file is auto-generated during build by the file-list
-     * maven plugin , but the file can be hand-edited if you want to omit
-     * or add coverage tracking for some types.
+     * Fetch the contents of the file identified by 'ctk.domaintypesfile'.
+     *
+     * @return the string
      */
-    private boolean readInDomainTypes() {
+    String getContentsFromProperty(){
         if (ctk_domaintypesfile == null) {
-            ctk_domaintypesfile = Utils.getPropEnvValue("ctk.domaintypesfile");
-        }
-        File adf = new File(ctk_domaintypesfile);
-        if (!adf.exists()) {
-            log.error("Missing domain information - couldn't find domain data types file. Looked for ctk.domaintypesfile of [{}]", ctk_domaintypesfile);
-            return false;
+            // in case we run without Spring ijection somehow, get directly from env
+            Utils.getPropEnvValue("ctk.domaintypesfile");
         }
         log.debug("enter readInDomainTypes looking for " + ctk_domaintypesfile
                 + " working dir is " + System.getProperty("user.dir"));
 
         String fileContents = Utils.readFile(ctk_domaintypesfile);
+        return fileContents;
+    }
+
+    /**
+     * Read in domain types file and parse to extract generated data
+     * type (messages, types, methods). Types not fitting the convention
+     * are considered "data object" types.
+     * <p>
+     * The domain types file content is auto-generated during build by the file-list
+     * maven plugin , but the file can be hand-edited if you want to omit
+     * or add coverage tracking for some types.
+     */
+    public boolean extractDomainTypes(String fileContents) {
+
         Gson gson = new Gson();
         String[] domaintypeStrings = gson.fromJson(fileContents, String[].class);
 
@@ -155,7 +199,7 @@ public class DomainInformationService {
 
         Set<String> activeEndpoints = new HashSet<>();
         activeEndpoints.addAll(endpoints.values());
-        activeEndpoints.remove(""); // ignore endpoints defined with "" value
+        activeEndpoints.remove(""); // "" value signals reserved-but-not-used
         return Utils.asSortedList(activeEndpoints);
     }
 
