@@ -15,7 +15,7 @@ import javax.persistence.*;
  *     <li>actionType: HTTP verb used</li>
  *     <li>jsonReq: the JSON stringbody sent to the target server</li>
  *     <li>classReceived: the IDL-generated class into which the response was deserialized</li>
- *     <li>the endpoint on the target server (after the URL root)</li>>
+ *     <li>the endpoint on the target server (after the URL root)</li>
  * </ul>
  * Created by Wayne Stidolph on 7/24/2015.
  */
