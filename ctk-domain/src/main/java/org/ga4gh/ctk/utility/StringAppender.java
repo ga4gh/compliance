@@ -8,9 +8,14 @@ import org.apache.logging.log4j.core.layout.*;
 
 import java.io.*;
 /**
+ * Class not currently used in CTK.
+ *
+ * Attach to loggers to fetch results in string,
+ * intended for testing of log-output.
  * @author andrew.flower
  * @see <a href=http://andrew-flower.com/blog/Create_Custom_Log4j_Plugins#Testing+the+Converter>author's blog post</a>
  */
+@Deprecated
 public class StringAppender extends AbstractOutputStreamAppender<StringAppender.StringOutputStreamManager> {
     static LoggerContext context = (LoggerContext) LogManager.getContext(false);
     static Configuration configuration = context.getConfiguration();
