@@ -24,7 +24,7 @@
  *     file indicating mapping from CTK target methods to target server endpoint URLS
  *     (normally in lib/defaulttransport.properties); file is normal properties with
  *     empty values to indicate a reserved by unused endpoint</li>
- *     <li>ctk.domaindatatypesfile: control location and/or name of the domain data types file
+ *     <li>ctk.domaintypesfile: control location and/or name of the domain data types file
  *     (normally 'avro-types.json'); file sis simple JSON array of fully-qulaified data type names</li>
  * </ul>
  * Created by Wayne Stidolph on 8/5/2015.
