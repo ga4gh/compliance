@@ -4,7 +4,7 @@ This covers the mechanics of adding tests to the `cts-java` module.
 
 ## Prerequisites
 - A reachable GA4GH Server; the CTK framework assumes this is available at the URL provided by the `ctk.tgt.urlRoot`
-property (e.g., `http://192.168.2.115:8000/v0.5.1/`)
+property (e.g., `http://192.168.2.115:8000`)
 - The CTK source installed (see [Installing The CTK](InstallingTheCTK.md))
 - You're familiar with the [CTK Test Architecture and Conventions](TestArchAndConventions.md)
 

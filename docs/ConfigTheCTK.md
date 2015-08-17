@@ -1,8 +1,10 @@
 # Configuring the CTK
 
-The CTK is controlled through properties to set up the target server information, and to control the test finding/selection mechanism. Logging is controlled by a standard `log4j2.xml` file.
+The CTK is controlled through properties to set up the target server information, and to control the test
+finding/selection mechanism. Logging is controlled by a standard `log4j2.xml` file.  You generally have no
+need to edit this file.
 
-You configure the CTK via the properties used by the:
+You can configure the CTK via the properties used by the:
 
 - `transport` module to control target server URLS (see `/transport/src/main/resources/defaulttransport.properties/`
 - `ctk-cli` module to control:
@@ -47,7 +49,7 @@ Note that many tests reinitialize the URLMAPPER in a @BeforeClass, so you may se
 Properties can be set on the command line, from a properties file (in various locations), or from environment variables. The mechanism is provided by Spring, so all the alternatives described in Spring documentation on [Externalized Configuration](http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html) are available. The important mechanisms for the CTS, in order of descending priority, are:
 
 1. Command line arguments when running the `ctk-cli` jar from the command line: anything starting with "--" becomes a system property, so `--ctk.testpackage=...` will set the property "`ctk.testpackage`" (this works with the bash script, as
-	- `./ctk --ctk.tgt.urlRoot=http://localhost:8000/v0.5.1"` or,
+	- `./ctk --ctk.tgt.urlRoot=http://localhost:8000` or,
 	- from a Java launch line as `java -jar ... --ctk.tgt.urlRoot=...`
 1. Operating System/shell environment variables
 1. Application properties files outside of the packaged jar (`application.properties` and YAML variants); the highest priority would be a `/config` subdir of the current directory, and next would be in the current directory when the test is launched. (The Spring documentation describes other locations, and even ways to change the properties files names if you want.) 
@@ -63,7 +65,7 @@ xxx
 
 To set properties as a command line variable (the highest priority) for a Maven invocation from a command line, just use the normal Maven invocation model of `-Dprop_name=prop_value` before the goal name, like this:
 
-    mvn -Dctk.tgt.urlRoot=http://localhost:8000/v0.5.1/ install 
+    mvn -Dctk.tgt.urlRoot=http://localhost:8000 install
 
 ### Configuring a Command Line invocation
 From the directory where the executable jar is, you can edit `application.properties`. The zip distribution has this file pre-extracted, but if you don't already have it, just extract it from the executable jar like this

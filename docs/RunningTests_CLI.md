@@ -18,11 +18,11 @@ When the tests are done, the reports will be in the `target/` directory. There a
 
 so, for example,
 
-    java -jar ctk-cli-0.5.1-SNAPSHOT.jar --ctk.tgt.urlRoot=http://myserver:8000/v0.5.1
+    java -jar ctk-cli-0.5.1-SNAPSHOT.jar --ctk.tgt.urlRoot=http://myserver:8000
 
 Tip - if you're regularly testing against the same server, you can set an operating system environment variable "`ctk_tgt_urlRoot`" (or "`ctk.tgt.urlRoot`" if your environment prefers that) to avoid having to re-enter that URL all the time on the command line. How you set environment variables varies with your shell, but a common example would be to add to your ~/.bashrc a line like"
 
-    export ctk_tgt_urlRoot='http://myserver:8000/v0.5.1/'
+    export ctk_tgt_urlRoot='http://myserver:8000'
 
 We'll stop adding that `ctk.tgt.urlRoot` property to the example command lines now.
 
@@ -52,7 +52,7 @@ and see that you can run with just:
 
 This will use defaults and environment variables and property files. If you want to override some properties, add the property and new value to the command line:
 
-    ./ctk --ctk.tgt.urRoot=http://myserver:8000/v0.5.1/
+    ./ctk --ctk.tgt.urRoot=http://myserver:8000
 
 Just as when running using the 'java' command, there will be some console output, and you can check in `target/report` for details; if you have a browser, check out `target/report/html/index.html`
 
@@ -111,7 +111,7 @@ You can see and set these in the `application.properties` file. Properties can a
 
 NOTE: in a 'bash' environment, you need to replace the '.' in variable names with underscore '_' when you set the variables in the environment; so, do something like:
 
-`export ctk_tgt_urlRoot='http://localhost:8000/v0.5.1/'`
+`export ctk_tgt_urlRoot='http://localhost:8000'`
 
 at a command line or in your .bashrc or as appropriate for your system.
 
@@ -129,7 +129,7 @@ If you want to alter which tests get run, you can do that on the command line
 
 ```
 
-    ~/temp>java -jar ctk-cli-0.5.1-SNAPSHOT.jar --ctk.matchstr=.*ReadMethodsEndpointAliveIT.* --ctk.tgt.urlRoot=http://192.168.2.115:8000/v0.5.1/
+    ~/temp>java -jar ctk-cli-0.5.1-SNAPSHOT.jar --ctk.matchstr=.*ReadMethodsEndpointAliveIT.* --ctk.tgt.urlRoot=http://192.168.2.115:8000/
     [TESTLOG] 4 failed, 6 passed, 0 skipped, 1068 ms
     [TESTLOG] FAIL: [0] TWO_GOOD, NOT_IMPLEMENTED (multipleReadGroupsNotSupported)(org.ga4gh.cts.api.reads.ReadMethodsEndpointAliveIT):
     ...

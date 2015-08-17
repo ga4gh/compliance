@@ -25,9 +25,7 @@ Both plugins can run the same tests, so we use our CTK naming convention to spli
 
 surefire plugin as the test runner, so the main CTK Application isn't involved. Still, stdout and the default TESTLOG should be available in your terminal (this may vary if you elect to run Maven under an IDE which itself manages I/O routing).
 
-
-
-**Most important property** to check is: `ctk.tgt.urlRoot=http://localhost:8000/v0.5.1`
+**The most important property** to check is: `ctk.tgt.urlRoot=http://localhost:8000`
 
 To alter logging behavior: modify `log4j2.xml` in source/test for a build/run launch in your IDE or in Maven, or modify `lib/log4j2.xml` for a command-line launch.
 

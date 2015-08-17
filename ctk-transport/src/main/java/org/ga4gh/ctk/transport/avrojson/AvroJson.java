@@ -62,7 +62,7 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
     final DatumWriter<Q> dw;
     final Q theAvroReq;
     /**
-     * url root to system-under-test; e.g., "http://localhost:8000/v0.5.1/"
+     * url root to system-under-test; e.g., "http://localhost:8000"
      */
     String urlRoot;
     /**

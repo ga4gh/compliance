@@ -8,13 +8,13 @@ import java.util.Map;
 public interface URLMAPPING {
 
     /**
-     * </p>The urlRoot is a string such as http://localhost:8000/v0.5.1<p>
+     * </p>The urlRoot is a string such as http://localhost:8000<p>
      * @return the URL to be used to reach the target server
      */
     String getUrlRoot();
 
     /**
-     * </p>The urlRoot is a string such as http://localhost:8000/v0.5.1<p>
+     * </p>The urlRoot is a string such as http://localhost:8000<p>
      * @param urlRoot URL to be used to reach the target server
      */
     void setUrlRoot(String urlRoot);
