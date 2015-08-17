@@ -3,7 +3,7 @@
  * <p>These services are used by tests to get information
  * about test activity and about the underlying ctk-schema-driven domain.</p>
  * <ul>
- *     <li>TestActivityDataServcie: collect and supply information about the
+ *     <li>TrafficLogService: collect and supply information about the
  *     activity of the tests themselves (e.g., TrafficLog summaries)</li>
  *     <l>DomainInformationService: collect and supply information about the
  *     underlying domain (e.g., names of Request objects or defined endpoints.
@@ -24,7 +24,7 @@
  *     file indicating mapping from CTK target methods to target server endpoint URLS
  *     (normally in lib/defaulttransport.properties); file is normal properties with
  *     empty values to indicate a reserved by unused endpoint</li>
- *     <li>ctk.avrodatafile: control location and/or name of the domain data types file
+ *     <li>ctk.domaindatatypesfile: control location and/or name of the domain data types file
  *     (normally 'avro-types.json'); file sis simple JSON array of fully-qulaified data type names</li>
  * </ul>
  * Created by Wayne Stidolph on 8/5/2015.
