@@ -1,10 +1,15 @@
-package com.shopobot.util;
+package org.ga4gh.ctk.transport;
 
 import junit.framework.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ * Tests for class {@link URL}.
+ *
+ * @author <a href="https://github.com/juliuss">julius schorzman</a>
+ */
 public class URLTest {
 
   @Test

@@ -1,4 +1,4 @@
-package com.shopobot.util;
+package org.ga4gh.ctk.transport;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -9,7 +9,9 @@ import java.nio.charset.UnsupportedCharsetException;
 
 /**
  * This class is used to encode a string using the format required by <a
- * href="http://tools.ietf.org/html/rfc3986">RFC 3986</a>
+ * href="http://tools.ietf.org/html/rfc3986">RFC 3986</a>.
+ *
+ * @author <a href="https://github.com/juliuss">julius schorzman</a>
  */
 public class FragmentEncoder {
 

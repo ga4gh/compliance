@@ -7,7 +7,6 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import com.shopobot.util.URL;
 import org.apache.avro.Schema;
 import org.apache.avro.io.DatumWriter;
 import org.apache.avro.specific.SpecificDatumWriter;
@@ -15,6 +14,7 @@ import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.http.HttpStatus;
 import org.apache.http.HttpVersion;
 import org.apache.http.message.BasicStatusLine;
+import org.ga4gh.ctk.transport.URL;
 import org.ga4gh.ctk.transport.WireTracker;
 
 import java.util.Map;
