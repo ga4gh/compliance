@@ -14,12 +14,12 @@ import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.http.HttpStatus;
 import org.apache.http.HttpVersion;
 import org.apache.http.message.BasicStatusLine;
-import org.ga4gh.ctk.transport.URL;
 import org.ga4gh.ctk.transport.WireTracker;
 
 import java.util.Map;
 
 import static org.ga4gh.ctk.transport.RespCode.fromInt;
+import static org.ga4gh.ctk.transport.TransportUtils.makeUrl;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -193,30 +193,6 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
         log.info(toString());
     }
 
-    /**
-     * Create a new URL (as a string) based on a server root (which may include path components
-     * and query parameters) and a path that's relative to the server root.
-     * <p>For instance, if we have <tt>baseUrl</tt> = <tt>https://locahost:8000/v1.0?param1=foo&param2=bar</tt>
-     * and <tt>path</tt> = "datasets/search", the result should be
-     * <tt>https://locahost:8000/v1.0/datasets/search?param1=foo&param2=bar</tt>.
-     * </p>
-     * @param baseUrl a server root URL
-     * @param path relative path
-     * @return the result of merging the root and path, accounting for path components and query parameters
-     * in baseUrl
-     */
-    private static String makeUrl(String baseUrl, String path) {
-        final URL baseAsUrl = new URL(baseUrl);
-        String baseUrlPathPortion = baseAsUrl.getPath();
-
-        if (!baseUrlPathPortion.endsWith("/")) {
-            baseUrlPathPortion += "/";
-        }
-
-        final URL constructed = new URL(baseAsUrl.toJavaURL());
-        constructed.setPath(baseUrlPathPortion+path);
-        return constructed.toString();
-    }
 
     /**
      * <p>Access the message-traffic recording Table.</p>
