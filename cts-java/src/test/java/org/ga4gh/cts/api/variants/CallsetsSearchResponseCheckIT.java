@@ -6,6 +6,7 @@ import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.apache.avro.AvroRemoteException;
 import org.ga4gh.ctk.CtkLogs;
+import org.ga4gh.ctk.transport.TransportUtils;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
@@ -38,7 +39,7 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
     private static Client client = new Client(urls);
 
     private static String makeUrl(String partialUrl) {
-        return urls.getUrlRoot() + "/" + partialUrl;
+        return TransportUtils.makeUrl(urls.getUrlRoot(), partialUrl);
     }
 
     /**
@@ -114,7 +115,7 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
      * Test search routing and the handling of bad data.
      *
      * @param fullUrl the URL to test (supplied by {@link #allSearchUrls()}
-     * @throws UnirestException is there's a communication problem
+     * @throws UnirestException if there's a communication problem
      */
     @Test
     @Parameters(method = "allSearchUrls")

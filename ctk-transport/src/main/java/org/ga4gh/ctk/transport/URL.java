@@ -1,4 +1,4 @@
-package com.shopobot.util;
+package org.ga4gh.ctk.transport;
 
 import java.io.UnsupportedEncodingException;
 import java.net.*;
