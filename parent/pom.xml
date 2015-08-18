@@ -47,7 +47,6 @@
         <httpclient.version>4.4.1</httpclient.version>
         <httpmime.version>4.4.1</httpmime.version>
 
-        <jackson2.version>2.5.3</jackson2.version>
         <json-patch.version>1.9</json-patch.version>
         <jsonassert.version>1.2.3</jsonassert.version>
         <junit.version>4.12</junit.version>
@@ -181,24 +180,6 @@
                 <version>${jsonassert.version}</version>
                 <scope>compile</scope>
             </dependency>
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.jaxrs</groupId>
-                <artifactId>jackson-jaxrs-json-provider</artifactId>
-                <version>${jackson2.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.dataformat</groupId>
-                <artifactId>jackson-dataformat-avro</artifactId>
-                <version>${jackson2.version}</version>
-            </dependency>
-
-            <!-- yanl support for log4j2 config .. I wonder if snakeyaml would handle this? -->
-            <!--            <dependency>
-                            <groupId>com.fasterxml.jackson.dataformat</groupId>
-                            <artifactId>jackson-dataformat-yaml</artifactId>
-                            <version>2.5.0</version>
-                        </dependency>-->
 
             <!-- the best general assertions library :) -->
             <dependency>

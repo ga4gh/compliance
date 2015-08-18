@@ -99,9 +99,7 @@
             <version>${guava.version}</version>
         </dependency>
         <dependency>
-            <!-- provide the google JSON support, easier than
-            Jackson for handling the 'normal' JSON to Avro class
-            deserialization -->
+            <!-- for handling the 'normal' JSON to Avro class deserialization -->
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>${gson.version}</version>
