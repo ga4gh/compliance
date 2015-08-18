@@ -263,11 +263,11 @@
                             <rules>
                                 <requireMavenVersion>
                                     <version>[3.3.3,)</version>
-                                    <message>*** This project requires Maven 3.3.3 or later. ***</message>
+                                    <message>*** This project requires Maven 3.3.3 or later. This is version ${maven.version}. ***</message>
                                 </requireMavenVersion>
                                 <requireJavaVersion>
                                     <version>[1.8,)</version>
-                                    <message>*** This project requires JDK 1.8/J2SE 8 or later. ***</message>
+                                    <message>*** This project requires JDK 1.8 (J2SE 8) or later. This is version ${java.version}. }***</message>
                                 </requireJavaVersion>
                             </rules>
                         </configuration>
