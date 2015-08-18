@@ -39,7 +39,6 @@
         <httpclient.version>4.4.1</httpclient.version>
         <httpmime.version>4.4.1</httpmime.version>
 
-        <jackson2.version>2.5.3</jackson2.version>
         <json-patch.version>1.9</json-patch.version>
         <jsonassert.version>1.2.3</jsonassert.version>
         <junit.version>4.12</junit.version>
@@ -139,9 +138,7 @@
             <version>${guava.version}</version>
         </dependency>
         <dependency>
-            <!-- provide the google JSON support, easier than
-            Jackson for handling the 'normal' JSON to Avro class
-            deserialization -->
+            <!-- for handling the 'normal' JSON to Avro class deserialization -->
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>${gson.version}</version>
