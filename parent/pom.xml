@@ -248,6 +248,34 @@
     </dependencyManagement>
 
     <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <id>enforce-versions</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>[3.3.3,)</version>
+                                    <message>*** This project requires Maven 3.3.3 or later. ***</message>
+                                </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <version>[1.8,)</version>
+                                    <message>*** This project requires JDK 1.8/J2SE 8 or later. ***</message>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
         <pluginManagement>
             <plugins>
                 <plugin>
