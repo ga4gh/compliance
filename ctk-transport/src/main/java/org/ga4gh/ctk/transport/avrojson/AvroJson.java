@@ -185,12 +185,13 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
     private void setCleanRootUrl(String urlRoot, String path) {
         // neither urlRoot nor path should have leading or trailing spaces.
         this.urlRoot = urlRoot.trim();
-        String tsPath = path.trim();
 
         // the path does not begin or end with a slash
+        String tsPath = path.trim();
         this.path = CharMatcher.is('/').trimFrom(tsPath);
 
-        log.info(toString());
+        log.info("set urlRoot = " + this.urlRoot + " path = " + this.path + " merged = " +
+                         makeUrl(this.urlRoot, this.path));
     }
 
 
@@ -355,7 +356,8 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
                     + jsonResponse != null ? jsonResponse.getStatusText() : "FAILED");
         }
         if (wireTracker != null) {
-            wireTracker.theUrl = theUrl + "/ " + id;
+            // value below is for tracing/display only; it's not meant to be a valid URL
+            wireTracker.theUrl = theUrl + " / " + id;
             wireTracker.bodySent = "";
             wireTracker.bodyReceived = (jsonResponse != null? jsonResponse.getBody().toString(): null);
             wireTracker.setResponseStatus(fromInt(jsonResponse != null ? jsonResponse.getStatus() : 0));
