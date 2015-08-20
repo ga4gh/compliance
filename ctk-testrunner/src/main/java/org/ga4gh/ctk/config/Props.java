@@ -1,11 +1,12 @@
 package org.ga4gh.ctk.config;
 
-import lombok.*;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.*;
-import org.springframework.context.annotation.*;
-import org.springframework.context.support.*;
-import org.springframework.stereotype.*;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.stereotype.Component;
 
 /**
  * <p>Access to runtime environment properties.</p>
@@ -98,6 +99,8 @@ public class Props {
     @Value("${ctk.reporttitle}")
     public String ctk_report_title;
 
+    @Value("${ctk.tgt.dataset_id}")
+    public String ctk_tgt_dataset_id;
 
     /* logging control (name of the test/traffic logs) not yet working */
     /*
