@@ -130,7 +130,7 @@ So you end up with:
 
 Advanced tip: if you want to attach a debugger to the command-line CTK, use:
 
-    java -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=8000,suspend=n \
+    java -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=5005,suspend=n \
          -jar ctk-cli-0.5.1-SNAPSHOT.jar
 
 Altering the run

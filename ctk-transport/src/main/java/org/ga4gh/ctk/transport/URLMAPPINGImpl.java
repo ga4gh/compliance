@@ -91,7 +91,7 @@ public class URLMAPPINGImpl implements URLMAPPING {
      * <li>a properties file of that name on the classpath</li>
      * <li>a properties file of that name from the file system</li>
      * <li>the operating system environment variables ("ctk.tgt.*)</li>
-     * <li>the java system properties (e.g., command line -D...) of "ctk.tgt.*"</li>
+     * <li>the Java system properties (e.g., command line -D...) of "ctk.tgt.*"</li>
      * </ul>
      * If the resName is blank then the file/resource sought is "defaulttransport.properties"
      * If the resName is given then the default properties file is not loaded at all.
