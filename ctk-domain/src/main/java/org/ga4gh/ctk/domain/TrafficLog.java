@@ -30,15 +30,16 @@ public class TrafficLog {
     private Long runKey;
     @Column
     private int testMethodKey;
-    @Column
+    @Column (nullable = true)
     private String classSent;
-    @Column
+    @Column(nullable = true)
     private String actionType;
-    @Column
+    @Lob
+    @Column(length=2048, nullable=true)
     private String jsonReq; // as sent to server
-    @Column
-    private String classReceived;
-    @Column
+    @Column (nullable = true)
+    String classReceived;
+    @Column(nullable = true)
     private String endpoint;
     @Column(nullable = true)
     private String idParam;

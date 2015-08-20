@@ -45,6 +45,7 @@ public class ReadGroupSetsGetByIdIT {
             assertThat(fromSearch).isNotNull();
             final String searchReadGroupSetId = fromSearch.getId();
             final ReadGroupSet fromGet = client.reads.getReadGroupSet(searchReadGroupSetId);
+            assertThat(fromGet).isNotNull();
             assertThat(fromGet).isEqualTo(fromSearch);
         }
     }

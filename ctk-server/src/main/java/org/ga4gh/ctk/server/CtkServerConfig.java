@@ -1,7 +1,6 @@
 package org.ga4gh.ctk.server;
 
 import org.springframework.context.annotation.*;
-import org.springframework.data.jpa.repository.config.*;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.resource.*;
 
@@ -13,7 +12,7 @@ import org.springframework.web.servlet.resource.*;
  */
 @Configuration
 @EnableWebMvc
-@EnableJpaRepositories(basePackages="org.ga4gh.ctk.domain")
+//@EnableJpaRepositories(basePackages="org.ga4gh.ctk.domain")
 @ComponentScan("org.ga4gh.ctk")
 public class CtkServerConfig extends WebMvcConfigurerAdapter{
 

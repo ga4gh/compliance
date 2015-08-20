@@ -64,7 +64,7 @@ public class Utils {
 
         possVal=System.getenv(key);
         if (possVal != null) {
-            log.debug("no Property {}but found in Environment as {}", key, possVal);
+            log.debug("no Property {} but found in Environment as {}", key, possVal);
             return possVal;
         }
         log.warn("no value found for {} in Properties nor Environment", key);
