@@ -85,20 +85,18 @@ public class AntExecutor {
         this.props = props;
     }
 
-
     /**
      * To execute the default target specified in the Ant antRunTests.xml file
-     *
      */
     public boolean executeAntTask() {
-        return
-                executeAntTask( // use the properties and defaults
-                        props.ctk_testjar,
-                        props.ctk_matchstr,
-                        URLMAPPING.getInstance(),
-                        "testresults/target/",
-                        null
-                    );
+        // use the properties and defaults
+        return executeAntTask(props.ctk_testjar,
+                              props.ctk_matchstr,
+                              URLMAPPING.getInstance(),
+                              props.ctk_tgt_dataset_id,
+                              "testresults/target/",
+                              null
+                             );
     }
 
     /**
@@ -106,7 +104,9 @@ public class AntExecutor {
      *
      * @param testjar tests jar to unpack/run in Ant
      */
-    public boolean executeAntTask(String testjar, String matchstr, URLMAPPING urls, String toDir, BuildListener theBoss) {
+    public boolean executeAntTask(String testjar, String matchstr, URLMAPPING urls,
+                                  String datasetId,
+                                  String toDir, BuildListener theBoss) {
 
         log.trace("passed-in urls has " + urls.getEndpoints());
         log.info("passed-in urls.getUrlRoot " + urls.getUrlRoot());
@@ -125,8 +125,11 @@ public class AntExecutor {
             project.setUserProperty("ctk.testjar", testjar);
             project.setUserProperty("ctk.matchstr", matchstr);
             project.setUserProperty("ctk.reporttitle", expandedReportTitle);
+            project.setUserProperty("ctk.testjar", testjar);
+            project.setUserProperty("ctk.tgt.dataset_id", datasetId);
             project.setUserProperty("ctk.todir", toDir);
             project.addBuildListener(antExecListener);
+
             // if there's an interested listener, hook them up
             if (theBoss != null) {
                 project.addBuildListener(theBoss);
@@ -162,11 +165,13 @@ public class AntExecutor {
             // and thereby use the passed-in values.
             Properties sysprops = new Properties(System.getProperties()); // this one we'll alter
             sysprops.putAll(urls.getEndpoints());
+            sysprops.put("ctk.tgt.dataset_id", datasetId);
             System.setProperties(sysprops);
 
             log.debug("About to run ant, sysprop ctk.tgt.urlRoot " + System.getProperty("ctk.tgt.urlRoot"));
+            log.debug("  ctk.tgt.dataset_id = " + System.getProperty("ctk.tgt.dataset_id"));
             project.executeTarget(targetToExecute);
-            success = true;// well, we got a good launch at least!
+            success = true; // well, we got a good launch at least!
 
             System.setProperties(copySysProp); // restore the system
             log.debug("Done with ant, restored system props, ctk.tgt.urlRoot "
@@ -192,7 +197,7 @@ public class AntExecutor {
     /**
      * Logger to log output generated while executing ant script in console
      *
-     * @return
+     * @return the logger
      */
     private DefaultLogger getConsoleLogger() {
 

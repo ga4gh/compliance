@@ -8,7 +8,7 @@
 Modify the behavior under Maven using:
 - properties set in the `cts-java` Maven `pom.xml`, or
 - on the command line using `mvn -D<property>=<value>`, or
-- `application.properties` to alter which tests are run by default (change `cts.matchstr`),
+- `application.properties` to alter which tests are run by default (change `ctk.matchstr`),
 - `defaulttransport.properties` to alter server endpoints
 
 # Introduction

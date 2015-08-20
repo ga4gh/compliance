@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class DatasetIdPropertyIT {
 
-    private static final String PROP_NAME = "cfg.tgt.dataset_id";
+    private static final String PROP_NAME = "ctk.tgt.dataset_id";
 
     /**
      * Check that {@link TestData#getDatasetId()} returns the default dataset ID when
@@ -32,7 +32,7 @@ public class DatasetIdPropertyIT {
             if (originalValue == null) {
                 System.clearProperty(PROP_NAME);
             } else {
-                System.setProperty("cfg.tgt.dataset_id", originalValue);
+                System.setProperty(PROP_NAME, originalValue);
             }
         }
     }
@@ -58,7 +58,7 @@ public class DatasetIdPropertyIT {
             if (originalValue == null) {
                 System.clearProperty(PROP_NAME);
             } else {
-                System.setProperty("cfg.tgt.dataset_id", originalValue);
+                System.setProperty(PROP_NAME, originalValue);
             }
         }
     }

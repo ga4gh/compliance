@@ -36,7 +36,7 @@ if you have a browser, check out `target/report/html/index.html`.
 #### Tips
 If you want to attach a debugger to the command-line CTK, use:
 
-    java -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=8000,suspend=n \
+    java -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=5005,suspend=n \
          -jar ctk-cli-0.5.1-SNAPSHOT.jar
 
 For help on using the 'java' command refer to your java vendor's documentation or the help provided with your installation (e.g., `man java` or `java -h`)
