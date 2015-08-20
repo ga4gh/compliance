@@ -15,8 +15,7 @@ import static org.assertj.core.api.Assertions.*;
 public class PropSetIT {
 
     @Test
-    @Parameters({ // properties ecplicitly passed in via AntExecutor
-    "ant.file",
+    @Parameters({ // ctk.*, cts.* properties ecplicitly passed in via AntExecutor
     "ctk.testjar",
     "ctk.testclassroots",
     "ctk.matchstr",

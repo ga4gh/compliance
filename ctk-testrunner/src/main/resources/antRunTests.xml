@@ -1,4 +1,5 @@
-<project default="reports">
+<project default="reports"
+         xmlns:if="ant:if" xmlns:unless="ant:unless">
     <description>This runs tests for the GA4GH CTK</description>
     <!-- Define the classpath which includes the junit.jar and the classes after compiling-->
     <target name="diagnostics" description="diagnostics">
@@ -32,22 +33,34 @@
     <path id="packedup-tests-jar.path" location="${ctk.todir}/lib/packedup-tests.jar" />
 
     <target name="test-if-classpath-ok">
-        <available classname="org.ga4gh.ctk.testrunner.TestExecListener" property="tel.Present"/>
-        <echo level="debug">Ant classpath includes org.ga4gh.ctk.TestExecListener? ${tel.Present}</echo>
+        <!-- we pick a sample class which should be visible; if it's not, the tests won't run
+             and the AntExecListener log will show this isn't here, which signals it's a classpath issue -->
+        <available classname="org.ga4gh.ctk.TestExecListener" property="tel.Present"/>
+        <echo level="error" unless:true="${tel.Present}"
+              message="WILL SKIP ALL TESTS due to junit classpath problem, can't find example class TestExecListener"/>
     </target>
 
-    <target name="tests" if="tel.Present" depends="test-if-classpath-ok, make-directories, make-test-jar">
-        <junit printsummary="on" fork="true" filtertrace="on"
+    <target name="tests" if:true="tel.Present" depends="test-if-classpath-ok, make-directories, make-test-jar">
+        <junit printsummary="on" fork="off" filtertrace="on"
                haltonfailure="false" showoutput="false"
                enableTestListenerEvents="false">
-            <!-- the 'ctk.runkey' prop lets tests see persisted data from this same run -->
-            <!-- see, e.g., the zzCheckCoverage test class -->
+            <!-- map any properties on to the java Syste,.getProperties() for the test classes -->
             <syspropertyset>
                 <propertyref prefix="ctk"/>
                 <propertyref prefix="cts"/>
             </syspropertyset>
 
-            <classpath location="${ctk.todir}/lib/packedup-tests.jar"/>
+            <!-- "When you specify a nested <classpath> in Ant,
+                 Ant creates a new class loader that uses the path you have specified.
+                 It then tries to load additional classes from this classloader." : Apache Ant FAQ
+                 So, since we need to set a classpath to see the new packedup-tests.jar,
+                 we need to bolt on the parent classloader (java class path). Note that the
+                 parent loader has to be the Spring loader so it can dig out the nested jars
+                 of the maven modules (ctk-testrunner, etc). -->
+            <classpath>
+                <pathelement location="${ctk.todir}/lib/packedup-tests.jar"/>
+                <pathelement path="${java.class.path}"/>
+            </classpath>
 
             <batchtest fork="off" skipNonTests="true" todir="${ctk.todir}">
                 <zipfileset src="${ctk.todir}/lib/packedup-tests.jar" includes="${ctk.matchstr}"
@@ -56,8 +69,7 @@
             <formatter type="xml"/>
             <formatter type="brief"/>
             <!-- this "formatter" just bridges junit events to the CTK log -->
-            <!-- this class isn't on the classpath?? -->
-            <formatter classname="org.ga4gh.ctk.testrunner.TestExecListener"/>
+            <formatter classname="org.ga4gh.ctk.TestExecListener"/>
         </junit>
     </target>
 
@@ -73,7 +85,6 @@
         <echoproperties>
             <propertyset>
                 <propertyref prefix="user.dir"/>
-                <propertyref prefix="ctk."/>
                 <propertyref prefix="ctk."/>
                 <propertyref prefix="cts."/>
             </propertyset>
