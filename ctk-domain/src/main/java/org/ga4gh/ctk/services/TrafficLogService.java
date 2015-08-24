@@ -15,7 +15,7 @@ import java.util.stream.*;
  * test runner. This leads to an unfortunate "if repo then ... else ... " structure
  * in many methods, but this seems faster/easier than spinning up a DB
  * for every unit test run. (A design alternative of using a ServiceFactory, seems
- * too heavyweight for this size of service.</p>
+ * too heavyweight for this size of service.)</p>
  * Created by Wayne Stidolph on 7/28/2015.
  */
 public class TrafficLogService {
@@ -47,6 +47,11 @@ public class TrafficLogService {
     // Map to use if no trafficLogRepository set
     private Map<Long, List<TrafficLog>> trafficLogMap = new HashMap<>();
 
+    /**
+     * Sets traffic log repository. Used by launchers to avaoid propogating Spring dependence.
+     *
+     * @param tlr the TrafficLogRepsoitory to use (null for "store it local to Service")
+     */
     public void setTrafficLogRepository(TrafficLogRepository tlr) {
         if (tlr == null){
             log.debug("setTrafficLogRepository has null arg, will store activity in static Map for {}", this);
@@ -126,21 +131,47 @@ public class TrafficLogService {
         return sortedStrings;
     }
 
+    /**
+     * Gets list of endpoints actually attempted in the test run identified by the runkey.
+     *
+     * @param runkey the runkey
+     * @return the used endpoints
+     */
     public List<String> getUsedEndpoints(long runkey) {
         log.debug("getUsedEndpoints with runkey " + runkey);
         return collectDistinctLoggedValues(runkey, TrafficLog::getEndpoint);
     }
 
+    /**
+     * Gets Request data types actually used in the test run identified by the runkey.
+     *
+     * @param runkey the runkey
+     * @return the used requests
+     */
     public List<String> getUsedRequests(long runkey) {
         log.debug("getUsedRequests (classSent) with runkey " + runkey);
         return collectDistinctLoggedValues(runkey, TrafficLog::getClassSent);
     }
 
+    /**
+     * Gets Response data types actually used in the test run identified by the runkey.
+     *
+     * @param runkey the runkey
+     * @return the used responses
+     */
     public List<String> getUsedResponses(long runkey) {
         log.debug("enter getUsedResponses (classReceived) with runkey " + runkey);
         return collectDistinctLoggedValues(runkey, TrafficLog::getClassReceived);
     }
 
+    /**
+     * <p>Gets the list of TrafficLog objects generated during the run identified by the runkey.</p>
+     * <p>Use log level 'debug' to see whether local or Repository storage was used and
+     * how many TrafficLogs were extracted.</p>
+     *
+     * @param runkey the runkey
+     * @return the traffic logs
+     */
     public List<TrafficLog> getTrafficLogs(long runkey) {
 
         List<TrafficLog> msgs;
@@ -164,6 +195,8 @@ public class TrafficLogService {
     /**
      * Create test run key - a (non-negative) long.
      *
+     * Also does any setup the storage needs for hadnlingthe new runkey.
+     *
      * @return the runKey
      */
     public long createTestRunKey() {
@@ -178,7 +211,14 @@ public class TrafficLogService {
         return newkey;
     }
 
-     boolean isKnownRunkey(long runkey){
+    /**
+     * <p>Returns true if teh runkey is available in teh current traffic log repository (whether local or Repository).</p>
+     * <p>Use 'debug' log to get the list of known runkeys if the passed-in key is not found.</p>
+     *
+     * @param runkey the runkey
+     * @return the boolean
+     */
+    boolean isKnownRunkey(long runkey){
         if (trafficLogRepository != null) {
             return true; // FIXME when adding a test activity data set to the repos
         }
@@ -190,11 +230,20 @@ public class TrafficLogService {
         return found;
     }
 
+    /**
+     * Clear static traffic log for an identified runkey. If using non-static storage, doesn't do anything.
+     *
+     * @param runkey the runkey
+     */
     public void clearStaticTrafficLog(long runkey) {
         log.debug("clearTrafficLog dropping static activity data for runkey {}", runkey);
         trafficLogMap.remove(runkey);
     }
 
+    /**
+     * Remove all static traffic logs, just drops the store. No runkeys
+     * nor data survive. If using a Repository (DB) then it has no effect.
+     */
     public void clearStaticTrafficLog() {
         log.debug("clearTrafficLog dropping ALL static activity data");
         trafficLogMap = new HashMap<>();
