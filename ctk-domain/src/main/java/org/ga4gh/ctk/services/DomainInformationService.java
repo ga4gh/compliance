@@ -9,6 +9,27 @@ import org.springframework.beans.factory.annotation.*;
 import java.util.*;
 
 /**
+ * <p>Provide information about the domain of interactions with the GA4GH Server (e.g.,
+ * data types, transport endpoints, etc).</p>
+ *
+ * <p>The DomainInformationService (DIS) is initialized with a list of the generated data
+ * elements coming from Schema compilation during the CTK build process. The DIS sorts this
+ * data into request types, reponse types, methods, data object types and "other" (e.g.,
+ * the GAExeption). This data is then available to tests to use for comparing against actual
+ * object sent/recieved.</p>
+ *
+ * <p>The DIS initializes by reading the file identified by the property "ctk.domaintypesfile"
+ * which is expected to be a JSON array of strings, one data type for each string. The DIS assumes
+ * that data items:</P
+ * <ul>
+ *     <li>packaged in the org.ga4.gh.models package are data objects</li>
+ *     <li>whose java class name ends in "Request" are Request objects</li>
+ *     <li>whose java class name ends in "Response" are Response objects</li>
+ *     <li>whose java class name ends in "Methods" are Method interface (currently ignored)</li>
+ *     <li>not fitting above categories are "other"</li>
+ * </ul>
+
+ *
  * Created by Wayne Stidolph on 8/2/2015.
  */
 
@@ -71,7 +92,7 @@ public class DomainInformationService {
         // dig out the actual methods on the interface, add to 'methods'
         // until we do that, don't want to just stuff the methods interface
         // into this list - want it to alarmingly empty :)
-        log.trace("addToMethodsList is unimplemented, does nothing with {}", methodsClass);
+        log.debug("addToMethodsList is unimplemented, does nothing with {}", methodsClass);
     }
 
     public void clearTypes() {
@@ -128,13 +149,12 @@ public class DomainInformationService {
     }
 
     /**
-     * Read in domain types file and parse to extract generated data
-     * type (messages, types, methods). Types not fitting the convention
-     * are considered "data object" types.
-     * <p>
-     * The domain types file content is auto-generated during build by the file-list
+     * <p>Read in domain types file (as identified by the "ctk.domaintypesfile" property)
+     * and parse it to extract GA4GH IDL domain data type type (messages, types, methods).
+     * Types not fitting the convention are considered "data object" types.</p>
+     * <p>The domain types file content is auto-generated during build by the file-list
      * maven plugin , but the file can be hand-edited if you want to omit
-     * or add coverage tracking for some types.
+     * or add coverage tracking for some types.</p>
      */
     public boolean extractDomainTypes(String fileContents) {
 
@@ -182,12 +202,13 @@ public class DomainInformationService {
     /**
      * <p>Extracts the "active" endpoints from a Map of string->endpoint.</p>
      * <p>"Active" is endpoint keys which have a non-null/empty value, and aren't
-     * the base path of the target server. The CTK expects an "active" endpoint
-     * to be used in some test.</p>
-     * <p>The default enpoints in the URLMAPPING might have a value "reserved" but
-     * if this is overriden by properties (e.g., in defaulttransport.properties
-     * or on command line) to be blank, then the endpoint is "inactive"
-     * meaning the CTK does not expect it to be used.</p>
+     * the base path of the target server.</p>
+     * <p>You might not want an endpoint to be considered for coverage testing, even if
+     * it is defined in the URLMAPPINGImpl default set of URLs (perhaps it is not yet implemented
+     * in the schema you are testing). Therefore, values in the default URLMAPPINGImpl can
+     * be overriden using properties (e.g., in defaulttransport.properties or on command line)
+     * to be blank ("ctk.tgt.getVariant=") and then the endpoint is "inactive"
+     * and will not be included in the response from getActiveEndpoints.</p>
      *
      * @param endpoints the endpoints to filter
      * @return the list of "active" enpoints, alpha-sorted
