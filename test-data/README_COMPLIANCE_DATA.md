@@ -1,4 +1,4 @@
-# GA4GH Server Compliance Tesing Suite Data README
+# GA4GH Server Compliance Testing Suite Data README
 
 The data in this directory is a small curated subset of the larger [1000 genomes](http://www.1000genomes.org) dataset maintained by NCBI and EBI.
 
@@ -6,8 +6,8 @@ The data in this directory is a small curated subset of the larger [1000 genomes
 It centers on data pertinent to several small genes: BRCA1, *** TODO: other genes ***
 For each gene, the following files are supplied:
 
-* `hs37d5_<REGION>.fa`   - the FASTA file containing GRCh37 reference bases for the gene's region
-* `1000g_offset.<UNDERSCORE_SEPARATED_SAMPLE_IDS>.2010502.<REGION>.vcf` - the VCF containing variant calls for the gene (including selected specific sample data)
+* `hs37d5_<REGION>.fa`   - the FASTA file containing GRCh37 reference bases for the gene's region,
+* `1000g_offset.<UNDERSCORE_SEPARATED_SAMPLE_IDS>.2010502.<REGION>.vcf` - the VCF containing variant calls for the gene (including selected specific sample data),
 * `BRCA1_<SAMPLE_ID>_hg37_offset.sam` - Reads corresponding to the above, for the given sample. There will be more than one of these per region.
 
 where `<REGION>` is of the form `<CHROMOSOME_NAME>_<START_POSITION>-<END_POSITION>`
@@ -37,9 +37,9 @@ is translated to:
 Since the compliance data are provided as human-readable FASTA, SAM and VCF files, these will likely need to be converted to equivalent
 optimized and indexed files when imported into the server being tested.
 
-## Using data with compliance suite
+## Using data with the compliance test suite
 
-The class `org.ga4gh.cts.api.TestData` in the GA4GH compliance suite (`TestData.java` in the `cts-java` module) describes the server's
+The class `org.ga4gh.cts.api.TestData` in the GA4GH compliance test suite (`TestData.java` in the `cts-java` module) describes the server's
 data as the compliance tests expect it to be.  If you make any additions or changes to the existing
 compliance test data, you will almost certainly need to make corresponding changes to the `TestData`
 class.
