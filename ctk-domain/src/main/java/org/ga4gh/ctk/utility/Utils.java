@@ -45,8 +45,9 @@ public class Utils {
             }
             result = sb.toString();
         } catch(Exception e) {
-            log.warn("readFile " + filename + " : " + lineNo + " failed due to " + e.getMessage());
+            log.warn("readFile on file [" + filename + "] : line [" + lineNo + "] failed due to: " + e.toString());
         }
+        log.debug("readFile pulled in {} lines from {}", lineNo, filename);
         return result;
     }
 
@@ -62,7 +63,7 @@ public class Utils {
             return possVal;
         }
 
-        possVal=System.getenv(key);
+        possVal=System.getenv(key.replace('.','_')); // env vars use underscores, not dots
         if (possVal != null) {
             log.debug("no Property {} but found in Environment as {}", key, possVal);
             return possVal;

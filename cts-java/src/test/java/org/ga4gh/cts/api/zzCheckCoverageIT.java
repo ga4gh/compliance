@@ -41,6 +41,8 @@ public class zzCheckCoverageIT {
                 domainInformationService.getRequestTypes().isEmpty() );
         long runkey = getRunKey();
         List<String> usedRequests = trafficLogService.getUsedRequests(runkey);
+        usedRequests.remove("null");  //could be from intentional error-request
+
         log.debug("allIdlRequestsShouldBeSent runkey " + runkey + " sees usedRequests list size is " + usedRequests.size());
         assertThat(usedRequests).containsOnlyElementsOf(domainInformationService.getRequestTypes());
     }
@@ -69,10 +71,10 @@ public class zzCheckCoverageIT {
         // if an endpoint is left defined, then some test should hit it.
 
         // First, find the 'active' endpoints the CTK knows about.
-        List<String> sortedEndpoints =
+        List<String> knownEndpoints =
                 domainInformationService.getActiveEndpoints(
                         URLMAPPING.getInstance().getEndpoints());
-        assertThat(sortedEndpoints).isNotEmpty();
+        assertThat(knownEndpoints).isNotEmpty();
 
         // now collect up the endpoints we actually hit
         long runkey = getRunKey();
@@ -86,8 +88,23 @@ public class zzCheckCoverageIT {
         log.debug("allEndpointsShouldBeUsed runkey " + runkey
                 + " sees usedIdlEndpoints list size of " + usedIdlEndpoints.size());
 
+        // let's discard any prefix and suffix "/" from both Lists
+        List<String> actual = new ArrayList<>();
+        for(String s : usedIdlEndpoints){
+            if(s.startsWith("/")) s = s.substring(1);
+            if(s.endsWith("/")) s = s.substring(0, s.length() - 1);
+            actual.add(s);
+        }
+
+        List<String> expected = new ArrayList<>();
+        for(String s : knownEndpoints){
+            if(s.startsWith("/")) s = s.substring(1);
+            if(s.endsWith("/")) s = s.substring(0, s.length() - 1);
+            expected.add(s);
+        }
+
         // assertThat( actual ).containsOnlyElementsOf ( expected )
-        assertThat(usedIdlEndpoints).containsOnlyElementsOf(sortedEndpoints);
+        assertThat(actual).containsOnlyElementsOf(expected);
 
     }
 

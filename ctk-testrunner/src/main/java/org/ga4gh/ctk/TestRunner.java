@@ -1,11 +1,11 @@
 package org.ga4gh.ctk;
 
 import org.apache.tools.ant.*;
-import org.ga4gh.ctk.config.*;
 import org.ga4gh.ctk.domain.*;
 import org.ga4gh.ctk.services.*;
 import org.ga4gh.ctk.transport.*;
 import org.ga4gh.ctk.transport.avrojson.*;
+import org.ga4gh.ctk.utility.*;
 import org.ga4gh.ctk.utility.ResultsSupport;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.*;

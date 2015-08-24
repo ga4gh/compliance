@@ -47,6 +47,7 @@
         <junit-toolbox.version>2.1</junit-toolbox.version>
 
         <log4j2.version>2.3</log4j2.version>
+        <lombok.version>1.16.4</lombok.version>
         <maven.project.info.reports.version>2.8</maven.project.info.reports.version>
         <org.json.json.version>20141113</org.json.json.version>
         <slf4j.version>1.7.12</slf4j.version>
@@ -154,6 +155,11 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>${gson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
         </dependency>
         <dependency>
             <groupId>com.mashape.unirest</groupId>

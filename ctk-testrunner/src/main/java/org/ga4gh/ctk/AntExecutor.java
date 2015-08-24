@@ -6,8 +6,8 @@ package org.ga4gh.ctk;
  */
 
 import org.apache.tools.ant.*;
-import org.ga4gh.ctk.config.*;
 import org.ga4gh.ctk.transport.*;
+import org.ga4gh.ctk.utility.*;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.context.annotation.*;
@@ -134,6 +134,7 @@ public class AntExecutor {
             // or classloader
             project.setUserProperty("basedir",System.getProperty("user.dir"));
             project.setUserProperty("ant.file", buildFile.getName());
+
             project.setUserProperty("ctk.testjar", testjar);
             project.setUserProperty("ctk.testclassroots", props.ctk_testclassroots);
             project.setUserProperty("ctk.matchstr", matchstr);

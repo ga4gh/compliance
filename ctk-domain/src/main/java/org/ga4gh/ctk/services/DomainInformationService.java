@@ -18,6 +18,15 @@ public class DomainInformationService {
     private static DomainInformationService me = new DomainInformationService();
 
     private static boolean initialized = false;
+    private static List<String> requestTypes = new LinkedList<>();
+    private static List<String> responseTypes = new LinkedList<>();
+    private static List<String> methods = new LinkedList<>();
+    private static List<String> dataObjTypes = new LinkedList<>();
+    private static List<String> otherTypes = new LinkedList<>();
+    @Autowired
+    Props props;
+    public DomainInformationService() {
+    }
 
     /**
      * Gets service with information extracted from file identified by
@@ -40,11 +49,11 @@ public class DomainInformationService {
      * is a domain class type:
      * <pre>
      *     [
-             "org\\ga4gh\\methods\\GAException.java",
-             "org\\ga4gh\\methods\\ListReferenceBasesRequest.java",
-             "org\\ga4gh\\methods\\ListReferenceBasesResponse.java",
-             ...
-           ]
+     * "org\\ga4gh\\methods\\GAException.java",
+     * "org\\ga4gh\\methods\\ListReferenceBasesRequest.java",
+     * "org\\ga4gh\\methods\\ListReferenceBasesResponse.java",
+     * ...
+     * ]
      * </pre>
      *
      * @param fileContents the file contents (as would be in the domain types file)
@@ -58,11 +67,12 @@ public class DomainInformationService {
         return me;
     }
 
-    private static List<String> requestTypes = new LinkedList<>();
-    private static List<String> responseTypes = new LinkedList<>();
-    private static List<String> methods = new LinkedList<>();
-    private static List<String> dataObjTypes = new LinkedList<>();
-    private static List<String> otherTypes = new LinkedList<>();
+    private static void addToMethodsList(String methodsClass) {
+        // dig out the actual methods on the interface, add to 'methods'
+        // until we do that, don't want to just stuff the methods interface
+        // into this list - want it to alarmingly empty :)
+        log.trace("addToMethodsList is unimplemented, does nothing with {}", methodsClass);
+    }
 
     public void clearTypes() {
         requestTypes = new LinkedList<>();
@@ -83,6 +93,7 @@ public class DomainInformationService {
     public List<String> getDataObjType() {
         return dataObjTypes;
     }
+
     public List<String> getOtherTypes() {
         return otherTypes;
     }
@@ -91,30 +102,28 @@ public class DomainInformationService {
         return methods;
     }
 
-
-    public DomainInformationService() {
-    }
-
-
-    // read this property directly instead of off of Props to avoid having
-    // ctk-domain depend on ctk-testrunner. But, maybe we should move the Props?
-    @Value("${ctk.domaintypesfile}")
-    public String ctk_domaintypesfile;
-
     /**
      * Fetch the contents of the file identified by 'ctk.domaintypesfile'.
      *
      * @return the string
      */
-    String getContentsFromProperty(){
-        if (ctk_domaintypesfile == null) {
-            // in case we run without Spring ijection somehow, get directly from env
-            Utils.getPropEnvValue("ctk.domaintypesfile");
-        }
-        log.debug("enter readInDomainTypes looking for " + ctk_domaintypesfile
-                + " working dir is " + System.getProperty("user.dir"));
+    String getContentsFromProperty() {
 
-        String fileContents = Utils.readFile(ctk_domaintypesfile);
+        if (props != null) {
+            log.debug("getContentsFromProperty sees props.ctk_domaintypesfile as {}", props.ctk_domaintypesfile);
+            return Utils.readFile(props.ctk_domaintypesfile);
+        } else {
+            log.info("getContentsFromProperty has null 'props' so will look directly in Environment");
+        }
+        // in case we run without Spring ijection somehow, get directly from env
+        String filename = Utils.getPropEnvValue("ctk.domaintypesfile");
+
+        if (filename.isEmpty()) {
+            log.warn("Never found good value for ctk.domaintypesfile");
+            return "";
+        }
+
+        String fileContents = Utils.readFile(filename);
         return fileContents;
     }
 
@@ -133,14 +142,14 @@ public class DomainInformationService {
         String[] domaintypeStrings = gson.fromJson(fileContents, String[].class);
 
         if (domaintypeStrings == null) {
-            log.warn("readInDomainTypes file {} parsed to null", ctk_domaintypesfile);
+            log.warn("extractDomainTypes contents parsed to null, contents are: {}", fileContents);
             return false;
         } else {
-            log.debug("readInDomainTypes file {} has {} entries", ctk_domaintypesfile, domaintypeStrings.length);
+            log.debug("extractDomainTypes gets {} entries from contents: {}", domaintypeStrings.length, fileContents);
         }
 
         for (String line : domaintypeStrings) {
-            log.trace("readInDomainTypes processing " + line);
+            log.trace("extractDomainTypes processing " + line);
 
             // convert directory to dot, drop repeats, and drop .java suffix
             CharSequence dotted = CharMatcher.anyOf("/\\").replaceFrom(line, ".");
@@ -168,14 +177,6 @@ public class DomainInformationService {
         }
 
         return true;
-    }
-
-
-    private static void addToMethodsList(String methodsClass) {
-        // dig out the actual methods on the interface, add to 'methods'
-        // until we do that, don't want to just stuff the methods interface
-        // into this list - want it to alarmingly empty :)
-        log.trace("addToMethodsList is unimplemented, does nothing with {}", methodsClass);
     }
 
     /**

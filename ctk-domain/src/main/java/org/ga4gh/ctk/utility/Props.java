@@ -1,4 +1,4 @@
-package org.ga4gh.ctk.config;
+package org.ga4gh.ctk.utility;
 
 import lombok.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -76,10 +76,13 @@ public class Props {
 
     @Value("${ctk.matchstr}")
     public String ctk_matchstr;
+
     @Value("${ctk.testpackage}")
     public String ctk_testpackage;
+
     @Value("${ctk.pattern.testclass}")
     public String ctk_pattern_testclass;
+
     @Value("${ctk.pattern.testsuite}")
     public String ctk_pattern_testsuite;
 

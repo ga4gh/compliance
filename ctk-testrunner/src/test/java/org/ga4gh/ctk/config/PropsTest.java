@@ -1,5 +1,6 @@
 package org.ga4gh.ctk.config;
 
+import org.ga4gh.ctk.utility.*;
 import org.junit.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.test.context.*;

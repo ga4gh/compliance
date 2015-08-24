@@ -1,8 +1,8 @@
 package org.ga4gh.ctk;
 
-import org.ga4gh.ctk.config.*;
 import org.ga4gh.ctk.domain.*;
 import org.ga4gh.ctk.services.*;
+import org.ga4gh.ctk.utility.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.boot.*;
 import org.springframework.boot.autoconfigure.*;
