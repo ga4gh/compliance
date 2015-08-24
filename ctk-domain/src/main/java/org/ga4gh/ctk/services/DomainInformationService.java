@@ -103,28 +103,66 @@ public class DomainInformationService {
         otherTypes = new LinkedList<>();
     }
 
+    /**
+     * Gets "Request" types.
+     *
+     * @return the Request-named IDL types
+     */
     public List<String> getRequestTypes() {
         return requestTypes;
     }
 
+    /**
+     * Gets list of "Response" types.
+     *
+     * @return the Response-named IDL types
+     */
     public List<String> getResponseTypes() {
         return responseTypes;
     }
 
+    /**
+     * Gets types defined in org.ga4gh.models package.
+     *
+     * @return the data obj type
+     */
     public List<String> getDataObjType() {
         return dataObjTypes;
     }
 
+    /**
+     * Gets "other" types (not Request, Response,method, nor model).
+     *
+     * @return the "other" types
+     */
     public List<String> getOtherTypes() {
         return otherTypes;
     }
 
+    /**
+     * <p>DOES NOTHING YET.</p>
+     *
+     * <p>Intent is to return list of methods defined on various Method interface.
+     * But, not yet designed whether to pass in an interface-selector param, or to
+     * respond with a list of all methods; so, not implementing meaningfully until
+     * use cases clear.</p>
+     *
+     * @return the methods
+     * @throws UnsupportedOperationException to indicate this shouldn't be used yet
+     */
     public List<String> getMethods() {
-        return methods;
+        throw new UnsupportedOperationException("Not implemented yet");
+        // return methods;
     }
 
     /**
-     * Fetch the contents of the file identified by 'ctk.domaintypesfile'.
+     * <p>Fetch the contents of the file identified by 'ctk.domaintypesfile'.</p>
+     * <p>Looks on the 'Props' object for teh property but that object might not be
+     * present(if not running under Spring) so this method has a fallback to look for the
+     * property value directly on the java System Properties and the enclosing Environment.</p>
+     * <p>The property usually identifies the domain types file which was auto-generated
+     * during build (by the file-list maven plugin) but the file can be hand-edited or a different
+     * file identified if you want to omit or add coverage tracking for some types.</p>
      *
      * @return the string
      */
@@ -149,23 +187,38 @@ public class DomainInformationService {
     }
 
     /**
-     * <p>Read in domain types file (as identified by the "ctk.domaintypesfile" property)
-     * and parse it to extract GA4GH IDL domain data type type (messages, types, methods).
-     * Types not fitting the convention are considered "data object" types.</p>
-     * <p>The domain types file content is auto-generated during build by the file-list
-     * maven plugin , but the file can be hand-edited if you want to omit
-     * or add coverage tracking for some types.</p>
+     * <p>Extract domain types information from a string. String is often the contents
+     * of the file identified by teh "ctk.domaintypesfile" property. String is a JSON
+     * array of strings, each string identifying a GA4GH IDL domain data type
+     * (a request, response, data types, a methods interface or "other").</p>
+     * <p>The strings are each a fully qualified java class path, with the directory
+     * separator escaped:</p>
+     * <pre>
+     *     <code>
+[
+     "org\\ga4gh\\methods\\GAException.java",
+     "org\\ga4gh\\methods\\ListReferenceBasesRequest.java",
+     "org\\ga4gh\\methods\\ListReferenceBasesResponse.java",
+     ...
+     *     </code>
+     * </pre>
+     * <p>Use log level 'debug' to get summary parsing information; use 'trace'
+     * to get line-by-line information.</p>
+     *
+     * @param jsonArrOfStrClassnames the json array of strings of class path-names
+     * @return true IFF 'gson' extracted a non-null array to process from the param
+     *
      */
-    public boolean extractDomainTypes(String fileContents) {
+    public boolean extractDomainTypes(String jsonArrOfStrClassnames) {
 
         Gson gson = new Gson();
-        String[] domaintypeStrings = gson.fromJson(fileContents, String[].class);
+        String[] domaintypeStrings = gson.fromJson(jsonArrOfStrClassnames, String[].class);
 
         if (domaintypeStrings == null) {
-            log.warn("extractDomainTypes contents parsed to null, contents are: {}", fileContents);
+            log.warn("extractDomainTypes contents parsed to null, contents are: {}", jsonArrOfStrClassnames);
             return false;
         } else {
-            log.debug("extractDomainTypes gets {} entries from contents: {}", domaintypeStrings.length, fileContents);
+            log.debug("extractDomainTypes gets {} entries from contents: {}", domaintypeStrings.length, jsonArrOfStrClassnames);
         }
 
         for (String line : domaintypeStrings) {
