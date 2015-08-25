@@ -49,12 +49,13 @@ public class zzCheckCoverageIT {
 
     @Test
     public void allIdlResponsesShouldBeReceived() throws Exception {
-        org.junit.Assert.assertFalse("DomainInformationService gave empty list of Response types",
-                domainInformationService.getResponseTypes().isEmpty() );
+        List<String> expectedReturns = domainInformationService.getExpectedReturns();
+        org.junit.Assert.assertFalse("DomainInformationService gave empty list of expected return types",
+                expectedReturns.isEmpty() );
         long runkey = getRunKey();
         List<String> usedResponses = trafficLogService.getUsedResponses(runkey);
         testlog.debug("allIdlResponsesShouldBeReceived runkey " + runkey + " sees usedResponses list size is " + usedResponses.size());
-        assertThat(usedResponses).containsOnlyElementsOf(domainInformationService.getResponseTypes());
+        assertThat(usedResponses).containsOnlyElementsOf(expectedReturns);
     }
 
     @Ignore("Unimplemented")

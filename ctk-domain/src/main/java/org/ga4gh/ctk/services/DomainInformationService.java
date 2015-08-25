@@ -6,6 +6,7 @@ import org.ga4gh.ctk.utility.*;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.*;
 
+import java.lang.reflect.*;
 import java.util.*;
 
 /**
@@ -88,12 +89,7 @@ public class DomainInformationService {
         return me;
     }
 
-    private static void addToMethodsList(String methodsClass) {
-        // dig out the actual methods on the interface, add to 'methods'
-        // until we do that, don't want to just stuff the methods interface
-        // into this list - want it to alarmingly empty :)
-        log.debug("addToMethodsList is unimplemented, does nothing with {}", methodsClass);
-    }
+
 
     public void clearTypes() {
         requestTypes = new LinkedList<>();
@@ -151,8 +147,36 @@ public class DomainInformationService {
      * @throws UnsupportedOperationException to indicate this shouldn't be used yet
      */
     public List<String> getMethods() {
+
+
         throw new UnsupportedOperationException("Not implemented yet");
         // return methods;
+    }
+
+    private static List<String> methodRtn = new ArrayList<>();
+    private static void addToMethodRtnsList(String methodsClass) {
+        // dig out the actual methods on the interface, add to 'methods'
+
+        try {
+            Class clazz = Class.forName(methodsClass);
+            Method[] methods = clazz.getDeclaredMethods();
+            for (Method method : methods){
+                methodRtn.add(method.getReturnType().getName());
+            }
+        } catch (ClassNotFoundException e) {
+           log.warn("addToMethodRtnsList could not find class {}", methodsClass);
+        }
+    }
+
+    public List<String> getExpectedReturns() {
+        Set<String> exRtns = new HashSet<>(getResponseTypes());
+        exRtns.addAll(methodRtn);
+        return new ArrayList<>(exRtns);
+    }
+
+    void addToMethodsList(String methodClassName){
+        methods.add(methodClassName);
+        addToMethodRtnsList(methodClassName);
     }
 
     /**
