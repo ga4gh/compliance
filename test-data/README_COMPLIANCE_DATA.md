@@ -41,11 +41,28 @@ optimized and indexed files when imported into the server being tested.
 
 The class `org.ga4gh.cts.api.TestData` in the GA4GH compliance test suite (`TestData.java` in the `cts-java` module) describes the server's
 data as the compliance tests expect it to be.  If you make any additions or changes to the existing
-compliance test data, you will almost certainly need to make corresponding changes to the `TestData`
-class.
+compliance test data, you will almost certainly need to make corresponding changes to the `TestData` class.
 
-The data contained here will likely need to be converted to a machine-optimized, indexed form for use with a server. Please refer to 
-[samtools](http://www.htslib.org/doc/samtools.html) and [tabix](http://www.htslib.org/doc/tabix.html) for details on converting the data to your preferred indexed binary format.
+The data contained here will likely need to be converted to a machine-optimized, indexed form for use with a server. 
+For example, to obtain compressed and indexed files for use with the reference server,
+
+### Reference:
+
+    bgzip -c <reference_file>.fa > <reference_file>.fa.gz
+    samtools faidx <reference_file>.fa.gz
+
+### Reads:
+
+    samtools view -b -h -o <reads_file>.bam <reads_file>.sam
+    samtools index <reads_file>.bam
+
+### Variants:
+
+    bgzip -c <variants_file>.vcf > <variants_file>.vcf.gz
+    tabix -p vcf <variants_file>.vcf.gz
+
+Please refer to [samtools](http://www.htslib.org/doc/samtools.html) and [tabix](http://www.htslib.org/doc/tabix.html) for any further details on converting 
+the data to your preferred indexed binary format.
 
 
 ## License and contact
