@@ -36,19 +36,22 @@ public class DatasetsSearchIT {
 
         final Dataset dataset = datasets.get(0);
         assertThat(dataset).isNotNull();
+        // XXX this is no longer meaningful
         assertThat(dataset.getId()).isEqualTo(TestData.getDatasetId());
     }
 
     @Test
-    public void fetchDatasetByName() throws AvroRemoteException {
+    public void fetchDatasetById() throws AvroRemoteException {
+        // XXX getDataset isn't implemented on the ref server
         final Dataset dataset = client.reads.getDataset(TestData.getDatasetId());
         assertThat(dataset).isNotNull();
         assertThat(dataset.getId()).isEqualTo(TestData.getDatasetId());
     }
 
     @Test
-    public void fetchDatasetWithBogusName() throws AvroRemoteException {
+    public void fetchDatasetWithBogusId() throws AvroRemoteException {
         final String nonexistentDatasetId = Utils.randomId();
+        // XXX getDataset isn't implemented on the ref server
         final Dataset dataset = client.reads.getDataset(nonexistentDatasetId);
         assertThat(dataset).isNull();
     }
@@ -60,6 +63,7 @@ public class DatasetsSearchIT {
         final List<Dataset> datasets = resp.getDatasets();
 
         for (Dataset ds : datasets) {
+            // XXX getDataset isn't implemented on the ref server
             final Dataset dataset = client.reads.getDataset(ds.getId());
             assertThat(ds).isEqualTo(dataset);
         }
