@@ -6,12 +6,10 @@ import org.ga4gh.ctk.services.*;
 import org.ga4gh.ctk.transport.*;
 import org.ga4gh.ctk.transport.avrojson.*;
 import org.ga4gh.ctk.utility.*;
-import org.ga4gh.ctk.utility.ResultsSupport;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -44,6 +42,9 @@ public class TestRunner implements BuildListener {
 
     @Value("${ctk.tgt.urlRoot}")
     String urlroot;
+
+    TrafficLogService trafficLogService;
+    long runkey; // = trafficLogService.createTestRunKey();
 
     // this is the object we use to pass final result status back
     CompletableFuture<String> result;

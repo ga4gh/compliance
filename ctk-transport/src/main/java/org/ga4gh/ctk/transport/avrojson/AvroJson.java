@@ -13,11 +13,11 @@ import org.ga4gh.ctk.domain.*;
 import org.ga4gh.ctk.services.*;
 import org.ga4gh.ctk.transport.*;
 
-import java.util.Map;
+import java.util.*;
 
-import static org.ga4gh.ctk.transport.RespCode.fromInt;
-import static org.ga4gh.ctk.transport.TransportUtils.makeUrl;
-import static org.slf4j.LoggerFactory.getLogger;
+import static org.ga4gh.ctk.transport.RespCode.*;
+import static org.ga4gh.ctk.transport.TransportUtils.*;
+import static org.slf4j.LoggerFactory.*;
 
 /**
  * <p>Provide Avro/Json communications layer specific to GA4GH and with extensive logging in
@@ -183,17 +183,6 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
 
         log.info("set urlRoot = " + this.urlRoot + " path = " + this.path + " merged = " +
                          makeUrl(this.urlRoot, this.path));
-    }
-
-
-    /**
-     * <p>Access the message-traffic recording Table.</p>
-     * <p>Each target endpoint/parameter string becomes a key to a row in the table,
-     * and the row cells are:</p>
-     * <p>| request (class, post/get, body/id) | response class (msg type) | HTTP status code |</p>
-     */
-    public static Table<String, String, Integer> getMessages() {
-        return messages;
     }
 
     /**
