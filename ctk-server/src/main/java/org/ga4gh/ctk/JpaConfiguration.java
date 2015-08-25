@@ -1,4 +1,4 @@
-package org.ga4gh.ctk.server;
+package org.ga4gh.ctk;
 
 /**
  * Created by Wayne Stidolph on 7/27/2015.

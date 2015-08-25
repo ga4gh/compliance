@@ -1,4 +1,4 @@
-package org.ga4gh.ctk.server;
+package org.ga4gh.ctk;
 
 import org.ga4gh.ctk.domain.*;
 import org.ga4gh.ctk.services.*;
