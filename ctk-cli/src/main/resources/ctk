@@ -5,7 +5,7 @@
 # This script launches the CTK, passing in properties you specify on the
 # command line using "--<property name>=<property value>". Example:
 #
-# ./ctk --ctk.tgt.urlRoot=http://localhost:8000/v0.5.1 --cts.matchstr=**/*IT.class
+# ./ctk --ctk.tgt.urlRoot=http://localhost:8000 --ctk.matchstr=**/*IT.class
 #
 # You can also control the CTK using the application.properties
 # and log4j2.xml files, or by simply setting the controlling properties in

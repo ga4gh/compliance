@@ -157,9 +157,7 @@
             <version>${guava.version}</version>
         </dependency>
         <dependency>
-            <!-- provide the google JSON support, easier than
-            Jackson for handling the 'normal' JSON to Avro class
-            deserialization -->
+            <!-- for handling the 'normal' JSON to Avro class deserialization -->
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>${gson.version}</version>
@@ -169,18 +167,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-        </dependency>
-
-        <dependency>
-            <!-- transitively brings in jackson-databind, so this
-            triggers log4j2 support for hide_log4j2.json and log4j2.jsm config,
-            as well as providing Jackson-based JSON processing if we want it -->
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-json-provider</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-yaml</artifactId>
         </dependency>
 
         <!-- need BCEL during site build -->

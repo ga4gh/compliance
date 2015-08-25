@@ -1,8 +1,10 @@
 package org.ga4gh.ctk.transport;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * URLMAPPING Tester.
@@ -56,7 +58,7 @@ public class URLMAPPINGTest {
     //@Test
     public void testGetUrlRoot() throws Exception {
         String url = urlmapping.getUrlRoot();
-        assertThat(url).isEqualTo("http://localhost:8000/v0.5.1/");
+        assertThat(url).isEqualTo("http://localhost:8000");
     }
 
     /**

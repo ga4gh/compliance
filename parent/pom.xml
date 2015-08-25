@@ -30,7 +30,10 @@
 
     <properties>
         <ga4gh.schema.local.version>0.5.1-SNAPSHOT</ga4gh.schema.local.version>
-        <ctk.tgt.urlRoot>http://localhost:8000/v0.5.1</ctk.tgt.urlRoot>
+        <ctk.tgt.urlRoot>http://localhost:8000</ctk.tgt.urlRoot>
+        <!-- Controls skipping of cts-java IT tests during build; skip the tests by passing
+             a command line parameter, e.g. mvn -Dcts.skipITs=true install.  Run them by default. -->
+        <cts.skipITs>false</cts.skipITs>
 
         <java.version>1.8</java.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -48,7 +51,6 @@
         <httpclient.version>4.4.1</httpclient.version>
         <httpmime.version>4.4.1</httpmime.version>
 
-        <jackson2.version>2.5.3</jackson2.version>
         <json-patch.version>1.9</json-patch.version>
         <jsonassert.version>1.2.3</jsonassert.version>
         <junit.version>4.12</junit.version>
@@ -189,24 +191,6 @@
                 <scope>compile</scope>
             </dependency>
 
-            <dependency>
-                <groupId>com.fasterxml.jackson.jaxrs</groupId>
-                <artifactId>jackson-jaxrs-json-provider</artifactId>
-                <version>${jackson2.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.dataformat</groupId>
-                <artifactId>jackson-dataformat-avro</artifactId>
-                <version>${jackson2.version}</version>
-            </dependency>
-
-            <!-- yanl support for log4j2 config .. I wonder if snakeyaml would handle this? -->
-            <!--            <dependency>
-                            <groupId>com.fasterxml.jackson.dataformat</groupId>
-                            <artifactId>jackson-dataformat-yaml</artifactId>
-                            <version>2.5.0</version>
-                        </dependency>-->
-
             <!-- the best general assertions library :) -->
             <dependency>
                 <groupId>org.assertj</groupId>
@@ -268,6 +252,34 @@
     </dependencyManagement>
 
     <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <id>enforce-versions</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>[3.3.3,)</version>
+                                    <message>*** This project requires Maven 3.3.3 or later. This is version ${maven.version}. ***</message>
+                                </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <version>[1.8,)</version>
+                                    <message>*** This project requires JDK 1.8 (J2SE 8) or later. This is version ${java.version}. }***</message>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
         <pluginManagement>
             <plugins>
                 <plugin>

@@ -10,9 +10,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.*;
 import org.springframework.web.servlet.view.*;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
+ * Test controller used when running as a server.
+ *
  * Created by Wayne Stidolph on 7/15/2015.
  */
 @Controller
@@ -41,13 +44,12 @@ public class ServerTestController implements CtkLogs {
             // we have a place to put results
             log.info("about to run tests " + urlRoot + " " + mstr + " " + props.ctk_testjar);
             Future<String> futureTestResultIndexPage =
-                    testrunner.doTestRun(urlRoot, mstr, props.ctk_testjar, resultsDir);
+                    testrunner.doTestRun(urlRoot, props.ctk_tgt_dataset_id,
+                                         mstr, props.ctk_testjar, resultsDir);
             String testResultIndexPage = null;
             try { // wait for results
                 testResultIndexPage = futureTestResultIndexPage.get();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
             log.info("test complete, results to " + testResultIndexPage);

@@ -44,7 +44,7 @@ public class URLMAPPINGImpl implements URLMAPPING {
      * takes during the doInit() method (what
      * 'ctk.tgt.*' properties it discovers and their values).
      * This static method is invoked during class initialization, and by tests which
-     * want to ensure the transport environment is initialzied as they expect</p>
+     * want to ensure the transport environment is initialized as they expect</p>
      */
     public static boolean dumpToStdOut = false;
 
@@ -64,15 +64,15 @@ public class URLMAPPINGImpl implements URLMAPPING {
         defaultEndpoints.put("ctk.tgt.getReferencesets", "referencesets/{id}");
         defaultEndpoints.put("ctk.tgt.getReferencesBases", "references/{id}/bases");
 
-        defaultEndpoints.put("ctk.tgt.getReadGroupSet", "/readgroupsets/{id}");
-        defaultEndpoints.put("ctk.tgt.getReadGroup", "/readgroups/{id}");
-        defaultEndpoints.put("ctk.tgt.searchDatasets", "/datasets/search");
-        defaultEndpoints.put("ctk.tgt.getDataset", "/datasets/{id}");
-        defaultEndpoints.put("ctk.tgt.getVariant", "/variants/{id}");
-        defaultEndpoints.put("ctk.tgt.getVariantSet", "/variantsets/{id}");
-        defaultEndpoints.put("ctk.tgt.getCallset", "/callsets/{id}");
+        defaultEndpoints.put("ctk.tgt.getReadGroupSet", "readgroupsets/{id}");
+        defaultEndpoints.put("ctk.tgt.getReadGroup", "readgroups/{id}");
+        defaultEndpoints.put("ctk.tgt.searchDatasets", "datasets/search");
+        defaultEndpoints.put("ctk.tgt.getDataset", "datasets/{id}");
+        defaultEndpoints.put("ctk.tgt.getVariant", "variants/{id}");
+        defaultEndpoints.put("ctk.tgt.getVariantSet", "variantsets/{id}");
+        defaultEndpoints.put("ctk.tgt.getCallset", "callsets/{id}");
 
-        dumpToStdOut = Boolean.getBoolean("ctk.tgt.urlmapper.dump"); // so, -Dctk.urlmapper.dump= true
+        dumpToStdOut = Boolean.getBoolean("ctk.tgt.urlmapper.dump"); // so, -Dctk.tgt.urlmapper.dump=true
 
         log.info("set default URLMAPPING urlRoot to " + defaultEndpoints.get("ctk.tgt.urlRoot"));
     }
@@ -91,7 +91,7 @@ public class URLMAPPINGImpl implements URLMAPPING {
      * <li>a properties file of that name on the classpath</li>
      * <li>a properties file of that name from the file system</li>
      * <li>the operating system environment variables ("ctk.tgt.*)</li>
-     * <li>the java system properties (e.g., command line -D...) of "ctk.tgt.*"</li>
+     * <li>the Java system properties (e.g., command line -D...) of "ctk.tgt.*"</li>
      * </ul>
      * If the resName is blank then the file/resource sought is "defaulttransport.properties"
      * If the resName is given then the default properties file is not loaded at all.
@@ -235,9 +235,6 @@ public class URLMAPPINGImpl implements URLMAPPING {
     public void setUrlRoot(String urlRoot) {
         log.debug("setUrlRoot param is " + urlRoot);
         if (urlRoot != null && !urlRoot.isEmpty()) {
-            if (!urlRoot.endsWith("/")) {
-                urlRoot = urlRoot + "/";
-            }
             endpoints.put("ctk.tgt.urlRoot", urlRoot);
             log.debug("setUrlRoot sets ctk.tgt.urlRoot to " + urlRoot);
         } else {

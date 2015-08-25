@@ -148,6 +148,7 @@
                             <goal>verify</goal>
                         </goals>
                         <configuration>
+                            <skipITs>${cts.skipITs}</skipITs>
                             <argLine>-Dctk.tgt.urlRoot=${ctk.tgt.urlRoot}</argLine>
                             <properties>
                                 <property>

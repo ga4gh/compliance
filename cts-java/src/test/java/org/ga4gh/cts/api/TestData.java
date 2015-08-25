@@ -26,7 +26,7 @@ public class TestData {
      * The name of the Java system property that sets the name of the compliance dataset,
      * if the default (<tt>compliance-dataset1</tt>) is not correct.
      */
-    private static final String DATASET_PROP_NAME = "cfg.tgt.dataset_id";
+    private static final String DATASET_PROP_NAME = "ctk.tgt.dataset_id";
 
     /**
      * The names of the readgroup sets in the standard compliance dataset.
@@ -64,7 +64,7 @@ public class TestData {
     /**
      * Return the ID of the compliance dataset on the server being tested.
      * By default this is the value of {@link #DEFAULT_DATASET_ID}, <tt>compliance-dataset1</tt>, but
-     * it can be overridden by setting the Java property <tt>-Dcfg.tgt.dataset_id</tt>.
+     * it can be overridden by setting the Java property <tt>-Dctk.tgt.dataset_id</tt>.
      */
     public static String getDatasetId() {
         final String propValue = System.getProperty(DATASET_PROP_NAME);

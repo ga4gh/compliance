@@ -90,19 +90,18 @@ public class AntExecutor {
     DefaultLogger consoleLogger;
     /**
      * To execute the default target specified in the Ant antRunTests.xml file
-     *
      */
     public boolean executeAntTask() {
-        return
-                executeAntTask( // use the properties and defaults
-                        props.ctk_testjar,
-                        props.ctk_matchstr,
-                        URLMAPPING.getInstance(),
-                        "testresults/target/",
-                        -1, // default runkey
-                        -1, // default testmethodkey
-                        null
-                    );
+        // use the properties and defaults
+        return executeAntTask(props.ctk_testjar,
+                              props.ctk_matchstr,
+                              URLMAPPING.getInstance(),
+                              props.ctk_tgt_dataset_id,
+                              "testresults/target/",
+                              -1, // default runkey
+                              -1, // default testmethodkey
+                              null
+                             );
     }
 
     /**
@@ -110,9 +109,8 @@ public class AntExecutor {
      *
      * @param testjar tests jar to unpack/run in Ant
      */
-    public boolean executeAntTask(String testjar,
-                                  String matchstr,
-                                  URLMAPPING urls,
+    public boolean executeAntTask(String testjar, String matchstr, URLMAPPING urls,
+                                  String datasetId,
                                   String toDir,
                                   long runkey,
                                   int testmethodkey,
@@ -139,15 +137,19 @@ public class AntExecutor {
             project.setUserProperty("ctk.testclassroots", props.ctk_testclassroots);
             project.setUserProperty("ctk.matchstr", matchstr);
             project.setUserProperty("ctk.reporttitle", expandedReportTitle);
+            project.setUserProperty("ctk.testjar", testjar);
+            project.setUserProperty("ctk.tgt.dataset_id", datasetId);
             project.setUserProperty("ctk.todir", toDir);
             project.setUserProperty("ctk.runkey", ""+runkey);
             project.setUserProperty("ctk.testmethodkey", ""+testmethodkey);
             project.setUserProperty("ctk.domaintypesfile", props.ctk_domaintypesfile);
             project.setUserProperty("ctk.defaulttransportfile",props.ctk_defaulttransportfile);
             project.addBuildListener(antExecListener);
+
             // if there's an interested listener, hook them up
-            if(theBoss != null)
+            if (theBoss != null) {
                 project.addBuildListener(theBoss);
+            }
 
             project.fireBuildStarted();
             project.init();
@@ -180,11 +182,13 @@ public class AntExecutor {
             // and thereby use the passed-in values.
             Properties sysprops = new Properties(System.getProperties()); // this one we'll alter
             sysprops.putAll(urls.getEndpoints());
+            sysprops.put("ctk.tgt.dataset_id", datasetId);
             System.setProperties(sysprops);
 
             log.debug("About to run ant, sysprop ctk.tgt.urlRoot " + System.getProperty("ctk.tgt.urlRoot"));
+            log.debug("  ctk.tgt.dataset_id = " + System.getProperty("ctk.tgt.dataset_id"));
             project.executeTarget(targetToExecute);
-            success = true;// well, we got a good launch at least!
+            success = true; // well, we got a good launch at least!
 
             System.setProperties(copySysProp); // restore the system
             log.debug("Done with ant, restored system props, ctk.tgt.urlRoot "
@@ -210,7 +214,7 @@ public class AntExecutor {
     /**
      * Logger to log output generated while executing ant script in console
      *
-     * @return
+     * @return the logger
      */
     private DefaultLogger getConsoleLogger() {
 

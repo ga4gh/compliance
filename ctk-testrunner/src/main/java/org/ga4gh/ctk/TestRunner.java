@@ -11,6 +11,7 @@ import org.slf4j.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -44,16 +45,13 @@ public class TestRunner implements BuildListener {
     @Value("${ctk.tgt.urlRoot}")
     String urlroot;
 
-    TrafficLogService trafficLogService;
-    long runkey; // = trafficLogService.createTestRunKey();
-
     // this is the object we use to pass final result status back
     CompletableFuture<String> result;
 
     /**
      * String name of the directory under which to put the test results
      */
-    private String acceptedTargetDir="";
+    private String acceptedTargetDir = "";
 
     /**
      * Default invocation, does test run using properties
@@ -67,20 +65,22 @@ public class TestRunner implements BuildListener {
         log.debug("matchStr: " + matchStr);
         String resultDir = ResultsSupport.getResultsDir(urlroot);
 
-        return doTestRun(urlroot,matchStr,props.ctk_testjar,resultDir);
-
+        return doTestRun(urlroot, props.ctk_tgt_dataset_id, matchStr, props.ctk_testjar,
+                         resultDir);
     }
 
     /**
      * Do test run using specific parameters.
      *
      * @param urlRoot the url root
+     * @param datasetId the dataset ID
      * @param matchStr the match str
      * @param testJar the test jar
      * @param toDir the directory to put result into (default =".")
      * @return a Future with the string to use as a testrun identifier.
      */
     public CompletableFuture<String> doTestRun(String urlRoot,
+                                               String datasetId,
                                                String matchStr,
                                                String testJar,
                                                String toDir){
@@ -101,13 +101,14 @@ public class TestRunner implements BuildListener {
                     /* ****** MAIN RUN-THE-TESTS *********** */
 
         result = new CompletableFuture<String>();
-        boolean goodLaunch = antExecutor.executeAntTask(testJar,
-                matchStr,
-                urls,
-                acceptedTargetDir,
-                runkey,
-                DEFAULT_TESTMETHODKEY, // TODO placeholder we get mechanism to create per-test method keys
-                this); // "this" registers this for the BuildListener callbacks
+        boolean goodLaunch =
+                antExecutor.executeAntTask(testJar, matchStr,
+                                           urls, datasetId,
+                                           acceptedTargetDir,
+                                           runkey,
+                                           DEFAULT_TESTMETHODKEY, // TODO placeholder we get mechanism to create per-test method keys
+                                           this); // "this" registers this for the BuildListener
+                                           // callbacks
         if(!goodLaunch){
             log.warn("bad test run for " + acceptedTargetDir + " " + testJar + " " + matchStr + " urls: " + urls);
             result.complete("");
