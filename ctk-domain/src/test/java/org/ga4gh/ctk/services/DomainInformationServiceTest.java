@@ -53,6 +53,30 @@ public class DomainInformationServiceTest {
     }
 
     @Test
+    public void testGetExpectedReturns() throws Exception {
+        // need to set up some test interface with actual methods
+        assertThat(svc.getExpectedReturns()).containsExactly(
+                "org.ga4gh.models.CallSet",
+                "org.ga4gh.models.Reference",
+                "org.ga4gh.methods.SearchReadGroupSetsResponse",
+                "org.ga4gh.methods.SearchVariantsResponse",
+                "org.ga4gh.methods.SearchVariantSetsResponse",
+                "org.ga4gh.methods.SearchCallSetsResponse",
+                "org.ga4gh.models.VariantSet",
+                "org.ga4gh.models.ReadGroupSet",
+                "org.ga4gh.methods.SearchReferencesResponse",
+                "org.ga4gh.methods.ListReferenceBasesResponse",
+                "org.ga4gh.methods.SearchReferenceSetsResponse",
+                "org.ga4gh.models.ReferenceSet",
+                "org.ga4gh.methods.SearchReadsResponse",
+                "org.ga4gh.methods.SearchDatasetsResponse",
+                "org.ga4gh.models.ReadGroup",
+                "org.ga4gh.models.Variant",
+                "org.ga4gh.models.Dataset"
+        );
+    }
+
+    @Test
     public void testGetDataObjType() throws Exception {
         assertThat(svc.getDataObjType()).containsExactly(
                 "org.ga4gh.models.Call",
@@ -92,15 +116,48 @@ public class DomainInformationServiceTest {
     }
 
     @Test
-    public void testGetMethods() throws Exception {
+    public void testGetMethodTypes() throws Exception {
         // method isn't implemented so it returns empty string
-        assertThat(svc.getMethods()).containsExactly();
+        assertThat(svc.getMethodTypes()).containsExactly(
+                "org.ga4gh.methods.ReadMethods",
+                "org.ga4gh.methods.ReferenceMethods",
+                "org.ga4gh.methods.VariantMethods"
+        );
     }
 
     @Test
-    public void testExtractDomainTypes() throws Exception {
+    public void testGetMethodNames() throws Exception {
+        // this is a brittle test, it actually depends on the generated
+        // Method classes being on the classpath for the
+        // refection that getMethodname() uses to work; but,
+        // if the class isn't there then getMethodnames will throw
+        // a ClassNotFound exception, which seem reasonable
+
+        assertThat(svc.getMethodnames()).contains(
+                "searchReads",
+                "getReadGroup",
+                "getDataset",
+                "getReadGroupSet",
+                "searchDatasets",
+                "searchReadGroupSets",
+                "getReference",
+                "searchReferenceSets",
+                "getReferenceBases",
+                "getReferenceSet",
+                "searchReferences",
+                "getVariant",
+                "searchVariantSets",
+                "searchVariants",
+                "getVariantSet",
+                "searchCallSets",
+                "getCallSet"
+        );
+    }
+
+    @Test
+    public void testPopulateDomainTypes() throws Exception {
         svc.clearTypes();
-        assertThat(svc.extractDomainTypes(defaultTypes)).isTrue();
+        assertThat(svc.populateDomainTypes(defaultTypes)).isTrue();
     }
 
     @Test

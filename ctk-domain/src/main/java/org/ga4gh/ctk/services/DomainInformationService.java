@@ -42,9 +42,13 @@ public class DomainInformationService {
     private static boolean initialized = false;
     private static List<String> requestTypes = new LinkedList<>();
     private static List<String> responseTypes = new LinkedList<>();
-    private static List<String> methods = new LinkedList<>();
+    private static List<String> methodTypes = new LinkedList<>();
+    private static List<String> methodnames = new LinkedList<>();
+    private static List<String> methodRtn = new ArrayList<>();
     private static List<String> dataObjTypes = new LinkedList<>();
     private static List<String> otherTypes = new LinkedList<>();
+
+
     @Autowired
     Props props;
     public DomainInformationService() {
@@ -60,7 +64,7 @@ public class DomainInformationService {
         if (!initialized) {
             log.debug("getService finds service un-initialized");
             String fileContents = me.getContentsFromProperty();
-            initialized = me.extractDomainTypes(fileContents);
+            initialized = me.populateDomainTypes(fileContents);
         }
         return me;
     }
@@ -84,17 +88,23 @@ public class DomainInformationService {
     public static DomainInformationService getService(String fileContents) {
         if (!initialized) {
             log.debug("getService finds service un-initialized");
-            initialized = me.extractDomainTypes(fileContents);
+            initialized = me.populateDomainTypes(fileContents);
         }
         return me;
     }
 
-
-
+    /**
+     * Clear the types lists.
+     *
+     * Test-support function for testing this service; reset the lists of
+     *  domain information in prep for re-reading different domain info files.
+     */
     public void clearTypes() {
         requestTypes = new LinkedList<>();
         responseTypes = new LinkedList<>();
-        methods = new LinkedList<>();
+        methodTypes = new LinkedList<>();
+        methodnames = new LinkedList<>();
+        methodRtn = new LinkedList<>();
         dataObjTypes = new LinkedList<>();
         otherTypes = new LinkedList<>();
     }
@@ -105,7 +115,7 @@ public class DomainInformationService {
      * @return the Request-named IDL types
      */
     public List<String> getRequestTypes() {
-        return requestTypes;
+        return new LinkedList<String>(requestTypes);
     }
 
     /**
@@ -114,7 +124,7 @@ public class DomainInformationService {
      * @return the Response-named IDL types
      */
     public List<String> getResponseTypes() {
-        return responseTypes;
+        return new LinkedList<String>(responseTypes);
     }
 
     /**
@@ -123,7 +133,7 @@ public class DomainInformationService {
      * @return the data obj type
      */
     public List<String> getDataObjType() {
-        return dataObjTypes;
+        return new LinkedList<String>(dataObjTypes);
     }
 
     /**
@@ -132,35 +142,26 @@ public class DomainInformationService {
      * @return the "other" types
      */
     public List<String> getOtherTypes() {
-        return otherTypes;
+        return new LinkedList<String>(otherTypes);
     }
 
     /**
-     * <p>DOES NOTHING YET.</p>
-     *
-     * <p>Intent is to return list of methods defined on various Method interface.
-     * But, not yet designed whether to pass in an interface-selector param, or to
-     * respond with a list of all methods; so, not implementing meaningfully until
-     * use cases clear.</p>
+     * <p>Return list of names of Method interfaces.</>
      *
      * @return the methods
-     * @throws UnsupportedOperationException to indicate this shouldn't be used yet
      */
-    public List<String> getMethods() {
-
-
-        throw new UnsupportedOperationException("Not implemented yet");
-        // return methods;
+    public List<String> getMethodTypes() {
+        return new LinkedList<String>(methodTypes);
     }
 
-    private static List<String> methodRtn = new ArrayList<>();
     private static void addToMethodRtnsList(String methodsClass) {
-        // dig out the actual methods on the interface, add to 'methods'
+        // dig out the method return types
 
         try {
             Class clazz = Class.forName(methodsClass);
             Method[] methods = clazz.getDeclaredMethods();
             for (Method method : methods){
+                methodnames.add(method.getName());
                 methodRtn.add(method.getReturnType().getName());
             }
         } catch (ClassNotFoundException e) {
@@ -168,14 +169,8 @@ public class DomainInformationService {
         }
     }
 
-    public List<String> getExpectedReturns() {
-        Set<String> exRtns = new HashSet<>(getResponseTypes());
-        exRtns.addAll(methodRtn);
-        return new ArrayList<>(exRtns);
-    }
-
-    void addToMethodsList(String methodClassName){
-        methods.add(methodClassName);
+    void addToMethodTypes(String methodClassName){
+        methodTypes.add(methodClassName);
         addToMethodRtnsList(methodClassName);
     }
 
@@ -211,8 +206,8 @@ public class DomainInformationService {
     }
 
     /**
-     * <p>Extract domain types information from a string. String is often the contents
-     * of the file identified by teh "ctk.domaintypesfile" property. String is a JSON
+     * <p>Populate domain types information from a string. String is often the contents
+     * of the file identified by the "ctk.domaintypesfile" property. String is a JSON
      * array of strings, each string identifying a GA4GH IDL domain data type
      * (a request, response, data types, a methods interface or "other").</p>
      * <p>The strings are each a fully qualified java class path, with the directory
@@ -233,20 +228,20 @@ public class DomainInformationService {
      * @return true IFF 'gson' extracted a non-null array to process from the param
      *
      */
-    public boolean extractDomainTypes(String jsonArrOfStrClassnames) {
+    public boolean populateDomainTypes(String jsonArrOfStrClassnames) {
 
         Gson gson = new Gson();
         String[] domaintypeStrings = gson.fromJson(jsonArrOfStrClassnames, String[].class);
 
         if (domaintypeStrings == null) {
-            log.warn("extractDomainTypes contents parsed to null, contents are: {}", jsonArrOfStrClassnames);
+            log.warn("populateDomainTypes contents parsed to null, contents are: {}", jsonArrOfStrClassnames);
             return false;
         } else {
-            log.debug("extractDomainTypes gets {} entries from contents: {}", domaintypeStrings.length, jsonArrOfStrClassnames);
+            log.debug("populateDomainTypes gets {} entries from contents: {}", domaintypeStrings.length, jsonArrOfStrClassnames);
         }
 
         for (String line : domaintypeStrings) {
-            log.trace("extractDomainTypes processing " + line);
+            log.trace("populateDomainTypes processing " + line);
 
             // convert directory to dot, drop repeats, and drop .java suffix
             CharSequence dotted = CharMatcher.anyOf("/\\").replaceFrom(line, ".");
@@ -265,7 +260,7 @@ public class DomainInformationService {
                 responseTypes.add(typeStr);
                 log.trace(typeStr + " add to responseTypes");
             } else if (typeStr.endsWith("Methods")) {
-                addToMethodsList(typeStr);
+                addToMethodTypes(typeStr);
                 log.trace(typeStr + " add to methodTypes");
             } else {
                 otherTypes.add(typeStr);
@@ -302,4 +297,24 @@ public class DomainInformationService {
         return Utils.asSortedList(activeEndpoints);
     }
 
+    /**
+     * Gets expected returns - all "Response" items, and all return types defined
+     * from IDL-defined methods.
+     *
+     * @return the expected returns
+     */
+    public List<String> getExpectedReturns() {
+        Set<String> exRtns = new HashSet<>(getResponseTypes());
+        exRtns.addAll(methodRtn); // TODO - strip out 'void'?
+        return new ArrayList<>(exRtns);
+    }
+
+    /**
+     * Gets list of names of known Methods (no matter which *Methods interface they're on).
+     *
+     * @return the methodnames
+     */
+    public List<String> getMethodnames() {
+        return new LinkedList<String>(methodnames);
+    }
 }
