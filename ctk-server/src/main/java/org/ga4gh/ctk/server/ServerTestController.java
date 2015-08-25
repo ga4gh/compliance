@@ -1,9 +1,9 @@
 package org.ga4gh.ctk.server;
 
 import org.ga4gh.ctk.*;
-import org.ga4gh.ctk.ResultsSupport;
 import org.ga4gh.ctk.transport.*;
 import org.ga4gh.ctk.utility.*;
+import org.ga4gh.ctk.utility.ResultsSupport;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
 import org.springframework.web.bind.annotation.*;
