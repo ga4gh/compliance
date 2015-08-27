@@ -3,6 +3,9 @@ package org.ga4gh.ctk.transport.avrojson;
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -14,7 +17,9 @@ import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.http.HttpStatus;
 import org.apache.http.HttpVersion;
 import org.apache.http.message.BasicStatusLine;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.WireTracker;
+import org.ga4gh.methods.GAException;
 
 import java.util.Map;
 
@@ -231,7 +236,7 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
      *
      * @return an instance of the response type (as set during object construction), can be null.
      */
-    public P doPostResp() {
+    public P doPostResp() throws GAException {
         reqSchema = theAvroReq.getSchema();
 
         //jsonBytes = JsonMaker.avroToJsonBytes(dw, reqSchema, theAvroReq);
@@ -245,12 +250,42 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
         return theResp;
     }
 
-    private void updateTheRespAndLogMessages(String postOrGet){
-        // httpResp can be null (e.g., a timeout)
-        if (httpResp != null && httpResp.getStatus() == HttpStatus.SC_OK) {
-            String json = httpResp.getBody().toString();
+    /**
+     * Create and return a custom {@link Gson} object that knows how to deal with the innards of
+     * {@link GAException}, which has a field with a weird generated name (<tt>"message$"</tt>).
+     *
+     * @return a custom {@link Gson} object for dealing with {@link GAException}
+     */
+    private Gson makeGson() {
+        final GsonBuilder builder = new GsonBuilder();
+        builder.setFieldNamingStrategy(field -> {
+            final String originalName = field.getName();
+            if (originalName.equals("message$")) {
+                return "message";
+            }
+            return originalName;
+        });
+        return builder.create();
+    }
 
-            theResp = new AvroMaker<>(theResp).makeAvroFromJson(json, makeUrl(urlRoot, path));
+    private void updateTheRespAndLogMessages(String postOrGet) throws GAException {
+        // httpResp can be null (e.g., a timeout)
+        if (httpResp != null) {
+            final int httpStatus = httpResp.getStatus();
+            if (httpStatus != HttpStatus.SC_OK) {
+                final String json = httpResp.getBody().toString();
+                final Gson gson = makeGson();
+                try {
+                    final GAException cause = gson.fromJson(json, GAException.class);
+                    log.info("Throwing GAException for " + json + ", status " + httpStatus);
+                    throw new GAWrapperException(cause, httpStatus);
+                } catch (JsonSyntaxException e) {
+                    log.warn("Parse failure on GAException: BODY < " + json + " > " + e.toString());
+                }
+            } else {
+                final String json = httpResp.getBody().toString();
+                theResp = new AvroMaker<>(theResp).makeAvroFromJson(json, makeUrl(urlRoot, path));
+            }
         } else {
             theResp = null;
         }
@@ -274,9 +309,11 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
      *
      * @param id string to be used as route param to the URL
      *
-     * @return an instance of the response type (as set during object construction), can be null.
+     * @return an instance of the response type (as set during object construction), can be null
+     *
+     * @throws GAException if the server throws one in response to this request
      */
-    public P doGetResp(String id) {
+    public P doGetResp(String id) throws GAException {
         return doGetResp(id, null);
     }
 
@@ -288,9 +325,11 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
      * @param id string to be used as route param to the URL
      * @param queryParams optional query parameters to add to the GET request.  May be null.
      *
-     * @return an instance of the response type (as set during object construction), can be null.
+     * @return an instance of the response type (as set during object construction), can be null
+     *
+     * @throws GAException if the server throws one in response to this request
      */
-    public P doGetResp(String id, Map<String, Object> queryParams) {
+    public P doGetResp(String id, Map<String, Object> queryParams) throws GAException {
 
         // no request object to build, just GET from the endpoint with route param
         httpResp = shouldDoComms ? jsonGet(makeUrl(urlRoot, path), id, queryParams) : NO_COMM_RESP;

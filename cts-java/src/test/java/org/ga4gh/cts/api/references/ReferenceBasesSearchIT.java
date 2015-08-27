@@ -6,10 +6,7 @@ import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.Utils;
 import org.ga4gh.cts.api.reads.ReadsTests;
-import org.ga4gh.methods.ListReferenceBasesRequest;
-import org.ga4gh.methods.ListReferenceBasesResponse;
-import org.ga4gh.methods.SearchReferencesRequest;
-import org.ga4gh.methods.SearchReferencesResponse;
+import org.ga4gh.methods.*;
 import org.ga4gh.models.Reference;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -36,7 +33,7 @@ public class ReferenceBasesSearchIT {
      * that each returned {@link Reference} has a valid(-looking) MD5.  (In the future, perhaps this
      * test should compute the MD5 and compare it to what's returned.)
      *
-     * @throws AvroRemoteException if there's a communication problem
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
     public void getAllReferencesWithEmptyMd5List() throws AvroRemoteException {
@@ -65,7 +62,7 @@ public class ReferenceBasesSearchIT {
      *     <li>Test 2: assert that we received a {@link Reference} object with fields
      *     <pre>offset == 150 AND sequence == "ACCCTAACCC"</pre></li>
      * </ul>
-     * @throws AvroRemoteException if there's a communication problem
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
     public void searchForExpectedReferenceBases() throws AvroRemoteException {

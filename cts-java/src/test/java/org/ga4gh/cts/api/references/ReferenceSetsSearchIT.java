@@ -5,6 +5,7 @@ import org.apache.avro.AvroRemoteException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.reads.ReadsTests;
+import org.ga4gh.methods.GAException;
 import org.ga4gh.methods.SearchReferenceSetsRequest;
 import org.ga4gh.methods.SearchReferenceSetsResponse;
 import org.ga4gh.models.ReferenceSet;
@@ -39,7 +40,7 @@ public class ReferenceSetsSearchIT {
      * <li>Query 2: <pre>/referencesets/(ref set ID)</pre></li>
      * <li>Test 2: assert that the ID of the returned object == ref set ID above.</li>
      * </ul>
-     * @throws AvroRemoteException if there's a communication problem
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
     public void searchForExpectedReferenceSets() throws AvroRemoteException {

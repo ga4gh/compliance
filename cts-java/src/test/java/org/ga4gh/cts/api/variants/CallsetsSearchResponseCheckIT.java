@@ -6,15 +6,13 @@ import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.apache.avro.AvroRemoteException;
 import org.ga4gh.ctk.CtkLogs;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.TransportUtils;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.SearchCallSetsRequest;
-import org.ga4gh.methods.SearchCallSetsResponse;
-import org.ga4gh.methods.SearchVariantSetsRequest;
-import org.ga4gh.methods.SearchVariantSetsResponse;
+import org.ga4gh.methods.*;
 import org.ga4gh.models.CallSet;
 import org.ga4gh.models.VariantSet;
 import org.junit.Test;
@@ -135,7 +133,7 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
      * that it contains &gt; 0 {@link CallSet} objects. We can check that the call sets have
      * distinct ID values.</li>
      * </ul>
-     * @throws AvroRemoteException if there's a communication problem
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
     public void searchForExpectedCallSets() throws AvroRemoteException {
@@ -161,7 +159,7 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
 
     /**
      * Test getting a call set with a valid ID.
-     * @throws AvroRemoteException if there's a communication problem
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
     public void getCallSetWithValidIDShouldSucceed() throws AvroRemoteException {
@@ -197,16 +195,18 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
     }
 
     /**
-     * Test getting a call set with an invalid ID.
-     * @throws AvroRemoteException if there's a communication problem
+     * Test getting a call set with an invalid ID.  It should fail with NOT_FOUND.
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Test
     public void getCallSetWithInvalidIDShouldFail() throws AvroRemoteException {
         final String nonexistentCallSetId = Utils.randomId();
 
         // fetch the CallSet with that ID
-        final CallSet callSetFromGet = client.variants.getCallSet(nonexistentCallSetId);
-        assertThat(callSetFromGet).isNull();
+        final GAWrapperException t =
+                Utils.catchGAWrapperException(() -> client.variants.getCallSet(nonexistentCallSetId));
+        assertThat(t.getHttpStatusCode()).isEqualTo(HttpURLConnection.HTTP_NOT_FOUND);
     }
 
 
