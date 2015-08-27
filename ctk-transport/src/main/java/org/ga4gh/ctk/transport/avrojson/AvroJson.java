@@ -17,6 +17,7 @@ import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.http.HttpStatus;
 import org.apache.http.HttpVersion;
 import org.apache.http.message.BasicStatusLine;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.WireTracker;
 import org.ga4gh.methods.GAException;
 
@@ -270,13 +271,14 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
     private void updateTheRespAndLogMessages(String postOrGet) throws GAException {
         // httpResp can be null (e.g., a timeout)
         if (httpResp != null) {
-            if (httpResp.getStatus() != HttpStatus.SC_OK) {
+            final int httpStatus = httpResp.getStatus();
+            if (httpStatus != HttpStatus.SC_OK) {
                 final String json = httpResp.getBody().toString();
                 final Gson gson = makeGson();
                 try {
-                    final GAException exception = gson.fromJson(json, GAException.class);
-                    log.info("Throwing GAException for "+json);
-                    throw exception;
+                    final GAException cause = gson.fromJson(json, GAException.class);
+                    log.info("Throwing GAException for " + json + ", status " + httpStatus);
+                    throw new GAWrapperException(cause, httpStatus);
                 } catch (JsonSyntaxException e) {
                     log.warn("Parse failure on GAException: BODY < " + json + " > " + e.toString());
                 }

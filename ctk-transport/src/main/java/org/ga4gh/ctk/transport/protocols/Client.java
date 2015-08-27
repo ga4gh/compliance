@@ -284,7 +284,6 @@ public class Client {
          */
         @Override
         public SearchReadGroupSetsResponse searchReadGroupSets(SearchReadGroupSetsRequest request)
-
                 throws AvroRemoteException {
             String path = urls.getSearchReadGroupSets();
             // we use an empty concrete response class to pass into the Parameterized AvroJson
@@ -340,8 +339,8 @@ public class Client {
          * @throws AvroRemoteException if there's a communication problem
          */
         @Override
-        public SearchDatasetsResponse searchDatasets(SearchDatasetsRequest request) throws
-                AvroRemoteException {
+        public SearchDatasetsResponse searchDatasets(SearchDatasetsRequest request)
+                throws AvroRemoteException {
             String path = urls.getSearchDatasets();
             SearchDatasetsResponse response = new SearchDatasetsResponse();
             final AvroJson aj =

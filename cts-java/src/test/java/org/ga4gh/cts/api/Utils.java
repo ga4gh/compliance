@@ -1,11 +1,16 @@
 package org.ga4gh.cts.api;
 
+import org.assertj.core.api.ThrowableAssert;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.models.Program;
 import org.ga4gh.models.ReadAlignment;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+
+import static org.assertj.core.api.StrictAssertions.catchThrowable;
 
 /**
  * Handy test-related static methods and data.
@@ -95,4 +100,13 @@ public class Utils {
         return UUID.randomUUID().toString();
     }
 
+    /**
+     * Convenience method to catch a {@link GAWrapperException} and cast the return value to that type.
+     * @param shouldRaiseThrowable the {@link Callable} we're calling
+     * @return the {@link Throwable} thrown in the execution of the {@link Callable}
+     */
+    public static GAWrapperException catchGAWrapperException(ThrowableAssert.ThrowingCallable
+                                                                      shouldRaiseThrowable) {
+        return (GAWrapperException)catchThrowable(shouldRaiseThrowable);
+    }
 }
