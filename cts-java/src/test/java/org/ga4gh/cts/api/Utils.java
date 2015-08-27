@@ -1,11 +1,16 @@
 package org.ga4gh.cts.api;
 
+import org.assertj.core.api.ThrowableAssert;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.models.Program;
 import org.ga4gh.models.ReadAlignment;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+
+import static org.assertj.core.api.StrictAssertions.catchThrowable;
 
 /**
  * Handy test-related static methods and data.
@@ -77,10 +82,31 @@ public class Utils {
     /**
      * Create and return an ID that's (virtually) guaranteed not to name a real object on a
      * GA4GH server.  It uses {@link UUID#randomUUID()} to do it.
+     * This is identical to {@link #randomName()} but for the name.
      * @return an ID that's (virtually) guaranteed not to name a real object
      */
     public static String randomId() {
         return UUID.randomUUID().toString();
     }
 
+
+    /**
+     * Create and return a name that's (virtually) guaranteed not to name a real object on a
+     * GA4GH server.  It uses {@link UUID#randomUUID()} to do it.
+     * This is identical to {@link #randomId()} but for the name.
+     * @return a name that's (virtually) guaranteed not to name a real object
+     */
+    public static String randomName() {
+        return UUID.randomUUID().toString();
+    }
+
+    /**
+     * Convenience method to catch a {@link GAWrapperException} and cast the return value to that type.
+     * @param shouldRaiseThrowable the {@link Callable} we're calling
+     * @return the {@link Throwable} thrown in the execution of the {@link Callable}
+     */
+    public static GAWrapperException catchGAWrapperException(ThrowableAssert.ThrowingCallable
+                                                                      shouldRaiseThrowable) {
+        return (GAWrapperException)catchThrowable(shouldRaiseThrowable);
+    }
 }

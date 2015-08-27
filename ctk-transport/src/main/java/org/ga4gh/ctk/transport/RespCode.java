@@ -29,20 +29,41 @@ public enum RespCode {
         this.code=value;
     }
 
-    public static RespCode fromInt(int val){
-        for(RespCode rc : values()){
-            if(rc.code == val){
+    /**
+     * Convert the HTTP status code to a {@link RespCode} value.
+     * @param code the HTTP status code
+     * @return the corresponding {@link RespCode}, or {@link #NOT_IMPLEMENTED} if not present
+     */
+    public static RespCode fromInt(int code) {
+        for (RespCode rc : values()) {
+            if (rc.code == code) {
                 return rc;
             }
         }
-        org.slf4j.LoggerFactory.getLogger("org.ga4gh.ctk.transport.RespCode")
-                .warn("Unexpected value lookup for RespCode: "+ val);
+        org.slf4j.LoggerFactory.getLogger(RespCode.class.getName())
+                               .warn("Unexpected value lookup for RespCode: " + code);
         return NOT_IMPLEMENTED;
     }
 
-    public static boolean isKnownResponse(int val){
-        for (RespCode rc : values())
-            if(rc.code == val) return true;
+    /**
+     * Return true if the provided code can be mapped to a value in the {@link RespCode} enum.
+     * @param code the HTTP response code
+     * @return true if the provided code can be mapped to a value in the {@link RespCode} enum
+     */
+    public static boolean isKnownResponse(int code) {
+        for (RespCode rc : values()) {
+            if (rc.code == code) {
+                return true;
+            }
+        }
         return false;
+    }
+
+    /**
+     * Return the numeric code.
+     * @return the numeric code
+     */
+    public int getCode() {
+        return code;
     }
 }

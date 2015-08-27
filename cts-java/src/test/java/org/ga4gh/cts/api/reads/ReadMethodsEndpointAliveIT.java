@@ -2,28 +2,27 @@ package org.ga4gh.cts.api.reads;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
-import org.assertj.core.api.JUnitSoftAssertions;
+import org.apache.avro.AvroRemoteException;
 import org.ga4gh.ctk.CtkLogs;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.RespCode;
 import org.ga4gh.ctk.transport.URLMAPPING;
-import org.ga4gh.ctk.transport.WireTracker;
-import org.ga4gh.ctk.transport.WireTrackerAssert;
 import org.ga4gh.ctk.transport.protocols.Client;
-import org.ga4gh.methods.SearchReadGroupSetsRequest;
-import org.ga4gh.methods.SearchReadGroupSetsResponse;
-import org.ga4gh.methods.SearchReadsRequest;
-import org.ga4gh.methods.SearchReadsResponse;
-import org.junit.Rule;
+import org.ga4gh.cts.api.TestData;
+import org.ga4gh.methods.*;
+import org.ga4gh.models.ReadGroup;
+import org.ga4gh.models.ReadGroupSet;
+import org.ga4gh.models.ReferenceSet;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.net.HttpURLConnection;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.ga4gh.cts.api.Utils.aSingle;
+import static org.ga4gh.cts.api.Utils.catchGAWrapperException;
 
 /**
  * <p>Verifies basic sanity of the reads/search API.</p>
@@ -49,8 +48,46 @@ public class ReadMethodsEndpointAliveIT implements CtkLogs {
 
     private static Client client = new Client(URLMAPPING.getInstance());
 
-    @Rule
-    public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
+    /**
+     * Utility method to fetch the ID of a reference to which we can map the reads we're testing.
+     * @return the ID of a reference
+     * @throws AvroRemoteException is the server throws an exception or there's an I/O error
+     */
+    private static String getValidReferenceId() throws AvroRemoteException {
+        final SearchReferenceSetsRequest refSetReq = SearchReferenceSetsRequest.newBuilder().build();
+        final SearchReferenceSetsResponse refSetResp = client.references.searchReferenceSets(refSetReq);
+        assertThat(refSetResp).isNotNull();
+        assertThat(refSetResp.getReferenceSets()).isNotNull().isNotEmpty();
+        final ReferenceSet refSet = refSetResp.getReferenceSets().get(0);
+
+        final List<String> refIds = refSet.getReferenceIds();
+        assertThat(refIds).isNotNull().isNotEmpty();
+        return refIds.get(0);
+    }
+
+    /**
+     * Utility method to fetch the ID of an arbitrary ReadGroup.
+     * @return the ID of an arbitrary ReadGroup
+     * @throws AvroRemoteException is the server throws an exception or there's an I/O error
+     */
+    private static String getReadGroupId() throws AvroRemoteException {
+        final SearchReadGroupSetsRequest readGroupSetsReq =
+                SearchReadGroupSetsRequest
+                        .newBuilder()
+                        .setDatasetId(TestData.getDatasetId())
+                        .build();
+        final SearchReadGroupSetsResponse readGroupSetsResp =
+                client.reads.searchReadGroupSets(readGroupSetsReq);
+        assertThat(readGroupSetsResp).isNotNull();
+        final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSets();
+        assertThat(readGroupSets).isNotEmpty().isNotNull();
+        final ReadGroupSet readGroupSet = readGroupSets.get(0);
+        List<ReadGroup> readGroups = readGroupSet.getReadGroups();
+        assertThat(readGroups).isNotEmpty().isNotNull();
+        final ReadGroup readGroup = readGroups.get(0);
+        assertThat(readGroup).isNotNull();
+        return readGroup.getId();
+    }
 
     /**
      * Show that a SearchReadsRequest is accepted and
@@ -60,48 +97,50 @@ public class ReadMethodsEndpointAliveIT implements CtkLogs {
      */
     @Test
     public void defaultReadsRequestGetsNullAlignments() throws Exception {
-        // do a read search
-        SearchReadsRequest srr = SearchReadsRequest.newBuilder()
-                                                    .build();
-        SearchReadsResponse rtn = client.reads.searchReads(srr);
+
+        // first get a valid reference to map our read to
+        final String refId = getValidReferenceId();
+
+        final String readGroupId = getReadGroupId();
+
+        // then do a read search
+        final SearchReadsRequest srr =
+                SearchReadsRequest.newBuilder()
+                                  .setReadGroupIds(aSingle(readGroupId))
+                                  .setStart(0L)
+                                  .setEnd(150L)
+                                  .setReferenceId(refId)
+                                  .build();
+        final SearchReadsResponse rtn = client.reads.searchReads(srr);
         assertThat(rtn.getAlignments()).isNullOrEmpty();
     }
 
     /**
-     * Show that a SearchReadGroupSetsRequest is accepted and
-     * returns a parseable Response.
+     * Check that an unmatched {@link SearchReadsRequest} results in a thrown exception.
      *
+     * @param readGroupId the ReadGroup ID, passed in using the @Parameters annotation
      * @throws Exception the exception
      */
-    @Test
-    public void defaultReadgroupsetsRequestGetsResponse() throws Exception {
-        SearchReadGroupSetsRequest srgs =
-                SearchReadGroupSetsRequest.newBuilder().build();
-        SearchReadGroupSetsResponse rtn = client.reads.searchReadGroupSets(srgs);
-
-        assertThat(rtn).isNotNull();
-    }
-
-    /**
-     * Unmatched SearchReadsRequest elicits error msg.
-     *
-     * @param rgid the rgid
-     * @throws Exception the exception
-     */
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Test
     @Parameters({
             "myNonsenseId", "foo", ""
     })
-    public void unmatchedReadgroupidElicitsErrorMsg(String rgid) throws Exception {
-        SearchReadsRequest srr =
-                SearchReadsRequest.newBuilder()
-                                  .setReadGroupIds(aSingle(rgid))
-                                  .build();
-        WireTracker mywt = new WireTracker();
-        SearchReadsResponse rtn = client.reads.searchReads(srr, mywt);
+    public void unmatchedReadGroupIdElicitsErrorMsg(String readGroupId) throws Exception {
+        // get a valid reference to map our read to
+        final String refId = getValidReferenceId();
 
-        WireTrackerAssert.assertThat(mywt)
-                         .hasResponseStatus(RespCode.NOT_FOUND);
+        final SearchReadsRequest searchReadsReq =
+                SearchReadsRequest.newBuilder()
+                                  .setReadGroupIds(aSingle(readGroupId))
+                                  .setStart(0L)
+                                  .setEnd(150L)
+                                  .setReferenceId(refId)
+                                  .build();
+
+        GAWrapperException t =
+                catchGAWrapperException(() -> client.reads.searchReads(searchReadsReq));
+        assertThat(t.getHttpStatusCode()).isEqualTo(HttpURLConnection.HTTP_NOT_FOUND);
     }
 
     /**
@@ -114,16 +153,17 @@ public class ReadMethodsEndpointAliveIT implements CtkLogs {
      *     <li>a repeated set of valid readgroupID</li>
      * </ul>
      *
-     * @param rgid the rgid
+     * @param readGroupId the readgroup ID
      * @param expStatus the exp status
      * @throws Exception the exception
      */
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Test
     // Normally we'd just pass in the strings here, but the parameters are used
     // to create final TAP output streams, so the parameter values need to be
     // legal filenames ... this means, no colons in the readGroupIds!
     // The workaround is simple enough, and actually seems a bit more readable,
-    // so we'll pass in a (valid) key to a static Map (see rgidMap just below),
+    // so we'll pass in a (valid) key to a static Map (see readGroupIdMap just below),
     // and in the test method we'll look up the actual parameter.
     @Parameters({
             "TWO_GOOD, NOT_IMPLEMENTED",
@@ -131,17 +171,14 @@ public class ReadMethodsEndpointAliveIT implements CtkLogs {
             "TWO_BAD, NOT_IMPLEMENTED",
             "THREE_GOOD, NOT_IMPLEMENTED"
     })
-    public void multipleReadGroupsNotSupported(String rgid, RespCode expStatus) throws Exception {
-        String replacedRgid = rgidMap.get(rgid);
+    public void multipleReadGroupsNotSupported(String readGroupId, RespCode expStatus) throws Exception {
+        String replacedReadGroupId = readGroupIdMap.get(readGroupId);
         SearchReadsRequest srr =
                 SearchReadsRequest.newBuilder()
-                                  .setReadGroupIds(Arrays.asList(replacedRgid.split(";")))
+                                  .setReadGroupIds(Arrays.asList(replacedReadGroupId.split(";")))
                                   .build();
-        WireTracker mywt = new WireTracker();
-        SearchReadsResponse rtn = client.reads.searchReads(srr, mywt);
-        WireTrackerAssert.assertThat(mywt)
-                         .hasResponseStatus(expStatus);
-        assertThat(mywt.gotParseableGAE()).isTrue();
+        GAWrapperException e = catchGAWrapperException(() -> client.reads.searchReads(srr));
+        assertThat(e.getHttpStatusCode()).isEqualTo(expStatus.getCode());
     }
 
     /**
@@ -149,29 +186,35 @@ public class ReadMethodsEndpointAliveIT implements CtkLogs {
      * parameters string the test method wants, to get around problem that
      * GA4GH readGroupID are not necessarily valid filenames
      */
-    private static Map<String,String> rgidMap;
+    private static Map<String,String> readGroupIdMap;
     static {
-        rgidMap = new HashMap<>();
-        rgidMap.put("TWO_GOOD","low-coverage:HG00534;low-coverage:HG00533");
-        rgidMap.put("ONE_GOOD_ONE_BAD","low-coverage:HG00534;BAD_ID");
-        rgidMap.put("TWO_BAD", "DUMB_ID;BAD_ID");
-        rgidMap.put("THREE_GOOD", "low-coverage:HG00534;low-coverage:HG00533;low-coverage:HG00533");
+        readGroupIdMap = new HashMap<>();
+        readGroupIdMap.put("TWO_GOOD", "low-coverage:HG00534;low-coverage:HG00533");
+        readGroupIdMap.put("ONE_GOOD_ONE_BAD", "low-coverage:HG00534;BAD_ID");
+        readGroupIdMap.put("TWO_BAD", "DUMB_ID;BAD_ID");
+        readGroupIdMap.put("THREE_GOOD", "low-coverage:HG00534;low-coverage:HG00533;low-coverage:HG00533");
     }
 
     /**
-     * <p>Shows that attempting to supply 0 readgroup IDs in a SearchReadsRequest is sanely NOT_FOUND.</p>
+     * Check that attempting to supply 0 readgroup IDs in a {@link SearchReadsRequest} is not OK.
+     *
      * @throws Exception the exception
      */
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Test
     public void emptyReadGroupIdIsNotFound() throws Exception {
-        SearchReadsRequest srr =
+        // first get a valid reference to map our read to
+        final String refId = getValidReferenceId();
+
+        final SearchReadsRequest srr =
                 SearchReadsRequest.newBuilder()
-                                  .setReadGroupIds(aSingle(""))
+                                  .setReadGroupIds(Collections.emptyList())
+                                  .setStart(0L)
+                                  .setEnd(150L)
+                                  .setReferenceId(refId)
                                   .build();
-        WireTracker mywt = new WireTracker();
-        SearchReadsResponse rtn = client.reads.searchReads(srr, mywt);
-        WireTrackerAssert.assertThat(mywt)
-                         .hasResponseStatus(RespCode.NOT_FOUND);
+        final GAWrapperException t = catchGAWrapperException(() -> client.reads.searchReads(srr));
+        assertThat(t.getHttpStatusCode()).isEqualTo(HttpURLConnection.HTTP_NOT_IMPLEMENTED);
     }
 
 }

@@ -7,6 +7,7 @@ import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
+import org.ga4gh.methods.GAException;
 import org.ga4gh.methods.SearchReadGroupSetsRequest;
 import org.ga4gh.methods.SearchReadGroupSetsResponse;
 import org.ga4gh.methods.SearchReadGroupSetsResponseAssert;
@@ -29,11 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(JUnitParamsRunner.class)
 public class ReadGroupSetsSearchIT implements CtkLogs {
 
-    private static final String BAD_DATASET_ID = "foobar";
-
     private static Client client = new Client(URLMAPPING.getInstance());
-
-    private static String BAD_READGROUPSET_NAME = "xyzzy";
 
     /**
      * Returrn the number of Strings that match the possible substring.
@@ -78,12 +75,14 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
     @Test
     public void readGroupSetsNonexistentNameShouldMatchNothing() throws AvroRemoteException {
         // try to fetch a read group set with a name the server can't match
-        final SearchReadGroupSetsRequest badReq =
-                SearchReadGroupSetsRequest.newBuilder().
-                        setDatasetId(TestData.getDatasetId()).setName(BAD_READGROUPSET_NAME).build();
-        SearchReadGroupSetsResponse badResp = client.reads.searchReadGroupSets(badReq);
-        final List<ReadGroupSet> emptyRgSets = badResp.getReadGroupSets();
-        assertThat(emptyRgSets).isEmpty();
+        final SearchReadGroupSetsRequest badNameReq =
+                SearchReadGroupSetsRequest.newBuilder()
+                                          .setDatasetId(TestData.getDatasetId())
+                                          .setName(Utils.randomName())
+                                          .build();
+        final SearchReadGroupSetsResponse badNameResp = client.reads.searchReadGroupSets(badNameReq);
+        final List<ReadGroupSet> emptyReadGroupSets = badNameResp.getReadGroupSets();
+        assertThat(emptyReadGroupSets).isEmpty();
     }
 
     /**
@@ -98,7 +97,7 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
     public void readgroupSetResponseForNonexistentDatasetIdShouldReturnEmptyList() throws AvroRemoteException {
         SearchReadGroupSetsRequest reqb =
                 SearchReadGroupSetsRequest.newBuilder()
-                                          .setDatasetId(BAD_DATASET_ID)
+                                          .setDatasetId(Utils.randomId())
                                           .build();
         SearchReadGroupSetsResponse rtnVal = client.reads.searchReadGroupSets(reqb);
         // avro says always get a 200
@@ -115,7 +114,7 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
      * of type Experiment; datasetId == &lt;dataset ID&gt;; a program of type {@link Program}
      * which is not empty.
      * </ul>
-     * @throws AvroRemoteException if there's a communication problem
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
     public void requestForAllReadGroupSetsShouldReturnAllWellFormed() throws AvroRemoteException {

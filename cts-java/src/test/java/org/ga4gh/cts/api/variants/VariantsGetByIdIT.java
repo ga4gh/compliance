@@ -5,10 +5,7 @@ import org.apache.avro.AvroRemoteException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
-import org.ga4gh.methods.SearchVariantSetsRequest;
-import org.ga4gh.methods.SearchVariantSetsResponse;
-import org.ga4gh.methods.SearchVariantsRequest;
-import org.ga4gh.methods.SearchVariantsResponse;
+import org.ga4gh.methods.*;
 import org.ga4gh.models.Variant;
 import org.ga4gh.models.VariantSet;
 import org.junit.Test;
@@ -33,7 +30,7 @@ public class VariantsGetByIdIT {
     /**
      * Verify that Variants that we obtain by way of {@link SearchVariantsRequest} match the ones
      * we get via <tt>GET /variants/{id}</tt>.
-     * @throws AvroRemoteException if there's a communication problem
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
     public void checkVariantsGetResultsMatchSearchResults() throws AvroRemoteException {
