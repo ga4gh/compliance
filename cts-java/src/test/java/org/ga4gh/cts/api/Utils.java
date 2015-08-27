@@ -77,9 +77,21 @@ public class Utils {
     /**
      * Create and return an ID that's (virtually) guaranteed not to name a real object on a
      * GA4GH server.  It uses {@link UUID#randomUUID()} to do it.
+     * This is identical to {@link #randomName()} but for the name.
      * @return an ID that's (virtually) guaranteed not to name a real object
      */
     public static String randomId() {
+        return UUID.randomUUID().toString();
+    }
+
+
+    /**
+     * Create and return a name that's (virtually) guaranteed not to name a real object on a
+     * GA4GH server.  It uses {@link UUID#randomUUID()} to do it.
+     * This is identical to {@link #randomId()} but for the name.
+     * @return a name that's (virtually) guaranteed not to name a real object
+     */
+    public static String randomName() {
         return UUID.randomUUID().toString();
     }
 

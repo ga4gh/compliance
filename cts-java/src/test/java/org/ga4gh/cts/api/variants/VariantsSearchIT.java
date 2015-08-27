@@ -5,10 +5,7 @@ import org.ga4gh.ctk.CtkLogs;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
-import org.ga4gh.methods.SearchVariantSetsRequest;
-import org.ga4gh.methods.SearchVariantSetsResponse;
-import org.ga4gh.methods.SearchVariantsRequest;
-import org.ga4gh.methods.SearchVariantsResponse;
+import org.ga4gh.methods.*;
 import org.ga4gh.models.Call;
 import org.ga4gh.models.Variant;
 import org.ga4gh.models.VariantSet;
@@ -42,7 +39,7 @@ public class VariantsSearchIT implements CtkLogs {
      * <li>Test 4: assert that the <tt>genotype</tt> field of the first {@link Call} is an array
      * of integers.</li>
      * </ul>
-     * @throws AvroRemoteException if there's a communication problem
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
     public void searchForExpectedVariants() throws AvroRemoteException {

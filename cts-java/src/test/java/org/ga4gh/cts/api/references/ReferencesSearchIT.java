@@ -6,6 +6,7 @@ import org.assertj.core.api.StrictAssertions;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.variants.VariantsTests;
+import org.ga4gh.methods.GAException;
 import org.ga4gh.methods.SearchReferencesRequest;
 import org.ga4gh.methods.SearchReferencesResponse;
 import org.ga4gh.models.Reference;
@@ -41,7 +42,7 @@ public class ReferencesSearchIT {
      * <li>Query 2: <pre>/references/(ref ID)</pre></li>
      * <li>Test 2: assert that the returned {@link Reference} has <pre>ID == ref ID</pre></li>
      * </ul>
-     * @throws AvroRemoteException if there's a communication problem
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
     public void searchForExpectedReferences() throws AvroRemoteException {

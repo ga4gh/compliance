@@ -4,6 +4,7 @@ import org.apache.avro.AvroRemoteException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
+import org.ga4gh.methods.GAException;
 import org.ga4gh.methods.SearchReadGroupSetsRequest;
 import org.ga4gh.methods.SearchReadGroupSetsResponse;
 import org.ga4gh.models.ReadGroupSet;
@@ -26,7 +27,7 @@ public class ReadGroupSetsGetByIdIT {
      * Check that the {@link ReadGroupSet}s we get via search (1) have valid IDs in them; (2)
      * those IDs can be used to fetch identical {@link ReadGroupSet}s.
      *
-     * @throws AvroRemoteException if there's a communication problem
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
     public void testGetByIdMatchesSearch() throws AvroRemoteException {

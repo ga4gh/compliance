@@ -5,6 +5,7 @@ import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
+import org.ga4gh.methods.GAException;
 import org.ga4gh.methods.SearchDatasetsRequest;
 import org.ga4gh.methods.SearchDatasetsResponse;
 import org.ga4gh.models.Dataset;
@@ -14,6 +15,7 @@ import org.junit.experimental.categories.Category;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.StrictAssertions.catchThrowable;
 
 /**
  * Tests dealing with searching for datasets.
@@ -51,9 +53,14 @@ public class DatasetsSearchIT {
     @Test
     public void fetchDatasetWithBogusId() throws AvroRemoteException {
         final String nonexistentDatasetId = Utils.randomId();
-        // XXX getDataset isn't implemented on the ref server
-        final Dataset dataset = client.reads.getDataset(nonexistentDatasetId);
-        assertThat(dataset).isNull();
+
+        // this should throw a "no such dataset" GAException
+        final GAException didThrow =
+                (GAException)catchThrowable(() -> client.reads.getDataset(nonexistentDatasetId));
+
+        // XXX getDataset isn't implemented on the ref server, so be careful to check it's not that
+        assertThat(didThrow).isInstanceOf(GAException.class);
+        assertThat(didThrow.getMessage$().contains("Path")).isFalse();
     }
 
     @Test

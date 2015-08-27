@@ -11,10 +11,7 @@ import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.SearchCallSetsRequest;
-import org.ga4gh.methods.SearchCallSetsResponse;
-import org.ga4gh.methods.SearchVariantSetsRequest;
-import org.ga4gh.methods.SearchVariantSetsResponse;
+import org.ga4gh.methods.*;
 import org.ga4gh.models.CallSet;
 import org.ga4gh.models.VariantSet;
 import org.junit.Test;
@@ -135,7 +132,7 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
      * that it contains &gt; 0 {@link CallSet} objects. We can check that the call sets have
      * distinct ID values.</li>
      * </ul>
-     * @throws AvroRemoteException if there's a communication problem
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
     public void searchForExpectedCallSets() throws AvroRemoteException {
@@ -161,7 +158,7 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
 
     /**
      * Test getting a call set with a valid ID.
-     * @throws AvroRemoteException if there's a communication problem
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
     public void getCallSetWithValidIDShouldSucceed() throws AvroRemoteException {
@@ -198,7 +195,7 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
 
     /**
      * Test getting a call set with an invalid ID.
-     * @throws AvroRemoteException if there's a communication problem
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
     public void getCallSetWithInvalidIDShouldFail() throws AvroRemoteException {

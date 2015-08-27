@@ -6,15 +6,11 @@ import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.SearchReadGroupSetsRequest;
-import org.ga4gh.methods.SearchReadGroupSetsResponse;
-import org.ga4gh.methods.SearchReadsRequest;
-import org.ga4gh.methods.SearchReadsResponse;
+import org.ga4gh.methods.*;
 import org.ga4gh.models.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -49,7 +45,7 @@ public class ReadsSearchIT implements CtkLogs {
      * alignment of type {@link LinearAlignment} with field cigar holding a {@link CigarUnit}.</li>
      * </ul>
      *
-     * @throws AvroRemoteException if there's a communication problem
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
     public void searchReads() throws AvroRemoteException {
@@ -131,7 +127,7 @@ public class ReadsSearchIT implements CtkLogs {
     public void searchReadsWithAllNamesReturnsAllMatching() throws Exception {
         final SearchReadsRequest request =
                 SearchReadsRequest.newBuilder()
-                                  .setReadGroupIds(Arrays.asList(TestData.SOME_EXPECTED_READGROUP_NAMES))
+                                  .setReadGroupIds(TestData.EXPECTED_READGROUP_NAMES)
                                   .build();
         final SearchReadsResponse response = client.reads.searchReads(request);
 
@@ -151,7 +147,7 @@ public class ReadsSearchIT implements CtkLogs {
      */
     @Test
     public void readsResponseMatchesACTGNPattern() throws Exception {
-        for (String readGroupName : TestData.SOME_EXPECTED_READGROUP_NAMES) {
+        for (String readGroupName : TestData.EXPECTED_READGROUP_NAMES) {
             SearchReadsRequest request = SearchReadsRequest.newBuilder()
                                                            .setReadGroupIds(aSingle(readGroupName))
                                                            .build();
