@@ -6,6 +6,7 @@ import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.apache.avro.AvroRemoteException;
 import org.ga4gh.ctk.CtkLogs;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.TransportUtils;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
@@ -194,16 +195,18 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
     }
 
     /**
-     * Test getting a call set with an invalid ID.
+     * Test getting a call set with an invalid ID.  It should fail with NOT_FOUND.
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Test
     public void getCallSetWithInvalidIDShouldFail() throws AvroRemoteException {
         final String nonexistentCallSetId = Utils.randomId();
 
         // fetch the CallSet with that ID
-        final CallSet callSetFromGet = client.variants.getCallSet(nonexistentCallSetId);
-        assertThat(callSetFromGet).isNull();
+        final GAWrapperException t =
+                Utils.catchGAWrapperException(() -> client.variants.getCallSet(nonexistentCallSetId));
+        assertThat(t.getHttpStatusCode()).isEqualTo(HttpURLConnection.HTTP_NOT_FOUND);
     }
 
 

@@ -138,7 +138,7 @@ public class ReadMethodsEndpointAliveIT implements CtkLogs {
                                   .setReferenceId(refId)
                                   .build();
 
-        GAWrapperException t =
+        final GAWrapperException t =
                 catchGAWrapperException(() -> client.reads.searchReads(searchReadsReq));
         assertThat(t.getHttpStatusCode()).isEqualTo(HttpURLConnection.HTTP_NOT_FOUND);
     }
@@ -177,7 +177,7 @@ public class ReadMethodsEndpointAliveIT implements CtkLogs {
                 SearchReadsRequest.newBuilder()
                                   .setReadGroupIds(Arrays.asList(replacedReadGroupId.split(";")))
                                   .build();
-        GAWrapperException e = catchGAWrapperException(() -> client.reads.searchReads(srr));
+        final GAWrapperException e = catchGAWrapperException(() -> client.reads.searchReads(srr));
         assertThat(e.getHttpStatusCode()).isEqualTo(expStatus.getCode());
     }
 
