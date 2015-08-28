@@ -29,7 +29,7 @@ public class Utils {
      * Certain AssertJ methods accept a variable number of args: <tt>assertThat(Collection).doesNotContain(...)</tt>,
      * for instance.  Sometimes we want to pass null to such a method, but the IDE complains that this is "confusing."
      * If we supply a typed value, the complaint goes away.
-     * This is a null suitable for use where we might want to pass a {@link Program}.
+     * This is a null suitable for use where we might want to pass a {@link Program} to a varargs method.
      */
     public static final Program nullProgram = null;
 
@@ -37,7 +37,7 @@ public class Utils {
      * Certain AssertJ methods accept a variable number of args: <tt>assertThat(Collection).doesNotContain(...)</tt>,
      * for instance.  Sometimes we want to pass null to such a method, but the IDE complains that this is "confusing."
      * If we supply a typed value, the complaint goes away.
-     * This is a null suitable for use where we might want to pass a {@link ReadAlignment}.
+     * This is a null suitable for use where we might want to pass a {@link ReadAlignment} to a varargs method.
      */
     public static final ReadAlignment nullReadAlignment = null;
 
