@@ -16,8 +16,12 @@ Tests follow the normal JUnit pattern: a test class contains test methods, each 
 some server interaction, then makes some assertions about the results of the interaction (examining the returned status,
 or the returned object(s)).
 
-The CTK starts with normal JUnit, then provides two major GA4GH-specific facilities: datatyped-communications with the
-target server, and flexible assertions about the returned objects.
+The CTK starts with normal JUnit, then provides three major GA4GH-specific facilities:
+1. data-typed communications with the target server
+1. services to track and summarize communications and to provide domain-specific information based on the Schemas
+1. fluent test-assertions about the domain objects (and collections of them)
+
+The following sections elaborate on each of these in terms of writing tests.
 
 ### JUnit Test Mechanics
 
@@ -90,6 +94,24 @@ reachable and responsive.
 - Optionally create marker interface for test control, in the **test** tree of `ctk-cli` at
 `org.ga4gh.ctk.control.API.FooTests.java`.
 - Optionally create `org.ga4gh.ctk.systests.FooTestSuite.java`.
+
+### Test-Support Services
+
+The CTK supplies two services, the Domain Information Service (DIS) and the TrafficLogService (TLS). The code for these is in the ```ctk-domain/src/main/java/org/ga4gh/ctk/services/``` package. You get access to these Services in a test class using the static getService() method on each them, e.g: ```TrafficLogService myTLS = TrafficLogService.getService()``` or ```DomainInformationService.getService()```. The service objects returned provide information access methods that your test can use to find out what data types or methods currently exist in the the domain, or what target server endpoints have been accessed, and so forth. For example usages, see the tests in ```cts-java/src/test/java/org/ga4gh/cts/api/zzCheckCoverage.java``` which evaluates the "completeness" of the CTS test run by comparing the data tracked by the TLS against the expectations set by the IDL as reported from the DIS.
+
+#### TLS Notes
+
+The TLS (```ctk-domain/src/main/java/org/ga4gh/ctk/services/TrafficLogService.java```) collects, stores, and reports on TrafficLog messages (```ctk-domain/src/main/java/org/ga4gh/ctk/domain/TrafficLog.java```). These messages are created in the ```ctk-transport``` layer when data is exchanged with the target server.
+
+The TLS can store the messages either in a volatile static Map, or in a Java Persistence Architecture "repository." The TLS uses the JPA repository if it is configured when you execute getService(), else it initializes the Map. The JPA repository is configured by the Spring framework when you run the Command Line Interface or Server launchers; however, when you directly run a test via a JUnit runner in an IDE or when you run tests under Maven, the JPA repository is *not* configured (because Spring does not run).
+
+The default TLS repository configuration is to use an embedded H2 database. 
+
+#### DIS Notes 
+The DIS (```ctk-domain/src/main/java/org/ga4gh/ctk/services/DomainInformationService.java```) collects and reports on the domain defined by the IDL. During maven build, the ctk-domain module generates a domain data types file, which lists the generated domain classes as an array of JSON strings. This file is identified by a property, ```ctk.domaintypesfile``` (in the CLI and Server configurations, this property is set in application.properties to a default of ```lib/avro-types.json``` but you can set it as you wish for running in different development environments).
+
+When you execute getService() the file is parsed to get the list classes, and and classes named Methods are also investigated using java reflection to identify the names and return types defined for their methods. The resulting data is available to tests using methods on the DIS instance.
+
 
 ### Assertions
 
