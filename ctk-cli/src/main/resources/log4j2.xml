@@ -25,8 +25,8 @@
         </Root>
 
         <!-- This sets the level for the CTK, independent of the framework classes
-(spring, etc). Note that since additivity is false, the CTK log messages do
-no percolate to the Root logger (or its Appender) -->
+             (spring, etc). Note that since additivity is false, the CTK log messages do
+             not percolate to the Root logger (or its Appender) -->
         <Logger name="org.ga4gh.ctk" level="warn" additivity="false">
             <AppenderRef ref="STDOUT"/>
         </Logger>
