@@ -25,27 +25,17 @@ public class VariantsSearchIT implements CtkLogs {
     private static Client client = new Client(URLMAPPING.getInstance());
 
     /**
-     * Search variants.  Fetches variants from the specified dataset.
-     * <ul>
-     * <li>Query 1: <pre>/variantsets/search datasetIds: 1 </pre>(passed in)</li>
-     * <li>Test 1: assert that we received a {@link SearchVariantSetsResponse} containing
-     * (how many? &gt; 0) {@link VariantSet} objects.  Get the ID of the first one.</li>
-     * <li>Query 2: <pre>/variants/search variantSetIds: [variantSetId] referenceName: '22' start:
-     *     51005353 end: 51015354 pageSize: 1</pre></li>
-     * <li>Test 2: assert that the first result is of type {@link Variant} AND has reference name
-     * == "22".</li>
-     * <li>Test 3: assert that the <tt>calls</tt> field (a {@link Call}) of that {@link Variant}
-     * is not null.</li>
-     * <li>Test 4: assert that the <tt>genotype</tt> field of the first {@link Call} is an array
-     * of integers.</li>
-     * </ul>
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * Fetch variants between two positions in the reference and count them.  The number must
+     * equal what we're expecting by visual examination of the variants data.
+     *
+     * @throws AvroRemoteException if there's a communication problem or
+     * server exception ({@link GAException})
      */
     @Test
-    public void searchForExpectedVariants() throws AvroRemoteException {
-        final String referenceName = "3";
-        final long start = 60156;
-        final long end = 60383;  // should be eight variants
+    public void checkExpectedNumberOfVariants() throws AvroRemoteException {
+        final long start = 50;
+        final long end = 100;
+        final int expectedNumberOfVariants = 6;
 
         final SearchVariantSetsRequest req =
                 SearchVariantSetsRequest.newBuilder()
@@ -60,19 +50,113 @@ public class VariantsSearchIT implements CtkLogs {
         final SearchVariantsRequest vReq =
                 SearchVariantsRequest.newBuilder()
                                      .setVariantSetId(id)
-                                     .setReferenceName(referenceName)
+                                     .setReferenceName(TestData.REFERENCE_NAME)
                                      .setStart(start).setEnd(end)
                                      .build();
         final SearchVariantsResponse vResp = client.variants.searchVariants(vReq);
         final List<Variant> searchVariants = vResp.getVariants();
-        final Variant firstVariant = searchVariants.get(0);
-        assertThat(firstVariant).isNotNull();
-        assertThat(firstVariant.getReferenceName()).isEqualTo(referenceName);
 
-        assertThat(firstVariant.getCalls()).isNotNull();
-        final Call call = firstVariant.getCalls().get(0);
-        assertThat(call).isNotNull();
-        assertThat(call.getGenotype()).isNotEmpty();
+        assertThat(searchVariants).hasSize(expectedNumberOfVariants);
+    }
+
+    /**
+     * Check that we receive the expected number of {@link VariantSet}s.
+     *
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     */
+    @Test
+    public void checkExpectedVariantSets() throws AvroRemoteException {
+        final int expectedNumberOfVariantSets = 1;
+
+        final SearchVariantSetsRequest req =
+                SearchVariantSetsRequest.newBuilder()
+                                        .setDatasetId(TestData.getDatasetId())
+                                        .build();
+        final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
+
+        final List<VariantSet> variantSets = resp.getVariantSets();
+        assertThat(variantSets).hasSize(expectedNumberOfVariantSets);
+    }
+
+    /**
+     * Check that the variants we receive from {@link org.ga4gh.ctk.transport.protocols.Client.Variants#searchVariants(SearchVariantsRequest)}
+     * search contain the expected reference name.
+     *
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     */
+    @Test
+    public void checkVariantsForExpectedReferenceName() throws AvroRemoteException {
+        final long start = 50;
+        final long end = 100;
+
+        final SearchVariantSetsRequest req =
+                SearchVariantSetsRequest.newBuilder()
+                                        .setDatasetId(TestData.getDatasetId())
+                                        .build();
+        final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
+
+        final List<VariantSet> variantSets = resp.getVariantSets();
+        assertThat(variantSets).isNotEmpty();
+        final String id = variantSets.get(0).getId();
+
+        final SearchVariantsRequest vReq =
+                SearchVariantsRequest.newBuilder()
+                                     .setVariantSetId(id)
+                                     .setReferenceName(TestData.REFERENCE_NAME)
+                                     .setStart(start).setEnd(end)
+                                     .build();
+        final SearchVariantsResponse vResp = client.variants.searchVariants(vReq);
+        final List<Variant> searchVariants = vResp.getVariants();
+
+        searchVariants.stream().forEach(v -> assertThat(v.getReferenceName()).isEqualTo(TestData.REFERENCE_NAME));
+
+        searchVariants.stream().forEach(v -> v.getCalls().stream().forEach(c -> assertThat(c).isNotNull()));
+    }
+
+    /**
+     * Check that the variants we receive from {@link org.ga4gh.ctk.transport.protocols.Client.Variants#searchVariants(SearchVariantsRequest)}
+     * search contain well-formed {@link Call}s.
+     *
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     */
+    @Test
+    public void checkCallsForWellFormedness() throws AvroRemoteException {
+        final long start = 50;
+        final long end = 100;
+
+        final SearchVariantSetsRequest req =
+                SearchVariantSetsRequest.newBuilder()
+                                        .setDatasetId(TestData.getDatasetId())
+                                        .build();
+        final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
+
+        final List<VariantSet> variantSets = resp.getVariantSets();
+        assertThat(variantSets).isNotEmpty();
+        final String id = variantSets.get(0).getId();
+
+        final SearchVariantsRequest vReq =
+                SearchVariantsRequest.newBuilder()
+                                     .setVariantSetId(id)
+                                     .setReferenceName(TestData.REFERENCE_NAME)
+                                     .setStart(start).setEnd(end)
+                                     .build();
+        final SearchVariantsResponse vResp = client.variants.searchVariants(vReq);
+        final List<Variant> searchVariants = vResp.getVariants();
+
+        searchVariants.stream().forEach(v -> v.getCalls().stream()
+                                              .forEach(c -> assertThat(c.getGenotype()).isNotNull().isNotEmpty()));
+
+        searchVariants.stream().forEach(v -> v.getCalls().stream()
+                                              .forEach(c -> assertThat(c.getGenotypeLikelihood()).isNotNull()));
+
+        searchVariants.stream().forEach(v -> v.getCalls().stream().forEach(c -> {
+            assertThat(c.getInfo()).isNotNull();
+            // check that the info map contains no null keys or values
+            c.getInfo().keySet().stream().forEach(key -> {
+                assertThat(key).isNotNull();
+                assertThat(c.getInfo().get(key)).isNotNull();
+            });
+        }));
     }
 
 }

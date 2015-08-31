@@ -34,9 +34,9 @@ public class VariantsGetByIdIT {
      */
     @Test
     public void checkVariantsGetResultsMatchSearchResults() throws AvroRemoteException {
-        final long start = 60156;
-        final long end = 60383;
-        final String referenceName = "3";
+        final long start = 50;
+        final long end = 100;
+        final int expectedNumberOfVariants = 6;
 
         // first get a variant set ID
         final SearchVariantSetsRequest searchVariantSetsReq =
@@ -54,7 +54,7 @@ public class VariantsGetByIdIT {
         final SearchVariantsRequest req =
                 SearchVariantsRequest.newBuilder()
                                      .setVariantSetId(variantSetId)
-                                     .setReferenceName(referenceName)
+                                     .setReferenceName(TestData.REFERENCE_NAME)
                                      .setStart(start)
                                      .setEnd(end)
                                      .build();

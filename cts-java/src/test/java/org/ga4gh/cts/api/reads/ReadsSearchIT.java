@@ -80,7 +80,6 @@ public class ReadsSearchIT implements CtkLogs {
         // first get a valid reference
         final String refId = Utils.getValidReferenceId(client);
 
-        final String referenceName = TestData.EXPECTED_REFERENCE_NAMES[0];
         final long start = 150;
         final long end = 160;
 
@@ -98,7 +97,7 @@ public class ReadsSearchIT implements CtkLogs {
         alignments.stream().forEach(read -> assertThat(read.getNextMatePosition()).isNotNull());
         alignments.stream()
                   .forEach(read -> assertThat(read.getNextMatePosition()
-                                                  .getReferenceName()).isEqualTo(referenceName));
+                                                  .getReferenceName()).isEqualTo(TestData.REFERENCE_NAME));
         alignments.stream().forEach(read -> assertThat(read.getAlignment()).isNotNull());
         alignments.stream().forEach(read -> assertThat(read.getAlignment().getCigar()).isNotNull());
     }
