@@ -2,23 +2,23 @@ package org.ga4gh.cts.api.reads;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
-import org.apache.avro.AvroRemoteException;
 import org.ga4gh.ctk.CtkLogs;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.RespCode;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
-import org.ga4gh.cts.api.TestData;
-import org.ga4gh.methods.*;
-import org.ga4gh.models.ReadGroup;
-import org.ga4gh.models.ReadGroupSet;
-import org.ga4gh.models.ReferenceSet;
+import org.ga4gh.cts.api.Utils;
+import org.ga4gh.methods.SearchReadsRequest;
+import org.ga4gh.methods.SearchReadsResponse;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import java.net.HttpURLConnection;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.ga4gh.cts.api.Utils.aSingle;
@@ -49,47 +49,6 @@ public class ReadMethodsEndpointAliveIT implements CtkLogs {
     private static Client client = new Client(URLMAPPING.getInstance());
 
     /**
-     * Utility method to fetch the ID of a reference to which we can map the reads we're testing.
-     * @return the ID of a reference
-     * @throws AvroRemoteException is the server throws an exception or there's an I/O error
-     */
-    private static String getValidReferenceId() throws AvroRemoteException {
-        final SearchReferenceSetsRequest refSetReq = SearchReferenceSetsRequest.newBuilder().build();
-        final SearchReferenceSetsResponse refSetResp = client.references.searchReferenceSets(refSetReq);
-        assertThat(refSetResp).isNotNull();
-        assertThat(refSetResp.getReferenceSets()).isNotNull().isNotEmpty();
-        final ReferenceSet refSet = refSetResp.getReferenceSets().get(0);
-
-        final List<String> refIds = refSet.getReferenceIds();
-        assertThat(refIds).isNotNull().isNotEmpty();
-        return refIds.get(0);
-    }
-
-    /**
-     * Utility method to fetch the ID of an arbitrary ReadGroup.
-     * @return the ID of an arbitrary ReadGroup
-     * @throws AvroRemoteException is the server throws an exception or there's an I/O error
-     */
-    private static String getReadGroupId() throws AvroRemoteException {
-        final SearchReadGroupSetsRequest readGroupSetsReq =
-                SearchReadGroupSetsRequest
-                        .newBuilder()
-                        .setDatasetId(TestData.getDatasetId())
-                        .build();
-        final SearchReadGroupSetsResponse readGroupSetsResp =
-                client.reads.searchReadGroupSets(readGroupSetsReq);
-        assertThat(readGroupSetsResp).isNotNull();
-        final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSets();
-        assertThat(readGroupSets).isNotEmpty().isNotNull();
-        final ReadGroupSet readGroupSet = readGroupSets.get(0);
-        List<ReadGroup> readGroups = readGroupSet.getReadGroups();
-        assertThat(readGroups).isNotEmpty().isNotNull();
-        final ReadGroup readGroup = readGroups.get(0);
-        assertThat(readGroup).isNotNull();
-        return readGroup.getId();
-    }
-
-    /**
      * Show that a SearchReadsRequest is accepted and
      * returns a parseable Response.
      *
@@ -99,9 +58,9 @@ public class ReadMethodsEndpointAliveIT implements CtkLogs {
     public void defaultReadsRequestGetsNullAlignments() throws Exception {
 
         // first get a valid reference to map our read to
-        final String refId = getValidReferenceId();
+        final String refId = Utils.getValidReferenceId(client);
 
-        final String readGroupId = getReadGroupId();
+        final String readGroupId = Utils.getReadGroupId(client);
 
         // then do a read search
         final SearchReadsRequest srr =
@@ -128,7 +87,7 @@ public class ReadMethodsEndpointAliveIT implements CtkLogs {
     })
     public void unmatchedReadGroupIdElicitsErrorMsg(String readGroupId) throws Exception {
         // get a valid reference to map our read to
-        final String refId = getValidReferenceId();
+        final String refId = Utils.getValidReferenceId(client);
 
         final SearchReadsRequest searchReadsReq =
                 SearchReadsRequest.newBuilder()
@@ -204,7 +163,7 @@ public class ReadMethodsEndpointAliveIT implements CtkLogs {
     @Test
     public void emptyReadGroupIdIsNotFound() throws Exception {
         // first get a valid reference to map our read to
-        final String refId = getValidReferenceId();
+        final String refId = Utils.getValidReferenceId(client);
 
         final SearchReadsRequest srr =
                 SearchReadsRequest.newBuilder()

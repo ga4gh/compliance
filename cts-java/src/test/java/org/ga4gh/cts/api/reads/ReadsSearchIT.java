@@ -2,25 +2,29 @@ package org.ga4gh.cts.api.reads;
 
 import org.apache.avro.AvroRemoteException;
 import org.ga4gh.ctk.CtkLogs;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
 import org.ga4gh.methods.*;
-import org.ga4gh.models.*;
+import org.ga4gh.models.ReadAlignment;
+import org.ga4gh.models.ReadGroup;
+import org.ga4gh.models.ReadGroupSet;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.net.HttpURLConnection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.ga4gh.cts.api.Utils.aSingle;
+import static org.ga4gh.cts.api.Utils.catchGAWrapperException;
 
 /**
- * <p>Verify that data returned from reads/search queries meets expectations.</p>
- *
- * <p>Created by Wayne Stidolph on 6/7/2015.</p>
+ * Verify that data returned from <tt>/reads/search</tt> queries meets expectations.
  */
 @Category(ReadsTests.class)
 public class ReadsSearchIT implements CtkLogs {
@@ -28,66 +32,69 @@ public class ReadsSearchIT implements CtkLogs {
     private static Client client = new Client(URLMAPPING.getInstance());
 
     /**
-     * Search reads. Looks up a read group set for NA12878 from the specified dataset, then fetches
-     * reads.
-     * <ul>
-     * <li>Query 1: <pre>/readgroupsets/search datasetId: "compliance-dataset1" name:
-     *     '(name)'</pre></li>
-     * <li>Test 1: assert that we received a {@link SearchReadGroupSetsResponse} containing an
-     * array of {@link ReadGroupSet}, length 1, with name '(name)'. Pull field 'id' from the
-     * first returned readGroups.</li>
-     * <li>Query 2: <pre>/reads/search readGroupIds: [id] referenceName: '(name)' start:
-     *     150 end: 160</pre></li>
-     * <li>Test 2: assert that the result is a {@link SearchReadsResponse} containing an
-     * array of &gt; 0 {@link ReadAlignment} objects.</li>
-     * <li>Test 3: assert that each of the {@link ReadAlignment} objects contains a
-     * nextMatePosition of type {@link Position} with reference name == "(name)" AND
-     * alignment of type {@link LinearAlignment} with field cigar holding a {@link CigarUnit}.</li>
-     * </ul>
+     * Call <tt>/reads/search</tt> with a range that contains zero reads, and verify that it returns none.
+     * (Adapted from an old JavaScript test.)
      *
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void searchReads() throws AvroRemoteException {
+    public void searchReadsWithUninterestingRangeProducesZeroReads() throws AvroRemoteException {
 
-        final String expectedReadGroupSetName = TestData.EXPECTED_READGROUPSETS_NAMES[0];
-        final String referenceName = TestData.EXPECTED_REFERENCE_NAMES[0];
-        final long start = 150;
-        final long end = 160;
+        final long emptyRangeStart = 150;
+        final long emptyRangeEnd = 160;
 
         final SearchReadGroupSetsRequest req =
                 SearchReadGroupSetsRequest.newBuilder()
                                           .setDatasetId(TestData.getDatasetId())
-                                          .setName(expectedReadGroupSetName)
                                           .build();
         final SearchReadGroupSetsResponse resp = client.reads.searchReadGroupSets(req);
 
         final List<ReadGroupSet> readGroupSets = resp.getReadGroupSets();
 
-        // test 1
-        assertThat(readGroupSets).hasSize(1);
-        final ReadGroupSet readGroupSet = readGroupSets.get(0); // need this below
-        readGroupSets.stream()
-                     .forEach(rgs -> assertThat(rgs.getName())
-                             .isEqualTo(expectedReadGroupSetName));
-
-        // query 2
-        final String readGroupSetId = readGroupSet.getId();
         final SearchReadsRequest srReq =
                 SearchReadsRequest.newBuilder()
-                                  .setReadGroupIds(aSingle(readGroupSetId))
-                                  .setStart(start)
-                                  .setEnd(end)
+                                  .setReferenceId(Utils.getValidReferenceId(client))
+                                  .setReadGroupIds(aSingle(Utils.getReadGroupId(client)))
+                                  .setStart(emptyRangeStart)
+                                  .setEnd(emptyRangeEnd)
                                   .build();
+        // XXX fails due to server issue #591
         final SearchReadsResponse srResp = client.reads.searchReads(srReq);
 
-        // test 2
         final List<ReadAlignment> alignments = srResp.getAlignments();
         assertThat(alignments).isNotEmpty();
 
         assertThat(alignments).doesNotContain(Utils.nullReadAlignment);
+    }
 
-        // test 3
+    /**
+     * Call <tt>/reads/search</tt> with a range that contains multiple reads, and verify
+     * they are well-formed.
+     * (Adapted from an old JavaScript test.)
+     *
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     */
+    @Test
+    public void searchReadsProducesWellFormedReads() throws AvroRemoteException {
+
+        // first get a valid reference
+        final String refId = Utils.getValidReferenceId(client);
+
+        final String referenceName = TestData.EXPECTED_REFERENCE_NAMES[0];
+        final long start = 150;
+        final long end = 160;
+
+        final SearchReadsRequest srReq =
+                SearchReadsRequest.newBuilder()
+                                  .setReferenceId(Utils.getValidReferenceId(client))
+                                  .setReadGroupIds(aSingle(Utils.getReadGroupId(client)))
+                                  .setStart(start)
+                                  .setEnd(end)
+                                  .build();
+        // XXX fails due to server issue #591
+        final SearchReadsResponse srResp = client.reads.searchReads(srReq);
+
+        final List<ReadAlignment> alignments = srResp.getAlignments();
         alignments.stream().forEach(read -> assertThat(read.getNextMatePosition()).isNotNull());
         alignments.stream()
                   .forEach(read -> assertThat(read.getNextMatePosition()
@@ -97,17 +104,76 @@ public class ReadsSearchIT implements CtkLogs {
     }
 
     /**
-     * Verify that passing zero read group names in a {@link SearchReadsRequest}
-     * returns all read groups.
+     * The <tt>searchReadGroupSets</tt> operation must return {@link ReadGroupSet}s with expected names.
+     * (Adapted from an old JavaScript test.)
+     *
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     */
+    @Test
+    public void searchReadGroupSetsMustReturnReadGroupSetsWithExpectedNames() throws AvroRemoteException {
+
+        final String expectedReadGroupSetName = TestData.EXPECTED_READGROUPSETS_NAMES[0];
+
+        final SearchReadGroupSetsRequest req =
+                SearchReadGroupSetsRequest.newBuilder()
+                                          .setDatasetId(TestData.getDatasetId())
+                                          .build();
+        final SearchReadGroupSetsResponse resp = client.reads.searchReadGroupSets(req);
+
+        final List<ReadGroupSet> readGroupSets = resp.getReadGroupSets();
+
+        assertThat(readGroupSets).hasSize(1);
+        readGroupSets.stream()
+                     .forEach(rgs -> assertThat(rgs.getName()).isEqualTo(expectedReadGroupSetName));
+    }
+
+    /**
+     * Verify that passing zero read group names in a {@link SearchReadsRequest} fails.
+     *
+     * @throws Exception if there's a problem we didn't catch
+     */
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
+    @Test
+    public void searchReadsWithNoIdsFails() throws Exception {
+
+        // first get a valid reference
+        final String refId = Utils.getValidReferenceId(client);
+
+        final SearchReadsRequest request =
+                SearchReadsRequest.newBuilder()
+                                  .setReadGroupIds(Collections.emptyList())
+                                  .setStart(0L)
+                                  .setEnd(150L)
+                                  .setReferenceId(refId)
+                                  .build();
+
+        final GAWrapperException t = catchGAWrapperException(() -> client.reads.searchReads(request));
+        assertThat(t.getHttpStatusCode()).isEqualTo(HttpURLConnection.HTTP_NOT_IMPLEMENTED);
+    }
+
+    /**
+     * Verify that passing one read group name in a {@link SearchReadsRequest}
+     * returns valid reads.
      *
      * @throws Exception if there's a problem
      */
     @Test
-    public void searchReadsWithNoNamesReturnsAll() throws Exception {
+    public void searchReadsWithOneReadGroupIdSucceeds() throws Exception {
+
+        // first get a valid reference
+        final String refId = Utils.getValidReferenceId(client);
+
+        // get a ReadGroup id
+        final String readGroupId = Utils.getReadGroupId(client);
+
         final SearchReadsRequest request =
                 SearchReadsRequest.newBuilder()
-                                  .setReadGroupIds(Collections.<String>emptyList())
+                                  .setReadGroupIds(aSingle(readGroupId))
+                                  .setStart(0L)
+                                  .setEnd(150L)
+                                  .setReferenceId(refId)
                                   .build();
+        // XXX fails due to server issue #591
         final SearchReadsResponse response = client.reads.searchReads(request);
 
         assertThat(response.getAlignments()).isNotNull();
@@ -120,14 +186,33 @@ public class ReadsSearchIT implements CtkLogs {
     /**
      * Verify that passing all known read group names in a {@link SearchReadsRequest}
      * returns all matching read groups.
+     * XXX fails due to server issue #596
      *
      * @throws Exception if there's a problem
      */
     @Test
-    public void searchReadsWithAllNamesReturnsAllMatching() throws Exception {
+    public void searchReadsWithAllIdsReturnsReadsForEach() throws Exception {
+        // first get a valid reference
+        final String refId = Utils.getValidReferenceId(client);
+
+        // get all ReadGroupSets
+        final List<ReadGroupSet> allReadGroupSets = Utils.getAllReadGroupSets(client);
+
+        // collect all IDs from the ReadGroups
+        final List<String> allReadGroupIds =
+                allReadGroupSets.stream()
+                                .flatMap(readGroupSet ->
+                                                 readGroupSet.getReadGroups()
+                                                             .stream())
+                                .map(ReadGroup::getId)
+                                .collect(Collectors.toList());
+
         final SearchReadsRequest request =
                 SearchReadsRequest.newBuilder()
-                                  .setReadGroupIds(TestData.EXPECTED_READGROUP_NAMES)
+                                  .setReadGroupIds(allReadGroupIds)
+                                  .setStart(0L)
+                                  .setEnd(150L)
+                                  .setReferenceId(refId)
                                   .build();
         final SearchReadsResponse response = client.reads.searchReads(request);
 
@@ -139,19 +224,28 @@ public class ReadsSearchIT implements CtkLogs {
     }
 
     /**
-     * <p>Verify alignedSequences match pattern.</p>
-     * <p>In any {@link SearchReadsResponse}, the <tt>alignedSequence</tt> field can only contain
+     * <p>Verify aligned sequences contain only the permitted symbols.</p>
+     * <p>In any {@link ReadAlignment}, the <tt>alignedSequence</tt> field can only contain
      * <tt>[ACTGN]+</tt>: No spaces, no other letters, no lowercase, no null.</p>
      *
      * @throws Exception if there's a problem
      */
     @Test
     public void readsResponseMatchesACTGNPattern() throws Exception {
+
+        final String refId = Utils.getValidReferenceId(client);
+
         for (String readGroupName : TestData.EXPECTED_READGROUP_NAMES) {
-            SearchReadsRequest request = SearchReadsRequest.newBuilder()
-                                                           .setReadGroupIds(aSingle(readGroupName))
-                                                           .build();
-            SearchReadsResponse response = client.reads.searchReads(request);
+            final String readGroupID = Utils.getReadGroupIdForName(client, readGroupName);
+            final SearchReadsRequest request =
+                    SearchReadsRequest.newBuilder()
+                                      .setReadGroupIds(aSingle(readGroupID))
+                                      .setReferenceId(refId)
+                                      .setStart(0L)
+                                      .setEnd(150L)
+                                      .build();
+            // XXX fails due to server issue #591
+            final SearchReadsResponse response = client.reads.searchReads(request);
 
             assertThat(response.getAlignments()).isNotNull();
 
