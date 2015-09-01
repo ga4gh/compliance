@@ -177,9 +177,10 @@ public class ReadsSearchIT implements CtkLogs {
 
         assertThat(response.getAlignments()).isNotNull();
 
-        for (ReadAlignment gar : response.getAlignments()) {
-            assertThat(gar.getAlignedSequence()).isNotNull().matches("[ACTGN]+");
-        }
+        response.getAlignments().stream()
+                .forEach(readAlignment ->
+                                 assertThat(readAlignment.getAlignedSequence()).isNotNull()
+                                                                               .matches("[ACTGN]+"));
     }
 
     /**
@@ -217,9 +218,10 @@ public class ReadsSearchIT implements CtkLogs {
 
         assertThat(response.getAlignments()).isNotNull();
 
-        for (ReadAlignment gar : response.getAlignments()) {
-            assertThat(gar.getAlignedSequence()).isNotNull().matches("[ACTGN]+");
-        }
+        response.getAlignments().stream()
+                .forEach(readAlignment ->
+                                 assertThat(readAlignment.getAlignedSequence()).isNotNull()
+                                                                               .matches("[ACTGN]+"));
     }
 
     /**
@@ -248,9 +250,10 @@ public class ReadsSearchIT implements CtkLogs {
 
             assertThat(response.getAlignments()).isNotNull();
 
-            for (ReadAlignment gar : response.getAlignments()) {
-                assertThat(gar.getAlignedSequence()).isNotNull().matches("[ACTGN]+");
-            }
+            response.getAlignments().stream()
+                    .forEach(readAlignment ->
+                                     assertThat(readAlignment.getAlignedSequence()).isNotNull()
+                                                                                   .matches("[ACTGN]+"));
         }
     }
 }

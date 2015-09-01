@@ -24,9 +24,7 @@ import java.net.HttpURLConnection;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * <p>
- * Callsets-related integration tests.
- * </p>
+ * Callsets-related tests.
  */
 @RunWith(JUnitParamsRunner.class)
 @Category(VariantsTests.class)
@@ -122,17 +120,8 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
     }
 
     /**
-     * Search call sets.  Fetches call sets from the specified dataset.
-     * <ul>
-     * <li>Query 1: <pre>/variantsets/search datasetIds: (passed in)</pre></li>
-     * <li>Test 1: assert that we received a {@link SearchVariantSetsResponse} containing an
-     * array of {@link VariantSet} objects.  For each of the VariantSet objects, grab the
-     * <pre>id</pre> and pass it to....</li>
-     * <li>Query 2: <pre>/callsets/search variantSetIds: id</pre></li>
-     * <li>Test 2: assert that the returned object is a {@link SearchCallSetsResponse}, and
-     * that it contains &gt; 0 {@link CallSet} objects. We can check that the call sets have
-     * distinct ID values.</li>
-     * </ul>
+     * Fetch call sets and make sure we do get some back.
+     *
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
