@@ -2,7 +2,6 @@ package org.ga4gh.cts.api;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
-import org.ga4gh.models.Reference;
 import org.ga4gh.models.ReferenceSet;
 
 import java.util.ArrayList;
@@ -33,6 +32,21 @@ public class TestData {
      * if the default (<tt>compliance-dataset1</tt>) is not correct.
      */
     private static final String DATASET_PROP_NAME = "ctk.tgt.dataset_id";
+
+    /**
+     * The name of the reference in the standard test data.
+     */
+    public static final String REFERENCE_NAME = "ref_brca1";
+
+    /**
+     * The start of the reference data.
+     */
+    public static final long REFERENCE_START = 0;
+
+    /**
+     * The end of the reference data.
+     */
+    public static final long REFERENCE_END = 81187;
 
     /**
      * The names of the readgroup sets in the standard compliance dataset.
@@ -66,13 +80,6 @@ public class TestData {
      */
     public static final String[] EXPECTED_REFERENCESET_NAMES = {
             "example_1"
-    };
-
-    /**
-     * The names of all {@link Reference}s.
-     */
-    public static final String[] EXPECTED_REFERENCE_NAMES = {
-            "example_1:simple",
     };
 
     /**
