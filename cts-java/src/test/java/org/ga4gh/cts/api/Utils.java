@@ -4,10 +4,7 @@ import org.apache.avro.AvroRemoteException;
 import org.assertj.core.api.ThrowableAssert;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.protocols.Client;
-import org.ga4gh.methods.SearchReadGroupSetsRequest;
-import org.ga4gh.methods.SearchReadGroupSetsResponse;
-import org.ga4gh.methods.SearchReferenceSetsRequest;
-import org.ga4gh.methods.SearchReferenceSetsResponse;
+import org.ga4gh.methods.*;
 import org.ga4gh.models.*;
 
 import java.util.Collections;
@@ -114,15 +111,21 @@ public class Utils {
      * @throws AvroRemoteException is the server throws an exception or there's an I/O error
      */
     public static String getValidReferenceId(Client client) throws AvroRemoteException {
-        final SearchReferenceSetsRequest refSetReq = SearchReferenceSetsRequest.newBuilder().build();
-        final SearchReferenceSetsResponse refSetResp = client.references.searchReferenceSets(refSetReq);
-        assertThat(refSetResp).isNotNull();
-        assertThat(refSetResp.getReferenceSets()).isNotNull().isNotEmpty();
-        final ReferenceSet refSet = refSetResp.getReferenceSets().get(0);
+        final SearchReferenceSetsRequest refSetsReq = SearchReferenceSetsRequest.newBuilder().build();
+        final SearchReferenceSetsResponse refSetsResp = client.references.searchReferenceSets(refSetsReq);
 
-        final List<String> refIds = refSet.getReferenceIds();
-        assertThat(refIds).isNotNull().isNotEmpty();
-        return refIds.get(0);
+        final List<ReferenceSet> refSets = refSetsResp.getReferenceSets();
+
+        final SearchReferencesRequest refsReq = SearchReferencesRequest
+                .newBuilder()
+                .setReferenceSetId(refSets.get(0).getId())
+                .build();
+        final SearchReferencesResponse refsResp = client.references.searchReferences(refsReq);
+        assertThat(refsResp).isNotNull();
+        final List<Reference> references = refsResp.getReferences();
+        assertThat(references).isNotNull().isNotEmpty();
+
+        return references.get(0).getId();
     }
 
     /**

@@ -189,89 +189,6 @@ public class ReferenceSetAssert extends AbstractAssert<ReferenceSetAssert, Refer
   }
 
   /**
-   * Verifies that the actual ReferenceSet's referenceIds contains the given String elements.
-   * @param referenceIds the given elements that should be contained in actual ReferenceSet's referenceIds.
-   * @return this assertion object.
-   * @throws AssertionError if the actual ReferenceSet's referenceIds does not contain all given String elements.
-   */
-  public ReferenceSetAssert hasReferenceIds(String... referenceIds) {
-    // check that actual ReferenceSet we want to make assertions on is not null.
-    isNotNull();
-
-    // check that given String varargs is not null.
-    if (referenceIds == null) failWithMessage("Expecting referenceIds parameter not to be null.");
-    
-    // check with standard error message, to set another message call: info.overridingErrorMessage("my error message");
-    Iterables.instance().assertContains(info, actual.getReferenceIds(), referenceIds);
-
-    // return the current assertion for method chaining
-    return this;
-  }
-
-  /**
-   * Verifies that the actual ReferenceSet's referenceIds contains <b>only<b> the given String elements and nothing else in whatever order.
-   * @param referenceIds the given elements that should be contained in actual ReferenceSet's referenceIds.
-   * @return this assertion object.
-   * @throws AssertionError if the actual ReferenceSet's referenceIds does not contain all given String elements.
-   */
-  public ReferenceSetAssert hasOnlyReferenceIds(String... referenceIds) {
-    // check that actual ReferenceSet we want to make assertions on is not null.
-    isNotNull();
-
-    // check that given String varargs is not null.
-    if (referenceIds == null) failWithMessage("Expecting referenceIds parameter not to be null.");
-    
-    // check with standard error message, to set another message call: info.overridingErrorMessage("my error message");
-    Iterables.instance().assertContainsOnly(info, actual.getReferenceIds(), referenceIds);
-
-    // return the current assertion for method chaining
-    return this;
-  }
-
-  /**
-   * Verifies that the actual ReferenceSet's referenceIds does not contain the given String elements.
-   *
-   * @param referenceIds the given elements that should not be in actual ReferenceSet's referenceIds.
-   * @return this assertion object.
-   * @throws AssertionError if the actual ReferenceSet's referenceIds contains any given String elements.
-   */
-  public ReferenceSetAssert doesNotHaveReferenceIds(String... referenceIds) {
-    // check that actual ReferenceSet we want to make assertions on is not null.
-    isNotNull();
-
-    // check that given String varargs is not null.
-    if (referenceIds == null) failWithMessage("Expecting referenceIds parameter not to be null.");
-    
-    // check with standard error message (use overridingErrorMessage before contains to set your own message).
-    Iterables.instance().assertDoesNotContain(info, actual.getReferenceIds(), referenceIds);
-
-    // return the current assertion for method chaining
-    return this;
-  }
-
-  /**
-   * Verifies that the actual ReferenceSet has no referenceIds.
-   * @return this assertion object.
-   * @throws AssertionError if the actual ReferenceSet's referenceIds is not empty.
-   */
-  public ReferenceSetAssert hasNoReferenceIds() {
-    // check that actual ReferenceSet we want to make assertions on is not null.
-    isNotNull();
-
-    // we override the default error message with a more explicit one
-    String assertjErrorMessage = "\nExpecting :\n  <%s>\nnot to have referenceIds but had :\n  <%s>";
-    
-    // check
-    if (actual.getReferenceIds().iterator().hasNext()) {
-      failWithMessage(assertjErrorMessage, actual, actual.getReferenceIds());
-    }
-    
-    // return the current assertion for method chaining
-    return this;
-  }
-  
-
-  /**
    * Verifies that the actual ReferenceSet's schema is equal to the given one.
    * @param schema the given schema to compare the actual ReferenceSet's schema to.
    * @return this assertion object.
@@ -399,7 +316,6 @@ public class ReferenceSetAssert extends AbstractAssert<ReferenceSetAssert, Refer
     // return the current assertion for method chaining
     return this;
   }
-
 
 
 
