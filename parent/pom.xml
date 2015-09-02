@@ -246,8 +246,8 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>[3.3.3,)</version>
-                                    <message>*** This project requires Maven 3.3.3 or later. This is version ${maven.version}. ***</message>
+                                    <version>[3.2.5,)</version>
+                                    <message>*** This project requires Maven 3.2.5 or later. This is version ${maven.version}. ***</message>
                                 </requireMavenVersion>
                                 <requireJavaVersion>
                                     <version>[1.8,)</version>
