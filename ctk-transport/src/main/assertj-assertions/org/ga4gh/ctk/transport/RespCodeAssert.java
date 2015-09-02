@@ -25,4 +25,27 @@ public class RespCodeAssert extends AbstractAssert<RespCodeAssert, RespCode> {
     return new RespCodeAssert(actual);
   }
 
+  /**
+   * Verifies that the actual RespCode's code is equal to the given one.
+   * @param code the given code to compare the actual RespCode's code to.
+   * @return this assertion object.
+   * @throws AssertionError - if the actual RespCode's code is not equal to the given one.
+   */
+  public RespCodeAssert hasCode(int code) {
+    // check that actual RespCode we want to make assertions on is not null.
+    isNotNull();
+
+    // overrides the default error message with a more explicit one
+    String assertjErrorMessage = "\nExpecting code of:\n  <%s>\nto be:\n  <%s>\nbut was:\n  <%s>";
+    
+    // check
+    int actualCode = actual.getCode();
+    if (actualCode != code) {
+      failWithMessage(assertjErrorMessage, actual, code, actualCode);
+    }
+
+    // return the current assertion for method chaining
+    return this;
+  }
+
 }
