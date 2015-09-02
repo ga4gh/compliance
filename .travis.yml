@@ -3,7 +3,8 @@ jdk:
 - oraclejdk8
 deploy:
   provider: releases
-  api_key: e8d63b31df75151f1bd83064d9520eab2bf7b53c
+  api-key:
+      secure: oAzBA3yHssBSvh173mYiEph/pFMWxofcx8qUZJxWWrLSxHE0FuKzAt6vA880Z9kpdQKL24hiwUAzvyIdOj3tFArpmX+G4zIe6eHiVB9qb/aEDYwnmK4+p166lTHA6CWgPIBxvek8DKQAgyf2h7Uk5hUDhBuVWCK5cmxlSNajb/bOr9VLVOvPr84wPmJXRgtVy1j1JC36dgWh4TrAjxetNAmlHcCXLtHT7ZrwAId8Y48tqiakQfOXnzBbsgzliG4H/7eB6nidhMIa5/JErl18vgWDBURQCjVJmm+O+R04EKWHKqhSc7fxpP78UyaMKeLvFWcaabwHpIE798FQnJngdHM7oCmpCgRQL9tgK6XMcwjH905rtzS3HoAGANMcIV+lLrfPev47PuSVNL2/V/gwK56UR2rpTx+QWzq7SJGv8pAvfJPlGOzoJiefWwNNWm4FJLD4DeUttsTI9QAMcJoQcjFm9qcYVQiU7zg15RRvhbRU3nfLQ6hYhb3CMmbVK+f3BSeZEiZ9U/JyeA1ClZOKiVFFLFyhzL9NUYzQ/1Fm0Wd9V//bJMK8JPfQrWxkH0n24Af+LtmooIp9LmW/+jjtTfn8q3EXF2hjpGpC3qLeZTYSu6hDF+Xt9ACp5os0ZEyXldCM6D8T6hhgnS3cixyC0Rww6sr5joko4SZ9Az2CyZo=
   file:
     - dist/target/ga4gh-ctk-cli.zip
     - dist/target/ga4gh-ctk-server.zip
@@ -11,4 +12,3 @@ deploy:
   on:
     repo: wstidolph/compliance
     tags: true
-
