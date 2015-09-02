@@ -1,13 +1,9 @@
 package org.ga4gh.cts.api.variants;
 
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
 import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import org.apache.avro.AvroRemoteException;
 import org.ga4gh.ctk.CtkLogs;
 import org.ga4gh.ctk.transport.GAWrapperException;
-import org.ga4gh.ctk.transport.TransportUtils;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
@@ -33,91 +29,6 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
     private static final URLMAPPING urls = URLMAPPING.getInstance();
 
     private static Client client = new Client(urls);
-
-    private static String makeUrl(String partialUrl) {
-        return TransportUtils.makeUrl(urls.getUrlRoot(), partialUrl);
-    }
-
-    /**
-     * Test that the basic server verbs/methods work as expected.
-     *
-     * @param fullUrl the URL to test
-     */
-    private void testHttpMethods(String fullUrl) throws UnirestException {
-        assertThat(Unirest.get(fullUrl).asBinary().getStatus()).isEqualTo(HttpURLConnection.HTTP_BAD_METHOD);
-        assertThat(Unirest.options(fullUrl).asBinary().getStatus()).isEqualTo(HttpURLConnection.HTTP_OK);
-        assertThat(Unirest.post(fullUrl).asBinary().getStatus()).isEqualTo(HttpURLConnection.HTTP_UNSUPPORTED_TYPE);
-    }
-
-    /**
-     * Test that searches' verbs/methods work as expected.
-     *
-     * @param fullUrl the URL to test
-     */
-    private void testSearchRouting(final String fullUrl) throws UnirestException {
-        // send some malformed requests and expect status == HTTP_BAD_REQUEST
-        final String[] badJson = {"", "JSON", "<xml/>", "{", "}", "{\"bad:\"", "{]"};
-        for (String datum : badJson) {
-            assertThat(Unirest.post(fullUrl)
-                              .header("Content-type", "application/json")
-                              .body(datum)
-                              .asBinary()
-                              .getStatus()).isEqualTo(HttpURLConnection.HTTP_BAD_REQUEST);
-        }
-    }
-
-    /**
-     * Test the status codes we're supposed to receive from the GET, POST, and OPTIONS methods on
-     * <tt>/callsets/search</tt>.
-     *
-     * <p>See server/tests/unit/test_views.py: testRouteCallsets</p>
-     *
-     * @throws Exception if there's a connection problem
-     */
-    @Test
-    public void checkCallSetsRouting() throws Exception {
-        String callsetsPartialUrl = urls.getSearchCallsets();
-
-        testHttpMethods(makeUrl(callsetsPartialUrl));
-    }
-
-    /**
-     * Test the status codes we're supposed to receive from the GET, POST, and OPTIONS methods on
-     * <tt>/variants/search</tt>.
-     *
-     * <p>See server/tests/unit/test_views.py: testRouteCallsets</p>
-     *
-     * @throws Exception if there's a connection problem
-     */
-    @Test
-    public void checkVariantSearchMethods() throws Exception {
-        String partialUrl = urls.getSearchVariants();
-
-        testHttpMethods(makeUrl(partialUrl));
-    }
-
-    private String[] allSearchUrls() {
-        return new String[] {
-                makeUrl(urls.getSearchCallsets()),
-                makeUrl(urls.getSearchReadGroupSets()),
-                makeUrl(urls.getSearchReads()),
-                makeUrl(urls.getSearchReferencesets()), // this fails (404 instead of 405)
-                makeUrl(urls.getSearchVariants()),
-                makeUrl(urls.getSearchVariantSets())
-        };
-    }
-
-    /**
-     * Test search routing and the handling of bad data.
-     *
-     * @param fullUrl the URL to test (supplied by {@link #allSearchUrls()}
-     * @throws UnirestException if there's a communication problem
-     */
-    @Test
-    @Parameters(method = "allSearchUrls")
-    public void checkSearchRouting(String fullUrl) throws UnirestException {
-        testSearchRouting(fullUrl);
-    }
 
     /**
      * Fetch call sets and make sure we do get some back.
