@@ -3,11 +3,12 @@ jdk:
 - oraclejdk8
 deploy:
   provider: releases
-  api_key:
-    secure: Ly7MPzmxaRv9U46WzvGj/MxI4CvEY4uExvh88K9Hinj2XSUzuLKfLJ0yKs1Dg0VJLSqKIraRMt3aFTuYIPCBxcqbrK1kTTU+DtxqoBDHVhnvbxX0uMpSnwmizZFutmi2NpmsshiRkHsXUfc8UeLaP2eFp9YcmyixTybDYAifwO0=
-  file: dist/target/ga4gh-ctk-cli.zip
+  api_key: e8d63b31df75151f1bd83064d9520eab2bf7b53c
+  file:
+    - dist/target/ga4gh-ctk-cli.zip
+    - dist/target/ga4gh-ctk-server.zip
   skip_cleanup: true
   on:
-    repo: ga4gh/compliance
+    repo: wstidolph/compliance
     tags: true
 
