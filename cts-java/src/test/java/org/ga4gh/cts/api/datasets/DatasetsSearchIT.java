@@ -28,6 +28,10 @@ public class DatasetsSearchIT {
 
     private static Client client = new Client(URLMAPPING.getInstance());
 
+    /**
+     * Check that the compliance dataset is present.
+     * @throws AvroRemoteException if there's an unanticipated error
+     */
     @Test
     public void checkComplianceDatasetIsPresent() throws AvroRemoteException {
         final SearchDatasetsRequest sdr = SearchDatasetsRequest.newBuilder().build();
@@ -37,12 +41,16 @@ public class DatasetsSearchIT {
         assertThat(datasets).isNotNull();
         assertThat(datasets.size()).isGreaterThanOrEqualTo(1);
 
-        final Dataset dataset = datasets.get(0);
-        assertThat(dataset).isNotNull();
-        // XXX this is no longer meaningful
-        assertThat(dataset.getId()).isEqualTo(TestData.getDatasetId());
+        // check that there is exactly one dataset with the ID of the test data
+        assertThat(datasets.stream().filter(ds -> ds.getId().equals(TestData.getDatasetId())).count())
+                .isEqualTo(1);
     }
 
+    /**
+     * Check that we can retrieve the compliance dataset via <tt>/datasets/{id}</tt>.
+     *
+     * @throws AvroRemoteException if there's an unanticipated error
+     */
     @Test
     public void fetchDatasetById() throws AvroRemoteException {
         // XXX getDataset isn't implemented on the ref server
@@ -53,6 +61,7 @@ public class DatasetsSearchIT {
 
     /**
      * Try to fetch a dataset with a bogus ID and make sure it fails.
+     *
      * @throws AvroRemoteException if something goes wrong
      */
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
@@ -67,6 +76,12 @@ public class DatasetsSearchIT {
         assertThat(didThrow.getHttpStatusCode()).isEqualTo(HttpURLConnection.HTTP_NOT_FOUND);
     }
 
+    /**
+     * For every dataset returned from <tt>/datasets/search</tt>, pass its ID to <tt>/datasets/{id}</tt>
+     * and verify that the {@link Dataset} objects are identical.
+     *
+     * @throws AvroRemoteException if something goes wrong
+     */
     @Test
     public void checkSearchResultAgainstGet() throws AvroRemoteException {
         final SearchDatasetsRequest sdr = SearchDatasetsRequest.newBuilder().build();
