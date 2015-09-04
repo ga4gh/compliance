@@ -226,6 +226,27 @@ public class Utils {
     }
 
     /**
+     * Utility method to fetch a ReferenceSetId given a {@link ReferenceSet#assemblyId}.
+     * @param client the {@link Client} connection to the server
+     * @param assemblyId the {@link ReferenceSet#assemblyId} of the {@link ReferenceSet}
+     * @return The ReferenceSet ID
+     *
+     * @throws AvroRemoteException is the server throws an exception or there's an I/O error
+     */
+    public static String getReferenceSetIdByAssemblyId(Client client, String assemblyId) throws AvroRemoteException {
+        final SearchReferenceSetsRequest req =
+                SearchReferenceSetsRequest.newBuilder()
+                        .setAssemblyId(assemblyId)
+                        .build();
+        final SearchReferenceSetsResponse resp =
+                client.references.searchReferenceSets(req);
+        final List<ReferenceSet> refSets = resp.getReferenceSets();
+        assertThat(refSets).isNotNull();
+        final ReferenceSet refSet = refSets.get(0);
+        return refSet.getId();
+    }
+
+    /**
      * Convenience method to catch a {@link GAWrapperException} and cast the return value to that type.
      * @param shouldRaiseThrowable the {@link Callable} we're calling
      * @return the {@link Throwable} thrown in the execution of the {@link Callable}

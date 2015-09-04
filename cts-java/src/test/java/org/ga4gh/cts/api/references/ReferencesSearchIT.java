@@ -6,10 +6,11 @@ import org.assertj.core.api.StrictAssertions;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.variants.VariantsTests;
-import org.ga4gh.methods.GAException;
-import org.ga4gh.methods.SearchReferencesRequest;
-import org.ga4gh.methods.SearchReferencesResponse;
+import org.ga4gh.cts.api.TestData;
+import org.ga4gh.cts.api.Utils;
+import org.ga4gh.methods.*;
 import org.ga4gh.models.Reference;
+import org.ga4gh.models.ReferenceSet;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -22,60 +23,127 @@ import static org.ga4gh.cts.api.Utils.aSingle;
 /**
  * Compliance tests relating to searching reference bases.
  *
- * @author Herb Jellinek
+ * @author Maciek Smuga-Otto
  */
 @RunWith(JUnitParamsRunner.class)
-@Category(VariantsTests.class)
+@Category(ReferencesTests.class)
 public class ReferencesSearchIT {
 
     private static Client client = new Client(URLMAPPING.getInstance());
 
     /**
-     * Search for chr1 of GRCh37 by MD5 checksum (<tt>1b22b98cdeb4a9304cb5d48026a85128</tt>)
-     * and then fetch that same reference by ID.
-     * <ul>
-     *  <li>Query 1: <pre>/references/search md5checksums: [md5checksum] pageSize: 1</pre></li>
-     *  <li>Test 1: assert that the result is a {@link SearchReferencesResponse}
-     *  containing an array of {@link Reference} objects. Array must be of length (what??).
-     * Assert that every Reference has <pre>length == 249250621 AND md5checksum == (md5checksum) AND
-     * ncbiTaxonId == 9606 (human)</pre></li>
-     * <li>Query 2: <pre>/references/(ref ID)</pre></li>
-     * <li>Test 2: assert that the returned {@link Reference} has <pre>ID == ref ID</pre></li>
-     * </ul>
+     * Fetch all references in the reference set, check there are some.
+     *
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void searchForExpectedReferences() throws AvroRemoteException {
-
-//        final String expectedMd5 = "1b22b98cdeb4a9304cb5d48026a85128";
-        final String expectedMd5 = "TODO";
-        final int expectedLength = 8050;
-//        final int expectedLength = 249250621;
-        final int expectedTaxonId = 9606;
-        final int expectedRefs = 1;
-
+    public void checkSearchingAllReferencesReturnsSome() throws AvroRemoteException {
+        final String referenceSetId =
+                Utils.getReferenceSetIdByAssemblyId(client, TestData.REFERENCESET_ASSEMBLY_ID);
         final SearchReferencesRequest req =
                 SearchReferencesRequest.newBuilder()
-                                         .setMd5checksums(aSingle(expectedMd5))
-                                         .build();
+                        .setReferenceSetId(referenceSetId)
+                        .build();
         final SearchReferencesResponse resp = client.references.searchReferences(req);
 
         final List<Reference> refs = resp.getReferences();
-        assertThat(refs).hasSize(expectedRefs);
-
-        refs.stream().forEach(ref -> StrictAssertions.assertThat(ref.getLength()).isEqualTo(expectedLength));
-        refs.stream().forEach(ref -> StrictAssertions.assertThat(ref.getMd5checksum()).isEqualTo(expectedMd5));
-        refs.stream().forEach(ref -> StrictAssertions.assertThat(ref.getNcbiTaxonId()).isEqualTo(expectedTaxonId));
-
-        // do query 2 and test 2
-        // open-coded loop because it's awkward to deal with possible exceptions using filter syntax
-        for (Reference ref : refs) {
-            final String id = ref.getId();
-            final Reference fetchedRef = client.references.getReference(id);
-            StrictAssertions.assertThat(fetchedRef.getId()).isEqualTo(id);
-        }
+        assertThat(refs).isNotEmpty();
     }
 
+    /**
+     * Fetch references and make sure they're well-formed.
+     *
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     */
+    @Test
+    public void checkSearchingAllReferencesReturnsWellFormed() throws AvroRemoteException {
+        final String referenceSetId =
+                Utils.getReferenceSetIdByAssemblyId(client, TestData.REFERENCESET_ASSEMBLY_ID);
+        final SearchReferencesRequest req =
+                SearchReferencesRequest.newBuilder()
+                        .setReferenceSetId(referenceSetId)
+                        .build();
+        final SearchReferencesResponse resp = client.references.searchReferences(req);
 
+        final List<Reference> sets = resp.getReferences();
 
+        sets.stream().forEach(rs -> assertThat(rs.getId()).isNotNull());
+        sets.stream().forEach(rs -> assertThat(rs.getName()).isNotNull());
+        sets.stream().forEach(rs -> assertThat(rs.getLength()).isNotNull());
+        sets.stream().forEach(rs -> assertThat(rs.getMd5checksum()).isNotNull());
+        sets.stream().forEach(rs -> assertThat(rs.getSourceAccessions()).isNotNull());
+    }
+
+    /**
+     * Fetch a reference by accession, check its attributes.
+     *
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     */
+    @Test
+    public void checkReferenceFoundByAccession() throws AvroRemoteException {
+        final String referenceSetId =
+                Utils.getReferenceSetIdByAssemblyId(client, TestData.REFERENCESET_ASSEMBLY_ID);
+        final SearchReferencesRequest req =
+                SearchReferencesRequest.newBuilder()
+                        .setReferenceSetId(referenceSetId)
+                        .setAccessions(aSingle(TestData.REFERENCE_BRCA1_ACCESSION))
+                        .build();
+        final SearchReferencesResponse resp = client.references.searchReferences(req);
+
+        final List<Reference> refs = resp.getReferences();
+        assertThat(refs).hasSize(1);
+
+        final Reference ref = refs.get(0);
+        assertThat(ref.getName()).isEqualTo(TestData.REFERENCE_BRCA1_NAME);
+        assertThat(ref.getLength()).isEqualTo(TestData.REFERENCE_BRCA1_LENGTH);
+        assertThat(ref.getMd5checksum()).isEqualTo(TestData.REFERENCE_BRCA1_MD5_CHECKSUM);
+        assertThat(ref.getSourceAccessions()).isEqualTo(aSingle(TestData.REFERENCE_BRCA1_ACCESSION));
+    }
+
+    /**
+     * Check that no reference is fetched on an invalid accession.
+     *
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     */
+    @Test
+    public void checkSearchingReferencesWithInvalidAccessionReturnsEmpty() throws AvroRemoteException {
+        final String referenceSetId =
+                Utils.getReferenceSetIdByAssemblyId(client, TestData.REFERENCESET_ASSEMBLY_ID);
+        final String accession = Utils.randomName();
+        final SearchReferencesRequest req =
+                SearchReferencesRequest.newBuilder()
+                        .setReferenceSetId(referenceSetId)
+                        .setAccessions(aSingle(accession))
+                        .build();
+        final SearchReferencesResponse resp = client.references.searchReferences(req);
+
+        final List<Reference> refs = resp.getReferences();
+        assertThat(refs).isEmpty();
+    }
+
+    /**
+     * Fetch a reference by its MD5 checksum, check its attributes.
+     *
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     */
+    @Test
+    public void checkReferenceFoundByMD5Checksum() throws AvroRemoteException {
+        final String referenceSetId =
+                Utils.getReferenceSetIdByAssemblyId(client, TestData.REFERENCESET_ASSEMBLY_ID);
+        final SearchReferencesRequest req =
+                SearchReferencesRequest.newBuilder()
+                        .setReferenceSetId(referenceSetId)
+                        .setMd5checksums(aSingle(TestData.REFERENCE_BRCA1_MD5_CHECKSUM))
+                        .build();
+        final SearchReferencesResponse resp = client.references.searchReferences(req);
+
+        final List<Reference> refs = resp.getReferences();
+        assertThat(refs).hasSize(1);
+
+        final Reference ref = refs.get(0);
+        assertThat(ref.getName()).isEqualTo(TestData.REFERENCE_BRCA1_NAME);
+        assertThat(ref.getLength()).isEqualTo(TestData.REFERENCE_BRCA1_LENGTH);
+        assertThat(ref.getMd5checksum()).isEqualTo(TestData.REFERENCE_BRCA1_MD5_CHECKSUM);
+        assertThat(ref.getSourceAccessions()).isEqualTo(aSingle(TestData.REFERENCE_BRCA1_ACCESSION));
+    }
 }
