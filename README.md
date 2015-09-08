@@ -17,5 +17,4 @@ limitations under the License.
 
 ## Technical Details
 
-The file [docs/README.md](docs/README.md) describes the technical details of writing, compiling,
-and executing compliance tests.
+Read [docs/Quickstart.md](docs/Quickstart.md) for an introduction to writing, compiling, and executing compliance tests.
