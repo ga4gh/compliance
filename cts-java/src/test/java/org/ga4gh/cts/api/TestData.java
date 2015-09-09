@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.ga4gh.cts.api.Utils.aSingle;
+
+
 /**
  * This class defines important constants that pertain to and describe the official test data.
  * It contains no methods and you cannot instantiate it.
@@ -76,11 +79,44 @@ public class TestData {
             new ArrayList<>(EXPECTED_READGROUPSET_READGROUP_NAMES.values());
 
     /**
-     * The names of all {@link ReferenceSet}s.
+     * The AssemblyID (really, a name) of the test {@link ReferenceSet}.
      */
-    public static final String[] EXPECTED_REFERENCESET_NAMES = {
-            "example_1"
-    };
+    public static final String REFERENCESET_ASSEMBLY_ID = "hg37";
+
+    /**
+     * Accession "numbers" (names, really) for the test {@link ReferenceSet}.
+     */
+    public static final List<String> REFERENCESET_ACCESSIONS = aSingle("GA4GH_CTS_01");
+
+    /**
+     * MD5 checksum for the test {@link ReferenceSet}.
+     */
+    public static final String REFERENCESET_MD5_CHECKSUM = "90977a37195d3fd247e4916b5b4cbae8";
+
+    /**
+     * NCBI Taxonomy ID (identifies species) for the test {@link ReferenceSet} (the NCBI TaxonId for Homo Sapiens).
+     */
+    public static final String REFERENCESET_TAXON_ID = "9606";
+
+    /**
+     * The name of the BRCA1 reference sequence.
+     */
+    public static final String REFERENCE_BRCA1_NAME = "ref_brca1";
+
+    /**
+     * The Accession "number" (really, a name) of the BRCA1 reference sequence.
+     */
+    public static final String REFERENCE_BRCA1_ACCESSION = "GA4GH_CTS_01_BRCA1";
+
+    /**
+     * MD5 checksum of the BRCA1 reference sequence.
+     */
+    public static final String REFERENCE_BRCA1_MD5_CHECKSUM = "90977a37195d3fd247e4916b5b4cbae8";
+
+    /**
+     * Length of BRCA1 reference sequence.
+     */
+    public static final long REFERENCE_BRCA1_LENGTH = 81188;
 
     /**
      * Return the ID of the compliance dataset on the server being tested.
