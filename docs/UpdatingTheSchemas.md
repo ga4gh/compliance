@@ -1,19 +1,23 @@
 # Updating the Schemas
 
-When the [schemas](http://github.com/ga4gh/schemas) change, so must the The Compliance Test Kit.
+When the [schemas](http://github.com/ga4gh/schemas) change, so must the The Compliance Test Kit.  It does not automatically
+sync with the [Schemas repo](http://github.com/ga4gh/schemas); we do that by hand.
+
 This is a quick description of the steps to follow to update the schemas contained in the test kit, and then to
 update the tests and test infrastructure to match.
 
 ## Assumptions
 
-You have a local copy of the `ga4gh/schemas` repository stored in a local directory called
+We assume the following:
+
+- You have a local copy of the `ga4gh/schemas` repository stored in a local directory called
 `schemas`.
 
-Your working copy of the Compliance Test Kit is stored in the directory `compliance`.
+- Your working copy of the Compliance Test Kit is stored in the directory `compliance`.
 
-You're using the a Unixesque shell (command interpreter).
+- You're using a Unixesque shell (command interpreter).
 
-You have the [Maven](https://maven.apache.org/) command line program `mvn` installed.
+- You have the [Maven](https://maven.apache.org/) command line program `mvn` installed.
 
 ## Procedure
 
