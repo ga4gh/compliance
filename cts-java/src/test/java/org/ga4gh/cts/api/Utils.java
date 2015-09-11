@@ -227,11 +227,11 @@ public class Utils {
 
     /**
      * Utility method to fetch a ReferenceSetId given a {@link ReferenceSet#assemblyId}.
-     * @param client the {@link Client} connection to the server
+     * @param client the connection to the server
      * @param assemblyId the {@link ReferenceSet#assemblyId} of the {@link ReferenceSet}
      * @return The ReferenceSet ID
      *
-     * @throws AvroRemoteException is the server throws an exception or there's an I/O error
+     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
      */
     public static String getReferenceSetIdByAssemblyId(Client client, String assemblyId) throws AvroRemoteException {
         final SearchReferenceSetsRequest req =
@@ -244,6 +244,48 @@ public class Utils {
         assertThat(refSets).isNotNull();
         final ReferenceSet refSet = refSets.get(0);
         return refSet.getId();
+    }
+
+    /**
+     * Utility method to fetch the ID off an arbitrary {@link VariantSet}.
+     * @param client the connection to the server
+     * @return the ID of a {@link VariantSet}
+     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     */
+    public static String getVariantSetId(Client client) throws AvroRemoteException {
+        final SearchVariantSetsRequest req =
+                SearchVariantSetsRequest.newBuilder()
+                                        .setDatasetId(TestData.getDatasetId())
+                                        .build();
+        final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
+
+        final List<VariantSet> variantSets = resp.getVariantSets();
+        assertThat(variantSets).isNotEmpty();
+        return variantSets.get(0).getId();
+    }
+
+    /**
+     * Search for and return all {@link Variant} objects in the {@link VariantSet} with ID
+     * <tt>variantSetId</tt>, from <tt>start</tt> to <tt>end</tt>.
+     * @param client the connection to the server
+     * @param variantSetId the ID of the {@link VariantSet}
+     * @param start the start of the range to search
+     * @param end the end of the range to search
+     * @return the {@link List} of results
+     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     */
+    public static List<Variant> getAllVariantsInRange(Client client,
+                                                      String variantSetId,
+                                                      long start, long end) throws AvroRemoteException {
+        // get all variants in the range
+        final SearchVariantsRequest vReq =
+                SearchVariantsRequest.newBuilder()
+                                     .setVariantSetId(variantSetId)
+                                     .setReferenceName(TestData.REFERENCE_NAME)
+                                     .setStart(start).setEnd(end)
+                                     .build();
+        final SearchVariantsResponse vResp = client.variants.searchVariants(vReq);
+        return vResp.getVariants();
     }
 
     /**
