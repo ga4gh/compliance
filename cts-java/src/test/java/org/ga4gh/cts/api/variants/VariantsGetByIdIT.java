@@ -67,6 +67,7 @@ public class VariantsGetByIdIT {
             final Variant variantFromGet = client.variants.getVariant(variantFromSearch.getId());
             assertThat(variantFromGet).isNotNull();
 
+            // XXX fails due to server issue #619
             assertThat(variantFromGet).isEqualTo(variantFromSearch);
         }
 

@@ -26,13 +26,13 @@ public class TestData {
     }
 
     /**
-     * The default ID of the dataset that holds the test data.
+     * The default ID of the dataset that holds the test data.  We use something readable so the
+     * meaning is clear, but in reality the value of this is unlikely to be human-readable.
      */
-    public static final String DEFAULT_DATASET_ID = "compliance-dataset1";
+    public static final String DEFAULT_DATASET_ID = "compliance-dataset";
 
     /**
-     * The name of the Java system property that sets the name of the compliance dataset,
-     * if the default (<tt>compliance-dataset1</tt>) is not correct.
+     * The name of the Java system property that sets the ID of the compliance dataset.
      */
     private static final String DATASET_PROP_NAME = "ctk.tgt.dataset_id";
 
@@ -120,8 +120,8 @@ public class TestData {
 
     /**
      * Return the ID of the compliance dataset on the server being tested.
-     * By default this is the value of {@link #DEFAULT_DATASET_ID}, <tt>compliance-dataset1</tt>, but
-     * it can be overridden by setting the Java property <tt>-Dctk.tgt.dataset_id</tt>.
+     * By default this is the value of {@link #DEFAULT_DATASET_ID}, but
+     * you can override it by setting the Java property <tt>-Dctk.tgt.dataset_id</tt>.
      */
     public static String getDatasetId() {
         final String propValue = System.getProperty(DATASET_PROP_NAME);

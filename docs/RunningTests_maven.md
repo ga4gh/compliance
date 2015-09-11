@@ -5,6 +5,8 @@ build tool and which you can use while developing or running GA4GH Compliance te
 
 # tl;dr
 
+Make sure you've gone through the [quickstart guide](Quickstart.md).
+
 Assume your root directory is called `compliance`.
 
 - in `compliance`, execute `mvn -Dcts.skipITs=false clean install`.  This will
@@ -67,7 +69,7 @@ implemented by `plugin`s. Each module has its own `pom.xml`,and its own plugins,
 are attached to which 'phases' in the Maven build lifecycles. (Maven has a handful of predefined lifecycles for things
 like "build a jar" and a lifecycle has phases, which may be used or vacant.  Maven executes whatever is bound to
 each predefined phase, in order.)
-> 
+>
 > To run a Maven goal, you `cd` into the directory holding the `pom.xml`, and enter a command which either identifies
 target phases in one of the Maven lifecycles (`mvn clean test` or `mvn site`) or you enter a specific goal (`mvn
 failsafe:integration-test` runs the integration-test goal of the failsafe plugin. Maven runs all the phases to get to
@@ -155,9 +157,4 @@ panel don't work.
 
 There's an example of an **intentionally-failing** test in the `LandingPageIT` test class of the `org.ga4gh.cts.core`
 package.  It fails if you run it with the `cts.demofail` property to true.
-
-## Prerequisites
-
-You'll need to install Java 8 and Maven 3.3.3. [CTK source Installed](InstallingTheCTK.md)
-The `parent/pom.xml` enforces these minimum versions.
 

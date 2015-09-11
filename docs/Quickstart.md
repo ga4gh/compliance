@@ -28,8 +28,6 @@ _In the compliance base directory_, run Maven to build the project:
 
     >  mvn clean install
 
-_For more information, see the [detailed installation README](InstallingTheCTK.md)_
-
 Before running any tests, you may want to set an environment variable to record the server URL you’re testing against:
 
      > export CTK_TGT_URLROOT=“<your GA4GH-compatible server URL>"
