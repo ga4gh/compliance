@@ -4,10 +4,10 @@ import junitparams.JUnitParamsRunner;
 import org.apache.avro.AvroRemoteException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
-import org.ga4gh.cts.api.TestData;
-import org.ga4gh.methods.*;
+import org.ga4gh.cts.api.Utils;
+import org.ga4gh.methods.GAException;
+import org.ga4gh.methods.SearchVariantsRequest;
 import org.ga4gh.models.Variant;
-import org.ga4gh.models.VariantSet;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -38,30 +38,10 @@ public class VariantsGetByIdIT {
         final long end = 100;
         final int expectedNumberOfVariants = 6;
 
-        // first get a variant set ID
-        final SearchVariantSetsRequest searchVariantSetsReq =
-                SearchVariantSetsRequest.newBuilder()
-                                        .setDatasetId(TestData.getDatasetId())
-                                        .build();
-        final SearchVariantSetsResponse searchVariantSetsResp =
-                client.variants.searchVariantSets(searchVariantSetsReq);
+        final String variantSetId = Utils.getVariantSetId(client);
+        final List<Variant> variants = Utils.getAllVariantsInRange(client, variantSetId, start, end);
 
-        final List<VariantSet> variantSets = searchVariantSetsResp.getVariantSets();
-        assertThat(variantSets).isNotEmpty();
-        final String variantSetId = variantSets.get(0).getId();
-
-        // then gather the variants that are part of the VariantSet with that ID
-        final SearchVariantsRequest req =
-                SearchVariantsRequest.newBuilder()
-                                     .setVariantSetId(variantSetId)
-                                     .setReferenceName(TestData.REFERENCE_NAME)
-                                     .setStart(start)
-                                     .setEnd(end)
-                                     .build();
-        final SearchVariantsResponse resp = client.variants.searchVariants(req);
-
-        final List<Variant> variants = resp.getVariants();
-        assertThat(variants).isNotEmpty();
+        assertThat(variants).hasSize(expectedNumberOfVariants);
 
         for (final Variant variantFromSearch : variants) {
             final Variant variantFromGet = client.variants.getVariant(variantFromSearch.getId());
