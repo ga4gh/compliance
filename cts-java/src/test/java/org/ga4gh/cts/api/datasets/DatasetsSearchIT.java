@@ -53,7 +53,6 @@ public class DatasetsSearchIT {
      */
     @Test
     public void fetchDatasetById() throws AvroRemoteException {
-        // XXX getDataset isn't implemented on the ref server
         final Dataset dataset = client.reads.getDataset(TestData.getDatasetId());
         assertThat(dataset).isNotNull();
         assertThat(dataset.getId()).isEqualTo(TestData.getDatasetId());
@@ -89,7 +88,6 @@ public class DatasetsSearchIT {
         final List<Dataset> datasets = resp.getDatasets();
 
         for (Dataset ds : datasets) {
-            // XXX getDataset isn't implemented on the ref server
             final Dataset dataset = client.reads.getDataset(ds.getId());
             assertThat(ds).isEqualTo(dataset);
         }
