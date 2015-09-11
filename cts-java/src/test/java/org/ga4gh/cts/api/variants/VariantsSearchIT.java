@@ -110,7 +110,9 @@ public class VariantsSearchIT implements CtkLogs {
 
         searchVariants.stream().forEach(v -> assertThat(v.getReferenceName()).isEqualTo(TestData.REFERENCE_NAME));
 
-        searchVariants.stream().forEach(v -> v.getCalls().stream().forEach(c -> assertThat(c).isNotNull()));
+        searchVariants.stream().forEach(v -> v.getCalls()
+                                              .stream()
+                                              .forEach(c -> assertThat(c).isNotNull()));
     }
 
     /**
@@ -144,10 +146,12 @@ public class VariantsSearchIT implements CtkLogs {
         final List<Variant> searchVariants = vResp.getVariants();
 
         searchVariants.stream().forEach(v -> v.getCalls().stream()
-                                              .forEach(c -> assertThat(c.getGenotype()).isNotNull().isNotEmpty()));
+                                              .forEach(c -> assertThat(c.getGenotype()).isNotNull()
+                                                                                       .isNotEmpty()));
 
         searchVariants.stream().forEach(v -> v.getCalls().stream()
-                                              .forEach(c -> assertThat(c.getGenotypeLikelihood()).isNotNull()));
+                                              .forEach(c -> assertThat(c.getGenotypeLikelihood())
+                                                      .isNotNull()));
 
         searchVariants.stream().forEach(v -> v.getCalls().stream().forEach(c -> {
             assertThat(c.getInfo()).isNotNull();
@@ -158,5 +162,6 @@ public class VariantsSearchIT implements CtkLogs {
             });
         }));
     }
+
 
 }
