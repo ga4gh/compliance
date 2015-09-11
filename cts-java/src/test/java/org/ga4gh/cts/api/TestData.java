@@ -1,6 +1,7 @@
 package org.ga4gh.cts.api;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multiset;
 import com.google.common.collect.SetMultimap;
 import org.ga4gh.models.ReferenceSet;
 
@@ -52,24 +53,29 @@ public class TestData {
     public static final long REFERENCE_END = 81187;
 
     /**
-     * The names of the readgroup sets in the standard compliance dataset.
-     */
-    public static final String[] EXPECTED_READGROUPSETS_NAMES = {
-            "1kg-low-coverage",
-    };
-
-    /**
      * The names of known-good read groups.
      */
     public static final SetMultimap<String, String> EXPECTED_READGROUPSET_READGROUP_NAMES =
             HashMultimap.create();
 
     static {
-        EXPECTED_READGROUPSET_READGROUP_NAMES.putAll("1kg-low-coverage",
-                                                     Arrays.asList("BRCA1_HG00096",
-                                                                   "BRCA1_HG00099",
-                                                                   "BRCA1_HG00101"));
+        EXPECTED_READGROUPSET_READGROUP_NAMES.putAll("BRCA1_HG00096.bam",
+                                                     Arrays.asList("SRR062634",
+                                                                   "SRR062635",
+                                                                   "SRR062641"));
+        EXPECTED_READGROUPSET_READGROUP_NAMES.putAll("BRCA1_HG00099.bam",
+                                                     Arrays.asList("SRR741411",
+                                                                   "SRR741412"));
+        //noinspection ArraysAsListWithZeroOrOneArgument
+        EXPECTED_READGROUPSET_READGROUP_NAMES.putAll("BRCA1_HG00101.bam",
+                                                     Arrays.asList("ERR229776"));
     }
+
+    /**
+     * The names of the readgroup sets in the standard compliance dataset.
+     */
+    public static final Multiset<String> EXPECTED_READGROUPSETS_NAMES =
+            EXPECTED_READGROUPSET_READGROUP_NAMES.keys();
 
     /**
      * The names of all known {@link org.ga4gh.models.ReadGroup} objects, obtained from

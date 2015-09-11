@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Herb Jellinek
  */
 @Category(VariantsTests.class)
-public class VariantsMethodsPagingIT implements CtkLogs {
+public class VariantsPagingIT implements CtkLogs {
 
     private static Client client = new Client(URLMAPPING.getInstance());
 
@@ -53,7 +53,7 @@ public class VariantsMethodsPagingIT implements CtkLogs {
 
         // page through the variants using the same query parameters
         String pageToken = null;
-        for (Variant v : listOfVariants) {
+        for (Variant ignored : listOfVariants) {
             final SearchVariantsRequest pageReq =
                     SearchVariantsRequest.newBuilder()
                                          .setVariantSetId(variantSetId)
