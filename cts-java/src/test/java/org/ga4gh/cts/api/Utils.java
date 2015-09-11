@@ -289,6 +289,24 @@ public class Utils {
     }
 
     /**
+     * Search for and return all {@link CallSet}s in the {@link VariantSet} named by <tt>variantSetId</tt>.
+     *
+     * @param client the connection to the server
+     * @param variantSetId the ID of the {@link VariantSet}
+     * @return the {@link List} of results
+     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     */
+    public static List<CallSet> getAllCallSets(Client client,
+                                               String variantSetId) throws AvroRemoteException {
+        final SearchCallSetsRequest callSetsSearchRequest =
+                SearchCallSetsRequest.newBuilder()
+                                     .setVariantSetId(variantSetId)
+                                     .build();
+        final SearchCallSetsResponse csResp = client.variants.searchCallSets(callSetsSearchRequest);
+        return csResp.getCallSets();
+    }
+
+    /**
      * Convenience method to catch a {@link GAWrapperException} and cast the return value to that type.
      * @param shouldRaiseThrowable the {@link Callable} we're calling
      * @return the {@link Throwable} thrown in the execution of the {@link Callable}

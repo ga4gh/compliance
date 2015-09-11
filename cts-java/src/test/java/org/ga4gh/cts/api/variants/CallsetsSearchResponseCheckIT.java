@@ -71,7 +71,7 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
 
         assertThat(vResp.getVariantSets()).isNotEmpty();
 
-        // grab the first VariantSet and use it as source of ReadSets
+        // grab the first VariantSet and use it as source of CallSets
         final VariantSet variantSet = vResp.getVariantSets().get(0);
         final String variantSetId = variantSet.getId();
 
