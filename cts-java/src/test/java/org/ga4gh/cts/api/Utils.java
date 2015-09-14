@@ -289,6 +289,22 @@ public class Utils {
     }
 
     /**
+     * Search for and return all {@link VariantSet}s.
+     *
+     * @param client the connection to the server
+     * @return the {@link List} of results
+     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     */
+    public static List<VariantSet> getAllVariantSets(Client client) throws AvroRemoteException {
+        final SearchVariantSetsRequest req =
+                SearchVariantSetsRequest.newBuilder()
+                                        .setDatasetId(TestData.getDatasetId())
+                                        .build();
+        final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
+        return resp.getVariantSets();
+    }
+
+    /**
      * Search for and return all {@link CallSet}s in the {@link VariantSet} named by <tt>variantSetId</tt>.
      *
      * @param client the connection to the server
