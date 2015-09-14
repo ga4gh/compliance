@@ -27,8 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(JUnitParamsRunner.class)
 @Category(VariantsTests.class)
-/**
- */
 public class CallSetsPagingIT {
 
     private static final URLMAPPING urls = URLMAPPING.getInstance();
