@@ -377,4 +377,15 @@ public class Utils {
         final SearchReadsResponse resp = client.reads.searchReads(req);
         return resp.getAlignments();
     }
+
+    /**
+     * Retrieve all {@link Dataset}s we're allowed to access.
+     * @param client the connection to the server
+     * @return all the {@link Dataset}s
+     */
+    public static List<Dataset> getAllDatasets(Client client) throws AvroRemoteException {
+        final SearchDatasetsRequest req = SearchDatasetsRequest.newBuilder().build();
+        return client.reads.searchDatasets(req).getDatasets();
+
+    }
 }

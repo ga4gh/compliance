@@ -4,6 +4,7 @@ import org.apache.avro.AvroRemoteException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.Utils;
+import org.ga4gh.cts.api.datasets.DatasetsTests;
 import org.ga4gh.methods.GAException;
 import org.ga4gh.methods.SearchReferencesRequest;
 import org.ga4gh.methods.SearchReferencesResponse;
@@ -19,11 +20,11 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test paging through the results returned by <tt>/references/search</tt>.
+ * Test paging through the results returned by <tt>/datasets/search</tt>.
  *
  * @author Herb Jellinek
  */
-@Category(ReferencesTests.class)
+@Category(DatasetsTests.class)
 public class ReferencesPagingIT {
 
     private static Client client = new Client(URLMAPPING.getInstance());
@@ -35,10 +36,10 @@ public class ReferencesPagingIT {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkPagingOneByOneThroughReferences() throws AvroRemoteException {
+    public void checkPagingOneByOneThroughDatasets() throws AvroRemoteException {
 
         final List<ReferenceSet> allRefSets = Utils.getAllReferenceSets(client);
-        assertThat(allRefSets.size()).isGreaterThan(0);
+        assertThat(allRefSets).isNotEmpty();
 
         final String refSetId = allRefSets.get(0).getId();
 
@@ -84,7 +85,7 @@ public class ReferencesPagingIT {
     public void checkPagingByOneChunkThroughReferences() throws AvroRemoteException {
 
         final List<ReferenceSet> listOfReferenceSets = Utils.getAllReferenceSets(client);
-        assertThat(listOfReferenceSets.size()).isGreaterThan(0);
+        assertThat(listOfReferenceSets).isNotEmpty();
         final String refSetId = listOfReferenceSets.get(0).getId();
 
         final List<Reference> listOfReferences =
@@ -106,7 +107,7 @@ public class ReferencesPagingIT {
     public void checkPagingByOneTooLargeChunkThroughReferences() throws AvroRemoteException {
 
         final List<ReferenceSet> listOfReferenceSets = Utils.getAllReferenceSets(client);
-        assertThat(listOfReferenceSets.size()).isGreaterThan(0);
+        assertThat(listOfReferenceSets).isNotEmpty();
         final String refSetId = listOfReferenceSets.get(0).getId();
         final List<Reference> listOfReferences =
                 Utils.getAllReferences(client,

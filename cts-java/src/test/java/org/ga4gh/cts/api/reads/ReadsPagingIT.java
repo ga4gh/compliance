@@ -51,7 +51,7 @@ public class ReadsPagingIT {
         final Set<ReadAlignment> setOfReads = new HashSet<>(listOfReads);
         assertThat(listOfReads).hasSize(setOfReads.size());
 
-        // page through the VariantSets using the same query parameters
+        // page through the ReadAlignments using the same query parameters
         String pageToken = null;
         for (ReadAlignment ignored : listOfReads) {
             final SearchReadsRequest pageReq =
@@ -87,7 +87,7 @@ public class ReadsPagingIT {
         final String referenceId = Utils.getValidReferenceId(client);
         final String readGroupId = Utils.getReadGroupId(client);
         final List<ReadAlignment> listOfReads = Utils.getAllReads(client, referenceId, readGroupId);
-        assertThat(listOfReads.size()).isGreaterThan(0);
+        assertThat(listOfReads).isNotEmpty();
 
         // page through the reads in one gulp
         checkSinglePageOfReads(referenceId, readGroupId, listOfReads.size(),
@@ -107,7 +107,7 @@ public class ReadsPagingIT {
         final String referenceId = Utils.getValidReferenceId(client);
         final String readGroupId = Utils.getReadGroupId(client);
         final List<ReadAlignment> listOfReads = Utils.getAllReads(client, referenceId, readGroupId);
-        assertThat(listOfReads.size()).isGreaterThan(0);
+        assertThat(listOfReads).isNotEmpty();
 
         // page through the reads in one too-large gulp
         checkSinglePageOfReads(referenceId, readGroupId, listOfReads.size() * 2,
