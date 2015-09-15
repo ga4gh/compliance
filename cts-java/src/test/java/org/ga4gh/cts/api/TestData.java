@@ -102,7 +102,7 @@ public class TestData {
     /**
      * NCBI Taxonomy ID (identifies species) for the test {@link ReferenceSet} (the NCBI TaxonId for Homo Sapiens).
      */
-    public static final String REFERENCESET_TAXON_ID = "9606";
+    public static final int REFERENCESET_TAXON_ID = 9606;
 
     /**
      * The name of the BRCA1 reference sequence.
