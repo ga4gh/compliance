@@ -346,8 +346,9 @@ public class Utils {
 
     /**
      * Retrieve all references in the {@link ReferenceSet} named by the reference set ID.
-     * @param client the connection to the server
-     *               @param refSetId the ID of the {@link ReferenceSet} we're using
+     *
+     * @param client   the connection to the server
+     * @param refSetId the ID of the {@link ReferenceSet} we're using
      * @return a {@link List} of all {@link Reference}s in the first {@link ReferenceSet}
      */
     public static List<Reference> getAllReferences(Client client,
@@ -358,5 +359,22 @@ public class Utils {
                                        .build();
         final SearchReferencesResponse refsResp = client.references.searchReferences(refsReq);
         return refsResp.getReferences();
+    }
+
+    /**
+     * Given a reference ID, return all {@link ReadAlignment}s
+     * @param client the connection to the server
+     * @param referenceId the ID of the {@link Reference} we're using
+     * @param readGroupId the ID of the {@link ReadGroup} we're using
+     * @return all the {@link ReadAlignment} objects that match
+     */
+    public static List<ReadAlignment> getAllReads(Client client, String referenceId,
+                                                  String readGroupId) throws AvroRemoteException {
+        final SearchReadsRequest req = SearchReadsRequest.newBuilder()
+                .setReferenceId(referenceId)
+                .setReadGroupIds(aSingle(readGroupId))
+                .build();
+        final SearchReadsResponse resp = client.reads.searchReads(req);
+        return resp.getAlignments();
     }
 }
