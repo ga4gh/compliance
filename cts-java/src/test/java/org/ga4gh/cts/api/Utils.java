@@ -331,4 +331,32 @@ public class Utils {
                                                                       shouldRaiseThrowable) {
         return (GAWrapperException)catchThrowable(shouldRaiseThrowable);
     }
+
+    /**
+     * Retrieve all {@link ReferenceSet}s.
+     * @param client the connection to the server
+     * @return a {@link List} of all {@link Reference}s in the first {@link ReferenceSet}
+     */
+    public static List<ReferenceSet> getAllReferenceSets(Client client) throws AvroRemoteException {
+        final SearchReferenceSetsRequest refSetsReq = SearchReferenceSetsRequest.newBuilder().build();
+        final SearchReferenceSetsResponse refSetsResp = client.references.searchReferenceSets(refSetsReq);
+
+        return refSetsResp.getReferenceSets();
+    }
+
+    /**
+     * Retrieve all references in the {@link ReferenceSet} named by the reference set ID.
+     * @param client the connection to the server
+     *               @param refSetId the ID of the {@link ReferenceSet} we're using
+     * @return a {@link List} of all {@link Reference}s in the first {@link ReferenceSet}
+     */
+    public static List<Reference> getAllReferences(Client client,
+                                                   String refSetId) throws AvroRemoteException {
+        final SearchReferencesRequest refsReq =
+                SearchReferencesRequest.newBuilder()
+                                       .setReferenceSetId(refSetId)
+                                       .build();
+        final SearchReferencesResponse refsResp = client.references.searchReferences(refsReq);
+        return refsResp.getReferences();
+    }
 }

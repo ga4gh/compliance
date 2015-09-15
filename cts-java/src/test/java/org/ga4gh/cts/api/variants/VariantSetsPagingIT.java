@@ -94,7 +94,7 @@ public class VariantSetsPagingIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkPagingByOneTooLargeChunkThroughCalls() throws AvroRemoteException {
+    public void checkPagingByOneTooLargeChunkThroughVariantSets() throws AvroRemoteException {
 
         final List<VariantSet> listOfVariantSets = Utils.getAllVariantSets(client);
 
