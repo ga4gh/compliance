@@ -20,7 +20,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test paging through the results returned by <tt>/datasets/search</tt>.
+ * Test paging through the results returned by <tt>/referencesets/search</tt>.
  *
  * @author Herb Jellinek
  */
@@ -36,7 +36,7 @@ public class ReferencesPagingIT {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkPagingOneByOneThroughDatasets() throws AvroRemoteException {
+    public void checkPagingOneByOneThroughReferences() throws AvroRemoteException {
 
         final List<ReferenceSet> allRefSets = Utils.getAllReferenceSets(client);
         assertThat(allRefSets).isNotEmpty();
