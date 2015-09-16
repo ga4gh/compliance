@@ -48,9 +48,6 @@ public class VariantsPagingIT implements CtkLogs {
         final Set<Variant> setOfVariants = new HashSet<>(listOfVariants);
         assertThat(listOfVariants).hasSize(setOfVariants.size());
 
-        // we don't care how many there are, as long as it's at least a few
-        assertThat(listOfVariants.size()).isGreaterThanOrEqualTo(3);
-
         // page through the variants using the same query parameters
         String pageToken = null;
         for (Variant ignored : listOfVariants) {
@@ -91,9 +88,6 @@ public class VariantsPagingIT implements CtkLogs {
         final String variantSetId = Utils.getVariantSetId(client);
         final List<Variant> listOfVariants = Utils.getAllVariantsInRange(client, variantSetId, start, end);
 
-        // we don't care how many there are, as long as it's at least a few
-        assertThat(listOfVariants.size()).isGreaterThanOrEqualTo(3);
-
         // page through the variants in one gulp
         checkSinglePageOfCalls(variantSetId, start, end,
                                listOfVariants.size(),
@@ -114,9 +108,6 @@ public class VariantsPagingIT implements CtkLogs {
 
         final String variantSetId = Utils.getVariantSetId(client);
         final List<Variant> listOfVariants = Utils.getAllVariantsInRange(client, variantSetId, start, end);
-
-        // we don't care how many there are, as long as it's at least a few
-        assertThat(listOfVariants.size()).isGreaterThanOrEqualTo(3);
 
         checkSinglePageOfCalls(variantSetId, start, end,
                                listOfVariants.size() * 2,

@@ -81,9 +81,6 @@ public class CallSetsPagingIT {
         final String variantSetId = Utils.getVariantSetId(client);
         final List<CallSet> listOfCallSets = Utils.getAllCallSets(client, variantSetId);
 
-        // we don't care how many there are, as long as it's at least a few
-        assertThat(listOfCallSets.size()).isGreaterThanOrEqualTo(3);
-
         // page through the variants in one gulp
         checkSinglePageOfCallSets(variantSetId,
                                   listOfCallSets.size(),
@@ -103,9 +100,6 @@ public class CallSetsPagingIT {
     public void checkPagingByOneTooLargeChunkThroughCallSets() throws AvroRemoteException {
         final String variantSetId = Utils.getVariantSetId(client);
         final List<CallSet> listOfCallSets = Utils.getAllCallSets(client, variantSetId);
-
-        // we don't care how many there are, as long as it's at least a few
-        assertThat(listOfCallSets.size()).isGreaterThanOrEqualTo(3);
 
         checkSinglePageOfCallSets(variantSetId,
                                   listOfCallSets.size() * 2,
