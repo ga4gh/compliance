@@ -30,6 +30,13 @@ public class Utils {
     }
 
     /**
+     * For some reason, the class {@link java.net.HttpURLConnection} doesn't define a constant
+     * for HTTP status 416, "Requested Range Not Satisfiable."  (See
+     * <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.17">HTTP Status Code Definitions</a>.)
+     */
+    public static final int HTTP_REQUESTED_RANGE_NOT_SATISFIABLE = 416;
+
+    /**
      * Certain AssertJ methods accept a variable number of args: <tt>assertThat(Collection).doesNotContain(...)</tt>,
      * for instance.  Sometimes we want to pass null to such a method, but the IDE complains that this is "confusing."
      * If we supply a typed value, the complaint goes away.
