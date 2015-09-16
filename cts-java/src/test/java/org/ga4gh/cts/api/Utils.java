@@ -30,6 +30,13 @@ public class Utils {
     }
 
     /**
+     * For some reason, the class {@link java.net.HttpURLConnection} doesn't define a constant
+     * for HTTP status 416, "Requested Range Not Satisfiable."  (See
+     * <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.17">HTTP Status Code Definitions</a>.)
+     */
+    public static final int HTTP_REQUESTED_RANGE_NOT_SATISFIABLE = 416;
+
+    /**
      * Certain AssertJ methods accept a variable number of args: <tt>assertThat(Collection).doesNotContain(...)</tt>,
      * for instance.  Sometimes we want to pass null to such a method, but the IDE complains that this is "confusing."
      * If we supply a typed value, the complaint goes away.
@@ -289,6 +296,22 @@ public class Utils {
     }
 
     /**
+     * Search for and return all {@link VariantSet}s.
+     *
+     * @param client the connection to the server
+     * @return the {@link List} of results
+     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     */
+    public static List<VariantSet> getAllVariantSets(Client client) throws AvroRemoteException {
+        final SearchVariantSetsRequest req =
+                SearchVariantSetsRequest.newBuilder()
+                                        .setDatasetId(TestData.getDatasetId())
+                                        .build();
+        final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
+        return resp.getVariantSets();
+    }
+
+    /**
      * Search for and return all {@link CallSet}s in the {@link VariantSet} named by <tt>variantSetId</tt>.
      *
      * @param client the connection to the server
@@ -314,5 +337,62 @@ public class Utils {
     public static GAWrapperException catchGAWrapperException(ThrowableAssert.ThrowingCallable
                                                                       shouldRaiseThrowable) {
         return (GAWrapperException)catchThrowable(shouldRaiseThrowable);
+    }
+
+    /**
+     * Retrieve all {@link ReferenceSet}s.
+     * @param client the connection to the server
+     * @return a {@link List} of all {@link Reference}s in the first {@link ReferenceSet}
+     */
+    public static List<ReferenceSet> getAllReferenceSets(Client client) throws AvroRemoteException {
+        final SearchReferenceSetsRequest refSetsReq = SearchReferenceSetsRequest.newBuilder().build();
+        final SearchReferenceSetsResponse refSetsResp = client.references.searchReferenceSets(refSetsReq);
+
+        return refSetsResp.getReferenceSets();
+    }
+
+    /**
+     * Retrieve all references in the {@link ReferenceSet} named by the reference set ID.
+     *
+     * @param client   the connection to the server
+     * @param refSetId the ID of the {@link ReferenceSet} we're using
+     * @return a {@link List} of all {@link Reference}s in the first {@link ReferenceSet}
+     */
+    public static List<Reference> getAllReferences(Client client,
+                                                   String refSetId) throws AvroRemoteException {
+        final SearchReferencesRequest refsReq =
+                SearchReferencesRequest.newBuilder()
+                                       .setReferenceSetId(refSetId)
+                                       .build();
+        final SearchReferencesResponse refsResp = client.references.searchReferences(refsReq);
+        return refsResp.getReferences();
+    }
+
+    /**
+     * Given a reference ID, return all {@link ReadAlignment}s
+     * @param client the connection to the server
+     * @param referenceId the ID of the {@link Reference} we're using
+     * @param readGroupId the ID of the {@link ReadGroup} we're using
+     * @return all the {@link ReadAlignment} objects that match
+     */
+    public static List<ReadAlignment> getAllReads(Client client, String referenceId,
+                                                  String readGroupId) throws AvroRemoteException {
+        final SearchReadsRequest req = SearchReadsRequest.newBuilder()
+                .setReferenceId(referenceId)
+                .setReadGroupIds(aSingle(readGroupId))
+                .build();
+        final SearchReadsResponse resp = client.reads.searchReads(req);
+        return resp.getAlignments();
+    }
+
+    /**
+     * Retrieve all {@link Dataset}s we're allowed to access.
+     * @param client the connection to the server
+     * @return all the {@link Dataset}s
+     */
+    public static List<Dataset> getAllDatasets(Client client) throws AvroRemoteException {
+        final SearchDatasetsRequest req = SearchDatasetsRequest.newBuilder().build();
+        return client.reads.searchDatasets(req).getDatasets();
+
     }
 }
