@@ -89,8 +89,6 @@ public class TestRunner implements BuildListener {
         URLMAPPING urls = URLMAPPING.getInstance();
         urls.setUrlRoot(urlRoot);
 
-        AvroJson.shouldDoComms = true; // always start from assumption of goodness!
-
         // is there a pattern we should enforce?
         acceptedTargetDir =
                 ((null == toDir || toDir.isEmpty()) ? "target/" : toDir);
@@ -98,7 +96,7 @@ public class TestRunner implements BuildListener {
 
                     /* ****** MAIN RUN-THE-TESTS *********** */
 
-        result = new CompletableFuture<String>();
+        result = new CompletableFuture<>();
         boolean goodLaunch =
                 antExecutor.executeAntTask(testJar, matchStr,
                                            urls, datasetId,
@@ -119,7 +117,6 @@ public class TestRunner implements BuildListener {
     /**
      * Signals that a build has started. This event
      * is fired before any targets have started.
-     * <p>
      * <p>This event is fired before the project instance is fully
      * configured.  In particular no properties have been set and the
      * project may not know its name or default target, yet.</p>

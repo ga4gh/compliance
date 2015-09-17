@@ -15,8 +15,6 @@ import org.apache.avro.io.DatumWriter;
 import org.apache.avro.specific.SpecificDatumWriter;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.http.HttpStatus;
-import org.apache.http.HttpVersion;
-import org.apache.http.message.BasicStatusLine;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.WireTracker;
 import org.ga4gh.methods.GAException;
@@ -75,21 +73,6 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
      */
     String urlRoot;
 
-    /**
-     * url root to live comparison server
-     */
-    String refRoot;
-
-    /**
-     * if true, duplicate request to refserver and compare results
-     */
-    boolean compareToRef = false;
-
-    /**
-     * Cause communications to be skipped and NO_COMM_RESP returned when false.
-     */
-    static public boolean shouldDoComms = true;
-
     private String path;
 
     private Schema reqSchema;
@@ -103,21 +86,6 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
     private P theResp;
 
     private WireTracker wireTracker;
-
-    /**
-     * The NO_COMM_RESP is a dummy returned when HTTP communications is stubbed out,
-     * due to test or to previous comms failures.
-     */
-    public static HttpResponse<JsonNode> NO_COMM_RESP;
-
-    static {
-        org.apache.http.HttpResponse
-                dummyResponse = new org.apache.http.message.BasicHttpResponse(
-                new BasicStatusLine(HttpVersion.HTTP_1_0,
-                                    HttpStatus.SC_SERVICE_UNAVAILABLE,
-                                    "No communication with server"));
-        NO_COMM_RESP = new HttpResponse<>(dummyResponse, JsonNode.class);
-    }
 
     /**
      * <p>Construct an AvroJson for a particular request/response interaction.</p>
@@ -243,7 +211,7 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
         //jsonBytes = JsonMaker.JacksonToJsonBytes(theAvroReq);
         jsonStr = JsonMaker.GsonToJsonBytes(theAvroReq);
 
-        httpResp = shouldDoComms ? jsonPost(makeUrl(urlRoot, path)): NO_COMM_RESP;
+        httpResp = jsonPost(makeUrl(urlRoot, path));
 
         updateTheRespAndLogMessages("POST");
 
@@ -332,7 +300,7 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
     public P doGetResp(String id, Map<String, Object> queryParams) throws GAException {
 
         // no request object to build, just GET from the endpoint with route param
-        httpResp = shouldDoComms ? jsonGet(makeUrl(urlRoot, path), id, queryParams) : NO_COMM_RESP;
+        httpResp = jsonGet(makeUrl(urlRoot, path), id, queryParams);
 
         updateTheRespAndLogMessages("GET");
 
@@ -357,9 +325,8 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
                     .body(jsonStr)
                     .asJson();
         } catch (UnirestException e) {
-            log.warn("stubbing future comms due to problem communicating JSON with " + theURL, e.getMessage());
+            log.warn("problem communicating with " + theURL, e.getMessage());
             log.debug(e.toString());
-            shouldDoComms = false;
         }
         if (log.isDebugEnabled()) {
             log.debug("exit jsonPost to " + theURL + " with status "
@@ -387,8 +354,7 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
                     .queryString(queryParams)
                     .asJson();
         } catch (UnirestException e) {
-            log.warn("stubbing future comms due to problem communicating JSON with " + theUrl + " id: " + id, e);
-            shouldDoComms = false;
+            log.warn("problem communicating with " + theUrl + " id: " + id, e);
         }
         if (log.isDebugEnabled()) {
             log.debug("exit jsonGet to " + theUrl + " id = " + id + " with status "
