@@ -1,7 +1,9 @@
 package org.ga4gh.ctk.asserts;
 
-import org.assertj.core.api.ErrorCollector;
 import org.assertj.core.internal.cglib.proxy.Enhancer;
+
+import org.assertj.core.api.ErrorCollector;
+
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.MultipleFailureException;

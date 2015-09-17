@@ -81,7 +81,7 @@
                 <executions>
                     <execution>
                         <!-- empty phase to prevent this from running automatically -->
-                        <phase/>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>generate-assertions</goal>
                         </goals>

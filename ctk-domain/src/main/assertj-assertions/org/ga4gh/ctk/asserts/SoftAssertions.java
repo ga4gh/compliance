@@ -1,12 +1,12 @@
 package org.ga4gh.ctk.asserts;
 
-import org.assertj.core.api.ErrorCollector;
-import org.assertj.core.api.SoftAssertionError;
-import org.assertj.core.internal.cglib.proxy.Enhancer;
+import static org.assertj.core.groups.Properties.extractProperty;
 
 import java.util.List;
+import org.assertj.core.internal.cglib.proxy.Enhancer;
 
-import static org.assertj.core.groups.Properties.extractProperty;
+import org.assertj.core.api.ErrorCollector;
+import org.assertj.core.api.SoftAssertionError;
 
 /**
  * Entry point for assertions of different data types. Each method in this class is a static factory for the

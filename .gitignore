@@ -99,5 +99,5 @@ crashlytics-build.properties
 
 # CTK ignores
 */testresults/
-
-
+/ctk-domain/src/main/assertj-assertions/*
+/ctk-transport/src/main/assertj-assertions/*
