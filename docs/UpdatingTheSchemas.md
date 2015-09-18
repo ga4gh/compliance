@@ -53,35 +53,18 @@ Copy the new schema files from `schemas` to `compliance`:
 
 ### Clean the `compliance` project
 
-Change directories to the root of the `compliance` project.
+Change directories to the root of the `compliance` project and remove all compiled output.
 
     $ cd compliance
-
-### Remove all compiled tests
-
     $ mvn clean
 
 ### Pull in project dependencies
 
     $ (cd parent; mvn install)
 
-### Remove all generated assertion-related Java classes
-
-Both the `ctk-domain` and `ctk-transport` modules contain generated assertion helper classes.
-
-    $ rm -rf ctk-domain/src/main/assertj-assertions/*
-    $ rm -rf ctk-transport/src/main/assertj-assertions/*
-
-They will be generated again below.
-
-### Remove the old generated Avro code and generate it again
+### Remove the source code generated for the previous Schemas version and generate it again
 
     $ (cd ctk-schemas; mvn clean && mvn install)
-
-### Generate the assertion helpers we deleted above
-
-    $ (cd ctk-domain; mvn assertj:generate-assertions)
-    $ (cd ctk-transport; mvn assertj:generate-assertions)
 
 ### Build everything!
 
