@@ -155,6 +155,6 @@ Project Reports link and then the Surefire Reports link.  Note that a `site` gen
 URLs for the various submodules (that comes when you `deploy` to a website) so the module-oriented links in the left navigation
 panel don't work.
 
-There's an example of an **intentionally-failing** test in the `LandingPageIT` test class of the `org.ga4gh.cts.core`
-package.  It fails if you run it with the `cts.demofail` property to true.
+There's an example of an **intentionally-failing** test in the `CanForceFailIT` test class of
+the `org.ga4gh.cts.core` package.  It fails if you run it with the `cts.demofail` property to true.
 

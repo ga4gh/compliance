@@ -55,8 +55,6 @@ my local server would display its results here:
 
      <test_directory>/testresults/localhost_8000/00004/report/html/index.html
      
-_For more information, see the [command line intro](README-IntroAtCommandLine.txt) detailed documentation._
-
 ## write, compile & run a test
 
 The Java source code files containing the actual tests are all located in:
