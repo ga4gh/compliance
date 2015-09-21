@@ -76,7 +76,11 @@ Edit the properties file, and leave it in the launch directory or put it in a `c
 
 ## How a property is accessed
 
-Most properties are read in at  launch and used to set fields on the Java object at `transport/src/main/java/org.ga4gh/ctk/config/Props.java` and this Props object is then used as the run-time source of property values. The Props object has a field (with a setter) for each property, and these fields are set by the Spring framework's @Value annotation; e.g., the property named "`ctk.testpackage`" is injected as:
+Most properties are read in at launch and used to set fields on the Java object at
+`transport/src/main/java/org.ga4gh/ctk/config/Props.java` and this Props object is then used as
+the runtime source of property values. The Props object has a field (with a setter) for each property,
+and these fields are set by the Spring framework's @Value annotation; e.g. the property named
+"`ctk.testpackage`" is injected as:
 
 ```java
 
@@ -85,4 +89,7 @@ Most properties are read in at  launch and used to set fields on the Java object
 
 ```
 
-Putting the properties on the Props object like this allows an IDE do auto-complete on the properties, so if you add new properties to the CTK, it's good to at least consider adding them to the Props object. But, you don't have to - as we saw in the "cts.demofail" use, you can declare a property and simply access it directly (in that case, from inside a test).
+Putting the properties on the Props object like this allows an IDE do auto-complete on the properties,
+so if you add new properties to the CTK, it's good to at least consider adding them to the Props object.
+But you don't have to - as we saw in the "cts.demofail" use, you can declare a property and simply access
+it directly (in that case, from inside a test).

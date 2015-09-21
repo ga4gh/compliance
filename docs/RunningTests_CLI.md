@@ -154,7 +154,8 @@ CTK output is to logs, not to "stdout" and such. The logging framework in the de
 The important thing to know is that there is a specific logger called "TESTLOG" used in all test classes to report on test progress, as well as the usual per-class loggers named after the class's full hierarchical name.
 You may want to send "TESTLOG" to a file, and leave the `org.ga4gh.*` loggers as console output, but the CTK default is to route all the loggers to the console, so you may see some duplicated information.
 
-If any tests fail, you'll get additional failure-specific logging at a WARN level. To demonstrate, we'll use the `propertyCanCauseTestFail` test case in the `LandingPageIT` test class.
+If any tests fail, you'll get additional failure-specific logging at a WARN level. To demonstrate, we'll use the `propertyCanCauseTestFail` test case
+in the `CanForceFailIT` test class.
 This test just passes or fails based on a property; here's the example code:
 
 ```java
@@ -176,27 +177,37 @@ We'll compile and package it (not shown).  Then let's run it:
 
 ```
 $ java -jar ctk-cli-0.5.1-SNAPSHOT.jar --cts.demofail=true --ctk.matchstr=**/*Landing*.class
-[TESTLOG] Suite start org.ga4gh.cts.core.LandingPageIT
-[TESTLOG] Dummying failure because cts.demofail is true
-[TESTLOG] FAILED propertyCanCauseTestFail(org.ga4gh.cts.core.LandingPageIT) due to expected:<[tru]e> but was:<[fals]e>
-[TESTLOG] Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.752 sec
-[o.g.c.AntExecListener ] task [junit] tgt [tests] msg: Test org.ga4gh.cts.core.LandingPageIT FAILED
-[TESTLOG] task [junit] tgt [tests] msg: Test org.ga4gh.cts.core.LandingPageIT FAILED
-[TESTLOG] Overall: Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.000 sec
+[TESTLOG] Suite start org.ga4gh.cts.api.DatasetIdPropertyIT
+[TESTLOG] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.134 sec
+[TESTLOG] Suite start org.ga4gh.cts.api.datasets.DatasetsPagingIT
+[TESTLOG] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.124 sec
+...
+[TESTLOG] Suite start org.ga4gh.cts.core.CanForceFailIT
+[TESTLOG] Forcing failure because cts.demofail is true
+[TESTLOG] FAILED propertyCanCauseTestFail(org.ga4gh.cts.core.CanForceFailIT) due to expected:<[tru]e> but was:<[fals]e>
+[TESTLOG] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.005 sec
+[o.g.c.Application ] task [junit] tgt [tests] msg: Test org.ga4gh.cts.core.CanForceFailIT FAILED
+[TESTLOG] task [junit] tgt [tests] msg: Test org.ga4gh.cts.core.CanForceFailIT FAILED
 ```
 
 The `TESTLOG` output tells us:
 
 * the name of the failing method ("`propertyCanCauseTestFail`")
-* the name of the class that test case comes from ("`org.ga4gh.cts.core.LandingPageIT`")
+* the name of the class that test case comes from ("`org.ga4gh.cts.core.CanForceFailIT`")
 * what assertion didn't pass ("`expected:<[tru]e> but was:<[fals]e`")
 
-(We get the odd-looking assertion message because we're doing a string compare rather than a boolean compare ... can you fix that? :)
+(We get the odd-looking assertion message because we're doing a string compare rather than a
+boolean compare ... can you fix that? :)
 
-You might want to have your TESTLOG routed to a network log-receiver, such as [Chainsaw](https://logging.apache.org/chainsaw/), [Logstash](https://www.elastic.co/products/logstash), or [Graylog](https://www.graylog.org/) - since we're using the common log4j2 framework you'll find a lot of internet tutorials and examples on how to set up these configurations.
+You might want to have your `TESTLOG` routed to a network log-receiver, such
+as [Chainsaw](https://logging.apache.org/chainsaw/), [Logstash](https://www.elastic.co/products/logstash),
+or [Graylog](https://www.graylog.org/) - since we're using the common log4j2 framework you'll find a lot
+of Internet tutorials and examples on how to set up these configurations.
 
 ## What's Next
 
-If you have Maven installed, you will want to look into using it as the environment for running and developing tests - you'll get cross-referenced/cross-linked source and test code and javadoc in HTML, and the HTML test reports have links from the failure messages directly into that source tree.
+If you have Maven installed, you will want to look into using it as the environment for running
+and developing tests - you'll get cross-referenced/cross-linked source and test code and javadoc in
+HTML, and the HTML test reports have links from the failure messages directly into that source tree.
 See [here](RunningTests_maven.md).
 
