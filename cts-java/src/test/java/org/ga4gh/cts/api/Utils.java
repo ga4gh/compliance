@@ -333,16 +333,16 @@ public class Utils {
     /**
      * Convenience method to catch a {@link GAWrapperException} and cast the return value to that type.
      * <b>Only use this when you're expecting the enclosed code to throw that exception.</b>
-     * If the code we call doesn't throw the expected {@link GAWrapperException}, it calls
-     * {@link org.assertj.core.api.StrictAssertions#fail(String)} to cause the enclosing test to logg
-     * the stack trace.
-     * @param shouldRaiseThrowable the {@link Callable} we're calling
+     * If the enclosed code doesn't throw the expected {@link GAWrapperException}, this method calls
+     * {@link org.assertj.core.api.StrictAssertions#fail(String)} to cause the enclosing test to fail
+     * and log the stack trace.
+     * @param thisShouldThrow the {@link Callable} we're calling, which should throw {@link GAWrapperException}
      * @return the {@link Throwable} thrown in the execution of the {@link Callable}
      */
     public static GAWrapperException catchGAWrapperException(ThrowableAssert.ThrowingCallable
-                                                                      shouldRaiseThrowable) {
+                                                                      thisShouldThrow) {
         final GAWrapperException maybeAnException =
-                (GAWrapperException)catchThrowable(shouldRaiseThrowable);
+                (GAWrapperException)catchThrowable(thisShouldThrow);
         if (maybeAnException == null) {
             // we were expecting an exception and didn't get one.  log it as a failure.
             fail("Expected but did not receive GAWrapperException");
