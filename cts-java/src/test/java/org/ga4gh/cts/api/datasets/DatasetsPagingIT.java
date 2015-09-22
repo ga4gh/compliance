@@ -83,7 +83,7 @@ public class DatasetsPagingIT {
         final List<Dataset> listOfDatasets = Utils.getAllDatasets(client);
         assertThat(listOfDatasets).isNotEmpty();
 
-        // page through the reads in one gulp
+        // page through the datasets in one gulp
         checkSinglePageOfDatasets(listOfDatasets.size(),
                                   listOfDatasets);
     }
@@ -102,7 +102,7 @@ public class DatasetsPagingIT {
         final List<Dataset> listOfDatasets = Utils.getAllDatasets(client);
         assertThat(listOfDatasets).isNotEmpty();
 
-        // page through the reads in one too-large gulp
+        // page through the datasets in one too-large gulp
         checkSinglePageOfDatasets(listOfDatasets.size() * 2, listOfDatasets);
     }
 
