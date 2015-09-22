@@ -15,6 +15,7 @@ import java.util.concurrent.Callable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.StrictAssertions.catchThrowable;
+import static org.assertj.core.api.StrictAssertions.fail;
 
 /**
  * Handy test-related static methods and data.
@@ -331,12 +332,22 @@ public class Utils {
 
     /**
      * Convenience method to catch a {@link GAWrapperException} and cast the return value to that type.
+     * <b>Only use this when you're expecting the enclosed code to throw that exception.</b>
+     * If the code we call doesn't throw the expected {@link GAWrapperException}, it calls
+     * {@link org.assertj.core.api.StrictAssertions#fail(String)} to cause the enclosing test to logg
+     * the stack trace.
      * @param shouldRaiseThrowable the {@link Callable} we're calling
      * @return the {@link Throwable} thrown in the execution of the {@link Callable}
      */
     public static GAWrapperException catchGAWrapperException(ThrowableAssert.ThrowingCallable
                                                                       shouldRaiseThrowable) {
-        return (GAWrapperException)catchThrowable(shouldRaiseThrowable);
+        final GAWrapperException maybeAnException =
+                (GAWrapperException)catchThrowable(shouldRaiseThrowable);
+        if (maybeAnException == null) {
+            // we were expecting an exception and didn't get one.  log it as a failure.
+            fail("Expected but did not receive GAWrapperException");
+        }
+        return maybeAnException;
     }
 
     /**
