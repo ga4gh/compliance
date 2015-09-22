@@ -1,5 +1,7 @@
-package org.ga4gh.cts.api;
+package org.ga4gh.cts.core;
 
+import org.ga4gh.cts.api.TestData;
+import org.ga4gh.cts.api.Utils;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
