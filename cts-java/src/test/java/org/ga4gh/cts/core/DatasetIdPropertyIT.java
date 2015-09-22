@@ -1,8 +1,10 @@
 package org.ga4gh.cts.core;
 
+import org.ga4gh.ctk.testcategories.CoreTests;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Herb Jellinek
  */
+@Category(CoreTests.class)
 public class DatasetIdPropertyIT {
 
     private static final String PROP_NAME = "ctk.tgt.dataset_id";
