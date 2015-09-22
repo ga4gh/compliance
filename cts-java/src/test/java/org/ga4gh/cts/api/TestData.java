@@ -97,7 +97,7 @@ public class TestData {
     /**
      * MD5 checksum for the test {@link ReferenceSet}.
      */
-    public static final String REFERENCESET_MD5_CHECKSUM = "90977a37195d3fd247e4916b5b4cbae8";
+    public static final String REFERENCESET_MD5_CHECKSUM = "12827085103f42e97428dc05a7f26fec";
 
     /**
      * NCBI Taxonomy ID (identifies species) for the test {@link ReferenceSet} (the NCBI TaxonId for Homo Sapiens).
