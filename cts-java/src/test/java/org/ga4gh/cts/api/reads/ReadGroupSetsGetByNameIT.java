@@ -1,7 +1,6 @@
 package org.ga4gh.cts.api.reads;
 
 import org.apache.avro.AvroRemoteException;
-import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
@@ -14,7 +13,6 @@ import org.ga4gh.models.ReadGroupSet;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,22 +30,20 @@ public class ReadGroupSetsGetByNameIT {
     private static Client client = new Client(URLMAPPING.getInstance());
 
     /**
-     * Check that searching for {@link ReadGroup}s with a bogus name fails.
+     * Check that searching for {@link ReadGroupSet}s with a bogus name returns an empty list.
      *
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
-    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Test
-    public void testSearchForBogusNameFails() throws AvroRemoteException {
+    public void testSearchForBogusNameReturnsEmptyList() throws AvroRemoteException {
         final SearchReadGroupSetsRequest request =
                 SearchReadGroupSetsRequest.newBuilder()
                                           .setDatasetId(TestData.getDatasetId())
                                           .setName(Utils.randomName())
                                           .build();
 
-        final GAWrapperException g =
-                Utils.catchGAWrapperException(() -> client.reads.searchReadGroupSets(request));
-        assertThat(g.getHttpStatusCode()).isEqualTo(HttpURLConnection.HTTP_NOT_FOUND);
+        final SearchReadGroupSetsResponse resp = client.reads.searchReadGroupSets(request);
+        assertThat(resp.getReadGroupSets()).isEmpty();
     }
 
     /**

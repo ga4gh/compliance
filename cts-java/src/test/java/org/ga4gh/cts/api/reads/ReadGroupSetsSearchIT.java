@@ -67,28 +67,8 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
     }
 
     /**
-     * <p>When we supply a bogus name to {@link SearchReadGroupSetsRequest}, because the
-     * returned objects must all have names that match, we expect NOT_FOUND.</p>
-     * <p>The Schemas documentation says
-     * that a {@link SearchReadGroupSetsRequest} always matches names exactly.</p>
-     *
-     * @throws AvroRemoteException the exception thrown
-     */
-    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-    @Test
-    public void readGroupSetsNonexistentNameShouldSayNotFound() throws AvroRemoteException {
-        // try to fetch a read group set with a name the server can't match
-        final SearchReadGroupSetsRequest badNameReq =
-                SearchReadGroupSetsRequest.newBuilder()
-                                          .setDatasetId(TestData.getDatasetId())
-                                          .setName(Utils.randomName())
-                                          .build();
-        final GAWrapperException t = catchGAWrapperException(() -> client.reads.searchReadGroupSets(badNameReq));
-        assertThat(t.getHttpStatusCode()).isEqualTo(HttpURLConnection.HTTP_NOT_FOUND);
-    }
-
-    /**
-     * <p>Readgroup set response for a nonexistent dataset ID should be NOT_FOUND.</p>
+     * <p>Calling {@link SearchReadGroupSetsRequest} with a nonexistent dataset ID should throw an
+     * exception with status code <tt>NOT_FOUND</tt>.</p>
      *
      * <p>Pass in a well-formed but non-matching dataset ID to a SearchReadGroupSetsRequest
      * expect a valid SearchReadGroupSetsResponse with no ReadGroupSets in it.</p>
@@ -97,7 +77,7 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
      */
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Test
-    public void readgroupSetResponseForNonexistentDatasetIdShouldReturnEmptyList() throws AvroRemoteException {
+    public void readgroupSetResponseForNonexistentDatasetIdShouldThrowException() throws AvroRemoteException {
         SearchReadGroupSetsRequest reqb =
                 SearchReadGroupSetsRequest.newBuilder()
                                           .setDatasetId(Utils.randomId())
