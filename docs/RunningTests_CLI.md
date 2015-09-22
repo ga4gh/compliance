@@ -177,10 +177,10 @@ We'll compile and package it (not shown).  Then let's run it:
 
 ```
 $ java -jar ctk-cli-0.5.1-SNAPSHOT.jar --cts.demofail=true --ctk.matchstr=**/*Landing*.class
-[TESTLOG] Suite start org.ga4gh.cts.api.DatasetIdPropertyIT
-[TESTLOG] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.134 sec
 [TESTLOG] Suite start org.ga4gh.cts.api.datasets.DatasetsPagingIT
-[TESTLOG] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.124 sec
+[TESTLOG] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.474 sec
+[TESTLOG] Suite start org.ga4gh.cts.api.datasets.DatasetsSearchIT
+[TESTLOG] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.154 sec
 ...
 [TESTLOG] Suite start org.ga4gh.cts.core.CanForceFailIT
 [TESTLOG] Forcing failure because cts.demofail is true
@@ -192,7 +192,7 @@ $ java -jar ctk-cli-0.5.1-SNAPSHOT.jar --cts.demofail=true --ctk.matchstr=**/*La
 
 The `TESTLOG` output tells us:
 
-* the name of the failing method ("`propertyCanCauseTestFail`")
+* the names of failing methods ("`propertyCanCauseTestFail`")
 * the name of the class that test case comes from ("`org.ga4gh.cts.core.CanForceFailIT`")
 * what assertion didn't pass ("`expected:<[tru]e> but was:<[fals]e`")
 
