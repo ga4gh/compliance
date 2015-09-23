@@ -1,6 +1,6 @@
 @HD	VN:1.0	SO:coordinate
-@SQ	SN:ref_brca1	LN:171823	UR:https://github.com/ga4gh/compliance/tree/compliance_redux/test-data/hs37d5_chr17_41196312-41277500.fa	AS:NCBI37	SP:Human	M5:90977a37195d3fd247e4916b5b4cbae8
-@SQ	SN:hs37d5	LN:35477943	UR:ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/phase2_reference_assembly_sequence/hs37d5.fa.gz	AS:NCBI37	M5:5b6a4b3a81a2d3c134b7d14bf6ad39f1	SP:Human
+@SQ	SN:ref_brca1	LN:171823	UR:https://github.com/ga4gh/compliance/tree/compliance_redux/test-data/hs37d5_chr17_41196312-41277500.fa	AS:hg37	SP:Human	M5:90977a37195d3fd247e4916b5b4cbae8
+@SQ	SN:hs37d5	LN:35477943	UR:ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/phase2_reference_assembly_sequence/hs37d5.fa.gz	AS:hg37	M5:5b6a4b3a81a2d3c134b7d14bf6ad39f1	SP:Human
 @RG	ID:ERR229776	PL:ILLUMINA	LB:HG00101_I_bc_pelib_1018	PI:510	DS:SRP001294	SM:HG00101	CN:MPIMG
 @PG	ID:bwa_index	PN:bwa	VN:0.5.9-r16	CL:bwa index -a bwtsw $reference_fasta
 @PG	ID:bwa_aln_fastq	PN:bwa	PP:bwa_index	VN:0.5.9-r16	CL:bwa aln -q 15 -f $sai_file $reference_fasta $fastq_file
