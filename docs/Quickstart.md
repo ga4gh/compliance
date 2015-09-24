@@ -54,8 +54,15 @@ For example, the fourth run of the tests on
 my local server would display its results here:
 
      <test_directory>/testresults/localhost_8000/00004/report/html/index.html
-     
-## write, compile & run a test
+
+## Prepare compliance dataset
+
+A compliance dataset is provided as part of this `ga4gh/compliance` repository, in the subdirectory `test-data`.
+The data are all stored in human-readable files, and will likely need to be converted to equivalent binary files
+for ingestion in a working server. An example best-practice recipe for converting each file type into its binary
+equivalent is provided in the shell script `test-data/convert_to_binary.sh`.
+
+## Write, compile & run a test
 
 The Java source code files containing the actual tests are all located in:
 
