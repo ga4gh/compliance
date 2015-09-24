@@ -107,7 +107,7 @@ Once you’ve written your test file, you can compile and run just that one test
  
 The `-q` (“quiet”) option on Maven minimizes the amount diagnostic output to the command line, so that any errors in your compilation will stand out more clearly.
 
-_For more information about writing a new test, refer to the [test writing README](docs/WritingATest.md)_
+_For more information about writing a new test, refer to the [test writing README](WritingATest.md)._
 
 ## Contribute your code to the ga4gh compliance repository
 
