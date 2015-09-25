@@ -1,5 +1,5 @@
 # CTK
-An extensible Conformance Test Kit for the GA4GH Server
+An extensible Conformance Test Kit for the GA4GH Server API.
 
 ## Build Status
 

@@ -107,13 +107,21 @@ Once you’ve written your test file, you can compile and run just that one test
  
 The `-q` (“quiet”) option on Maven minimizes the amount diagnostic output to the command line, so that any errors in your compilation will stand out more clearly.
 
-_For more information about writing a new test, refer to the [test writing README](docs/WritingATest.md)_
+_For more information about writing a new test, refer to the [test writing README](WritingATest.md)._
 
 ## Contribute your code to the ga4gh compliance repository
 
-Please first ensure that any test you write can be successfully passed by a matching version of the [reference server](https://github.com/ga4gh/server). Pull requests will only be accepted if they result in a consistent state across all three GA4GH code repositories (
-[schemas](https://github.com/ga4gh/schemas), [reference server](https://github/ga4gh/server) and [compliance](https://github.com/ga4gh/compliance)). A change in schemas, for example, would typically trigger updates to all three repositories. A change or bugfix in the server need not entail a schemas change, but would likely result in added or modified compliance tests. A bugfix or addition to the compliance suite may be stand-alone.
+Please first ensure that any test you write can be successfully passed by a matching version of the
+[reference server](https://github.com/ga4gh/server). Pull requests will only be accepted if they result
+in a consistent state across all three GA4GH code repositories ([schemas](https://github.com/ga4gh/schemas),
+[reference server](https://github.com/ga4gh/server) and [compliance](https://github.com/ga4gh/compliance)).
+A change in schemas, for example, would typically trigger updates to all three repositories.
+A change or bugfix in the server need not entail a schemas change, but would likely result in added or
+modified compliance tests. A bugfix or addition to the compliance suite may be standalone.
 
-The typical workflow is to `git push` the working branch with your code to your fork of the repository (the `origin`), then issue a pull request against `ga4gh/compliance` (the `upstream` repository) from your github fork.
+The typical workflow is to `git push` the working branch with your code to your fork of the repository
+(the `origin`), then issue a pull request against `ga4gh/compliance` (the `upstream` repository) from your
+Github fork.
 
-_Please refer to the [CONTRIBUTING](https://github.com/ga4gh/compliance/blob/master/CONTRIBUTING.md) document for further details._
+_Please refer to the [CONTRIBUTING](https://github.com/ga4gh/compliance/blob/master/CONTRIBUTING.md)
+document for further details._

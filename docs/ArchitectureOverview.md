@@ -50,21 +50,9 @@ environment variables. The jar file includes the stable set of schema/tests, so 
 a quick server-sanity check. This approach generates test results to log files (defaulting to console out).
 It does not require a build tool, just Java 8.
 - helping a developer **create new tests** as they develop new APIs and related server implementations:
-for this, the developer uses the CTK under the Maven build tool (Maven 3 and java 8). This works
-particularly well in an IDE
-with Maven test reporting (as, for example, IntelliJ or Eclipse). See the
- [Getting Started as a test writer](##getting-started-as-a-test-writer) document.
-
-
-## Functional Status
-(August 1, 2015) The CTK runs against a reference server using the v6.0.be171b00 schemas.
-
-(June 22 2015) The CTK is able to execute and report on tests written in Java against the v0.5.1 schema. The collection
- of tests is currently small, and only attempts to
- use the *reads*, *references*, and *variants* endpoints. The tests presume the server has been configured with a data
- set as described in the [GA4GH API Demo
- instructions](http://ga4gh-reference-implementation.readthedocs.org/en/stable/demo.html). A Maven-capable user can
- generate cross-referenced javadoc and source for the framework and for server tests, and for test results.
+for this, the developer uses the CTK under the Maven build tool (Maven 3 and Java 8). This works
+particularly well in an IDE with Maven test reporting (as, for example, IntelliJ or Eclipse). See the
+ [Quickstart](Quickstart.md) document.
 
 ## Build Status
 
