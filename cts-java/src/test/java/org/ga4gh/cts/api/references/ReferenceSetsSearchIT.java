@@ -1,0 +1,149 @@
+package org.ga4gh.cts.api.references;
+
+import junitparams.JUnitParamsRunner;
+import org.apache.avro.AvroRemoteException;
+import org.ga4gh.ctk.transport.URLMAPPING;
+import org.ga4gh.ctk.transport.protocols.Client;
+import org.ga4gh.cts.api.TestData;
+import org.ga4gh.cts.api.reads.ReadsTests;
+import org.ga4gh.methods.GAException;
+import org.ga4gh.methods.SearchReferenceSetsRequest;
+import org.ga4gh.methods.SearchReferenceSetsResponse;
+import org.ga4gh.models.ReferenceSet;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.ga4gh.cts.api.Utils.aSingle;
+
+/**
+ * Reference sets-related compliance tests.
+ *
+ * @author Maciek Smuga-Otto
+ */
+@Category(ReferencesTests.class)
+@RunWith(JUnitParamsRunner.class)
+public class ReferenceSetsSearchIT {
+
+    private static Client client = new Client(URLMAPPING.getInstance());
+
+    /**
+     * Fetch reference sets and make sure we get some.
+     *
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     */
+    @Test
+    public void checkSearchingReferenceSetsReturnsSome() throws AvroRemoteException {
+        final SearchReferenceSetsRequest req =
+                SearchReferenceSetsRequest.newBuilder().build();
+        final SearchReferenceSetsResponse resp = client.references.searchReferenceSets(req);
+
+        final List<ReferenceSet> sets = resp.getReferenceSets();
+        assertThat(sets).isNotEmpty();
+    }
+
+
+    /**
+     * Fetch reference sets and make sure they're well-formed.
+     *
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     */
+    @Test
+    public void checkSearchingReferenceSetsReturnsWellFormed() throws AvroRemoteException {
+        final SearchReferenceSetsRequest req =
+                SearchReferenceSetsRequest.newBuilder().build();
+        final SearchReferenceSetsResponse resp = client.references.searchReferenceSets(req);
+
+        final List<ReferenceSet> sets = resp.getReferenceSets();
+
+        sets.stream().forEach(rs -> assertThat(rs.getId()).isNotNull());
+        sets.stream().forEach(rs -> assertThat(rs.getMd5checksum()).isNotNull());
+        sets.stream().forEach(rs -> assertThat(rs.getSourceAccessions()).isNotNull());
+    }
+
+    /**
+     * Fetch a reference set by accession, check its attributes.
+     *
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     */
+    @Test
+    public void checkReferenceSetFoundByAccession() throws AvroRemoteException {
+        final SearchReferenceSetsRequest req =
+                SearchReferenceSetsRequest.newBuilder()
+                        .setAccessions(TestData.REFERENCESET_ACCESSIONS)
+                        .build();
+        final SearchReferenceSetsResponse resp = client.references.searchReferenceSets(req);
+
+        final List<ReferenceSet> refSets = resp.getReferenceSets();
+        assertThat(refSets).hasSize(1);
+
+        final ReferenceSet refSet = refSets.get(0);
+        assertThat(refSet.getAssemblyId()).isEqualTo(TestData.REFERENCESET_ASSEMBLY_ID);
+        assertThat(refSet.getMd5checksum()).isEqualTo(TestData.REFERENCESET_MD5_CHECKSUM);
+        assertThat(refSet.getSourceAccessions()).isEqualTo(TestData.REFERENCESET_ACCESSIONS);
+    }
+
+    /**
+     * Fetch a reference set by md5 checksum, check its attributes
+     *
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     */
+    @Test
+    public void checkReferenceSetFoundByMD5Checksum() throws AvroRemoteException {
+        final SearchReferenceSetsRequest req =
+                SearchReferenceSetsRequest.newBuilder()
+                        .setMd5checksums(aSingle(TestData.REFERENCESET_MD5_CHECKSUM))
+                        .build();
+        final SearchReferenceSetsResponse resp = client.references.searchReferenceSets(req);
+
+        final List<ReferenceSet> refSets = resp.getReferenceSets();
+        assertThat(refSets).hasSize(1);
+
+        final ReferenceSet refSet = refSets.get(0);
+        assertThat(refSet.getAssemblyId()).isEqualTo(TestData.REFERENCESET_ASSEMBLY_ID);
+        assertThat(refSet.getMd5checksum()).isEqualTo(TestData.REFERENCESET_MD5_CHECKSUM);
+        assertThat(refSet.getSourceAccessions()).isEqualTo(TestData.REFERENCESET_ACCESSIONS);
+    }
+
+    /**
+     * Fetch a reference set by assemblyId, check its attributes.
+     *
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     */
+    @Test
+    public void checkReferenceSetFoundByAssemblyId() throws AvroRemoteException {
+        final SearchReferenceSetsRequest req =
+                SearchReferenceSetsRequest.newBuilder()
+                        .setAssemblyId(TestData.REFERENCESET_ASSEMBLY_ID)
+                        .build();
+        final SearchReferenceSetsResponse resp = client.references.searchReferenceSets(req);
+
+        final List<ReferenceSet> refSets = resp.getReferenceSets();
+        assertThat(refSets).hasSize(1);
+
+        final ReferenceSet refSet = refSets.get(0);
+        assertThat(refSet.getAssemblyId()).isEqualTo(TestData.REFERENCESET_ASSEMBLY_ID);
+        assertThat(refSet.getMd5checksum()).isEqualTo(TestData.REFERENCESET_MD5_CHECKSUM);
+        assertThat(refSet.getSourceAccessions()).isEqualTo(TestData.REFERENCESET_ACCESSIONS);
+    }
+
+    /**
+     * Verify that all found references identify the right species (NCBI Taxonomy ID).
+     *
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     */
+    @Test
+    public void checkTaxonIdOfReferenceSets() throws AvroRemoteException {
+        final SearchReferenceSetsRequest req =
+                SearchReferenceSetsRequest.newBuilder().build();
+        final SearchReferenceSetsResponse resp = client.references.searchReferenceSets(req);
+
+        final List<ReferenceSet> refSets = resp.getReferenceSets();
+        assertThat(refSets).isNotEmpty();
+
+        refSets.stream().forEach(rs -> assertThat(rs.getNcbiTaxonId()).isEqualTo(TestData.REFERENCESET_TAXON_ID));
+    }
+}
