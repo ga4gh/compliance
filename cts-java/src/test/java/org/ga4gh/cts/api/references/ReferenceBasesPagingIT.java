@@ -36,18 +36,18 @@ public class ReferenceBasesPagingIT {
 
         final String refId = Utils.getValidReferenceId(client);
 
-        final long sequenceStart = 0L;
-        final long sequenceEnd = 150L;
+        final long sequenceStart = 2L;
+        final long sequenceEnd = 15L;
 
         final ListReferenceBasesRequest req = ListReferenceBasesRequest.newBuilder()
                 .setStart(sequenceStart).setEnd(sequenceEnd)
                 .build();
         final ListReferenceBasesResponse resp = client.references.getReferenceBases(refId, req);
         final String expectedSequence = resp.getSequence();
-        assertThat(expectedSequence).hasSize((int)sequenceEnd);
+        assertThat(expectedSequence).hasSize((int)(sequenceEnd - sequenceStart));
 
         // walk through the bases by incrementing start and end
-        long offset = 0L;
+        long offset = sequenceStart;
         for (char expectedChar : expectedSequence.toCharArray()) {
             final ListReferenceBasesRequest pageReq =
                     ListReferenceBasesRequest.newBuilder()
@@ -83,7 +83,7 @@ public class ReferenceBasesPagingIT {
      * Check that we can request a sequence of bases from
      * {@link org.ga4gh.ctk.transport.protocols.Client.References#getReferenceBases(String,
      * ListReferenceBasesRequest)}
-     * using a size twice as large as the full sequence, and receive the full sequence.
+     * using a size equal to the size of the full sequence, and receive the full sequence.
      *
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */

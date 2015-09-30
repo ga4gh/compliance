@@ -31,23 +31,28 @@ public class ReferenceSetsPagingIT {
     /**
      * Check that we can page 1 by 1 through the {@link ReferenceSet}s we receive from
      * {@link Client.References#searchReferenceSets(SearchReferenceSetsRequest)}.
-     *
+     * <p>
+     * The call to retrieve all {@link ReferenceSet}s may return fewer than all of them, subject to
+     * server-imposed limits.  The 1-by-1 paging must enumerate them all, however.  The set of "all"
+     * must be a subset of those gathered one-by-one.
+     * </p>
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
     public void checkPagingOneByOneThroughReferenceSets() throws AvroRemoteException {
 
-        // retrieve them all
+        // retrieve them all - this may return fewer than "all," however.
         final List<ReferenceSet> listOfReferenceSets = Utils.getAllReferenceSets(client);
         assertThat(listOfReferenceSets).isNotEmpty();
 
-        // we will remove ReferenceSets from this Set and assert at the end that we have zero
-        final Set<ReferenceSet> setOfReferenceSets = new HashSet<>(listOfReferenceSets);
-        assertThat(listOfReferenceSets).hasSize(setOfReferenceSets.size());
+        // we will do a set comparison after retrieving them 1 at a time
+        final Set<ReferenceSet> setOfExpectedReferenceSets = new HashSet<>(listOfReferenceSets);
+        assertThat(listOfReferenceSets).hasSize(setOfExpectedReferenceSets.size());
 
-        // page through the ReferenceSets using the same query parameters
+        final Set<ReferenceSet> setOfReferenceSetsGathered1By1 = new HashSet<>(setOfExpectedReferenceSets.size());
+        // page through the ReferenceSets using the same query parameters and collect them
         String pageToken = null;
-        for (ReferenceSet ignored : listOfReferenceSets) {
+        do {
             final SearchReferenceSetsRequest pageReq =
                     SearchReferenceSetsRequest.newBuilder()
                                            .setPageSize(1)
@@ -58,13 +63,11 @@ public class ReferenceSetsPagingIT {
             pageToken = pageResp.getNextPageToken();
 
             assertThat(pageOfReferenceSets).hasSize(1);
-            assertThat(setOfReferenceSets).contains(pageOfReferenceSets.get(0));
+            setOfReferenceSetsGathered1By1.add(pageOfReferenceSets.get(0));
 
-            setOfReferenceSets.remove(pageOfReferenceSets.get(0));
-        }
+        } while (pageToken != null);
 
-        assertThat(pageToken).isNull();
-        assertThat(setOfReferenceSets).isEmpty();
+        assertThat(setOfReferenceSetsGathered1By1).containsAll(setOfExpectedReferenceSets);
     }
 
     /**

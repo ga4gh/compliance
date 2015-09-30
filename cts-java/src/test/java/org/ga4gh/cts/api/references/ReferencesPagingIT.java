@@ -32,6 +32,11 @@ public class ReferencesPagingIT {
     /**
      * Check that we can page 1 by 1 through the {@link org.ga4gh.models.Reference}s we receive from
      * {@link org.ga4gh.ctk.transport.protocols.Client.References#searchReferences(SearchReferencesRequest)}.
+     * <p>
+     * The call to retrieve all {@link Reference}s may return fewer than all of them, subject to
+     * server-imposed limits.  The 1-by-1 paging must enumerate them all, however.  The set of "all"
+     * must be a subset of those gathered one-by-one.
+     * </p>
      *
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
@@ -43,17 +48,18 @@ public class ReferencesPagingIT {
 
         final String refSetId = allRefSets.get(0).getId();
 
-        // retrieve them all
+        // retrieve them all - this may return fewer than "all," however.
         final List<Reference> listOfReferences = Utils.getAllReferences(client, refSetId);
         assertThat(listOfReferences).isNotEmpty();
 
-        // we will remove References from this Set and assert at the end that we have zero
-        final Set<Reference> setOfReferences = new HashSet<>(listOfReferences);
-        assertThat(listOfReferences).hasSize(setOfReferences.size());
+        // we will do a set comparison after retrieving them 1 at a time
+        final Set<Reference> setOfExpectedReferences = new HashSet<>(listOfReferences);
+        assertThat(listOfReferences).hasSize(setOfExpectedReferences.size());
 
-        // page through the References using the same query parameters
+        final Set<Reference> setOfReferencesGathered1By1 = new HashSet<>(setOfExpectedReferences.size());
+        // page through the References using the same query parameters and collect them
         String pageToken = null;
-        for (Reference ignored : listOfReferences) {
+        do {
             final SearchReferencesRequest pageReq =
                     SearchReferencesRequest.newBuilder()
                                            .setReferenceSetId(refSetId)
@@ -65,13 +71,10 @@ public class ReferencesPagingIT {
             pageToken = pageResp.getNextPageToken();
 
             assertThat(pageOfReferences).hasSize(1);
-            assertThat(setOfReferences).contains(pageOfReferences.get(0));
+            setOfReferencesGathered1By1.add(pageOfReferences.get(0));
+        } while (pageToken != null);
 
-            setOfReferences.remove(pageOfReferences.get(0));
-        }
-
-        assertThat(pageToken).isNull();
-        assertThat(setOfReferences).isEmpty();
+        assertThat(setOfReferencesGathered1By1).containsAll(setOfExpectedReferences);
     }
 
     /**
