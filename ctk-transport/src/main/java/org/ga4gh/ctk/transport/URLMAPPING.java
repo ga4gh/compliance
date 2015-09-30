@@ -98,7 +98,7 @@ public interface URLMAPPING {
 
     /**
      * <p>Initialize URLMAPPING.</p>
-     * <p>Given a resource name, this looks loads (in order):
+     * <p>Given a resource name, this loads (in order):
      * <ul>
      * <li>a properties file of that name on the classpath</li>
      * <li>a properties file of that name from the file system</li>
