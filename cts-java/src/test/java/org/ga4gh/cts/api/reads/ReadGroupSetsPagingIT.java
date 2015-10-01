@@ -39,18 +39,19 @@ public class ReadGroupSetsPagingIT {
     @Test
     public void checkPagingOneByOneThroughReadGroupSets() throws AvroRemoteException {
 
-
-        // retrieve all the reads
+        // retrieve them all - this may return fewer than "all."
         final List<ReadGroupSet> listOfReadGroupSets = Utils.getAllReadGroupSets(client);
         assertThat(listOfReadGroupSets).isNotEmpty();
 
-        // we will remove ReadGroupSets from this Set and assert at the end that we have zero
-        final Set<ReadGroupSet> setOfReadGroupSets = new HashSet<>(listOfReadGroupSets);
-        assertThat(listOfReadGroupSets).hasSize(setOfReadGroupSets.size());
+        // we will do a set comparison after retrieving them 1 at a time
+        final Set<ReadGroupSet> setOfExpectedReadGroupSets = new HashSet<>(listOfReadGroupSets);
+        assertThat(listOfReadGroupSets).hasSize(setOfExpectedReadGroupSets.size());
 
+        final Set<ReadGroupSet> setOfReadGroupSetsGathered1By1 =
+                new HashSet<>(setOfExpectedReadGroupSets.size());
         // page through the ReadGroupSets using the same query parameters
         String pageToken = null;
-        for (ReadGroupSet ignored : listOfReadGroupSets) {
+        do {
             final SearchReadGroupSetsRequest pageReq =
                     SearchReadGroupSetsRequest.newBuilder()
                                               .setDatasetId(TestData.getDatasetId())
@@ -62,13 +63,10 @@ public class ReadGroupSetsPagingIT {
             pageToken = pageResp.getNextPageToken();
 
             assertThat(pageOfReadGroupSets).hasSize(1);
-            assertThat(setOfReadGroupSets).contains(pageOfReadGroupSets.get(0));
+            setOfReadGroupSetsGathered1By1.add(pageOfReadGroupSets.get(0));
+        } while (pageToken != null);
 
-            setOfReadGroupSets.remove(pageOfReadGroupSets.get(0));
-        }
-
-        assertThat(pageToken).isNull();
-        assertThat(setOfReadGroupSets).isEmpty();
+        assertThat(setOfReadGroupSetsGathered1By1).containsAll(setOfExpectedReadGroupSets);
     }
 
     /**
