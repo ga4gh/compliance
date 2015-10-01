@@ -6,6 +6,7 @@ import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.ga4gh.ctk.transport.TransportUtils;
 import org.ga4gh.ctk.transport.URLMAPPING;
+import org.ga4gh.ctk.transport.protocols.Client;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -60,7 +61,9 @@ public class RawEndpointsIT {
     }
 
     /**
-     * Test that searches' verbs/methods work as expected.
+     * Test that searches' verbs/methods work as expected.  Because our usual {@link Client} object
+     * only creates well-formed requests, we use Unirest, a simple REST client API,
+     * to connect to the server.
      *
      * @param fullUrl the URL to test
      */
@@ -71,7 +74,7 @@ public class RawEndpointsIT {
             assertThat(Unirest.post(fullUrl)
                               .header("Content-type", "application/json")
                               .body(datum)
-                              .asBinary()
+                              .asBinary() // make the request; we don't really care about the format
                               .getStatus()).isEqualTo(HttpURLConnection.HTTP_BAD_REQUEST);
         }
     }
