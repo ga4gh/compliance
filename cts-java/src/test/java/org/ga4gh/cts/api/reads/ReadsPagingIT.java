@@ -31,10 +31,14 @@ public class ReadsPagingIT {
     private static Client client = new Client(URLMAPPING.getInstance());
 
     /**
-     * Check that we can page 1 by 1 through the {@link org.ga4gh.models.ReadAlignment}s (familiarly, "reads")
+     * Check that we can page 1 by 1 through the {@link ReadAlignment}s (familiarly, "reads")
      * we receive from
      * {@link org.ga4gh.ctk.transport.protocols.Client.Reads#searchReadGroupSets(SearchReadGroupSetsRequest)}.
-     *
+     * <p>
+     * The call to retrieve all {@link ReadAlignment}s may return fewer than all of them, subject to
+     * server-imposed limits.  The 1-by-1 paging must enumerate them all, however.  The set of "all"
+     * must be a subset of those gathered one-by-one.
+     * </p>
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
@@ -43,35 +47,33 @@ public class ReadsPagingIT {
         final String referenceId = Utils.getValidReferenceId(client);
         final String readGroupId = Utils.getReadGroupId(client);
 
-        // retrieve all the reads
+        // retrieve them all - this may return fewer than "all."
         final List<ReadAlignment> listOfReads = Utils.getAllReads(client, referenceId, readGroupId);
         assertThat(listOfReads).isNotEmpty();
 
-        // we will remove ReadAlignments from this Set and assert at the end that we have zero
-        final Set<ReadAlignment> setOfReads = new HashSet<>(listOfReads);
-        assertThat(listOfReads).hasSize(setOfReads.size());
+        // we will do a set comparison after retrieving them 1 at a time
+        final Set<ReadAlignment> setOfExpectedReads = new HashSet<>(listOfReads);
+        assertThat(listOfReads).hasSize(setOfExpectedReads.size());
 
-        // page through the ReadAlignments using the same query parameters
+        final Set<ReadAlignment> setOfReadsGathered1By1 = new HashSet<>(setOfExpectedReads.size());
+        // page through the ReadAlignments using the same query parameters and collect them
         String pageToken = null;
-        for (ReadAlignment ignored : listOfReads) {
+        do {
             final SearchReadsRequest pageReq =
                     SearchReadsRequest.newBuilder()
-                                            .setReferenceId(referenceId)
-                                            .setPageSize(1)
-                                            .setPageToken(pageToken)
+                                      .setReferenceId(referenceId)
+                                      .setPageSize(1)
+                                      .setPageToken(pageToken)
                                       .build();
             final SearchReadsResponse pageResp = client.reads.searchReads(pageReq);
             final List<ReadAlignment> pageOfReads = pageResp.getAlignments();
             pageToken = pageResp.getNextPageToken();
 
             assertThat(pageOfReads).hasSize(1);
-            assertThat(setOfReads).contains(pageOfReads.get(0));
+            setOfReadsGathered1By1.add(pageOfReads.get(0));
+        } while (pageToken != null);
 
-            setOfReads.remove(pageOfReads.get(0));
-        }
-
-        assertThat(pageToken).isNull();
-        assertThat(setOfReads).isEmpty();
+        assertThat(setOfReadsGathered1By1).containsAll(setOfExpectedReads);
     }
 
     /**
