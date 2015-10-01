@@ -6,6 +6,7 @@ import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.ga4gh.ctk.transport.TransportUtils;
 import org.ga4gh.ctk.transport.URLMAPPING;
+import org.ga4gh.ctk.transport.protocols.Client;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -36,88 +37,58 @@ public class RawEndpointsIT {
     }
 
     /**
-     * Test that the basic server verbs/methods work as expected.
-     *
-     * @param fullUrl the URL to test
+     * Input data for parameterized tests that require a search URL as argument.
+     * <p>
+     * Note that this list doesn't include {@link URLMAPPING#getSearchReferenceBases()},
+     * which is a <tt>GET</tt>, not <tt>POST</tt>, method.
+     * </p>
+     * @return an array of all search URLs that accept POST
      */
-    private void testHttpMethods(String fullUrl) throws UnirestException {
-        assertThat(Unirest.get(fullUrl).asBinary().getStatus()).isEqualTo(HttpURLConnection.HTTP_BAD_METHOD);
-        assertThat(Unirest.options(fullUrl).asBinary().getStatus()).isEqualTo(HttpURLConnection.HTTP_OK);
-        assertThat(Unirest.post(fullUrl).asBinary().getStatus()).isEqualTo(HttpURLConnection.HTTP_UNSUPPORTED_TYPE);
-    }
-
-    /**
-     * Test the status codes we're supposed to receive from the GET, POST, and OPTIONS methods on
-     * <tt>/callsets/search</tt>.
-     *
-     * <p>See server/tests/unit/test_views.py: testRouteCallsets</p>
-     *
-     * @throws Exception if there's a connection problem
-     */
-    @Test
-    public void checkCallSetsRouting() throws Exception {
-        String callsetsPartialUrl = urls.getSearchCallsets();
-
-        testHttpMethods(makeFullUrl(callsetsPartialUrl));
-    }
-
-    /**
-     * Test the status codes we're supposed to receive from the GET, POST, and OPTIONS methods on
-     * <tt>/variants/search</tt>.
-     *
-     * <p>See server/tests/unit/test_views.py: testRouteCallsets</p>
-     *
-     * @throws Exception if there's a connection problem
-     */
-    @Test
-    public void checkVariantSearchMethods() throws Exception {
-        String partialUrl = urls.getSearchVariants();
-
-        testHttpMethods(makeFullUrl(partialUrl));
-    }
-
-    /**
-     * Test that searches' verbs/methods work as expected.
-     *
-     * @param fullUrl the URL to test
-     */
-    private void testSearchRouting(final String fullUrl) throws UnirestException {
-        // send some malformed requests and expect status == HTTP_BAD_REQUEST
-        final String[] badJson = {"", "JSON", "<xml/>", "{", "}", "{\"bad:\"", "{]"};
-        for (String datum : badJson) {
-            assertThat(Unirest.post(fullUrl)
-                              .header("Content-type", "application/json")
-                              .body(datum)
-                              .asBinary()
-                              .getStatus()).isEqualTo(HttpURLConnection.HTTP_BAD_REQUEST);
-        }
-    }
-
-    /**
-     * Input data for {@link #checkSearchRouting(String)}.
-     * @return  an array of URLs
-     */
-    private String[] allSearchUrls() {
+    private String[] allSearchUrlsThatAcceptPost() {
         return new String[] {
                 makeFullUrl(urls.getSearchCallsets()),
+                makeFullUrl(urls.getSearchDatasets()),
                 makeFullUrl(urls.getSearchReadGroupSets()),
                 makeFullUrl(urls.getSearchReads()),
-                makeFullUrl(urls.getSearchReferencesets()), // this fails (404 instead of 405)
+                makeFullUrl(urls.getSearchReferences()),
+                /*
+                makeFullUrl(urls.getSearchReferenceBases()), // uses GET, not POST!
+                */
+                makeFullUrl(urls.getSearchReferencesets()),
                 makeFullUrl(urls.getSearchVariants()),
                 makeFullUrl(urls.getSearchVariantSets())
         };
     }
 
     /**
+     * Test that searches' verbs/methods work as expected.  Because our usual {@link Client} object
+     * only creates well-formed requests, we use Unirest, a simple REST client API,
+     * to connect to the server.
+     *
+     * @param fullUrl the URL to test
+     */
+    private void tryMalformedSearchPayloads(final String fullUrl) throws UnirestException {
+        // send some malformed requests and expect status == HTTP_BAD_REQUEST
+        final String[] requestBodies = {"", "JSON", "<xml/>", "{", "}", "{\"bad:\"", "{]"};
+        for (String datum : requestBodies) {
+            assertThat(Unirest.post(fullUrl)
+                              .header("Content-type", "application/json")
+                              .body(datum)
+                              .asBinary() // make the request; we don't really care about the format
+                              .getStatus()).isEqualTo(HttpURLConnection.HTTP_BAD_REQUEST);
+        }
+    }
+
+    /**
      * Test search routing and the handling of bad data.
      *
-     * @param fullUrl the URL to test (supplied by {@link #allSearchUrls()}
+     * @param fullUrl the URL to test (supplied by {@link #allSearchUrlsThatAcceptPost()})
      * @throws UnirestException if there's a communication problem
      */
     @Test
-    @Parameters(method = "allSearchUrls")
-    public void checkSearchRouting(String fullUrl) throws UnirestException {
-        testSearchRouting(fullUrl);
+    @Parameters(method = "allSearchUrlsThatAcceptPost")
+    public void testMalformedSearchPayloads(final String fullUrl) throws UnirestException {
+        tryMalformedSearchPayloads(fullUrl);
     }
 
 }
