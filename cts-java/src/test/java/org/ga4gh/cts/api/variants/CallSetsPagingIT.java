@@ -36,6 +36,11 @@ public class CallSetsPagingIT {
     /**
      * Check that we can page 1 by 1 through the {@link CallSet}s we receive from
      * {@link org.ga4gh.ctk.transport.protocols.Client.Variants#searchCallSets(SearchCallSetsRequest)}.
+     * <p>
+     * The call to retrieve all {@link CallSet}s may return fewer than all of them, subject to
+     * server-imposed limits.  The 1-by-1 paging must enumerate them all, however.  The set of "all"
+     * must be a subset of those gathered one-by-one.
+     * </p>
      *
      * @throws AvroRemoteException if there's a communication problem or server exception
      */
@@ -43,11 +48,19 @@ public class CallSetsPagingIT {
     public void checkPagingOneByOneThroughCallSets() throws AvroRemoteException {
 
         final String variantSetId = Utils.getVariantSetId(client);
-        final List<CallSet> allCallSets = Utils.getAllCallSets(client, variantSetId);
-        final Set<CallSet> setOfCallSets = new HashSet<>(allCallSets);
+        // retrieve them all - this may return fewer than "all," however.
+        final List<CallSet> listOfCallSets = Utils.getAllCallSets(client, variantSetId);
+        assertThat(listOfCallSets).isNotEmpty();
 
+        // we will do a set comparison after retrieving them 1 at a time
+        final Set<CallSet> setOfExpectedCallSets = new HashSet<>(listOfCallSets);
+        assertThat(listOfCallSets).hasSameSizeAs(setOfExpectedCallSets);
+
+        final Set<CallSet> setOfCallSetsGathered1By1 = new HashSet<>(setOfExpectedCallSets.size());
+
+        // page through the ReferenceSets using the same query parameters and collect them
         String pageToken = null;
-        for (CallSet ignored : allCallSets) {
+        do {
             final SearchCallSetsRequest pageReq =
                     SearchCallSetsRequest.newBuilder()
                                          .setVariantSetId(variantSetId)
@@ -60,13 +73,11 @@ public class CallSetsPagingIT {
             pageToken = pageResp.getNextPageToken();
 
             assertThat(pageOfCallSets).hasSize(1);
-            assertThat(setOfCallSets).contains(pageOfCallSets.get(0));
+            setOfCallSetsGathered1By1.add(pageOfCallSets.get(0));
 
-            setOfCallSets.remove(pageOfCallSets.get(0));
-        }
+        } while (pageToken != null);
 
-        assertThat(pageToken).isNull();
-        assertThat(setOfCallSets).isEmpty();
+        assertThat(setOfCallSetsGathered1By1).containsAll(setOfExpectedCallSets);
     }
 
     /**
