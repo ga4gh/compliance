@@ -86,6 +86,8 @@ public class URLMAPPINGImpl implements URLMAPPING {
         defaultEndpoints.put("ctk.tgt.searchFeatures", "features/search");
         defaultEndpoints.put("ctk.tgt.getFeatures", "features/{id}");
 
+        defaultEndpoints.put("ctk.tgt.searchGenotypePhenotype", "genotypephenotype/search");
+
         dumpToStdOut = Boolean.getBoolean("ctk.tgt.urlmapper.dump"); // so, -Dctk.tgt.urlmapper.dump=true
 
         log.info("set default URLMAPPING urlRoot to " + defaultEndpoints.get("ctk.tgt.urlRoot"));
@@ -535,6 +537,16 @@ public class URLMAPPINGImpl implements URLMAPPING {
     @Override
     public String getGetFeature() {
         return endpoints.get("ctk.tgt.getFeatures");
+    }
+
+    @Override
+    public String getSearchGenotypePhenotype() {
+        return endpoints.get("ctk.tgt.searchGenotypePhenotype");
+    }
+
+    @Override
+    public void setSearchGenotypePhenotype(String searchGenotypePhenotype) {
+        endpoints.put("ctk.tgt.searchGenotypePhenotype", searchGenotypePhenotype);
     }
 
     @Override

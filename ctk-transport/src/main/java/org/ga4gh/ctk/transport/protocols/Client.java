@@ -90,6 +90,15 @@ public class Client {
      */
     public final References references = new References();
 
+
+    /**
+     * Provides access to GenotypePhenotype-related methods.  For example,
+     * <pre>
+     *     myClient.genotypePhenotype.searchReferenceSets(...);
+     * </pre>
+     */
+    public final GenotypePhenotype genotypePhenotype = new GenotypePhenotype();
+
     /**
      * Provides access to variantannotations-related methods.  For example,
      * <pre>
@@ -607,6 +616,25 @@ public class Client {
             return builder.build();
         }
 
+    }
+
+
+    /**
+     * Inner class holding all GenotypePheotype-related methods.  Gathering them in an inner class like this
+     * makes it a little easier for someone writing tests to use their IDE's auto-complete
+     * to type method names.
+     */
+    public class GenotypePhenotype implements GenotypePhenotypeMethods {
+
+        @Override
+        public SearchGenotypePhenotypeResponse searchGenotypePhenotype(SearchGenotypePhenotypeRequest request) throws AvroRemoteException, GAException {
+            String path = urls.getSearchGenotypePhenotype();
+            SearchGenotypePhenotypeResponse response = new SearchGenotypePhenotypeResponse();
+            final AvroJson aj =
+                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
+            response = (SearchGenotypePhenotypeResponse)aj.doPostResp();
+            return response;
+        }
     }
 
 }

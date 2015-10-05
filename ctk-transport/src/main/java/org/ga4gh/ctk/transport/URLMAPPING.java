@@ -135,6 +135,10 @@ public interface URLMAPPING {
     void setGetFeature(String getFeature);
 
 
+    String getSearchGenotypePhenotype();
+
+    void setSearchGenotypePhenotype(String searchGenotypePhenotype);
+
     Map<String, String> getEndpoints();
 
     void setEndpoints(Map<String, String> endpoints);
