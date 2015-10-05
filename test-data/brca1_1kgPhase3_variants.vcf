@@ -1,9 +1,9 @@
 ##fileformat=VCFv4.1
 ##FILTER=<ID=PASS,Description="All filters passed">
 ##fileDate=20150218
-##reference=hs37d5_chr17_41196312-41277500.fa
+##reference=ref_brca1.fa
 ##source=GA4GH_Compliance_Test_Suite_Data
-##contig=<ID=ref_brca1,assembly=b37,length=171823>
+##contig=<ID=ref_brca1,assembly=hg37,length=171823>
 ##ALT=<ID=CNV,Description="Copy Number Polymorphism">
 ##ALT=<ID=DEL,Description="Deletion">
 ##ALT=<ID=DUP,Description="Duplication">
