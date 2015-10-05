@@ -58,7 +58,7 @@ public class CallSetsPagingIT {
 
         final Set<CallSet> setOfCallSetsGathered1By1 = new HashSet<>(setOfExpectedCallSets.size());
 
-        // page through the ReferenceSets using the same query parameters and collect them
+        // page through the CallSets using the same query parameters and collect them
         String pageToken = null;
         do {
             final SearchCallSetsRequest pageReq =
