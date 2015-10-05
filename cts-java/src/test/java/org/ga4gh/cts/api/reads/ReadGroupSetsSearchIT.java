@@ -18,7 +18,6 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import java.net.HttpURLConnection;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -33,16 +32,6 @@ import static org.ga4gh.cts.api.Utils.catchGAWrapperException;
 public class ReadGroupSetsSearchIT implements CtkLogs {
 
     private static Client client = new Client(URLMAPPING.getInstance());
-
-    /**
-     * Return the number of Strings that match the possible substring.
-     * @param possibleSubstring the substring we're searching for
-     * @param matchWithin the {@link String[]} we're searching within
-     * @return the number of elements of <tt>matchWithin</tt> that contain <tt>possibleSubstring</tt>
-     */
-    private static int countMatches(String possibleSubstring, String[] matchWithin) {
-         return (int)Arrays.stream(matchWithin).filter(name -> name.contains(possibleSubstring)).count();
-    }
 
     /**
      * <p>When we supply a name to {@link SearchReadGroupSetsRequest}, the

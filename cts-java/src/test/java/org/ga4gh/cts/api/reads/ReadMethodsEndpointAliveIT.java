@@ -9,14 +9,12 @@ import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.Utils;
 import org.ga4gh.methods.SearchReadsRequest;
-import org.ga4gh.methods.SearchReadsResponse;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import java.net.HttpURLConnection;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,32 +45,6 @@ import static org.ga4gh.cts.api.Utils.catchGAWrapperException;
 public class ReadMethodsEndpointAliveIT implements CtkLogs {
 
     private static Client client = new Client(URLMAPPING.getInstance());
-
-    /**
-     * Show that a SearchReadsRequest is accepted and
-     * returns a parseable Response.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void defaultReadsRequestGetsNullAlignments() throws Exception {
-
-        // first get a valid reference to map our read to
-        final String refId = Utils.getValidReferenceId(client);
-
-        final String readGroupId = Utils.getReadGroupId(client);
-
-        // then do a read search
-        final SearchReadsRequest srr =
-                SearchReadsRequest.newBuilder()
-                                  .setReadGroupIds(aSingle(readGroupId))
-                                  .setStart(0L)
-                                  .setEnd(150L)
-                                  .setReferenceId(refId)
-                                  .build();
-        final SearchReadsResponse rtn = client.reads.searchReads(srr);
-        assertThat(rtn.getAlignments()).isNullOrEmpty();
-    }
 
     /**
      * Check that an unmatched {@link SearchReadsRequest} results in a thrown exception.
@@ -152,28 +124,6 @@ public class ReadMethodsEndpointAliveIT implements CtkLogs {
         readGroupIdMap.put("ONE_GOOD_ONE_BAD", "low-coverage:HG00534;BAD_ID");
         readGroupIdMap.put("TWO_BAD", "DUMB_ID;BAD_ID");
         readGroupIdMap.put("THREE_GOOD", "low-coverage:HG00534;low-coverage:HG00533;low-coverage:HG00533");
-    }
-
-    /**
-     * Check that attempting to supply 0 readgroup IDs in a {@link SearchReadsRequest} is not OK.
-     *
-     * @throws Exception the exception
-     */
-    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-    @Test
-    public void emptyReadGroupIdIsNotFound() throws Exception {
-        // first get a valid reference to map our read to
-        final String refId = Utils.getValidReferenceId(client);
-
-        final SearchReadsRequest srr =
-                SearchReadsRequest.newBuilder()
-                                  .setReadGroupIds(Collections.emptyList())
-                                  .setStart(0L)
-                                  .setEnd(150L)
-                                  .setReferenceId(refId)
-                                  .build();
-        final GAWrapperException t = catchGAWrapperException(() -> client.reads.searchReads(srr));
-        assertThat(t.getHttpStatusCode()).isEqualTo(HttpURLConnection.HTTP_NOT_IMPLEMENTED);
     }
 
 }

@@ -58,7 +58,6 @@ public class ReadsSearchIT implements CtkLogs {
                                   .setStart(emptyRangeStart)
                                   .setEnd(emptyRangeEnd)
                                   .build();
-        // XXX fails due to server issue #591
         final SearchReadsResponse srResp = client.reads.searchReads(srReq);
 
         final List<ReadAlignment> alignments = srResp.getAlignments();
@@ -90,7 +89,6 @@ public class ReadsSearchIT implements CtkLogs {
                                   .setStart(start)
                                   .setEnd(end)
                                   .build();
-        // XXX fails due to server issue #591
         final SearchReadsResponse srResp = client.reads.searchReads(srReq);
 
         final List<ReadAlignment> alignments = srResp.getAlignments();
@@ -176,7 +174,6 @@ public class ReadsSearchIT implements CtkLogs {
                                   .setEnd(150L)
                                   .setReferenceId(refId)
                                   .build();
-        // XXX fails due to server issue #591
         final SearchReadsResponse response = client.reads.searchReads(request);
 
         assertThat(response.getAlignments()).isNotNull();
@@ -190,7 +187,6 @@ public class ReadsSearchIT implements CtkLogs {
     /**
      * Verify that passing all known read group names in a {@link SearchReadsRequest}
      * returns all matching read groups.
-     * XXX fails due to server issue #596
      *
      * @throws Exception if there's a problem
      */
@@ -230,7 +226,8 @@ public class ReadsSearchIT implements CtkLogs {
 
     /**
      * <p>Verify aligned sequences contain only the permitted symbols.</p>
-     * <p>In any {@link ReadAlignment}, the <tt>alignedSequence</tt> field can only contain
+     * <p>In any {@link ReadAlignment} in our compliance test data,
+     * the <tt>alignedSequence</tt> field can only contain
      * <tt>[ACTGN]+</tt>: No spaces, no other letters, no lowercase, no null.</p>
      *
      * @throws Exception if there's a problem
@@ -249,7 +246,6 @@ public class ReadsSearchIT implements CtkLogs {
                                       .setStart(0L)
                                       .setEnd(150L)
                                       .build();
-            // XXX fails due to server issue #591
             final SearchReadsResponse response = client.reads.searchReads(request);
 
             assertThat(response.getAlignments()).isNotNull();
