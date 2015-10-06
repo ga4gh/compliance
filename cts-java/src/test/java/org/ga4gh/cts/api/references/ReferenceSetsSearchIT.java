@@ -5,7 +5,6 @@ import org.apache.avro.AvroRemoteException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
-import org.ga4gh.cts.api.reads.ReadsTests;
 import org.ga4gh.methods.GAException;
 import org.ga4gh.methods.SearchReferenceSetsRequest;
 import org.ga4gh.methods.SearchReferenceSetsResponse;
@@ -59,9 +58,7 @@ public class ReferenceSetsSearchIT {
 
         final List<ReferenceSet> sets = resp.getReferenceSets();
 
-        sets.stream().forEach(rs -> assertThat(rs.getId()).isNotNull());
-        sets.stream().forEach(rs -> assertThat(rs.getMd5checksum()).isNotNull());
-        sets.stream().forEach(rs -> assertThat(rs.getSourceAccessions()).isNotNull());
+        sets.stream().forEach(this::checkRefSetConstants);
     }
 
     /**
@@ -81,9 +78,7 @@ public class ReferenceSetsSearchIT {
         assertThat(refSets).hasSize(1);
 
         final ReferenceSet refSet = refSets.get(0);
-        assertThat(refSet.getAssemblyId()).isEqualTo(TestData.REFERENCESET_ASSEMBLY_ID);
-        assertThat(refSet.getMd5checksum()).isEqualTo(TestData.REFERENCESET_MD5_CHECKSUM);
-        assertThat(refSet.getSourceAccessions()).isEqualTo(TestData.REFERENCESET_ACCESSIONS);
+        checkRefSetConstants(refSet);
     }
 
     /**
@@ -103,9 +98,7 @@ public class ReferenceSetsSearchIT {
         assertThat(refSets).hasSize(1);
 
         final ReferenceSet refSet = refSets.get(0);
-        assertThat(refSet.getAssemblyId()).isEqualTo(TestData.REFERENCESET_ASSEMBLY_ID);
-        assertThat(refSet.getMd5checksum()).isEqualTo(TestData.REFERENCESET_MD5_CHECKSUM);
-        assertThat(refSet.getSourceAccessions()).isEqualTo(TestData.REFERENCESET_ACCESSIONS);
+        checkRefSetConstants(refSet);
     }
 
     /**
@@ -125,6 +118,14 @@ public class ReferenceSetsSearchIT {
         assertThat(refSets).hasSize(1);
 
         final ReferenceSet refSet = refSets.get(0);
+        checkRefSetConstants(refSet);
+    }
+
+    /**
+     * Check the assembly ID, MD5 value, and accessions of a given {@link ReferenceSet}.
+     * @param refSet the {@link ReferenceSet}  to check
+     */
+    private void checkRefSetConstants(ReferenceSet refSet) {
         assertThat(refSet.getAssemblyId()).isEqualTo(TestData.REFERENCESET_ASSEMBLY_ID);
         assertThat(refSet.getMd5checksum()).isEqualTo(TestData.REFERENCESET_MD5_CHECKSUM);
         assertThat(refSet.getSourceAccessions()).isEqualTo(TestData.REFERENCESET_ACCESSIONS);
