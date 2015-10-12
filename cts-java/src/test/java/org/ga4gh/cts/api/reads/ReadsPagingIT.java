@@ -77,6 +77,65 @@ public class ReadsPagingIT {
     }
 
     /**
+     * Check that we can page through the {@link ReadAlignment}s (familiarly, "reads")
+     * we receive from
+     * {@link org.ga4gh.ctk.transport.protocols.Client.Reads#searchReadGroupSets(SearchReadGroupSetsRequest)} using
+     * two different chunk sizes.
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     */
+    @Test
+    public void checkPagingByRelativelyPrimeChunksOfReads() throws AvroRemoteException {
+
+        final int pageSize0 = 3;
+        final int pageSize1 = 7;
+
+        final String referenceId = Utils.getValidReferenceId(client);
+        final String readGroupId = Utils.getReadGroupId(client);
+
+        final Set<ReadAlignment> firstSetOfReads = new HashSet<>();
+        // page through the ReadAlignments using the same query parameters and collect them
+        String pageToken = null;
+        // page by pageSize0
+        do {
+            final SearchReadsRequest pageReq =
+                    SearchReadsRequest.newBuilder()
+                                      .setReadGroupIds(aSingle(readGroupId))
+                                      .setReferenceId(referenceId)
+                                      .setPageSize(pageSize0)
+                                      .setPageToken(pageToken)
+                                      .build();
+            final SearchReadsResponse pageResp = client.reads.searchReads(pageReq);
+            final List<ReadAlignment> pageOfReads = pageResp.getAlignments();
+            pageToken = pageResp.getNextPageToken();
+
+            firstSetOfReads.addAll(pageOfReads);
+        } while (pageToken != null);
+
+        final Set<ReadAlignment> secondSetOfReads = new HashSet<>();
+        // page through the ReadAlignments again using the same query parameters and collect them
+        pageToken = null;
+        // page by pageSize1
+        do {
+            final SearchReadsRequest pageReq =
+                    SearchReadsRequest.newBuilder()
+                                      .setReadGroupIds(aSingle(readGroupId))
+                                      .setReferenceId(referenceId)
+                                      .setPageSize(pageSize1)
+                                      .setPageToken(pageToken)
+                                      .build();
+            final SearchReadsResponse pageResp = client.reads.searchReads(pageReq);
+            final List<ReadAlignment> pageOfReads = pageResp.getAlignments();
+            pageToken = pageResp.getNextPageToken();
+
+            secondSetOfReads.addAll(pageOfReads);
+        } while (pageToken != null);
+
+        // assert that the sets contain the identical elements
+        assertThat(secondSetOfReads).containsAll(firstSetOfReads);
+        assertThat(firstSetOfReads).containsAll(secondSetOfReads);
+    }
+
+    /**
      * Check that we can page through the {@link ReadAlignment}s we receive from
      * {@link org.ga4gh.ctk.transport.protocols.Client.Reads#searchReads(SearchReadsRequest)}
      * using an increment as large as the non-paged set of results.

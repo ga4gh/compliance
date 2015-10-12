@@ -70,6 +70,64 @@ public class ReadGroupSetsPagingIT {
     }
 
     /**
+     * Check that we can page through the {@link ReadGroupSet}s
+     * we receive from
+     * {@link org.ga4gh.ctk.transport.protocols.Client.Reads#searchReadGroupSets(SearchReadGroupSetsRequest)} using
+     * two different chunk sizes.
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     */
+    @Test
+    public void checkPagingByRelativelyPrimeChunksOfReadGroupSets() throws AvroRemoteException {
+
+        final int pageSize0 = 3;
+        final int pageSize1 = 7;
+
+        final Set<ReadGroupSet> firstSetOfReadGroups = new HashSet<>();
+        // page through the ReadAlignments using the same query parameters and collect them
+
+        String pageToken = null;
+        // page by pageSize0
+        do {
+            final SearchReadGroupSetsRequest readGroupSetsReq =
+                    SearchReadGroupSetsRequest
+                            .newBuilder()
+                            .setPageSize(pageSize0)
+                            .setPageToken(pageToken)
+                            .setDatasetId(TestData.getDatasetId())
+                            .build();
+            final SearchReadGroupSetsResponse pageResp = client.reads.searchReadGroupSets(readGroupSetsReq);
+            final List<ReadGroupSet> pageOfReadGroupSets = pageResp.getReadGroupSets();
+            pageToken = pageResp.getNextPageToken();
+
+            firstSetOfReadGroups.addAll(pageOfReadGroupSets);
+        } while (pageToken != null);
+
+        final Set<ReadGroupSet> secondSetOfReadGroupSets = new HashSet<>();
+        // page through the ReadAlignments again using the same query parameters and collect them
+
+        // page by pageSize1
+        pageToken = null;
+        do {
+            final SearchReadGroupSetsRequest readGroupSetsReq =
+                    SearchReadGroupSetsRequest
+                            .newBuilder()
+                            .setPageSize(pageSize1)
+                            .setPageToken(pageToken)
+                            .setDatasetId(TestData.getDatasetId())
+                            .build();
+            final SearchReadGroupSetsResponse pageResp = client.reads.searchReadGroupSets(readGroupSetsReq);
+            final List<ReadGroupSet> pageOfReadGroupSets = pageResp.getReadGroupSets();
+            pageToken = pageResp.getNextPageToken();
+
+            secondSetOfReadGroupSets.addAll(pageOfReadGroupSets);
+        } while (pageToken != null);
+
+        // assert that the sets contain the identical elements
+        assertThat(secondSetOfReadGroupSets).containsAll(firstSetOfReadGroups);
+        assertThat(firstSetOfReadGroups).containsAll(secondSetOfReadGroupSets);
+    }
+
+    /**
      * Check that we can page through the {@link ReadGroupSet}s we receive from
      * {@link Client.Reads#searchReadGroupSets(SearchReadGroupSetsRequest)}
      * using an increment as large as the non-paged set of results.
