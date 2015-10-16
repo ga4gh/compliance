@@ -77,6 +77,74 @@ public class ReadsPagingIT {
     }
 
     /**
+     * Check that we can have two independent sequences of page 1 by 1 through the {@link ReadAlignment}s
+     * we receive from
+     * {@link org.ga4gh.ctk.transport.protocols.Client.Reads#searchReads(SearchReadsRequest)}, and
+     * compare the collections of objects at the end.  They should be identical.
+     *
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     */
+    @Test
+    public void checkTwoSimultaneousPagingSequencesThroughReads() throws AvroRemoteException {
+
+        final String referenceId = Utils.getValidReferenceId(client);
+        final String readGroupId = Utils.getReadGroupId(client);
+
+        final Set<ReadAlignment> setOfReads0 = new HashSet<>();
+        final Set<ReadAlignment> setOfReads1 = new HashSet<>();
+
+        // page through the ReadAlignments using the same query parameters, and collect them
+
+        String pageToken0 = null;
+        String pageToken1 = null;
+        do {
+            final SearchReadsRequest page0Req =
+                    SearchReadsRequest.newBuilder()
+                                      .setReferenceId(referenceId)
+                                      .setReadGroupIds(aSingle(readGroupId))
+                                      .setPageSize(1)
+                                      .setPageToken(pageToken0)
+                                      .build();
+            final SearchReadsRequest page1Req =
+                    SearchReadsRequest.newBuilder()
+                                      .setReferenceId(referenceId)
+                                      .setReadGroupIds(aSingle(readGroupId))
+                                      .setPageSize(1)
+                                      .setPageToken(pageToken1)
+                                      .build();
+            final SearchReadsResponse page0Resp = client.reads.searchReads(page0Req);
+            final List<ReadAlignment> pageOfReads0 = page0Resp.getAlignments();
+            setOfReads0.addAll(page0Resp.getAlignments());
+            pageToken0 = page0Resp.getNextPageToken();
+
+            final SearchReadsResponse page1Resp = client.reads.searchReads(page1Req);
+            final List<ReadAlignment> pageOfReads1 = page0Resp.getAlignments();
+            setOfReads1.addAll(page1Resp.getAlignments());
+            pageToken1 = page1Resp.getNextPageToken();
+
+            assertThat(pageOfReads0).hasSameSizeAs(pageOfReads1);
+            assertBothAreNullOrBothAreNot(pageToken0, pageToken1);
+        } while (pageToken0 != null);
+
+        assertThat(setOfReads0).containsAll(setOfReads1);
+        assertThat(setOfReads1).containsAll(setOfReads0);
+    }
+
+    /**
+     * Assert that both string arguments are null, or neither is.
+     * @param token0 a string to test
+     * @param token1 a string to test
+     */
+    private void assertBothAreNullOrBothAreNot(String token0, String token1) {
+        if (token0 == null) {
+            assertThat(token1).isNull();
+        }
+        if (token1 == null) {
+            assertThat(token0).isNull();
+        }
+    }
+
+    /**
      * Check that we can page through the {@link ReadAlignment}s (familiarly, "reads")
      * we receive from
      * {@link org.ga4gh.ctk.transport.protocols.Client.Reads#searchReadGroupSets(SearchReadGroupSetsRequest)} using
