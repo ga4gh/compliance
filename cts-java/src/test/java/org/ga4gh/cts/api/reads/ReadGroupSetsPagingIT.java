@@ -150,13 +150,15 @@ public class ReadGroupSetsPagingIT {
         do {
             final SearchReadGroupSetsRequest page0Req =
                     SearchReadGroupSetsRequest.newBuilder()
-                                      .setPageSize(1)
-                                      .setPageToken(pageToken0)
-                                      .build();
+                                              .setDatasetId(TestData.getDatasetId())
+                                              .setPageSize(1)
+                                              .setPageToken(pageToken0)
+                                              .build();
             final SearchReadGroupSetsRequest page1Req =
                     SearchReadGroupSetsRequest.newBuilder()
-                                      .setPageSize(1)
-                                      .setPageToken(pageToken1)
+                                              .setDatasetId(TestData.getDatasetId())
+                                              .setPageSize(1)
+                                              .setPageToken(pageToken1)
                                       .build();
             final SearchReadGroupSetsResponse page0Resp = client.reads.searchReadGroupSets(page0Req);
             final List<ReadGroupSet> pageOfReadGroupSets0 = page0Resp.getReadGroupSets();
