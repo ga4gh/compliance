@@ -181,7 +181,7 @@ public class ReadsSearchIT implements CtkLogs {
         response.getAlignments().stream()
                 .forEach(readAlignment ->
                                  assertThat(readAlignment.getAlignedSequence()).isNotNull()
-                                                                               .matches("[ACTGN]+"));
+                                                                               .matches(TestData.ALIGNED_SEQUENCE_CONTENTS_PATTERN));
     }
 
     /**
@@ -221,14 +221,14 @@ public class ReadsSearchIT implements CtkLogs {
         response.getAlignments().stream()
                 .forEach(readAlignment ->
                                  assertThat(readAlignment.getAlignedSequence()).isNotNull()
-                                                                               .matches("[ACTGN]+"));
+                                                                               .matches(TestData.ALIGNED_SEQUENCE_CONTENTS_PATTERN));
     }
 
     /**
      * <p>Verify aligned sequences contain only the permitted symbols.</p>
      * <p>In any {@link ReadAlignment} in our compliance test data,
      * the <tt>alignedSequence</tt> field can only contain
-     * <tt>[ACTGN]+</tt>: No spaces, no other letters, no lowercase, no null.</p>
+     * {@link TestData#ALIGNED_SEQUENCE_CONTENTS_PATTERN}.
      *
      * @throws Exception if there's a problem
      */
@@ -237,23 +237,26 @@ public class ReadsSearchIT implements CtkLogs {
 
         final String refId = Utils.getValidReferenceId(client);
 
-        for (String readGroupName : TestData.EXPECTED_READGROUP_NAMES) {
-            final String readGroupID = Utils.getReadGroupIdForName(client, readGroupName);
-            final SearchReadsRequest request =
-                    SearchReadsRequest.newBuilder()
-                                      .setReadGroupIds(aSingle(readGroupID))
-                                      .setReferenceId(refId)
-                                      .setStart(0L)
-                                      .setEnd(150L)
-                                      .build();
-            final SearchReadsResponse response = client.reads.searchReads(request);
+        for (String readGroupSetName : TestData.EXPECTED_READGROUPSETS_NAMES) {
+            for (String readGroupName : TestData.EXPECTED_READGROUPSET_READGROUP_NAMES.get(readGroupSetName)) {
+                final String readGroupId = Utils.getReadGroupIdForName(client, readGroupSetName, readGroupName);
+                final SearchReadsRequest request =
+                        SearchReadsRequest.newBuilder()
+                                          .setReadGroupIds(aSingle(readGroupId))
+                                          .setReferenceId(refId)
+                                          .setStart(0L)
+                                          .setEnd(150L)
+                                          .build();
+                final SearchReadsResponse response = client.reads.searchReads(request);
 
-            assertThat(response.getAlignments()).isNotNull();
+                assertThat(response.getAlignments()).isNotNull();
 
-            response.getAlignments().stream()
-                    .forEach(readAlignment ->
-                                     assertThat(readAlignment.getAlignedSequence()).isNotNull()
-                                                                                   .matches("[ACTGN]+"));
+                response.getAlignments().stream()
+                        .forEach(readAlignment ->
+                                         assertThat(readAlignment.getAlignedSequence()).isNotNull()
+                                                                                       .matches(TestData.ALIGNED_SEQUENCE_CONTENTS_PATTERN));
+            }
         }
     }
+
 }

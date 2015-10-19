@@ -7,10 +7,7 @@ import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.methods.*;
 import org.ga4gh.models.*;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -162,26 +159,27 @@ public class Utils {
     }
 
     /**
-     * Utility method to fetch the ID of a {@link ReadGroup} in a named {@link ReadGroupSet}.
+     * Utility method to fetch the ID of a named {@link ReadGroup} in a named {@link ReadGroupSet}.
      * @param client the {@link Client} connection to the server
-     * @param name the name of a ReadGroup
-     * @return the ID of an arbitrary {@link ReadGroup}
+     * @param readGroupSetName the name of a {@link ReadGroupSet}
+     * @param readGroupName the name of a {@link ReadGroup} in the given {@link ReadGroupSet}
+     * @return the ID of the {@link ReadGroup}, or null if not found
      * @throws AvroRemoteException is the server throws an exception or there's an I/O error
      */
-    public static String getReadGroupIdForName(Client client, String name) throws AvroRemoteException {
+    public static String getReadGroupIdForName(Client client, String readGroupSetName, String readGroupName) throws AvroRemoteException {
         final SearchReadGroupSetsRequest readGroupSetsReq =
                 SearchReadGroupSetsRequest.newBuilder()
                                           .setDatasetId(TestData.getDatasetId())
+                                          .setName(readGroupSetName)
                                           .build();
         final SearchReadGroupSetsResponse readGroupSetsResp =
                 client.reads.searchReadGroupSets(readGroupSetsReq);
-        assertThat(readGroupSetsResp).isNotNull();
         final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSets();
         assertThat(readGroupSets).isNotEmpty().isNotNull();
         final ReadGroupSet readGroupSet = readGroupSets.get(0);
-        List<ReadGroup> readGroups = readGroupSet.getReadGroups();
-        Optional<ReadGroup> result =
-                readGroups.stream().filter(readGroup -> name.equals(readGroup.getName())).findFirst();
+        final List<ReadGroup> readGroups = readGroupSet.getReadGroups();
+        final Optional<ReadGroup> result =
+                readGroups.stream().filter(readGroup -> readGroupName.equals(readGroup.getName())).findFirst();
         return result.isPresent() ? result.get().getId() : null;
     }
 
@@ -193,19 +191,29 @@ public class Utils {
      */
     public static List<ReadGroupSet> getAllReadGroupSets(Client client)
             throws AvroRemoteException {
-        final SearchReadGroupSetsRequest readGroupSetsReq =
-                SearchReadGroupSetsRequest
-                        .newBuilder()
-                        .setDatasetId(TestData.getDatasetId())
-                        .build();
-        final SearchReadGroupSetsResponse readGroupSetsResp =
-                client.reads.searchReadGroupSets(readGroupSetsReq);
-        assertThat(readGroupSetsResp).isNotNull();
-        final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSets();
-        assertThat(readGroupSets).isNotEmpty().isNotNull();
-        return readGroupSets;
-    }
 
+        final List<ReadGroupSet> result = new LinkedList<>();
+
+        String pageToken = null;
+        do {
+            final SearchReadGroupSetsRequest readGroupSetsReq =
+                    SearchReadGroupSetsRequest
+                            .newBuilder()
+                            .setPageSize(100)
+                            .setPageToken(pageToken)
+                            .setDatasetId(TestData.getDatasetId())
+                            .build();
+            final SearchReadGroupSetsResponse readGroupSetsResp =
+                    client.reads.searchReadGroupSets(readGroupSetsReq);
+            pageToken = readGroupSetsResp.getNextPageToken();
+            assertThat(readGroupSetsResp).isNotNull();
+            final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSets();
+            assertThat(readGroupSets).isNotEmpty().isNotNull();
+            result.addAll(readGroupSets);
+        } while (pageToken != null);
+
+        return result;
+    }
 
     /**
      * Utility method to fetch all {@link ReadGroup}s given a {@link ReadGroupSet} name.
@@ -388,12 +396,22 @@ public class Utils {
      */
     public static List<ReadAlignment> getAllReads(Client client, String referenceId,
                                                   String readGroupId) throws AvroRemoteException {
-        final SearchReadsRequest req = SearchReadsRequest.newBuilder()
-                .setReferenceId(referenceId)
-                .setReadGroupIds(aSingle(readGroupId))
-                .build();
-        final SearchReadsResponse resp = client.reads.searchReads(req);
-        return resp.getAlignments();
+
+        final List<ReadAlignment> result = new LinkedList<>();
+        String pageToken = null;
+        do {
+            final SearchReadsRequest req = SearchReadsRequest.newBuilder()
+                                                             .setReferenceId(referenceId)
+                                                             .setReadGroupIds(aSingle(readGroupId))
+                                                             .setPageToken(pageToken)
+                                                             .setPageSize(100)
+                                                             .build();
+            final SearchReadsResponse resp = client.reads.searchReads(req);
+            result.addAll(resp.getAlignments());
+            pageToken = resp.getNextPageToken();
+        } while (pageToken != null);
+
+        return result;
     }
 
     /**

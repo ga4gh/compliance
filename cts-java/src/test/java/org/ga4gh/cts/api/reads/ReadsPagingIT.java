@@ -62,6 +62,7 @@ public class ReadsPagingIT {
             final SearchReadsRequest pageReq =
                     SearchReadsRequest.newBuilder()
                                       .setReferenceId(referenceId)
+                                      .setReadGroupIds(aSingle(readGroupId))
                                       .setPageSize(1)
                                       .setPageToken(pageToken)
                                       .build();
@@ -201,46 +202,6 @@ public class ReadsPagingIT {
         // assert that the sets contain the identical elements
         assertThat(secondSetOfReads).containsAll(firstSetOfReads);
         assertThat(firstSetOfReads).containsAll(secondSetOfReads);
-    }
-
-    /**
-     * Check that we can page through the {@link ReadAlignment}s we receive from
-     * {@link org.ga4gh.ctk.transport.protocols.Client.Reads#searchReads(SearchReadsRequest)}
-     * using an increment as large as the non-paged set of results.
-     *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
-     */
-    @Test
-    public void checkPagingByOneChunkThroughReads() throws AvroRemoteException {
-
-        final String referenceId = Utils.getValidReferenceId(client);
-        final String readGroupId = Utils.getReadGroupId(client);
-        final List<ReadAlignment> listOfReads = Utils.getAllReads(client, referenceId, readGroupId);
-        assertThat(listOfReads).isNotEmpty();
-
-        // page through the reads in one gulp
-        checkSinglePageOfReads(referenceId, readGroupId, listOfReads.size(),
-                               listOfReads);
-    }
-
-    /**
-     * Check that we can page through the {@link ReadAlignment}s we receive from
-     * {@link org.ga4gh.ctk.transport.protocols.Client.Reads#searchReads(SearchReadsRequest)}
-     * using an increment twice as large as the non-paged set of results.
-     *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
-     */
-    @Test
-    public void checkPagingByOneTooLargeChunkThroughReads() throws AvroRemoteException {
-
-        final String referenceId = Utils.getValidReferenceId(client);
-        final String readGroupId = Utils.getReadGroupId(client);
-        final List<ReadAlignment> listOfReads = Utils.getAllReads(client, referenceId, readGroupId);
-        assertThat(listOfReads).isNotEmpty();
-
-        // page through the reads in one too-large gulp
-        checkSinglePageOfReads(referenceId, readGroupId, listOfReads.size() * 2,
-                               listOfReads);
     }
 
     /**
