@@ -37,7 +37,7 @@ public class VariantsPagingIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkPagingOneByOneThroughCalls() throws AvroRemoteException {
+    public void checkPagingOneByOneThroughVariants() throws AvroRemoteException {
         final long start = 50;
         final long end = 100;
 
@@ -81,7 +81,7 @@ public class VariantsPagingIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkPagingByOneChunkThroughCalls() throws AvroRemoteException {
+    public void checkPagingByOneChunkThroughVariants() throws AvroRemoteException {
         final long start = 50;
         final long end = 100;
 
@@ -89,9 +89,9 @@ public class VariantsPagingIT implements CtkLogs {
         final List<Variant> listOfVariants = Utils.getAllVariantsInRange(client, variantSetId, start, end);
 
         // page through the variants in one gulp
-        checkSinglePageOfCalls(variantSetId, start, end,
-                               listOfVariants.size(),
-                               listOfVariants);
+        checkSinglePageOfVariants(variantSetId, start, end,
+                                  listOfVariants.size(),
+                                  listOfVariants);
     }
 
     /**
@@ -102,23 +102,22 @@ public class VariantsPagingIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkPagingByOneTooLargeChunkThroughCalls() throws AvroRemoteException {
+    public void checkPagingByOneTooLargeChunkThroughVariants() throws AvroRemoteException {
         final long start = 50;
         final long end = 100;
 
         final String variantSetId = Utils.getVariantSetId(client);
         final List<Variant> listOfVariants = Utils.getAllVariantsInRange(client, variantSetId, start, end);
 
-        checkSinglePageOfCalls(variantSetId, start, end,
-                               listOfVariants.size() * 2,
-                               listOfVariants);
+        checkSinglePageOfVariants(variantSetId, start, end,
+                                  listOfVariants.size() * 2,
+                                  listOfVariants);
     }
 
     /**
      * Check that we can receive expected results when we request a single
      * page of variants from {@link org.ga4gh.ctk.transport.protocols.Client.Variants#searchVariants
-     * (SearchVariantsRequest)},
-     * using <tt>pageSize</tt> as the page size.
+     * (SearchVariantsRequest)}, using <tt>pageSize</tt> as the page size.
      *
      * @param variantSetId     the ID of the {@link VariantSet} we're paging through
      * @param start            the start value for the range we're searching
@@ -127,10 +126,10 @@ public class VariantsPagingIT implements CtkLogs {
      * @param expectedVariants all of the {@link Variant} objects we expect to receive
      * @throws AvroRemoteException if there's a communication problem or server exception
      */
-    private void checkSinglePageOfCalls(String variantSetId,
-                                        long start, long end,
-                                        int pageSize,
-                                        List<Variant> expectedVariants) throws AvroRemoteException {
+    private void checkSinglePageOfVariants(String variantSetId,
+                                           long start, long end,
+                                           int pageSize,
+                                           List<Variant> expectedVariants) throws AvroRemoteException {
 
         final SearchVariantsRequest pageReq =
                 SearchVariantsRequest.newBuilder()

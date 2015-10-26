@@ -13,16 +13,37 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test searching variants and variant sets.
+ * Test searching variants.
  */
 @Category(VariantsTests.class)
 public class VariantsSearchIT implements CtkLogs {
 
     private static Client client = new Client(URLMAPPING.getInstance());
+
+    /**
+     * For every {@link Variant} in the {@link List}, call the {@link Consumer}.
+     * @param variants the list to test
+     * @param cons the test ({@link Consumer}) to run
+     */
+    private void checkAllVariants(List<Variant> variants, Consumer<Variant> cons) {
+        variants.stream().forEach(cons::accept);
+    }
+
+    /**
+     * For every {@link Call} in the {@link Variant}s in the {@link List}, call the {@link Consumer}.
+     * @param variants the list to test
+     * @param cons the test ({@link Consumer}) to run
+     */
+    private void checkAllCalls(List<Variant> variants, Consumer<Call> cons) {
+        variants.stream().forEach(v -> v.getCalls()
+                                        .stream()
+                                        .forEach(cons::accept));
+    }
 
     /**
      * Fetch variants between two positions in the reference and count them.  The number must
@@ -60,25 +81,6 @@ public class VariantsSearchIT implements CtkLogs {
     }
 
     /**
-     * Check that we receive the expected number of {@link VariantSet}s.
-     *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
-     */
-    @Test
-    public void checkExpectedVariantSets() throws AvroRemoteException {
-        final int expectedNumberOfVariantSets = 1;
-
-        final SearchVariantSetsRequest req =
-                SearchVariantSetsRequest.newBuilder()
-                                        .setDatasetId(TestData.getDatasetId())
-                                        .build();
-        final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
-
-        final List<VariantSet> variantSets = resp.getVariantSets();
-        assertThat(variantSets).hasSize(expectedNumberOfVariantSets);
-    }
-
-    /**
      * Check that the variants we receive from {@link org.ga4gh.ctk.transport.protocols.Client.Variants#searchVariants(SearchVariantsRequest)}
      * search contain the expected reference name.
      *
@@ -108,11 +110,8 @@ public class VariantsSearchIT implements CtkLogs {
         final SearchVariantsResponse vResp = client.variants.searchVariants(vReq);
         final List<Variant> searchVariants = vResp.getVariants();
 
-        searchVariants.stream().forEach(v -> assertThat(v.getReferenceName()).isEqualTo(TestData.REFERENCE_NAME));
-
-        searchVariants.stream().forEach(v -> v.getCalls()
-                                              .stream()
-                                              .forEach(c -> assertThat(c).isNotNull()));
+        checkAllVariants(searchVariants, v -> assertThat(v.getReferenceName()).isEqualTo(TestData.REFERENCE_NAME));
+        checkAllCalls(searchVariants, c -> assertThat(c).isNotNull());
     }
 
     /**
@@ -145,23 +144,16 @@ public class VariantsSearchIT implements CtkLogs {
         final SearchVariantsResponse vResp = client.variants.searchVariants(vReq);
         final List<Variant> searchVariants = vResp.getVariants();
 
-        searchVariants.stream().forEach(v -> v.getCalls().stream()
-                                              .forEach(c -> assertThat(c.getGenotype()).isNotNull()
-                                                                                       .isNotEmpty()));
-
-        searchVariants.stream().forEach(v -> v.getCalls().stream()
-                                              .forEach(c -> assertThat(c.getGenotypeLikelihood())
-                                                      .isNotNull()));
-
-        searchVariants.stream().forEach(v -> v.getCalls().stream().forEach(c -> {
+        checkAllCalls(searchVariants, c -> assertThat(c.getGenotype()).isNotNull().isNotEmpty());
+        checkAllCalls(searchVariants, c -> assertThat(c.getGenotypeLikelihood()).isNotNull());
+        checkAllCalls(searchVariants, c -> {
             assertThat(c.getInfo()).isNotNull();
             // check that the info map contains no null keys or values
             c.getInfo().keySet().stream().forEach(key -> {
                 assertThat(key).isNotNull();
                 assertThat(c.getInfo().get(key)).isNotNull();
             });
-        }));
+        });
     }
-
 
 }
