@@ -46,6 +46,25 @@ public class VariantSetsSearchIT implements CtkLogs {
     }
 
     /**
+     * Check that we receive the expected number of {@link VariantSet}s.
+     *
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     */
+    @Test
+    public void checkExpectedVariantSets() throws AvroRemoteException {
+        final int expectedNumberOfVariantSets = 1;
+
+        final SearchVariantSetsRequest req =
+                SearchVariantSetsRequest.newBuilder()
+                                        .setDatasetId(TestData.getDatasetId())
+                                        .build();
+        final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
+
+        final List<VariantSet> variantSets = resp.getVariantSets();
+        assertThat(variantSets).hasSize(expectedNumberOfVariantSets);
+    }
+
+    /**
      * Fetch variant sets and make sure they're well-formed.
      *
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})

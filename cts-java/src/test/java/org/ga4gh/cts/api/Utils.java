@@ -7,11 +7,9 @@ import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.methods.*;
 import org.ga4gh.models.*;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.StrictAssertions.catchThrowable;
@@ -162,26 +160,27 @@ public class Utils {
     }
 
     /**
-     * Utility method to fetch the ID of a {@link ReadGroup} in a named {@link ReadGroupSet}.
+     * Utility method to fetch the ID of a named {@link ReadGroup} in a named {@link ReadGroupSet}.
      * @param client the {@link Client} connection to the server
-     * @param name the name of a ReadGroup
-     * @return the ID of an arbitrary {@link ReadGroup}
+     * @param readGroupSetName the name of a {@link ReadGroupSet}
+     * @param readGroupName the name of a {@link ReadGroup} in the given {@link ReadGroupSet}
+     * @return the ID of the {@link ReadGroup}, or null if not found
      * @throws AvroRemoteException is the server throws an exception or there's an I/O error
      */
-    public static String getReadGroupIdForName(Client client, String name) throws AvroRemoteException {
+    public static String getReadGroupIdForName(Client client, String readGroupSetName, String readGroupName) throws AvroRemoteException {
         final SearchReadGroupSetsRequest readGroupSetsReq =
                 SearchReadGroupSetsRequest.newBuilder()
                                           .setDatasetId(TestData.getDatasetId())
+                                          .setName(readGroupSetName)
                                           .build();
         final SearchReadGroupSetsResponse readGroupSetsResp =
                 client.reads.searchReadGroupSets(readGroupSetsReq);
-        assertThat(readGroupSetsResp).isNotNull();
         final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSets();
         assertThat(readGroupSets).isNotEmpty().isNotNull();
         final ReadGroupSet readGroupSet = readGroupSets.get(0);
-        List<ReadGroup> readGroups = readGroupSet.getReadGroups();
-        Optional<ReadGroup> result =
-                readGroups.stream().filter(readGroup -> name.equals(readGroup.getName())).findFirst();
+        final List<ReadGroup> readGroups = readGroupSet.getReadGroups();
+        final Optional<ReadGroup> result =
+                readGroups.stream().filter(readGroup -> readGroupName.equals(readGroup.getName())).findFirst();
         return result.isPresent() ? result.get().getId() : null;
     }
 
@@ -193,19 +192,29 @@ public class Utils {
      */
     public static List<ReadGroupSet> getAllReadGroupSets(Client client)
             throws AvroRemoteException {
-        final SearchReadGroupSetsRequest readGroupSetsReq =
-                SearchReadGroupSetsRequest
-                        .newBuilder()
-                        .setDatasetId(TestData.getDatasetId())
-                        .build();
-        final SearchReadGroupSetsResponse readGroupSetsResp =
-                client.reads.searchReadGroupSets(readGroupSetsReq);
-        assertThat(readGroupSetsResp).isNotNull();
-        final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSets();
-        assertThat(readGroupSets).isNotEmpty().isNotNull();
-        return readGroupSets;
-    }
 
+        final List<ReadGroupSet> result = new LinkedList<>();
+
+        String pageToken = null;
+        do {
+            final SearchReadGroupSetsRequest readGroupSetsReq =
+                    SearchReadGroupSetsRequest
+                            .newBuilder()
+                            .setPageSize(100)
+                            .setPageToken(pageToken)
+                            .setDatasetId(TestData.getDatasetId())
+                            .build();
+            final SearchReadGroupSetsResponse readGroupSetsResp =
+                    client.reads.searchReadGroupSets(readGroupSetsReq);
+            pageToken = readGroupSetsResp.getNextPageToken();
+            assertThat(readGroupSetsResp).isNotNull();
+            final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSets();
+            assertThat(readGroupSets).isNotEmpty().isNotNull();
+            result.addAll(readGroupSets);
+        } while (pageToken != null);
+
+        return result;
+    }
 
     /**
      * Utility method to fetch all {@link ReadGroup}s given a {@link ReadGroupSet} name.
@@ -216,21 +225,30 @@ public class Utils {
      */
     public static List<ReadGroup> getReadGroupsForName(Client client, String name)
             throws AvroRemoteException {
-        final SearchReadGroupSetsRequest readGroupSetsReq =
-                SearchReadGroupSetsRequest
-                        .newBuilder()
-                        .setName(name)
-                        .setDatasetId(TestData.getDatasetId())
-                        .build();
-        final SearchReadGroupSetsResponse readGroupSetsResp =
-                client.reads.searchReadGroupSets(readGroupSetsReq);
-        assertThat(readGroupSetsResp).isNotNull();
-        final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSets();
-        assertThat(readGroupSets).isNotEmpty().isNotNull();
-        final ReadGroupSet readGroupSet = readGroupSets.get(0);
-        List<ReadGroup> readGroups = readGroupSet.getReadGroups();
-        assertThat(readGroups).isNotNull();
-        return readGroups;
+
+        final List<ReadGroup> result = new LinkedList<>();
+        String pageToken = null;
+
+        do {
+            final SearchReadGroupSetsRequest readGroupSetsReq =
+                    SearchReadGroupSetsRequest
+                            .newBuilder()
+                            .setName(name)
+                            .setDatasetId(TestData.getDatasetId())
+                            .setPageSize(100)
+                            .setPageToken(pageToken)
+                            .build();
+            final SearchReadGroupSetsResponse readGroupSetsResp =
+                    client.reads.searchReadGroupSets(readGroupSetsReq);
+            pageToken = readGroupSetsResp.getNextPageToken();
+            final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSets();
+            assertThat(readGroupSets).isNotEmpty().isNotNull();
+            result.addAll(readGroupSets.stream()
+                                       .flatMap(rgs -> rgs.getReadGroups().stream())
+                                       .collect(Collectors.toList()));
+        } while (pageToken != null);
+
+        return result;
     }
 
     /**
@@ -255,7 +273,7 @@ public class Utils {
     }
 
     /**
-     * Utility method to fetch the ID off an arbitrary {@link VariantSet}.
+     * Utility method to fetch the ID of an arbitrary {@link VariantSet}.
      * @param client the connection to the server
      * @return the ID of a {@link VariantSet}
      * @throws AvroRemoteException if the server throws an exception or there's an I/O error
@@ -286,14 +304,24 @@ public class Utils {
                                                       String variantSetId,
                                                       long start, long end) throws AvroRemoteException {
         // get all variants in the range
-        final SearchVariantsRequest vReq =
-                SearchVariantsRequest.newBuilder()
-                                     .setVariantSetId(variantSetId)
-                                     .setReferenceName(TestData.REFERENCE_NAME)
-                                     .setStart(start).setEnd(end)
-                                     .build();
-        final SearchVariantsResponse vResp = client.variants.searchVariants(vReq);
-        return vResp.getVariants();
+        final List<Variant> result = new LinkedList<>();
+        String pageToken = null;
+
+        do {
+            final SearchVariantsRequest vReq =
+                    SearchVariantsRequest.newBuilder()
+                                         .setVariantSetId(variantSetId)
+                                         .setReferenceName(TestData.REFERENCE_NAME)
+                                         .setStart(start).setEnd(end)
+                                         .setPageSize(100)
+                                         .setPageToken(pageToken)
+                                         .build();
+            final SearchVariantsResponse vResp = client.variants.searchVariants(vReq);
+            pageToken = vResp.getNextPageToken();
+            result.addAll(vResp.getVariants());
+        } while (pageToken != null);
+
+        return result;
     }
 
     /**
@@ -304,12 +332,22 @@ public class Utils {
      * @throws AvroRemoteException if the server throws an exception or there's an I/O error
      */
     public static List<VariantSet> getAllVariantSets(Client client) throws AvroRemoteException {
-        final SearchVariantSetsRequest req =
-                SearchVariantSetsRequest.newBuilder()
-                                        .setDatasetId(TestData.getDatasetId())
-                                        .build();
-        final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
-        return resp.getVariantSets();
+
+        final List<VariantSet> result = new LinkedList<>();
+        String pageToken = null;
+        do {
+            final SearchVariantSetsRequest req =
+                    SearchVariantSetsRequest.newBuilder()
+                                            .setDatasetId(TestData.getDatasetId())
+                                            .setPageSize(100)
+                                            .setPageToken(pageToken)
+                                            .build();
+            final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
+            pageToken = resp.getNextPageToken();
+            result.addAll(resp.getVariantSets());
+        } while (pageToken != null);
+
+        return result;
     }
 
     /**
@@ -322,32 +360,21 @@ public class Utils {
      */
     public static List<CallSet> getAllCallSets(Client client,
                                                String variantSetId) throws AvroRemoteException {
-        final SearchCallSetsRequest callSetsSearchRequest =
-                SearchCallSetsRequest.newBuilder()
-                                     .setVariantSetId(variantSetId)
-                                     .build();
-        final SearchCallSetsResponse csResp = client.variants.searchCallSets(callSetsSearchRequest);
-        return csResp.getCallSets();
-    }
+        final List<CallSet> result = new LinkedList<>();
+        String pageToken = null;
+        do {
+            final SearchCallSetsRequest callSetsSearchRequest =
+                    SearchCallSetsRequest.newBuilder()
+                                         .setPageSize(100)
+                                         .setPageToken(pageToken)
+                                         .setVariantSetId(variantSetId)
+                                         .build();
+            final SearchCallSetsResponse csResp = client.variants.searchCallSets(callSetsSearchRequest);
+            pageToken = csResp.getNextPageToken();
+            result.addAll(csResp.getCallSets());
+        } while (pageToken != null);
 
-    /**
-     * Convenience method to catch a {@link GAWrapperException} and cast the return value to that type.
-     * <b>Only use this when you're expecting the enclosed code to throw that exception.</b>
-     * If the enclosed code doesn't throw the expected {@link GAWrapperException}, this method calls
-     * {@link org.assertj.core.api.StrictAssertions#fail(String)} to cause the enclosing test to fail
-     * and log the stack trace.
-     * @param thisShouldThrow the {@link Callable} we're calling, which should throw {@link GAWrapperException}
-     * @return the {@link Throwable} thrown in the execution of the {@link Callable}
-     */
-    public static GAWrapperException catchGAWrapperException(ThrowableAssert.ThrowingCallable
-                                                                      thisShouldThrow) {
-        final GAWrapperException maybeAnException =
-                (GAWrapperException)catchThrowable(thisShouldThrow);
-        if (maybeAnException == null) {
-            // we were expecting an exception and didn't get one.  log it as a failure.
-            fail("Expected but did not receive GAWrapperException");
-        }
-        return maybeAnException;
+        return result;
     }
 
     /**
@@ -356,10 +383,21 @@ public class Utils {
      * @return a {@link List} of all {@link Reference}s in the first {@link ReferenceSet}
      */
     public static List<ReferenceSet> getAllReferenceSets(Client client) throws AvroRemoteException {
-        final SearchReferenceSetsRequest refSetsReq = SearchReferenceSetsRequest.newBuilder().build();
-        final SearchReferenceSetsResponse refSetsResp = client.references.searchReferenceSets(refSetsReq);
+        final List<ReferenceSet> result = new LinkedList<>();
+        String pageToken = null;
+        do {
+            final SearchReferenceSetsRequest refSetsReq =
+                    SearchReferenceSetsRequest.newBuilder()
+                                              .setPageSize(100)
+                                              .setPageToken(pageToken)
+                                              .build();
+            final SearchReferenceSetsResponse refSetsResp =
+                    client.references.searchReferenceSets(refSetsReq);
+            pageToken = refSetsResp.getNextPageToken();
+            result.addAll(refSetsResp.getReferenceSets());
+        } while (pageToken != null);
 
-        return refSetsResp.getReferenceSets();
+        return result;
     }
 
     /**
@@ -371,12 +409,21 @@ public class Utils {
      */
     public static List<Reference> getAllReferences(Client client,
                                                    String refSetId) throws AvroRemoteException {
-        final SearchReferencesRequest refsReq =
-                SearchReferencesRequest.newBuilder()
-                                       .setReferenceSetId(refSetId)
-                                       .build();
-        final SearchReferencesResponse refsResp = client.references.searchReferences(refsReq);
-        return refsResp.getReferences();
+        final List<Reference> result = new LinkedList<>();
+        String pageToken = null;
+        do {
+            final SearchReferencesRequest refsReq =
+                    SearchReferencesRequest.newBuilder()
+                                           .setReferenceSetId(refSetId)
+                                           .setPageSize(100)
+                                           .setPageToken(pageToken)
+                                           .build();
+            final SearchReferencesResponse refsResp = client.references.searchReferences(refsReq);
+            pageToken = refsResp.getNextPageToken();
+            result.addAll(refsResp.getReferences());
+        } while (pageToken != null);
+
+        return result;
     }
 
     /**
@@ -402,8 +449,39 @@ public class Utils {
      * @return all the {@link Dataset}s
      */
     public static List<Dataset> getAllDatasets(Client client) throws AvroRemoteException {
-        final SearchDatasetsRequest req = SearchDatasetsRequest.newBuilder().build();
-        return client.reads.searchDatasets(req).getDatasets();
-
+        final List<Dataset> result = new LinkedList<>();
+        String pageToken = null;
+        do {
+            final SearchDatasetsRequest req =
+                    SearchDatasetsRequest.newBuilder()
+                                         .setPageSize(100)
+                                         .setPageToken(pageToken)
+                                         .build();
+            final SearchDatasetsResponse resp = client.reads.searchDatasets(req);
+            pageToken = resp.getNextPageToken();
+            result.addAll(resp.getDatasets());
+        } while (pageToken != null);
+        return result;
     }
+
+    /**
+     * Convenience method to catch a {@link GAWrapperException} and cast the return value to that type.
+     * <b>Only use this when you're expecting the enclosed code to throw that exception.</b>
+     * If the enclosed code doesn't throw the expected {@link GAWrapperException}, this method calls
+     * {@link org.assertj.core.api.StrictAssertions#fail(String)} to cause the enclosing test to fail
+     * and log the stack trace.
+     * @param thisShouldThrow the {@link Callable} we're calling, which should throw {@link GAWrapperException}
+     * @return the {@link Throwable} thrown in the execution of the {@link Callable}
+     */
+    public static GAWrapperException catchGAWrapperException(ThrowableAssert.ThrowingCallable
+                                                                     thisShouldThrow) {
+        final GAWrapperException maybeAnException =
+                (GAWrapperException)catchThrowable(thisShouldThrow);
+        if (maybeAnException == null) {
+            // we were expecting an exception and didn't get one.  log it as a failure.
+            fail("Expected but did not receive GAWrapperException");
+        }
+        return maybeAnException;
+    }
+
 }

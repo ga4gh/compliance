@@ -104,9 +104,9 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
         final String nonexistentCallSetId = Utils.randomId();
 
         // fetch the CallSet with that ID
-        final GAWrapperException t =
+        final GAWrapperException gae =
                 Utils.catchGAWrapperException(() -> client.variants.getCallSet(nonexistentCallSetId));
-        assertThat(t.getHttpStatusCode()).isEqualTo(HttpURLConnection.HTTP_NOT_FOUND);
+        assertThat(gae.getHttpStatusCode()).isEqualTo(HttpURLConnection.HTTP_NOT_FOUND);
     }
 
 
