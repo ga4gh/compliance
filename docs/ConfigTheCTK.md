@@ -6,14 +6,14 @@ need to edit this file.
 
 You can configure the CTK via the properties used by the:
 
-- `transport` module to control target server URLS (see `/transport/src/main/resources/defaulttransport.properties/`
+- `transport` module to control target server URLS (edit `cts-java/src/main/resources/defaulttransport.properties` and `ctk-transport/src/main/resources/defaulttransport.properties`)
 - `ctk-cli` module to control:
 	- test selection and some infrequently-changed items general operation (loader paths etc) (see `/ctk-cli/src/main/resources/application.properties`)
 	- logging behavior (see `/ctk-cli/src/main/resources/log4j2.xml`)
 - `cts-java` has its own copy of `defaulttransport.properties` to support running stand-alone tests under IDEs, this is still experimental and may be removed.
 
 
-If you're working with CTK/CTS source (in an IDE or for a Maven build) it's easiest to just edit `ctk-cli/src/main/resources/application.properties` and `ctk-cli/src/main/resources/application.properties` but these changes will have no effect until you rebuild (because the rebuild copies the files from `src/main/resources/` into `target/` which is where the code runs from). But, you can make temporary changes to the text properties files directly in the output build `target` tree.
+If you're working with CTK/CTS source (in an IDE or for a Maven build) it's easiest to just edit `ctk-cli/src/main/resources/application.properties`, `ctk-server/src/main/resources/application.properties`, and `ctk-testrunner/src/main/resources/application.properties`, but these changes will have no effect until you rebuild (because the rebuild copies the files from `src/main/resources/` into `target/` which is where the code runs from). But, you can make temporary changes to the text properties files directly in the output build `target` tree.
 
 If you're working with the CTK/CTS at the command line, you can extract that file from the packaged jar file and have it in the dir where the jar runs from
 (`jar xvf ctk-cli-v.0.5.1-SNAPSHOT.jar application.properties`) ... if you're using the ZIP distribution, it will already have extracted that properties file (and other control files) for you.
@@ -33,9 +33,9 @@ The CTK also sends test-specific data to special logs so you can redirect that o
 
 ## What Properties exist
 
-The Properties list is available by looking at the javadoc for the `transport/src/main/java/org.ga4gh/ctk/config/Props.java` class. 
+The Properties list is available by looking at the javadoc for the `ctk-testrunner/src/main/java/org/ga4gh/ctk/config/Props.java` class. 
 
-> **NOTE**: The target server endpoints are controlled by a class `transport/src/main/java/org/ga4gh/ctk/transport/URLMAPPING.java` which loads the target server URL from the `ctk.tgt.urlRoot` property, which is set in the `transport/src/main/resources/defaulttransport.properties` file and can be overridden by replacing the properties file or with an external config element like an environment variable or on a command line.
+> **NOTE**: The target server endpoints are controlled by a class `ctk-transport/src/main/java/org/ga4gh/ctk/transport/URLMAPPING.java` which loads the target server URL from the `ctk.tgt.urlRoot` property, which is set in the `ctk-transport/src/main/resources/defaulttransport.properties` file and can be overridden by replacing the properties file or with an external config element like an environment variable or on a command line.
 
 ### Debugging URLMAPPER Initialization
 
@@ -77,7 +77,7 @@ Edit the properties file, and leave it in the launch directory or put it in a `c
 ## How a property is accessed
 
 Most properties are read in at launch and used to set fields on the Java object at
-`transport/src/main/java/org.ga4gh/ctk/config/Props.java` and this Props object is then used as
+`ctk-testrunner/src/main/java/org/ga4gh/ctk/config/Props.java` and this Props object is then used as
 the runtime source of property values. The Props object has a field (with a setter) for each property,
 and these fields are set by the Spring framework's @Value annotation; e.g. the property named
 "`ctk.testpackage`" is injected as:
