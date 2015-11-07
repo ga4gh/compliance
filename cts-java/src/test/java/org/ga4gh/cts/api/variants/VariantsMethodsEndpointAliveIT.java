@@ -6,10 +6,7 @@ import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.Utils;
 import org.ga4gh.methods.SearchCallSetsRequest;
-import org.ga4gh.methods.SearchVariantsRequest;
-import org.ga4gh.methods.SearchVariantsResponse;
 import org.ga4gh.models.CallSet;
-import org.ga4gh.models.Variant;
 import org.ga4gh.models.VariantSet;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -25,29 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class VariantsMethodsEndpointAliveIT implements CtkLogs {
 
     private static Client client = new Client(URLMAPPING.getInstance());
-
-    /**
-     * Check that searching {@link Variant}s with a nonexistent reference name returns
-     * an empty list of {@link Variant}s.
-     *
-     * @throws Exception if something goes wrong
-     */
-    @Test
-    public void testSearchVariantsForNonexistentReferenceNameReturnsEmptyList() throws Exception {
-        final String variantSetId = Utils.getVariantSetId(client);
-
-        final SearchVariantsRequest request =
-                SearchVariantsRequest.newBuilder()
-                                     .setReferenceName(Utils.randomName())
-                                     .setVariantSetId(variantSetId)
-                                     .setStart(0L)
-                                     .setEnd(1L)
-                                     .build();
-
-        final SearchVariantsResponse resp = client.variants.searchVariants(request);
-
-        assertThat(resp.getVariants()).isEmpty();
-    }
 
     /**
      * Check that searching {@link CallSet}s with the ID of a nonexistent {@link VariantSet} fails.
