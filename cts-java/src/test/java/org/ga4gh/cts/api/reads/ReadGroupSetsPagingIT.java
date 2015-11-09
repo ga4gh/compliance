@@ -138,8 +138,6 @@ public class ReadGroupSetsPagingIT {
     @Test
     public void checkTwoSimultaneousPagingSequencesThroughReadGroupSets() throws AvroRemoteException {
 
-        final String referenceId = Utils.getValidReferenceId(client);
-
         final Set<ReadGroupSet> setOfReadGroupSets0 = new HashSet<>();
         final Set<ReadGroupSet> setOfReadGroupSets1 = new HashSet<>();
 
