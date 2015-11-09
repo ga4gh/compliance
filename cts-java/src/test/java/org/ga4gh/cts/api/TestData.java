@@ -59,15 +59,15 @@ public class TestData {
             HashMultimap.create();
 
     static {
-        EXPECTED_READGROUPSET_READGROUP_NAMES.putAll("BRCA1_HG00096.bam",
+        EXPECTED_READGROUPSET_READGROUP_NAMES.putAll("HG00096",
                                                      Arrays.asList("SRR062634",
                                                                    "SRR062635",
                                                                    "SRR062641"));
-        EXPECTED_READGROUPSET_READGROUP_NAMES.putAll("BRCA1_HG00099.bam",
+        EXPECTED_READGROUPSET_READGROUP_NAMES.putAll("HG00099",
                                                      Arrays.asList("SRR741411",
                                                                    "SRR741412"));
         //noinspection ArraysAsListWithZeroOrOneArgument
-        EXPECTED_READGROUPSET_READGROUP_NAMES.putAll("BRCA1_HG00101.bam",
+        EXPECTED_READGROUPSET_READGROUP_NAMES.putAll("HG00101",
                                                      Arrays.asList("ERR229776"));
     }
 
@@ -123,6 +123,11 @@ public class TestData {
      * Length of BRCA1 reference sequence.
      */
     public static final long REFERENCE_BRCA1_LENGTH = 81188;
+
+    /**
+     * The legal contents of an aligned sequence in the compliance data, as a Java regular expression.
+     */
+    public static final String ALIGNED_SEQUENCE_CONTENTS_PATTERN = "[ACTGN]+";
 
     /**
      * Return the ID of the compliance dataset on the server being tested.

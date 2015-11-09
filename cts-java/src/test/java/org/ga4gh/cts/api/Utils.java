@@ -435,12 +435,22 @@ public class Utils {
      */
     public static List<ReadAlignment> getAllReads(Client client, String referenceId,
                                                   String readGroupId) throws AvroRemoteException {
-        final SearchReadsRequest req = SearchReadsRequest.newBuilder()
-                .setReferenceId(referenceId)
-                .setReadGroupIds(aSingle(readGroupId))
-                .build();
-        final SearchReadsResponse resp = client.reads.searchReads(req);
-        return resp.getAlignments();
+
+        final List<ReadAlignment> result = new LinkedList<>();
+        String pageToken = null;
+        do {
+            final SearchReadsRequest req = SearchReadsRequest.newBuilder()
+                                                             .setReferenceId(referenceId)
+                                                             .setReadGroupIds(aSingle(readGroupId))
+                                                             .setPageToken(pageToken)
+                                                             .setPageSize(100)
+                                                             .build();
+            final SearchReadsResponse resp = client.reads.searchReads(req);
+            result.addAll(resp.getAlignments());
+            pageToken = resp.getNextPageToken();
+        } while (pageToken != null);
+
+        return result;
     }
 
     /**
