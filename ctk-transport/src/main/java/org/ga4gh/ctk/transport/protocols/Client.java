@@ -45,7 +45,7 @@ public class Client {
     public final Reads reads = new Reads();
 
     /**
-     * Provides access to variants-related methods.  For example,
+     * Provides access to references-related methods.  For example,
      * <pre>
      *     myClient.references.searchReferenceSets(...);
      * </pre>
