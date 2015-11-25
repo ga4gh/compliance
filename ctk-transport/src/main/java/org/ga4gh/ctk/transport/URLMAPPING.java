@@ -87,6 +87,20 @@ public interface URLMAPPING {
 
     void setGetCallset(String getCallset);
 
+
+    String getSearchVariantAnnotationSets();
+
+    void setSearchVariantAnnotationSets(String searchVariantAnnotationSets);
+
+    String getGetVariantAnnotationSet();
+
+    void setGetVariantAnnotationSet(String getVariantAnnotationSet);
+
+    String getSearchVariantAnnotations();
+
+    void setSearchVariantAnnotations(String searchVariantAnnotations);
+
+
     Map<String, String> getEndpoints();
 
     void setEndpoints(Map<String, String> endpoints);

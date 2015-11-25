@@ -90,9 +90,9 @@ public class TestData {
     public static final String REFERENCESET_ASSEMBLY_ID = "hg37";
 
     /**
-     * Accession "numbers" (names, really) for the test {@link ReferenceSet}.
+     * Accession "number" (names, really) for the test {@link ReferenceSet}.
      */
-    public static final List<String> REFERENCESET_ACCESSIONS = aSingle("GA4GH_CTS_01");
+    public static final String REFERENCESET_ACCESSION = "GA4GH_CTS_01";
 
     /**
      * MD5 checksum for the test {@link ReferenceSet}.
