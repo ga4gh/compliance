@@ -83,7 +83,7 @@ public class ReferencesSearchIT {
         final SearchReferencesRequest req =
                 SearchReferencesRequest.newBuilder()
                         .setReferenceSetId(referenceSetId)
-                        .setAccessions(aSingle(TestData.REFERENCE_BRCA1_ACCESSION))
+                        .setAccession(TestData.REFERENCE_BRCA1_ACCESSION)
                         .build();
         final SearchReferencesResponse resp = client.references.searchReferences(req);
 
@@ -94,7 +94,7 @@ public class ReferencesSearchIT {
         assertThat(ref.getName()).isEqualTo(TestData.REFERENCE_BRCA1_NAME);
         assertThat(ref.getLength()).isEqualTo(TestData.REFERENCE_BRCA1_LENGTH);
         assertThat(ref.getMd5checksum()).isEqualTo(TestData.REFERENCE_BRCA1_MD5_CHECKSUM);
-        assertThat(ref.getSourceAccessions()).isEqualTo(aSingle(TestData.REFERENCE_BRCA1_ACCESSION));
+        assertThat(ref.getSourceAccessions()).isEqualTo(TestData.REFERENCE_BRCA1_ACCESSION);
     }
 
     /**
@@ -110,7 +110,7 @@ public class ReferencesSearchIT {
         final SearchReferencesRequest req =
                 SearchReferencesRequest.newBuilder()
                         .setReferenceSetId(referenceSetId)
-                        .setAccessions(aSingle(accession))
+                        .setAccession(accession)
                         .build();
         final SearchReferencesResponse resp = client.references.searchReferences(req);
 
@@ -130,7 +130,7 @@ public class ReferencesSearchIT {
         final SearchReferencesRequest req =
                 SearchReferencesRequest.newBuilder()
                         .setReferenceSetId(referenceSetId)
-                        .setMd5checksums(aSingle(TestData.REFERENCE_BRCA1_MD5_CHECKSUM))
+                        .setMd5checksum(TestData.REFERENCE_BRCA1_MD5_CHECKSUM)
                         .build();
         final SearchReferencesResponse resp = client.references.searchReferences(req);
 
@@ -141,6 +141,6 @@ public class ReferencesSearchIT {
         assertThat(ref.getName()).isEqualTo(TestData.REFERENCE_BRCA1_NAME);
         assertThat(ref.getLength()).isEqualTo(TestData.REFERENCE_BRCA1_LENGTH);
         assertThat(ref.getMd5checksum()).isEqualTo(TestData.REFERENCE_BRCA1_MD5_CHECKSUM);
-        assertThat(ref.getSourceAccessions()).isEqualTo(aSingle(TestData.REFERENCE_BRCA1_ACCESSION));
+        assertThat(ref.getSourceAccessions()).isEqualTo(TestData.REFERENCE_BRCA1_ACCESSION);
     }
 }

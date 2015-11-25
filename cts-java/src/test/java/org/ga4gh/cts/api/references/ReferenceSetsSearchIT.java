@@ -70,7 +70,7 @@ public class ReferenceSetsSearchIT {
     public void checkReferenceSetFoundByAccession() throws AvroRemoteException {
         final SearchReferenceSetsRequest req =
                 SearchReferenceSetsRequest.newBuilder()
-                        .setAccessions(TestData.REFERENCESET_ACCESSIONS)
+                        .setAccession(TestData.REFERENCESET_ACCESSION)
                         .build();
         final SearchReferenceSetsResponse resp = client.references.searchReferenceSets(req);
 
@@ -90,7 +90,7 @@ public class ReferenceSetsSearchIT {
     public void checkReferenceSetFoundByMD5Checksum() throws AvroRemoteException {
         final SearchReferenceSetsRequest req =
                 SearchReferenceSetsRequest.newBuilder()
-                        .setMd5checksums(aSingle(TestData.REFERENCESET_MD5_CHECKSUM))
+                        .setMd5checksum(TestData.REFERENCESET_MD5_CHECKSUM)
                         .build();
         final SearchReferenceSetsResponse resp = client.references.searchReferenceSets(req);
 
@@ -128,7 +128,7 @@ public class ReferenceSetsSearchIT {
     private void checkRefSetConstants(ReferenceSet refSet) {
         assertThat(refSet.getAssemblyId()).isEqualTo(TestData.REFERENCESET_ASSEMBLY_ID);
         assertThat(refSet.getMd5checksum()).isEqualTo(TestData.REFERENCESET_MD5_CHECKSUM);
-        assertThat(refSet.getSourceAccessions()).isEqualTo(TestData.REFERENCESET_ACCESSIONS);
+        assertThat(refSet.getSourceAccessions()).isEqualTo(TestData.REFERENCESET_ACCESSION);
     }
 
     /**
