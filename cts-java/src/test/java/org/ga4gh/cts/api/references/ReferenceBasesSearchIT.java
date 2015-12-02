@@ -70,7 +70,7 @@ public class ReferenceBasesSearchIT {
         final SearchReferencesRequest req =
                 SearchReferencesRequest.newBuilder()
                         .setReferenceSetId(referenceSetId)
-                        .setAccessions(aSingle(TestData.REFERENCE_BRCA1_ACCESSION))
+                        .setAccession(TestData.REFERENCE_BRCA1_ACCESSION)
                         .build();
         final SearchReferencesResponse resp = client.references.searchReferences(req);
         final List<Reference> refs = resp.getReferences();
