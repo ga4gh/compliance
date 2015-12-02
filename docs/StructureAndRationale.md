@@ -49,7 +49,7 @@ avro    |              |     |                      |       |               |
 - **ctk-transport** is the JSON/HTTP/Avro connection module
 - **ctk-cli** is the command-line runner 
 - **cts-java** is the tests of the server (all in the src/test tree, treated as integration tests)
-- **cts-demo--java** is a module of examples test techniques (using the custom asserts, etc)
+- **cts-demo-java** is a module of examples test techniques (using the custom asserts, etc)
 - **dist** is a Maven assembly module, to build the distributions of the CTK (22 June 2015
 builds a single ZIP which unpacks to be the command-line tool)
 
