@@ -35,12 +35,12 @@ public class RnaQuantificationGetByIdIT {
         final int expectedNumberOfRnaQuantifications = 1;
 
         final String rnaQuantificationId = Utils.getRnaQuantificationSetId(client);
-        final List<RnaQuantification> rnaQuantifications = Utils.getRnaQuantification(client, rnaQuantificationId);
+        final List<RnaQuantifications> rnaQuantifications = Utils.getRnaQuantification(client, rnaQuantificationId);
 
         assertThat(rnaQuantifications).hasSize(expectedNumberOfRnaQuantifications);
 
-        for (final RnaQuantification rnaQuantificationFromSearch : rnaQuantifications) {
-            final RnaQuantification rnaQuantificationFromGet = client.rnaquantification.getRnaQuantification(rnaQuantificationFromSearch.getId());
+        for (final RnaQuantifications rnaQuantificationFromSearch : rnaQuantifications) {
+            final RnaQuantifications rnaQuantificationFromGet = client.rnaquantifications.getRnaQuantification(rnaQuantificationFromSearch.getId());
             assertThat(rnaQuantificationFromGet).isNotNull();
 
             assertThat(rnaQuantificationFromGet).isEqualTo(rnaQuantificationFromSearch);
