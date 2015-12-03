@@ -32,12 +32,10 @@ public class RnaQuantificationGetByIdIT {
      */
     @Test
     public void checkRnaQuantificationGetResultsMatchSearchResults() throws AvroRemoteException {
-        final long start = 50;
-        final long end = 100;
-        final int expectedNumberOfRnaQuantifications = 6;
+        final int expectedNumberOfRnaQuantifications = 1;
 
         final String rnaQuantificationId = Utils.getRnaQuantificationSetId(client);
-        final List<RnaQuantification> rnaQuantifications = Utils.getAllRnaQuantificationsInRange(client, rnaQuantificationId, start, end);
+        final List<RnaQuantification> rnaQuantifications = Utils.getRnaQuantification(client, rnaQuantificationId);
 
         assertThat(rnaQuantifications).hasSize(expectedNumberOfRnaQuantifications);
 

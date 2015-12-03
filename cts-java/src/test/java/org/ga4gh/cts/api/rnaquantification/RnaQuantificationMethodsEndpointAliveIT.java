@@ -22,20 +22,20 @@ public class RnaQuantificationMethodsEndpointAliveIT implements CtkLogs {
     private static Client client = new Client(URLMAPPING.getInstance());
 
     /**
-     * Check that searching {@link CallSet}s with the ID of a nonexistent {@link RnaQuantification} fails.
+     * Check that searching {@link RnaQuantification}s with the ID of a nonexistent {@link RnaQuantification} fails.
      *
      * @throws Exception if something goes wrong
      */
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Test
     public void testSearchCallSetsForNonexistentRnaQuantificationFails() throws Exception {
-        final SearchCallSetsRequest scsr =
-                SearchCallSetsRequest.newBuilder()
+        final SearchRnaQuantificationRequest srqr =
+                SearchRnaQuantificationRequest.newBuilder()
                                      .setRnaQuantificationId(Utils.randomId())
                                      .build();
 
         final GAWrapperException gae =
-                Utils.catchGAWrapperException(() -> client.rnaquantification.searchCallSets(scsr));
+                Utils.catchGAWrapperException(() -> client.rnaquantification.searchCallSets(srqr));
 
         assertThat(gae.getHttpStatusCode()).isEqualTo(HttpURLConnection.HTTP_NOT_FOUND);
     }
