@@ -143,4 +143,63 @@ public class TestData {
         }
     }
 
+    /**
+     * GenotypePhenotype PHENOTYPE external database name.
+     */
+    public static final String PHENOTYPE_DB = "http://purl.obolibrary.org/obo/OMIM_";
+
+    /**
+     * GenotypePhenotype PHENOTYPE external database identifier.
+     */
+    public static final String PHENOTYPE_DB_ID = "606764";
+
+    /**
+     * GenotypePhenotype PHENOTYPE external database Version.
+     */
+    public static final String PHENOTYPE_DB_VERSION = "*";
+    /**
+     * GenotypePhenotype PHENOTYPE name.
+     */
+    public static final String PHENOTYPE_NAME =  "GIST";
+
+    /**
+     * GenotypePhenotype EVIDENCE external database name.
+     */
+    public static final String EVIDENCE_DB = "http://www.drugbank.ca/drugs/";
+
+    /**
+     * GenotypePhenotype EVIDENCE external database identifier.
+     */
+    public static final String EVIDENCE_DB_ID = "DB00619";
+
+    /**
+     * GenotypePhenotype EVIDENCE external database Version.
+     */
+    public static final String EVIDENCE_DB_VERSION = "*";
+
+    /**
+     * GenotypePhenotype EVIDENCE name.
+     */
+    public static final String EVIDENCE_NAME =  "imatinib";
+
+    /**
+     * GenotypePhenotype FEATURE external database name.
+     */
+    public static final String FEATURE_DB = "http://www.monarchinitiative.org/_";
+
+    /**
+     * GenotypePhenotype FEATURE external database identifier.
+     */
+    public static final String FEATURE_DB_ID = "CGD:d8c2d551UniProtKB:P10721#P10721-1Region";
+
+    /**
+     * GenotypePhenotype FEATURE external database Version.
+     */
+    public static final String FEATURE_DB_VERSION = "*";
+
+    /**
+     * GenotypePhenotype FEATURE name.
+     */
+    public static final String FEATURE_NAME = "KIT *wild" ;
+
 }

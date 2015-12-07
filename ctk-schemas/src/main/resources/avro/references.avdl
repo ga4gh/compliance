@@ -12,7 +12,7 @@ A `Reference` is a canonical assembled contig, intended to act as a
 reference coordinate space for other genomic annotations. A single
 `Reference` might represent the human chromosome 1, for instance.
 
-`Reference`s are designed to be immutable.
+`Reference's` are designed to be immutable.
 */
 record Reference {
 
@@ -79,6 +79,9 @@ coordinate space for comparing reference-aligned experimental data.
 record ReferenceSet {
   /** The reference set ID. Unique in the repository. */
   string id;
+
+  /** The reference set name. */
+  union { null, string } name = null;
 
   /**
   Order-independent MD5 checksum which identifies this `ReferenceSet`.
