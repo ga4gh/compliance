@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.ga4gh.cts.api.Utils.aSingle;
 
 /**
  * Compliance tests relating to searching reference bases.
@@ -70,7 +69,7 @@ public class ReferenceBasesSearchIT {
         final SearchReferencesRequest req =
                 SearchReferencesRequest.newBuilder()
                         .setReferenceSetId(referenceSetId)
-                        .setAccessions(aSingle(TestData.REFERENCE_BRCA1_ACCESSION))
+                        .setAccession(TestData.REFERENCE_BRCA1_ACCESSION)
                         .build();
         final SearchReferencesResponse resp = client.references.searchReferences(req);
         final List<Reference> refs = resp.getReferences();
