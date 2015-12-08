@@ -7,7 +7,7 @@ import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.Utils;
 import org.ga4gh.methods.GAException;
 import org.ga4gh.methods.SearchRnaQuantificationRequest;
-import org.ga4gh.models.Rnaquantification;
+import org.ga4gh.models.RnaQuantification;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -34,13 +34,13 @@ public class RnaQuantificationGetByIdIT {
     public void checkRnaQuantificationGetResultsMatchSearchResults() throws AvroRemoteException {
         final int expectedNumberOfRnaQuantifications = 1;
 
-        final String rnaQuantificationId = Utils.getRnaQuantificationSetId(client);
-        final List<RnaQuantifications> rnaQuantifications = Utils.getRnaQuantification(client, rnaQuantificationId);
+        final String rnaQuantificationId = Utils.getRnaQuantificationId(client);
+        final List<RnaQuantification> rnaQuantifications = Utils.getAllRnaQuantifications(client, rnaQuantificationId);
 
         assertThat(rnaQuantifications).hasSize(expectedNumberOfRnaQuantifications);
 
-        for (final RnaQuantifications rnaQuantificationFromSearch : rnaQuantifications) {
-            final RnaQuantifications rnaQuantificationFromGet = client.rnaquantifications.getRnaQuantification(rnaQuantificationFromSearch.getId());
+        for (final RnaQuantification rnaQuantificationFromSearch : rnaQuantifications) {
+            final RnaQuantification rnaQuantificationFromGet = client.rnaquantifications.getRnaQuantification(rnaQuantificationFromSearch.getId());
             assertThat(rnaQuantificationFromGet).isNotNull();
 
             assertThat(rnaQuantificationFromGet).isEqualTo(rnaQuantificationFromSearch);

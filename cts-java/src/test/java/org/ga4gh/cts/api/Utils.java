@@ -475,6 +475,49 @@ public class Utils {
     }
 
     /**
+     * Utility method to fetch the ID of an arbitrary {@link RnaQuantification}.
+     * @param client the connection to the server
+     * @return the ID of a {@link RnaQuantification}
+     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     */
+    public static String getRnaQuantificationId(Client client) throws AvroRemoteException {
+        final SearchRnaQuantificationRequest req =
+                SearchRnaQuantificationRequest.newBuilder()
+                        .setDatasetId(TestData.getDatasetId())
+                        .build();
+        final SearchRnaQuantificationResponse resp = client.rnaquantifications.searchRnaQuantification(req);
+
+        final List<RnaQuantification> rnaQuantifications = resp.getRnaQuantification();
+        assertThat(rnaQuantifications).isNotEmpty();
+        return rnaQuantifications.get(0).getId();
+    }
+
+    /**
+     * Given a reference ID, return all {@link RnaQuantification}s
+     * @param client the connection to the server
+     * @param dataasetId the ID of the {@link Dataset} we're using
+     * @return all the {@link RnaQuantification} objects that match
+     */
+    public static List<RnaQuantification> getAllRnaQuantifications(Client client,
+                                                                   String referenceId) throws AvroRemoteException {
+
+        final List<RnaQuantification> result = new LinkedList<>();
+        String pageToken = null;
+        do {
+            final SearchRnaQuantificationRequest req = SearchRnaQuantificationRequest.newBuilder()
+                    .setDatasetId(referenceId)
+                    .setPageToken(pageToken)
+                    .setPageSize(100)
+                    .build();
+            final SearchRnaQuantificationResponse resp = client.rnaquantifications.searchRnaQuantification(req);
+            result.addAll(resp.getRnaQuantification());
+            pageToken = resp.getNextPageToken();
+        } while (pageToken != null);
+
+        return result;
+    }
+
+    /**
      * Convenience method to catch a {@link GAWrapperException} and cast the return value to that type.
      * <b>Only use this when you're expecting the enclosed code to throw that exception.</b>
      * If the enclosed code doesn't throw the expected {@link GAWrapperException}, this method calls

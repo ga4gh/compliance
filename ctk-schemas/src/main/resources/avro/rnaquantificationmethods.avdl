@@ -64,6 +64,17 @@ SearchRnaQuantificationResponse searchRnaQuantification(
     */
     SearchRnaQuantificationRequest request) throws GAException;
 
+/**************** /rnaquantification/{id} *******************/
+/**
+Gets a `RnaQuantification` by ID.
+`GET /rnaquantification/{id}` will return a JSON version of `RnaQuantification`.
+*/
+org.ga4gh.models.RnaQuantification getRnaQuantification(
+  /**
+  The ID of the `RnaQuantification`.
+  */
+  string id) throws GAException;
+
 /****************  /expressionlevel/search  *******************/
 /**
 This request maps to the body of 'POST /expressionlevel/search'
