@@ -84,7 +84,7 @@ public class ReadsSearchIT implements CtkLogs {
 
         final SearchReadsRequest srReq =
                 SearchReadsRequest.newBuilder()
-                                  .setReferenceId(Utils.getValidReferenceId(client))
+                                  .setReferenceId(refId)
                                   .setReadGroupIds(aSingle(Utils.getReadGroupId(client)))
                                   .setStart(start)
                                   .setEnd(end)
