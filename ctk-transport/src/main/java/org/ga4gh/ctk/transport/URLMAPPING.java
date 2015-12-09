@@ -87,6 +87,22 @@ public interface URLMAPPING {
 
     void setGetCallset(String getCallset);
 
+    String getGetRnaQuantification();
+
+    void setGetRnaQuantification(String getRnaQuantification);
+
+    String getSearchRnaQuantification();
+
+    void setSearchRnaQuantification(String searchRnaQuantification);
+
+    String getSearchFeatureGroup();
+
+    void setSearchFeatureGroup(String searchFeatureGroup);
+
+    String getSearchExpressionLevel();
+
+    void setSearchExpressionLevel(String searchExpressionLevel);
+
     Map<String, String> getEndpoints();
 
     void setEndpoints(Map<String, String> endpoints);

@@ -60,9 +60,13 @@ public class URLMAPPINGImpl implements URLMAPPING {
         defaultEndpoints.put("ctk.tgt.searchVariantSets", "variantsets/search");
         defaultEndpoints.put("ctk.tgt.searchVariants", "variants/search");
         defaultEndpoints.put("ctk.tgt.searchCallsets", "callsets/search");
+        defaultEndpoints.put("ctk.tgt.searchRnaQuantification", "rnaquantification/search");
+        defaultEndpoints.put("ctk.tgt.searchFeatureGroup", "featuregroup/search");
+        defaultEndpoints.put("ctk.tgt.searchExpressionLevel", "expressionlevel/search");
         defaultEndpoints.put("ctk.tgt.getReferences", "references/{id}");
         defaultEndpoints.put("ctk.tgt.getReferencesets", "referencesets/{id}");
         defaultEndpoints.put("ctk.tgt.getReferencesBases", "references/{id}/bases");
+        defaultEndpoints.put("ctk.tgt.getRnaQuantification", "rnaquantification/{id}");
 
         defaultEndpoints.put("ctk.tgt.getReadGroupSet", "readgroupsets/{id}");
         defaultEndpoints.put("ctk.tgt.getReadGroup", "readgroups/{id}");
@@ -410,6 +414,38 @@ public class URLMAPPINGImpl implements URLMAPPING {
     @Override
     public void setGetCallset(String getCallset) {
         endpoints.put("ctk.tgt.getCallset", getCallset);
+    }
+
+    @Override
+    public String getGetRnaQuantification() { return endpoints.get("ctk.tgt.getRnaQuantification"); }
+
+    @Override
+    public void setGetRnaQuantification(String getRnaQuantification) {
+        endpoints.put("ctk.tgt.getRnaQuantification", getRnaQuantification);
+    }
+
+    @Override
+    public String getSearchRnaQuantification() { return endpoints.get("ctk.tgt.searchRnaQuantification"); }
+
+    @Override
+    public void setSearchRnaQuantification(String searchRnaQuantification) {
+        endpoints.put("ctk.tgt.searchRnaQuantification", searchRnaQuantification);
+    }
+
+    @Override
+    public String getSearchFeatureGroup() { return endpoints.get("ctk.tgt.getFeatureGroup"); }
+
+    @Override
+    public void setSearchFeatureGroup(String searchFeatureGroup) {
+        endpoints.put("ctk.tgt.getFeatureGroup", searchFeatureGroup);
+    }
+
+    @Override
+    public String getSearchExpressionLevel() { return endpoints.get("ctk.tgt.searchExpressionLevel"); }
+
+    @Override
+    public void setSearchExpressionLevel(String searchExpressionLevel) {
+        endpoints.put("ctk.tgt.searchExpressionLevel", searchExpressionLevel);
     }
 
     @Override
