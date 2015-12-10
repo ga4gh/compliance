@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# This script serves only as an example, showing the commands commonly used to convert human-readable
+# tab-delimited file formats to their binary equivalents. For actual conversion to the reference
+# server format, use the script packaged with the server.
+
 # exit on any error
 set -e
 
@@ -21,7 +25,7 @@ samtools faidx ref_brca1.fa.gz
 bgzip -c brca1_1kgPhase3_variants.vcf > brca1_1kgPhase3_variants.vcf.gz
 
 # index with tabix
-tabix -p vcf 1000g_offset.HG00096_HG00099_HG00101.2010502.17_41196312-41277500.vcf.gz
+tabix -p vcf brca1_1kgPhase3_variants.vcf.gz
 
 ##
 ### reads
