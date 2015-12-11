@@ -42,11 +42,11 @@ public class VariantAnnotationsPagingIT implements CtkLogs {
         final String variantAnnotationSetId = Utils.getVariantAnnotationSetId(client);
         final List<VariantAnnotation> listOfVariantAnnotations = Utils.getAllVariantAnnotationsInRange(client, variantAnnotationSetId, start, end);
 
-        // we will remove VariantAnnotations from this Set and assert at the end that we have zero
+        // We will remove VariantAnnotations from this Set and assert at the end that we have zero
         final Set<VariantAnnotation> setOfVariantAnnotations = new HashSet<>(listOfVariantAnnotations);
         assertThat(listOfVariantAnnotations).hasSize(setOfVariantAnnotations.size());
 
-        // page through the variantAnnotations using the same query parameters
+        // Page through the variantAnnotations using the same query parameters.
         String pageToken = null;
         for (VariantAnnotation ignored : listOfVariantAnnotations) {
             final SearchVariantAnnotationsRequest pageReq =
@@ -70,39 +70,4 @@ public class VariantAnnotationsPagingIT implements CtkLogs {
         assertThat(pageToken).isNull();
         assertThat(setOfVariantAnnotations).isEmpty();
     }
-
-    /**
-     * Check that we can receive expected results when we request a single
-     * page of variantAnnotations from {@link org.ga4gh.ctk.transport.protocols.Client.VariantAnnotations#searchVariantAnnotations
-     * (SearchVariantAnnotationsRequest)}, using <tt>pageSize</tt> as the page size.
-     *
-     * @param variantAnnotationSetId  the ID of the {@link VariantAnnotationSet} we're paging through
-     * @param start                   the start value for the range we're searching
-     * @param end                     the end value for the range we're searching
-     * @param pageSize                the page size we'll request
-     * @param expectedVariantAnnotations all of the {@link VariantAnnotation} objects we expect to receive
-     * @throws AvroRemoteException if there's a communication problem or server exception
-     */
-    private void checkSinglePageOfVariantAnnotations(String variantAnnotationSetId,
-                                           long start, long end,
-                                           int pageSize,
-                                           List<VariantAnnotation> expectedVariantAnnotations) throws AvroRemoteException {
-
-        final SearchVariantAnnotationsRequest pageReq =
-                SearchVariantAnnotationsRequest.newBuilder()
-                                     .setVariantAnnotationSetId(variantAnnotationSetId)
-                                     .setReferenceName(TestData.VARIANT_ANNOTATION_REFERENCE_NAME)
-                                     .setStart(start).setEnd(end)
-                                     .setPageSize(pageSize)
-                                     .build();
-        final SearchVariantAnnotationsResponse pageResp = client.variantAnnotations.searchVariantAnnotations(pageReq);
-        final List<VariantAnnotation> pageOfVariantAnnotations = pageResp.getVariantAnnotations();
-        final String pageToken = pageResp.getNextPageToken();
-
-        assertThat(pageOfVariantAnnotations).hasSize(expectedVariantAnnotations.size());
-        assertThat(expectedVariantAnnotations).containsAll(pageOfVariantAnnotations);
-
-        assertThat(pageToken).isNull();
-    }
-
 }
