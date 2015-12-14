@@ -44,7 +44,7 @@ to equivalent optimized and indexed files when imported into the server being te
 
 Variant Annotation Data
 
-Initial variant annotation data is in the file WASH7P_annotation.vcf.
+Initial variant annotation data is in the files WASH7P_annotation.vcf and OR4F_annotation.vcf.
 
 ## Using the data with the compliance test suite
 
