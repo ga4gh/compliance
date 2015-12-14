@@ -40,6 +40,8 @@ public class ReadsSearchIT implements CtkLogs {
     @Test
     public void searchReadsWithUninterestingRangeProducesZeroReads() throws AvroRemoteException {
 
+        final String refId = Utils.getValidReferenceId(client);
+
         final long emptyRangeStart = 150;
         final long emptyRangeEnd = 160;
 
@@ -53,7 +55,7 @@ public class ReadsSearchIT implements CtkLogs {
 
         final SearchReadsRequest srReq =
                 SearchReadsRequest.newBuilder()
-                                  .setReferenceId(Utils.getValidReferenceId(client))
+                                  .setReferenceId(refId)
                                   .setReadGroupIds(aSingle(Utils.getReadGroupId(client)))
                                   .setStart(emptyRangeStart)
                                   .setEnd(emptyRangeEnd)
@@ -84,7 +86,7 @@ public class ReadsSearchIT implements CtkLogs {
 
         final SearchReadsRequest srReq =
                 SearchReadsRequest.newBuilder()
-                                  .setReferenceId(Utils.getValidReferenceId(client))
+                                  .setReferenceId(refId)
                                   .setReadGroupIds(aSingle(Utils.getReadGroupId(client)))
                                   .setStart(start)
                                   .setEnd(end)
