@@ -117,21 +117,16 @@ public class Utils {
      * @throws AvroRemoteException is the server throws an exception or there's an I/O error
      */
     public static String getValidReferenceId(Client client) throws AvroRemoteException {
-        final SearchReferenceSetsRequest refSetsReq = SearchReferenceSetsRequest.newBuilder().build();
-
-        final SearchReferenceSetsResponse refSetsResp = client.references.searchReferenceSets(refSetsReq);
-
-        final List<ReferenceSet> refSets = refSetsResp.getReferenceSets();
-
         final SearchReferencesRequest refsReq = SearchReferencesRequest
                 .newBuilder()
-                .setReferenceSetId(refSets.get(0).getId())
+                .setReferenceSetId(Utils.getReferenceSetIdByAssemblyId(client, TestData.REFERENCESET_ASSEMBLY_ID))
+                .setMd5checksum(TestData.REFERENCE_BRCA1_MD5_CHECKSUM)
                 .build();
         final SearchReferencesResponse refsResp = client.references.searchReferences(refsReq);
         assertThat(refsResp).isNotNull();
         final List<Reference> references = refsResp.getReferences();
         assertThat(references).isNotNull().isNotEmpty();
-
+        assertThat(references).hasSize(1);
         return references.get(0).getId();
     }
 
@@ -269,6 +264,7 @@ public class Utils {
                 client.references.searchReferenceSets(req);
         final List<ReferenceSet> refSets = resp.getReferenceSets();
         assertThat(refSets).isNotNull();
+        assertThat(refSets).hasSize(1);
         final ReferenceSet refSet = refSets.get(0);
         return refSet.getId();
     }

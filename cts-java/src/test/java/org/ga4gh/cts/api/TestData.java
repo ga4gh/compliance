@@ -53,12 +53,6 @@ public class TestData {
     public static final long REFERENCE_END = 81187;
 
     /**
-     * The name of the reference used for variant annotation in the standard test data.
-     */
-    public static final String VARIANT_ANNOTATION_REFERENCE_NAME = "1";
-
-
-    /**
      * The names of known-good read groups.
      */
     public static final SetMultimap<String, String> EXPECTED_READGROUPSET_READGROUP_NAMES =
@@ -96,9 +90,9 @@ public class TestData {
     public static final String REFERENCESET_ASSEMBLY_ID = "hg37";
 
     /**
-     * Accession "number" (names, really) for the test {@link ReferenceSet}.
+     * Accession "numbers" (names, really) for the test {@link ReferenceSet}.
      */
-    public static final String REFERENCESET_ACCESSION = "GA4GH_CTS_01";
+    public static final List<String> REFERENCESET_ACCESSIONS = aSingle("GA4GH_CTS_01");
 
     /**
      * MD5 checksum for the test {@link ReferenceSet}.

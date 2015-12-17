@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.ga4gh.cts.api.Utils.aSingle;
 
 /**
  * Compliance tests relating to searching reference bases.

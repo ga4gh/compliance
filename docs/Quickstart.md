@@ -7,6 +7,7 @@ Not all dependencies can be eliminated. This quickstart guide assumes that you h
 * [JDK 1.8 (aka J2SE 8)](https://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html)
 * [Maven](https://maven.apache.org) (version 3.2.5 or newer)
 * [git](https://git-scm.com)
+* `unzip` or similar zip decompressor
 
 All CLI commands are displayed in POSIX style (as tested on my MacOSX laptop). Translate as necessary when running on a Windows platform.
 
@@ -30,12 +31,12 @@ _In the compliance base directory_, run Maven to build the project:
 
 Before running any tests, you may want to set an environment variable to record the server URL you’re testing against:
 
-     > export CTK_TGT_URLROOT=“<your GA4GH-compatible server URL>"
+     > export CTK_TGT_URLROOT="<your GA4GH-compatible server URL>"
 
 You may also wish to set the dataset ID for the test dataset as an environment variable. Note that the ID given below is specific to the GA4GH reference server running on the compliance dataset, and will likely be different on another
 server implementation.
 
-     > export CTK_TGT_DATASET_ID=“YnJjYTE="
+     > export CTK_TGT_DATASET_ID="YnJjYTE="
 
 It is also possible to set these parameters on a per-run basis.
 
