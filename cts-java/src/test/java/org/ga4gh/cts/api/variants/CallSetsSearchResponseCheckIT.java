@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(JUnitParamsRunner.class)
 @Category(VariantsTests.class)
-public class CallsetsSearchResponseCheckIT implements CtkLogs {
+public class CallSetsSearchResponseCheckIT implements CtkLogs {
 
     private static final URLMAPPING urls = URLMAPPING.getInstance();
 
@@ -56,7 +56,41 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
             assertThat(csResp.getCallSets()).isNotEmpty();
         }
     }
+    /**
+     * Make sure VariantSet records exist for each CallSet.
+     *
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     */
+    @Test
+    public void searchCallSetsByVariantSet() throws AvroRemoteException {
+        // Get all the variant sets
+        final SearchVariantSetsRequest vReq =
+                SearchVariantSetsRequest.newBuilder()
+                        .setDatasetId(TestData.getDatasetId())
+                        .build();
+        final SearchVariantSetsResponse vResp = client.variants.searchVariantSets(vReq);
 
+        // Make sure there are variant sets there
+        assertThat(vResp.getVariantSets()).isNotEmpty();
+        for (VariantSet set : vResp.getVariantSets()) {
+            final String id = set.getId();
+
+            // Find CallSets that go with this VariantSet
+            final SearchCallSetsRequest csReq =
+                    SearchCallSetsRequest.newBuilder()
+                            .setVariantSetId(id)
+                            .build();
+            final SearchCallSetsResponse csResp = client.variants.searchCallSets(csReq);
+            for (CallSet cs : csResp.getCallSets()) {
+                for (String vsid : cs.getVariantSetIds()) {
+                    // Look up VariantSets by id
+                    VariantSet v = client.variants.getVariantSet(vsid);
+                    assertThat(v).isNotNull();
+                    assertThat(v.getId()).isEqualTo(id);
+                }
+            }
+        }
+    }
     /**
      * Test getting a call set with a valid ID.
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
