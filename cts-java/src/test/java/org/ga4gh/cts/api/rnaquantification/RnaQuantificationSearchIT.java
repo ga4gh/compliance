@@ -5,7 +5,6 @@ import org.apache.avro.AvroRemoteException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
-import org.ga4gh.cts.api.Utils;
 import org.ga4gh.methods.GAException;
 import org.ga4gh.methods.SearchRnaQuantificationRequest;
 import org.ga4gh.methods.SearchRnaQuantificationResponse;
@@ -48,9 +47,7 @@ public class RnaQuantificationSearchIT {
 
         final List<RnaQuantification> rnaQuants = resp.getRnaQuantification();
         assertThat(rnaQuants).isNotEmpty();
-        final String rnaQuantId = rnaQuants.get(0).getId();
-
-        return rnaQuantId;
+        return rnaQuants.get(0).getId();
     }
 
     /**
