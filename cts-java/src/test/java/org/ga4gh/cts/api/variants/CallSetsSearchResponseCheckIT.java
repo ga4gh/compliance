@@ -19,12 +19,14 @@ import java.net.HttpURLConnection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
+
 /**
  * Callsets-related tests.
  */
 @RunWith(JUnitParamsRunner.class)
 @Category(VariantsTests.class)
-public class CallSetsSearchResponseCheckIT implements CtkLogs {
+public class CallsetsSearchResponseCheckIT implements CtkLogs {
 
     private static final URLMAPPING urls = URLMAPPING.getInstance();
 
@@ -35,110 +37,34 @@ public class CallSetsSearchResponseCheckIT implements CtkLogs {
      *
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
+
+
     @Test
     public void searchForExpectedCallSets() throws AvroRemoteException {
+        // Find variant sets only using datasetID
         final SearchVariantSetsRequest vReq =
                 SearchVariantSetsRequest.newBuilder()
-                        .setDatasetId(TestData.getDatasetId())
-                        .build();
+                                        .setDatasetId(TestData.getDatasetId())
+                                        .build();
         final SearchVariantSetsResponse vResp = client.variants.searchVariantSets(vReq);
 
+        // Some amount of variant sets should be returned
         assertThat(vResp.getVariantSets()).isNotEmpty();
+
+        // Find callsets for each of the variant sets.
         for (VariantSet set : vResp.getVariantSets()) {
             final String id = set.getId();
 
             final SearchCallSetsRequest csReq =
                     SearchCallSetsRequest.newBuilder()
-                            .setVariantSetId(id)
-                            .build();
+                                         .setVariantSetId(id)
+                                         .build();
             final SearchCallSetsResponse csResp = client.variants.searchCallSets(csReq);
+            final List<CallSet> callSets = csResp.getCallSets();
 
-            assertThat(csResp.getCallSets()).isNotEmpty();
-        }
-    }
-    /**
-     * Fetch a CallSet by name and make sure we get the CallSet with that name back.
-     *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
-     */
-    @Test
-    public void searchForCallSetsByName() throws AvroRemoteException {
-        final SearchVariantSetsRequest vReq =
-                SearchVariantSetsRequest.newBuilder()
-                        .setDatasetId(TestData.getDatasetId())
-                        .build();
-        final SearchVariantSetsResponse vResp = client.variants.searchVariantSets(vReq);
-
-        assertThat(vResp.getVariantSets()).isNotEmpty();
-        for (VariantSet set : vResp.getVariantSets()) {
-            final String id = set.getId();
-
-            final SearchCallSetsRequest csReq =
-                    SearchCallSetsRequest.newBuilder()
-                            .setName(TestData.CALL_SET_NAME)
-                            .setVariantSetId(id)
-                            .build();
-            final SearchCallSetsResponse csResp = client.variants.searchCallSets(csReq);
-
-            assertThat(csResp.getCallSets()).isNotEmpty();
-            assertThat(csResp.getCallSets()).hasSize(1);
-            assertThat(csResp.getCallSets().get(0).getName()).isEqualTo(TestData.CALL_SET_NAME);
-        }
-    }
-
-    /**
-     * Look for callsets using a name known not to be in the test data. Should return no callsets.
-     *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
-     */
-    @Test
-    public void searchForCallSetsByBadName() throws AvroRemoteException {
-        final SearchVariantSetsRequest vReq =
-                SearchVariantSetsRequest.newBuilder()
-                        .setDatasetId(TestData.getDatasetId())
-                        .build();
-        final SearchVariantSetsResponse vResp = client.variants.searchVariantSets(vReq);
-
-        assertThat(vResp.getVariantSets()).isNotEmpty();
-        for (VariantSet set : vResp.getVariantSets()) {
-            final String id = set.getId();
-
-            final SearchCallSetsRequest csReq =
-                    SearchCallSetsRequest.newBuilder()
-                            .setName("3ATB33F")
-                            .setVariantSetId(id)
-                            .build();
-            final SearchCallSetsResponse csResp = client.variants.searchCallSets(csReq);
-
-            assertThat(csResp.getCallSets()).isEmpty();
-        }
-    }
-
-    /**
-     * Callset names are case-sensitive. This test ensures case-sensitivity for the name field and should return none.
-     *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
-     */
-    @Test
-    public void searchForCallSetsByLowercaseName() throws AvroRemoteException {
-        final SearchVariantSetsRequest vReq =
-                SearchVariantSetsRequest.newBuilder()
-                        .setDatasetId(TestData.getDatasetId())
-                        .build();
-        final SearchVariantSetsResponse vResp = client.variants.searchVariantSets(vReq);
-
-        assertThat(vResp.getVariantSets()).isNotEmpty();
-        for (VariantSet set : vResp.getVariantSets()) {
-            final String id = set.getId();
-
-            final SearchCallSetsRequest csReq =
-                    SearchCallSetsRequest.newBuilder()
-                            .setName(TestData.CALL_SET_NAME.toLowerCase())
-                            .setVariantSetId(id)
-                            .build();
-            final SearchCallSetsResponse csResp = client.variants.searchCallSets(csReq);
-
-            assertThat(csResp.getCallSets()).isEmpty();
+            // Ensure that if a CallSet is returned, one of the variantSetIds it refers to
+            // is the ID we are interested in.
+            callSets.stream().forEach(cs -> assertThat(cs.getVariantSetIds()).contains(id));
         }
     }
 
@@ -150,8 +76,8 @@ public class CallSetsSearchResponseCheckIT implements CtkLogs {
     public void getCallSetWithValidIDShouldSucceed() throws AvroRemoteException {
         final SearchVariantSetsRequest vReq =
                 SearchVariantSetsRequest.newBuilder()
-                        .setDatasetId(TestData.getDatasetId())
-                        .build();
+                                        .setDatasetId(TestData.getDatasetId())
+                                        .build();
         final SearchVariantSetsResponse vResp = client.variants.searchVariantSets(vReq);
 
         assertThat(vResp.getVariantSets()).isNotEmpty();
@@ -162,8 +88,8 @@ public class CallSetsSearchResponseCheckIT implements CtkLogs {
 
         final SearchCallSetsRequest callSetsSearchRequest =
                 SearchCallSetsRequest.newBuilder()
-                        .setVariantSetId(variantSetId)
-                        .build();
+                                     .setVariantSetId(variantSetId)
+                                     .build();
         final SearchCallSetsResponse csResp = client.variants.searchCallSets(callSetsSearchRequest);
 
         // grab one of the CallSets returned from the search
