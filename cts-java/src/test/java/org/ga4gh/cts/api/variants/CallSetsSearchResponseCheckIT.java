@@ -19,6 +19,8 @@ import java.net.HttpURLConnection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
+
 /**
  * Callsets-related tests.
  */
@@ -35,15 +37,21 @@ public class CallSetsSearchResponseCheckIT implements CtkLogs {
      *
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
+
+
     @Test
     public void searchForExpectedCallSets() throws AvroRemoteException {
+        // Find variant sets only using datasetID
         final SearchVariantSetsRequest vReq =
                 SearchVariantSetsRequest.newBuilder()
                                         .setDatasetId(TestData.getDatasetId())
                                         .build();
         final SearchVariantSetsResponse vResp = client.variants.searchVariantSets(vReq);
 
+        // Some amount of variant sets should be returned
         assertThat(vResp.getVariantSets()).isNotEmpty();
+
+        // Find callsets for each of the variant sets.
         for (VariantSet set : vResp.getVariantSets()) {
             final String id = set.getId();
 
@@ -52,8 +60,11 @@ public class CallSetsSearchResponseCheckIT implements CtkLogs {
                                          .setVariantSetId(id)
                                          .build();
             final SearchCallSetsResponse csResp = client.variants.searchCallSets(csReq);
+            final List<CallSet> callSets = csResp.getCallSets();
 
-            assertThat(csResp.getCallSets()).isNotEmpty();
+            // Ensure that if a CallSet is returned, one of the variantSetIds it refers to
+            // is the ID we are interested in.
+            callSets.stream().forEach(cs -> assertThat(cs.getVariantSetIds()).contains(id));
         }
     }
     /**
