@@ -495,17 +495,15 @@ public class Utils {
     /**
      * Given a reference ID, return all {@link RnaQuantification}s
      * @param client the connection to the server
-     * @param dataasetId the ID of the {@link Dataset} we're using
      * @return all the {@link RnaQuantification} objects that match
      */
-    public static List<RnaQuantification> getAllRnaQuantifications(Client client,
-                                                                   String referenceId) throws AvroRemoteException {
+    public static List<RnaQuantification> getAllRnaQuantifications(Client client) throws AvroRemoteException {
 
         final List<RnaQuantification> result = new LinkedList<>();
         String pageToken = null;
         do {
             final SearchRnaQuantificationRequest req = SearchRnaQuantificationRequest.newBuilder()
-                    .setDatasetId(referenceId)
+                    .setDatasetId(TestData.getDatasetId())
                     .setPageToken(pageToken)
                     .setPageSize(100)
                     .build();

@@ -35,7 +35,7 @@ public class RnaQuantificationGetByIdIT {
         final int expectedNumberOfRnaQuantifications = 1;
 
         final String rnaQuantificationId = Utils.getRnaQuantificationId(client);
-        final List<RnaQuantification> rnaQuantifications = Utils.getAllRnaQuantifications(client, rnaQuantificationId);
+        final List<RnaQuantification> rnaQuantifications = Utils.getAllRnaQuantifications(client);
 
         assertThat(rnaQuantifications).hasSize(expectedNumberOfRnaQuantifications);
 
