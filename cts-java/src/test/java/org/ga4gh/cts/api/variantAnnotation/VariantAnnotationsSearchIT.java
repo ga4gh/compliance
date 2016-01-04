@@ -38,7 +38,7 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
     // Define test region
     final long start = 10177;
     final long end = 11008;
-    final int expectedNumberOfAnnotations = 10;
+    final int expectedNumberOfAnnotations = 11;
 
     /**
      * For every {@link VariantAnnotation} in the {@link List}, call the {@link Consumer}.
