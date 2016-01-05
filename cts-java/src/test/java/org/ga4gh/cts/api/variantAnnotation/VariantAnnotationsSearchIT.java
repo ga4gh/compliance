@@ -8,6 +8,7 @@ import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
 import org.ga4gh.methods.*;
+import org.ga4gh.models.Variant;
 import org.ga4gh.models.VariantSet;
 import org.ga4gh.models.VariantAnnotationSet;
 import org.ga4gh.models.VariantAnnotation;
@@ -222,4 +223,38 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getCDSLocation().getOverlapStart()).isEqualTo(cdsStart));
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getProteinLocation().getOverlapStart()).isEqualTo(proteinStart));
     }
+    /**
+     * Check the VariantIds contained in VariantAnnotations records return Variant records.
+     *
+     *@throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+    */
+    @Test
+    public void checkVariantAnnotationVariants() throws AvroRemoteException {
+
+        // Obtain a VariantAnnotationSet from the compliance dataset.
+        final String variantAnnotationSetId = Utils.getVariantAnnotationSetId(client);
+
+        // Seek variant annotation records for the extracted VariantAnnotationSet.
+        final SearchVariantAnnotationsRequest req =
+                SearchVariantAnnotationsRequest.newBuilder()
+                                               .setVariantAnnotationSetId(variantAnnotationSetId)
+                                               .setReferenceName(TestData.VARIANT_ANNOTATION_REFERENCE_NAME)
+                                               .setStart(start)
+                                               .setEnd(end)
+                                               .build();
+
+        final SearchVariantAnnotationsResponse resp = client.variantAnnotations.searchVariantAnnotations(req);
+
+        //Check a valid variant id is returned for each record.
+        for( VariantAnnotation variantAnn : resp.getVariantAnnotations() ){
+            final String  variantId = variantAnn.getVariantId();
+
+            // Look up Variant by id to check it exists
+            Variant v = client.variants.getVariant(variantId);
+            assertThat(v).isNotNull();
+            assertThat(v.getId()).isEqualTo(variantId);
+        }
+    }
+
+
 }
