@@ -218,8 +218,8 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getImpact().toString()).isEqualTo(impact));
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getHGVSc()).isEqualTo(hgvsc));
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getHGVSp()).isEqualTo(hgvsp));
-        checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getCDNALocation().getOverlapStart()).isEqualTo(cdnaStart));
-        checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getCDSLocation().getOverlapStart()).isEqualTo(cdsStart));
-        checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getProteinLocation().getOverlapStart()).isEqualTo(proteinStart));
+        checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getCDNALocation().getStart()).isEqualTo(cdnaStart));
+        checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getCDSLocation().getStart()).isEqualTo(cdsStart));
+        checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getProteinLocation().getStart()).isEqualTo(proteinStart));
     }
 }
