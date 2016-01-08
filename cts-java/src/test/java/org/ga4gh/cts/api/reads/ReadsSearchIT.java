@@ -38,34 +38,23 @@ public class ReadsSearchIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void searchReadsWithUninterestingRangeProducesZeroReads() throws AvroRemoteException {
-
+    public void searchRangeWithNoReadsReturnsZeroResults() throws AvroRemoteException {
         final String refId = Utils.getValidReferenceId(client);
 
-        final long emptyRangeStart = 150;
-        final long emptyRangeEnd = 160;
-
-        final SearchReadGroupSetsRequest req =
-                SearchReadGroupSetsRequest.newBuilder()
-                                          .setDatasetId(TestData.getDatasetId())
-                                          .build();
-        final SearchReadGroupSetsResponse resp = client.reads.searchReadGroupSets(req);
-
-        final List<ReadGroupSet> readGroupSets = resp.getReadGroupSets();
+        final long emptyRangeStart = 0; // is this range actually empty?
+        final long emptyRangeEnd = 100;
 
         final SearchReadsRequest srReq =
                 SearchReadsRequest.newBuilder()
-                                  .setReferenceId(refId)
-                                  .setReadGroupIds(aSingle(Utils.getReadGroupId(client)))
-                                  .setStart(emptyRangeStart)
-                                  .setEnd(emptyRangeEnd)
-                                  .build();
+                        .setReferenceId(refId)
+                        .setReadGroupIds(aSingle(Utils.getReadGroupId(client)))
+                        .setStart(emptyRangeStart)
+                        .setEnd(emptyRangeEnd)
+                        .build();
         final SearchReadsResponse srResp = client.reads.searchReads(srReq);
 
         final List<ReadAlignment> alignments = srResp.getAlignments();
-        assertThat(alignments).isNotEmpty();
-
-        assertThat(alignments).doesNotContain(Utils.nullReadAlignment);
+        assertThat(alignments).isEmpty();
     }
 
     /**

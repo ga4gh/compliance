@@ -19,12 +19,14 @@ import java.net.HttpURLConnection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
+
 /**
  * Callsets-related tests.
  */
 @RunWith(JUnitParamsRunner.class)
 @Category(VariantsTests.class)
-public class CallsetsSearchResponseCheckIT implements CtkLogs {
+public class CallSetsSearchResponseCheckIT implements CtkLogs {
 
     private static final URLMAPPING urls = URLMAPPING.getInstance();
 
@@ -35,15 +37,21 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
      *
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
+
+
     @Test
     public void searchForExpectedCallSets() throws AvroRemoteException {
+        // Find variant sets only using datasetID
         final SearchVariantSetsRequest vReq =
                 SearchVariantSetsRequest.newBuilder()
                                         .setDatasetId(TestData.getDatasetId())
                                         .build();
         final SearchVariantSetsResponse vResp = client.variants.searchVariantSets(vReq);
 
+        // Some amount of variant sets should be returned
         assertThat(vResp.getVariantSets()).isNotEmpty();
+
+        // Find callsets for each of the variant sets.
         for (VariantSet set : vResp.getVariantSets()) {
             final String id = set.getId();
 
@@ -52,11 +60,48 @@ public class CallsetsSearchResponseCheckIT implements CtkLogs {
                                          .setVariantSetId(id)
                                          .build();
             final SearchCallSetsResponse csResp = client.variants.searchCallSets(csReq);
+            final List<CallSet> callSets = csResp.getCallSets();
 
-            assertThat(csResp.getCallSets()).isNotEmpty();
+            // Ensure that if a CallSet is returned, one of the variantSetIds it refers to
+            // is the ID we are interested in.
+            callSets.stream().forEach(cs -> assertThat(cs.getVariantSetIds()).contains(id));
         }
     }
+    /**
+     * Make sure VariantSet records exist for each CallSet.
+     *
+     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     */
+    @Test
+    public void searchCallSetsByVariantSet() throws AvroRemoteException {
+        // Get all the variant sets
+        final SearchVariantSetsRequest vReq =
+                SearchVariantSetsRequest.newBuilder()
+                        .setDatasetId(TestData.getDatasetId())
+                        .build();
+        final SearchVariantSetsResponse vResp = client.variants.searchVariantSets(vReq);
 
+        // Make sure there are variant sets there
+        assertThat(vResp.getVariantSets()).isNotEmpty();
+        for (VariantSet set : vResp.getVariantSets()) {
+            final String id = set.getId();
+
+            // Find CallSets that go with this VariantSet
+            final SearchCallSetsRequest csReq =
+                    SearchCallSetsRequest.newBuilder()
+                            .setVariantSetId(id)
+                            .build();
+            final SearchCallSetsResponse csResp = client.variants.searchCallSets(csReq);
+            for (CallSet cs : csResp.getCallSets()) {
+                for (String vsid : cs.getVariantSetIds()) {
+                    // Look up VariantSets by id
+                    VariantSet v = client.variants.getVariantSet(vsid);
+                    assertThat(v).isNotNull();
+                    assertThat(v.getId()).isEqualTo(id);
+                }
+            }
+        }
+    }
     /**
      * Test getting a call set with a valid ID.
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
