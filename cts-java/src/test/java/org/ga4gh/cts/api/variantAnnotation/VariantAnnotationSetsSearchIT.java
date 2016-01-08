@@ -56,4 +56,21 @@ public class VariantAnnotationSetsSearchIT implements CtkLogs {
                              .forEach(vas -> assertThat(vas.getVariantSetId()).isNotNull());
 
     }
+
+    /**
+     * Check to see if variant annotation sets can be gotten by their ID.
+     *
+     *@throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     */
+    @Test
+    public void checkGetVariantAnnotationSetById() throws AvroRemoteException {
+        // Find a variant annotation set ID using search
+        final String variantAnnotationSetId = Utils.getVariantAnnotationSetId(client);
+
+        // Get a variant annotation set using GET
+        final VariantAnnotationSet vSet = client.variantAnnotations.getVariantAnnotationSet(variantAnnotationSetId);
+
+        assertThat(vSet).isNotNull();
+        assertThat(vSet.getId()).isEqualTo(variantAnnotationSetId);
+    }
 }
