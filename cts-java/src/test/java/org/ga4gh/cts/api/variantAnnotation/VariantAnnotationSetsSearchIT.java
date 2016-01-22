@@ -64,7 +64,7 @@ public class VariantAnnotationSetsSearchIT implements CtkLogs {
      */
     @Test
     public void checkGetVariantAnnotationSetById() throws AvroRemoteException {
-        // Find a variant annotation set ID using search
+        // Find a compliance variant annotation set ID using search
         final String variantAnnotationSetId = Utils.getVariantAnnotationSetId(client);
 
         // Get a variant annotation set using GET
@@ -72,5 +72,32 @@ public class VariantAnnotationSetsSearchIT implements CtkLogs {
 
         assertThat(vSet).isNotNull();
         assertThat(vSet.getId()).isEqualTo(variantAnnotationSetId);
+
+    }
+    /**
+     * Check to see if a variant annotation set contains the expected analysis infromation.
+     *
+     *@throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     */
+    @Test
+    public void checkVariantAnnotationAnalysis() throws AvroRemoteException {
+
+        // Seek a list of VariantAnnotationSets for the compliance dataset.
+        final List<VariantAnnotationSet> variantAnnotationSets =  Utils.getAllVariantAnnotationSets(client);
+
+        // Use the first VariantAnnotationSet
+        final VariantAnnotationSet vSet = variantAnnotationSets.get(0);
+
+        // Check the Analysis record within the VariantAnnotationSet matches the test data
+        final String name        = "compliance1";
+        final String description = "variant annotation test data";
+        final String created     = "2015-11-18";
+        final String software    = "SnpEff";
+
+        assertThat(vSet.getAnalysis().getName()).isEqualTo(name);
+        assertThat(vSet.getAnalysis().getDescription()).isEqualTo(description);
+        assertThat(vSet.getAnalysis().getRecordCreateTime()).isEqualTo(created);
+        assertThat(vSet.getAnalysis().getSoftware().get(0)).isEqualTo(software);
+
     }
 }
