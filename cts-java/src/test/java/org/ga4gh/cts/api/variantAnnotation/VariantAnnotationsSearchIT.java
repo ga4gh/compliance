@@ -208,6 +208,7 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
         final String alternateBases = "G";
         final String impact     = "MODERATE";
         final String featureId  = "NM_001005484.1";
+        final String hgvsg      = "1:g.69541A>G";
         final String hgvsc      = "NM_001005484.1:c.451A>G";
         final String hgvsp      = "NM_001005484.1:p.Ser151Gly";
         final int cdnaStart     = 450;
@@ -217,6 +218,7 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getAlternateBases()).isEqualTo(alternateBases));
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getFeatureId()).isEqualTo(featureId));
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getImpact().toString()).isEqualTo(impact));
+        checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getHgvsAnnotation().getGenomic()).isEqualTo(hgvsg));
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getHgvsAnnotation().getCoding()).isEqualTo(hgvsc));
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getHgvsAnnotation().getProtein()).isEqualTo(hgvsp));
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getCDNALocation().getStart()).isEqualTo(cdnaStart));
