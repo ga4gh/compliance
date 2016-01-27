@@ -37,7 +37,7 @@ as SIFT on a specific allele.
 */
 record AnalysisResult {
 
-  /** The Id of the analysis record for this result */
+  /** The ID of the analysis record for this result */
   string analysisId;
 
   /** The text-based result for this analysis */
@@ -108,17 +108,19 @@ record VariantAnnotationSet {
 
 /**
 A HGVSAnnotation record holds Human Genome Variation Society descriptions
-of the variant allele with respect to a transcript.
+of the sequence change with respect to genomic, transcript and protein
+sequences. See: http://www.hgvs.org/mutnomen/recs.html.
+Descriptions should be provided at genomic level. Descriptions at transcript
+level should be provided when the allele lies within a transcript. Descriptions
+at protein level should be provided when the allele lies within the translated
+sequence or stop codon.
 */
 record HGVSAnnotation {
 
-  /** HGVS formatted annotation at genomic level  */
   union { null, string } genomic = null;
 
-  /** HGVS formatted annotation at transcript level */
-  union { null, string } coding = null;
+  union { null, string } transcript = null;
 
-  /** HGVS formatted annotation at protein level */
   union { null, string } protein = null;
 }
 
