@@ -76,8 +76,9 @@ record SearchVariantAnnotationsRequest {
 //  union { null, array<string> } featureIds = null;
 
   /**
-  Only return variant annotations including these effects (SO terms).
-  If null, return all variant annotations.
+  Only return variant annotations including these effects (SO terms). Exact
+  matching across all fields of the OntologyTerm is required. If null, return
+  all variant annotations.
   */
   union { null, array<org.ga4gh.models.OntologyTerm> } effects = null;
 
@@ -131,16 +132,9 @@ This request maps to the body of `POST /variantannotationsets/search` as JSON
 record SearchVariantAnnotationSetsRequest {
 
   /**
-  If non empty, will restrict the query to variant annotation sets within the
-  given dataset.
+  Required. The `VariantSet` to search.
   */
-  union { null, string } datasetId = null;
-
-  /**
-  If non empty, will restrict the query to variant annotation sets within the
-  given variant set. This takes precedence over any dataset id supplied.
-  */
-  union { null, string } variantSetId = null;
+  string variantSetId;
 
   /**
   Specifies the maximum number of results to return in a single page.
