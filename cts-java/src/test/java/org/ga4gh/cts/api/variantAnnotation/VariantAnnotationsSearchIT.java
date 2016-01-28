@@ -8,10 +8,12 @@ import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
 import org.ga4gh.methods.*;
+import org.ga4gh.models.Variant;
 import org.ga4gh.models.VariantSet;
 import org.ga4gh.models.VariantAnnotationSet;
 import org.ga4gh.models.VariantAnnotation;
 import org.ga4gh.models.TranscriptEffect;
+import org.ga4gh.models.HGVSAnnotation;
 import org.ga4gh.models.AlleleLocation;
 import org.ga4gh.models.AnalysisResult;
 import org.ga4gh.models.Impact;
@@ -138,42 +140,42 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
         checkAllTranscriptEffects(variantAnnotations, t -> assertThat(t.getEffects()).isNotNull());
 
     }
-
-    /**
-     * Check filtering by feature id
-     *
-     *@throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
-    */
-    @Test
-    public void checkSearchingVariantAnnotationsByFeature() throws AvroRemoteException {
-
-        final List<String> filterFeatures = aSingle("NR_046018.2");
-
-        // Obtain a VariantAnnotationSet from the compliance dataset.
-        final String variantAnnotationSetId = Utils.getVariantAnnotationSetId(client);
-
-
-        // Seek variant annotation records for the extracted VariantAnnotationSet.
-        final SearchVariantAnnotationsRequest req =
-                SearchVariantAnnotationsRequest.newBuilder()
-                                               .setVariantAnnotationSetId(variantAnnotationSetId)
-                                               .setReferenceName(TestData.VARIANT_ANNOTATION_REFERENCE_NAME)
-                                               .setStart(start)
-                                               .setEnd(end)
-                                               .setFeatureIds(filterFeatures)
-                                               .build();
-
-        final SearchVariantAnnotationsResponse resp = client.variantAnnotations.searchVariantAnnotations(req);
-
-        final List<VariantAnnotation> variantAnnotations = resp.getVariantAnnotations();
-        assertThat(variantAnnotations).isNotEmpty();
-
-        //Check the correct number were returned
-        assertThat(variantAnnotations).hasSize(expectedNumberOfAnnotations);
-
-        //Check transcriptEffect records all list the required feature
-        checkAllTranscriptEffects(variantAnnotations, t -> assertThat(t.getFeatureId()).isEqualTo(filterFeatures.get(0)));
-    }
+// To be re-instated when features are available
+//    /**
+//     * Check filtering by feature id
+//     *
+//     *@throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+//    */
+//    @Test
+//    public void checkSearchingVariantAnnotationsByFeature() throws AvroRemoteException {
+//
+//       final List<String> filterFeatures = aSingle("NR_046018.2");
+//
+//        // Obtain a VariantAnnotationSet from the compliance dataset.
+//       final String variantAnnotationSetId = Utils.getVariantAnnotationSetId(client);
+//
+//
+//        // Seek variant annotation records for the extracted VariantAnnotationSet.
+//        final SearchVariantAnnotationsRequest req =
+//                SearchVariantAnnotationsRequest.newBuilder()
+//                                               .setVariantAnnotationSetId(variantAnnotationSetId)
+//                                               .setReferenceName(TestData.VARIANT_ANNOTATION_REFERENCE_NAME)
+//                                               .setStart(start)
+//                                               .setEnd(end)
+//                                               .setFeatureIds(filterFeatures)
+//                                               .build();
+//
+//        final SearchVariantAnnotationsResponse resp = client.variantAnnotations.searchVariantAnnotations(req);
+//
+//        final List<VariantAnnotation> variantAnnotations = resp.getVariantAnnotations();
+//        assertThat(variantAnnotations).isNotEmpty();
+//
+//        //Check the correct number were returned
+//        assertThat(variantAnnotations).hasSize(expectedNumberOfAnnotations);
+//
+//        //Check transcriptEffect records all list the required feature
+//        checkAllTranscriptEffects(variantAnnotations, t -> assertThat(t.getFeatureId()).isEqualTo(filterFeatures.get(0)));
+//    }
 
     /**
      * Check returned annotation at specific location
@@ -207,6 +209,7 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
         final String alternateBases = "G";
         final String impact     = "MODERATE";
         final String featureId  = "NM_001005484.1";
+        final String hgvsg      = "1:g.69541A>G";
         final String hgvsc      = "NM_001005484.1:c.451A>G";
         final String hgvsp      = "NM_001005484.1:p.Ser151Gly";
         final int cdnaStart     = 450;
@@ -216,10 +219,45 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getAlternateBases()).isEqualTo(alternateBases));
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getFeatureId()).isEqualTo(featureId));
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getImpact().toString()).isEqualTo(impact));
-        checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getHGVSc()).isEqualTo(hgvsc));
-        checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getHGVSp()).isEqualTo(hgvsp));
+        checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getHgvsAnnotation().getGenomic()).isEqualTo(hgvsg));
+        checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getHgvsAnnotation().getTranscript()).isEqualTo(hgvsc));
+        checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getHgvsAnnotation().getProtein()).isEqualTo(hgvsp));
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getCDNALocation().getStart()).isEqualTo(cdnaStart));
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getCDSLocation().getStart()).isEqualTo(cdsStart));
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getProteinLocation().getStart()).isEqualTo(proteinStart));
     }
+    /**
+     * Check the VariantIds contained in VariantAnnotations records return Variant records.
+     *
+     *@throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+    */
+    @Test
+    public void checkVariantAnnotationVariants() throws AvroRemoteException {
+
+        // Obtain a VariantAnnotationSet from the compliance dataset.
+        final String variantAnnotationSetId = Utils.getVariantAnnotationSetId(client);
+
+        // Seek variant annotation records for the extracted VariantAnnotationSet.
+        final SearchVariantAnnotationsRequest req =
+                SearchVariantAnnotationsRequest.newBuilder()
+                                               .setVariantAnnotationSetId(variantAnnotationSetId)
+                                               .setReferenceName(TestData.VARIANT_ANNOTATION_REFERENCE_NAME)
+                                               .setStart(start)
+                                               .setEnd(end)
+                                               .build();
+
+        final SearchVariantAnnotationsResponse resp = client.variantAnnotations.searchVariantAnnotations(req);
+
+        //Check a valid variant id is returned for each record.
+        for( VariantAnnotation variantAnn : resp.getVariantAnnotations() ){
+            final String  variantId = variantAnn.getVariantId();
+
+            // Look up Variant by id to check it exists
+            Variant v = client.variants.getVariant(variantId);
+            assertThat(v).isNotNull();
+            assertThat(v.getId()).isEqualTo(variantId);
+        }
+    }
+
+
 }
