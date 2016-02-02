@@ -22,7 +22,6 @@
     <name>CTK Aggregator</name>
     <description>CTK Aggregation Module to build site and distributions</description>
     <modules>
-        <module>ctk-schemas</module>
         <module>ctk-domain</module>
         <module>ctk-transport</module>
         <module>ctk-cli</module>

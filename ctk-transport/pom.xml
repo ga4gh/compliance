@@ -96,16 +96,11 @@
         </dependency>
 
         <dependency>
-            <groupId>org.ga4gh</groupId>
-            <artifactId>ctk-schemas</artifactId>
-            <version>${ga4gh.schema.local.version}</version>
-            <!-- example if you want to build with link to a local schema jar file -->
-            <!--
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/ga4gh-format-${ga4gh.schema.local.version}.jar
-            </systemPath>
-            -->
+            <groupId>com.github.ga4gh</groupId>
+            <artifactId>schemas</artifactId>
+            <version>${ga4gh.schema.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.ga4gh</groupId>
             <artifactId>ctk-domain</artifactId>

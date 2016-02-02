@@ -27,9 +27,8 @@
         <url>https://github.com/wstidolph/ctk-core</url>
     </scm>
 
-
     <properties>
-        <ga4gh.schema.local.version>0.6.0a1</ga4gh.schema.local.version>
+        <ga4gh.schema.version>95efb3d</ga4gh.schema.version>
         <ctk.tgt.urlRoot>http://localhost:8000</ctk.tgt.urlRoot>
         <!-- Controls skipping of cts-java IT tests during build; skip the tests by passing
              a command line parameter, e.g. mvn -Dcts.skipITs=true install.  Run them by default. -->
@@ -88,7 +87,10 @@
             <id>spring-milestones</id>
             <url>http://repo.spring.io/milestone</url>
         </repository>
-
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -118,12 +120,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
                 <version>${spring.boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ga4gh</groupId>
-                <!--<artifactId>ga4gh-format</artifactId>-->
-                <artifactId>ctk-schemas</artifactId>
-                <version>${ga4gh.schema.local.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -228,6 +224,13 @@
                 <artifactId>gson</artifactId>
                 <version>${gson.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.github.ga4gh</groupId>
+                <artifactId>schemas</artifactId>
+                <version>${ga4gh.schema.version}}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
