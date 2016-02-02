@@ -57,6 +57,13 @@ public class TestData {
      */
     public static final String VARIANT_ANNOTATION_REFERENCE_NAME = "1";
 
+
+    /**
+     * The names of the variant annotation sets used for variant annotation in the standard test data.
+     */
+    public static final List<String> VARIANT_ANNOTATION_SET_NAMES =
+            Arrays.asList("WASH7P_annotation", "OR4F_annotation");
+
     /**
      * The names of known-good read groups.
      */
