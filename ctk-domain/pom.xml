@@ -21,16 +21,6 @@
             <version>${ga4gh.schema.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro</artifactId>
-            <version>${avro.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro-ipc</artifactId>
-            <version>${avro.version}</version>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>compile</scope>
@@ -39,6 +29,11 @@
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
         <!-- need BCEL during site build -->
         <dependency>
@@ -95,15 +90,12 @@
                 </executions>
                 <configuration>
                     <packages>
-                        <param>org.ga4gh</param>
+                        <param>ga4gh</param>
                     </packages>
                     <includes>
                         <!-- assert about the GA4GH data exchanged -->
-                        <param>org\.ga4gh\..*</param>
+                        <param>ga4gh\..*</param>
                     </includes>
-                    <excludes>
-                        <param>org\.ga4gh\.models\.Common.*</param>
-                    </excludes>
                     <entryPointClassPackage>org.ga4gh.ctk.asserts</entryPointClassPackage>
 
                     <targetDir>${project.basedir}/src/main/assertj-assertions</targetDir>

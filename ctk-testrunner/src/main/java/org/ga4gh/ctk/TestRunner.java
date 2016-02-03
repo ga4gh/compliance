@@ -5,7 +5,7 @@ import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildListener;
 import org.ga4gh.ctk.config.Props;
 import org.ga4gh.ctk.transport.URLMAPPING;
-import org.ga4gh.ctk.transport.avrojson.AvroJson;
+import org.ga4gh.ctk.transport.protobufjson.AvroJson;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

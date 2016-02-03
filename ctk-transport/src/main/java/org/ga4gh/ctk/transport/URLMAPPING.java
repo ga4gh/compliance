@@ -27,13 +27,13 @@ public interface URLMAPPING {
 
     void setGetReadGroup(String getReadGroup);
 
-    String getSearchDatasets();
+    String getSearchDataSets();
 
-    void setSearchDatasets(String searchDatasets);
+    void setSearchDataSets(String searchDataSets);
 
-    String getGetDataset();
+    String getGetDataSet();
 
-    void setGetDataset(String getDataset);
+    void setGetDataSet(String getDataSet);
 
     String getSearchReads();
 
@@ -59,9 +59,9 @@ public interface URLMAPPING {
 
     void setReferenceSets(String referenceSets);
 
-    String getSearchReferencesets();
+    String getSearchReferenceSets();
 
-    void setSearchReferencesets(String searchReferencesets);
+    void setSearchReferenceSets(String searchReferenceSets);
 
     String getSearchVariantSets();
 
@@ -79,13 +79,13 @@ public interface URLMAPPING {
 
     void setGetVariantSet(String getVariantSet);
 
-    String getSearchCallsets();
+    String getSearchCallSets();
 
-    void setSearchCallsets(String searchCallsets);
+    void setSearchCallSets(String searchCallSets);
 
-    String getGetCallset();
+    String getGetCallSet();
 
-    void setGetCallset(String getCallset);
+    void setGetCallSet(String getCallSet);
 
     Map<String, String> getEndpoints();
 

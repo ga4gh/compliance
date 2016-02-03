@@ -1,14 +1,16 @@
 package org.ga4gh.ctk.transport;
 
-import org.ga4gh.methods.GAException;
+import ga4gh.Common.GAException;
+
+import java.io.IOException;
 
 /**
- * A wrapper for {@link org.ga4gh.methods.GAException}, thrown instead of it.
+ * A wrapper for {@link ga4gh.Common.GAException}, thrown instead of it.
  * It includes the HTTP response code the server sent.
  *
  * @author Herb Jellinek
  */
-public class GAWrapperException extends GAException {
+public class GAWrapperException extends IOException {
 
     /**
      * The {@link GAException} we're wrapping.
@@ -44,7 +46,6 @@ public class GAWrapperException extends GAException {
      * Gets the value of the 'errorCode' field.
      * @return The numerical error code
      */
-    @Override
     public Integer getErrorCode() {
         return cause.getErrorCode();
     }
@@ -55,15 +56,6 @@ public class GAWrapperException extends GAException {
      */
     @Override
     public String getMessage() {
-        return cause.getMessage$();
-    }
-
-    /**
-     * Return the wrapped {@link GAException}.
-     * @return the wrapped {@link GAException}
-     */
-    @Override
-    public GAException getCause() {
-        return cause;
+        return cause.getMessage();
     }
 }
