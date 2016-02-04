@@ -28,6 +28,11 @@
             <artifactId>ctk-domain</artifactId>
             <version>0.6.0a1</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.ga4gh</groupId>
+            <artifactId>schemas</artifactId>
+            <version>${ga4gh.schema.version}</version>
+        </dependency>
         <!-- need BCEL during site build -->
         <dependency>
             <groupId>org.apache.bcel</groupId>
