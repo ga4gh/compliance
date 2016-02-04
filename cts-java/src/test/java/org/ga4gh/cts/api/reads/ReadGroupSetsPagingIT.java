@@ -1,15 +1,15 @@
 package org.ga4gh.cts.api.reads;
 
-import org.apache.avro.AvroRemoteException;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.GAException;
-import org.ga4gh.methods.SearchReadGroupSetsRequest;
-import org.ga4gh.methods.SearchReadGroupSetsResponse;
-import org.ga4gh.models.ReadAlignment;
-import org.ga4gh.models.ReadGroupSet;
+import ga4gh.Common.GAException;
+import ga4gh.ReadServiceOuterClass.*;
+import ga4gh.Reads.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -37,7 +37,7 @@ public class ReadGroupSetsPagingIT {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkPagingOneByOneThroughReadGroupSets() throws AvroRemoteException {
+    public void checkPagingOneByOneThroughReadGroupSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         // retrieve them all - this may return fewer than "all."
         final List<ReadGroupSet> listOfReadGroupSets = Utils.getAllReadGroupSets(client);
@@ -59,7 +59,7 @@ public class ReadGroupSetsPagingIT {
                                               .setPageToken(pageToken)
                                               .build();
             final SearchReadGroupSetsResponse pageResp = client.reads.searchReadGroupSets(pageReq);
-            final List<ReadGroupSet> pageOfReadGroupSets = pageResp.getReadGroupSets();
+            final List<ReadGroupSet> pageOfReadGroupSets = pageResp.getReadGroupSetsList();
             pageToken = pageResp.getNextPageToken();
 
             assertThat(pageOfReadGroupSets).hasSize(1);
@@ -77,7 +77,7 @@ public class ReadGroupSetsPagingIT {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkPagingByRelativelyPrimeChunksOfReadGroupSets() throws AvroRemoteException {
+    public void checkPagingByRelativelyPrimeChunksOfReadGroupSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final int pageSize0 = 3;
         final int pageSize1 = 7;
@@ -96,7 +96,7 @@ public class ReadGroupSetsPagingIT {
                             .setDatasetId(TestData.getDatasetId())
                             .build();
             final SearchReadGroupSetsResponse pageResp = client.reads.searchReadGroupSets(readGroupSetsReq);
-            final List<ReadGroupSet> pageOfReadGroupSets = pageResp.getReadGroupSets();
+            final List<ReadGroupSet> pageOfReadGroupSets = pageResp.getReadGroupSetsList();
             pageToken = pageResp.getNextPageToken();
 
             firstSetOfReadGroups.addAll(pageOfReadGroupSets);
@@ -116,7 +116,7 @@ public class ReadGroupSetsPagingIT {
                             .setDatasetId(TestData.getDatasetId())
                             .build();
             final SearchReadGroupSetsResponse pageResp = client.reads.searchReadGroupSets(readGroupSetsReq);
-            final List<ReadGroupSet> pageOfReadGroupSets = pageResp.getReadGroupSets();
+            final List<ReadGroupSet> pageOfReadGroupSets = pageResp.getReadGroupSetsList();
             pageToken = pageResp.getNextPageToken();
 
             secondSetOfReadGroupSets.addAll(pageOfReadGroupSets);
@@ -136,7 +136,7 @@ public class ReadGroupSetsPagingIT {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkTwoSimultaneousPagingSequencesThroughReadGroupSets() throws AvroRemoteException {
+    public void checkTwoSimultaneousPagingSequencesThroughReadGroupSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final Set<ReadGroupSet> setOfReadGroupSets0 = new HashSet<>();
         final Set<ReadGroupSet> setOfReadGroupSets1 = new HashSet<>();
@@ -159,12 +159,12 @@ public class ReadGroupSetsPagingIT {
                                               .setPageToken(pageToken1)
                                       .build();
             final SearchReadGroupSetsResponse page0Resp = client.reads.searchReadGroupSets(page0Req);
-            final List<ReadGroupSet> pageOfReadGroupSets0 = page0Resp.getReadGroupSets();
+            final List<ReadGroupSet> pageOfReadGroupSets0 = page0Resp.getReadGroupSetsList();
             setOfReadGroupSets0.addAll(pageOfReadGroupSets0);
             pageToken0 = page0Resp.getNextPageToken();
 
             final SearchReadGroupSetsResponse page1Resp = client.reads.searchReadGroupSets(page1Req);
-            final List<ReadGroupSet> pageOfReadGroupSets1 = page0Resp.getReadGroupSets();
+            final List<ReadGroupSet> pageOfReadGroupSets1 = page0Resp.getReadGroupSetsList();
             setOfReadGroupSets1.addAll(pageOfReadGroupSets1);
             pageToken1 = page1Resp.getNextPageToken();
 
@@ -198,7 +198,7 @@ public class ReadGroupSetsPagingIT {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkPagingByOneChunkThroughReadGroupSets() throws AvroRemoteException {
+    public void checkPagingByOneChunkThroughReadGroupSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final List<ReadGroupSet> listOfReadGroupSets = Utils.getAllReadGroupSets(client);
         assertThat(listOfReadGroupSets).isNotEmpty();
@@ -216,7 +216,7 @@ public class ReadGroupSetsPagingIT {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkPagingByOneTooLargeChunkThroughReadGroupSets() throws AvroRemoteException {
+    public void checkPagingByOneTooLargeChunkThroughReadGroupSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final List<ReadGroupSet> listOfReadGroupSets = Utils.getAllReadGroupSets(client);
         assertThat(listOfReadGroupSets).isNotEmpty();
@@ -236,9 +236,7 @@ public class ReadGroupSetsPagingIT {
      * @param expectedReadGroupSets all of the {@link ReadGroupSet} objects we expect to receive
      * @throws AvroRemoteException if there's a communication problem or server exception
      */
-    private void checkSinglePageOfReadGroupSets(int pageSize,
-                                                List<ReadGroupSet> expectedReadGroupSets)
-            throws AvroRemoteException {
+    private void checkSinglePageOfReadGroupSets(int pageSize, List<ReadGroupSet> expectedReadGroupSets) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final SearchReadGroupSetsRequest pageReq =
                 SearchReadGroupSetsRequest.newBuilder()
@@ -246,7 +244,7 @@ public class ReadGroupSetsPagingIT {
                                   .setPageSize(pageSize)
                                   .build();
         final SearchReadGroupSetsResponse pageResp = client.reads.searchReadGroupSets(pageReq);
-        final List<ReadGroupSet> pageOfReadGroupSets = pageResp.getReadGroupSets();
+        final List<ReadGroupSet> pageOfReadGroupSets = pageResp.getReadGroupSetsList();
         final String pageToken = pageResp.getNextPageToken();
 
         assertThat(pageOfReadGroupSets).hasSize(expectedReadGroupSets.size());

@@ -1,13 +1,15 @@
 package org.ga4gh.cts.api.variants;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import junitparams.JUnitParamsRunner;
-import org.apache.avro.AvroRemoteException;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.GAException;
-import org.ga4gh.methods.SearchVariantsRequest;
-import org.ga4gh.models.Variant;
+import ga4gh.Common.GAException;
+import ga4gh.VariantServiceOuterClass.*;
+import ga4gh.Variants.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -33,7 +35,7 @@ public class VariantsGetByIdIT {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkVariantsGetResultsMatchSearchResults() throws AvroRemoteException {
+    public void checkVariantsGetResultsMatchSearchResults() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final long start = 50;
         final long end = 100;
         final int expectedNumberOfVariants = 6;

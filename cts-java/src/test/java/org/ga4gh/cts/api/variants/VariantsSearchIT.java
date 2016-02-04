@@ -1,14 +1,14 @@
 package org.ga4gh.cts.api.variants;
 
-import org.apache.avro.AvroRemoteException;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import org.ga4gh.ctk.CtkLogs;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
-import org.ga4gh.methods.*;
-import org.ga4gh.models.Call;
-import org.ga4gh.models.Variant;
-import org.ga4gh.models.VariantSet;
+import ga4gh.VariantServiceOuterClass.*;
+import ga4gh.Variants.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -40,7 +40,7 @@ public class VariantsSearchIT implements CtkLogs {
      * @param cons the test ({@link Consumer}) to run
      */
     private void checkAllCalls(List<Variant> variants, Consumer<Call> cons) {
-        variants.stream().forEach(v -> v.getCalls()
+        variants.stream().forEach(v -> v.getCallsList()
                                         .stream()
                                         .forEach(cons::accept));
     }
@@ -53,7 +53,7 @@ public class VariantsSearchIT implements CtkLogs {
      * server exception ({@link GAException})
      */
     @Test
-    public void checkExpectedNumberOfVariants() throws AvroRemoteException {
+    public void checkExpectedNumberOfVariants() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final long start = 50;
         final long end = 100;
         final int expectedNumberOfVariants = 6;
@@ -64,7 +64,7 @@ public class VariantsSearchIT implements CtkLogs {
                                         .build();
         final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
 
-        final List<VariantSet> variantSets = resp.getVariantSets();
+        final List<VariantSet> variantSets = resp.getVariantSetsList();
         assertThat(variantSets).isNotEmpty();
         final String id = variantSets.get(0).getId();
 
@@ -75,7 +75,7 @@ public class VariantsSearchIT implements CtkLogs {
                                      .setStart(start).setEnd(end)
                                      .build();
         final SearchVariantsResponse vResp = client.variants.searchVariants(vReq);
-        final List<Variant> searchVariants = vResp.getVariants();
+        final List<Variant> searchVariants = vResp.getVariantsList();
 
         assertThat(searchVariants).hasSize(expectedNumberOfVariants);
     }
@@ -87,7 +87,7 @@ public class VariantsSearchIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkVariantsForExpectedReferenceName() throws AvroRemoteException {
+    public void checkVariantsForExpectedReferenceName() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final long start = 50;
         final long end = 100;
 
@@ -97,7 +97,7 @@ public class VariantsSearchIT implements CtkLogs {
                                         .build();
         final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
 
-        final List<VariantSet> variantSets = resp.getVariantSets();
+        final List<VariantSet> variantSets = resp.getVariantSetsList();
         assertThat(variantSets).isNotEmpty();
         final String id = variantSets.get(0).getId();
 
@@ -108,7 +108,7 @@ public class VariantsSearchIT implements CtkLogs {
                                      .setStart(start).setEnd(end)
                                      .build();
         final SearchVariantsResponse vResp = client.variants.searchVariants(vReq);
-        final List<Variant> searchVariants = vResp.getVariants();
+        final List<Variant> searchVariants = vResp.getVariantsList();
 
         checkAllVariants(searchVariants, v -> assertThat(v.getReferenceName()).isEqualTo(TestData.REFERENCE_NAME));
         checkAllCalls(searchVariants, c -> assertThat(c).isNotNull());
@@ -121,7 +121,7 @@ public class VariantsSearchIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkCallsForWellFormedness() throws AvroRemoteException {
+    public void checkCallsForWellFormedness() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final long start = 50;
         final long end = 100;
 
@@ -131,7 +131,7 @@ public class VariantsSearchIT implements CtkLogs {
                                         .build();
         final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
 
-        final List<VariantSet> variantSets = resp.getVariantSets();
+        final List<VariantSet> variantSets = resp.getVariantSetsList();
         assertThat(variantSets).isNotEmpty();
         final String id = variantSets.get(0).getId();
 
@@ -142,10 +142,10 @@ public class VariantsSearchIT implements CtkLogs {
                                      .setStart(start).setEnd(end)
                                      .build();
         final SearchVariantsResponse vResp = client.variants.searchVariants(vReq);
-        final List<Variant> searchVariants = vResp.getVariants();
+        final List<Variant> searchVariants = vResp.getVariantsList();
 
-        checkAllCalls(searchVariants, c -> assertThat(c.getGenotype()).isNotNull().isNotEmpty());
-        checkAllCalls(searchVariants, c -> assertThat(c.getGenotypeLikelihood()).isNotNull());
+        checkAllCalls(searchVariants, c -> assertThat(c.getGenotypeList()).isNotNull().isNotEmpty());
+        checkAllCalls(searchVariants, c -> assertThat(c.getGenotypeLikelihoodList()).isNotNull());
         checkAllCalls(searchVariants, c -> {
             assertThat(c.getInfo()).isNotNull();
             // check that the info map contains no null keys or values

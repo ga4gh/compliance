@@ -1,15 +1,15 @@
 package org.ga4gh.cts.api.reads;
 
-import org.apache.avro.AvroRemoteException;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.GAException;
-import org.ga4gh.methods.SearchReadGroupSetsRequest;
-import org.ga4gh.methods.SearchReadGroupSetsResponse;
-import org.ga4gh.models.ReadGroup;
-import org.ga4gh.models.ReadGroupSet;
+import ga4gh.Common.GAException;
+import ga4gh.ReadServiceOuterClass.*;
+import ga4gh.Reads.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -35,7 +35,7 @@ public class ReadGroupSetsGetByNameIT {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void testSearchForBogusNameReturnsEmptyList() throws AvroRemoteException {
+    public void testSearchForBogusNameReturnsEmptyList() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReadGroupSetsRequest request =
                 SearchReadGroupSetsRequest.newBuilder()
                                           .setDatasetId(TestData.getDatasetId())
@@ -43,7 +43,7 @@ public class ReadGroupSetsGetByNameIT {
                                           .build();
 
         final SearchReadGroupSetsResponse resp = client.reads.searchReadGroupSets(request);
-        assertThat(resp.getReadGroupSets()).isEmpty();
+        assertThat(resp.getReadGroupSetsList()).isEmpty();
     }
 
     /**
@@ -53,7 +53,7 @@ public class ReadGroupSetsGetByNameIT {
      */
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Test
-    public void testGetByGoodNameSucceeds() throws AvroRemoteException {
+    public void testGetByGoodNameSucceeds() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         // get all ReadGroupSets
         final SearchReadGroupSetsRequest req =
                 SearchReadGroupSetsRequest.newBuilder()
@@ -62,7 +62,7 @@ public class ReadGroupSetsGetByNameIT {
 
         final SearchReadGroupSetsResponse resp = client.reads.searchReadGroupSets(req);
 
-        final List<ReadGroupSet> readGroupSets = resp.getReadGroupSets();
+        final List<ReadGroupSet> readGroupSets = resp.getReadGroupSetsList();
         assertThat(readGroupSets).isNotNull().isNotEmpty();
 
         final Map<String, ReadGroupSet> byName = new HashMap<>(readGroupSets.size());
@@ -88,7 +88,7 @@ public class ReadGroupSetsGetByNameIT {
             final SearchReadGroupSetsResponse nameResp = client.reads.searchReadGroupSets(nameReq);
 
             // check that we found it
-            final List<ReadGroupSet> readGroupSetsFromQuery = nameResp.getReadGroupSets();
+            final List<ReadGroupSet> readGroupSetsFromQuery = nameResp.getReadGroupSetsList();
             assertThat(readGroupSetsFromQuery).isNotNull();
             assertThat(readGroupSetsFromQuery).hasSize(1);
 

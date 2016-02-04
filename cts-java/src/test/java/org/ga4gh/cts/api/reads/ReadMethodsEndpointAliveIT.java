@@ -8,7 +8,8 @@ import org.ga4gh.ctk.transport.RespCode;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.SearchReadsRequest;
+import ga4gh.ReadServiceOuterClass.*;
+import ga4gh.Reads.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -63,7 +64,7 @@ public class ReadMethodsEndpointAliveIT implements CtkLogs {
 
         final SearchReadsRequest searchReadsReq =
                 SearchReadsRequest.newBuilder()
-                                  .setReadGroupIds(aSingle(readGroupId))
+                                  .addAllReadGroupIds(aSingle(readGroupId))
                                   .setStart(0L)
                                   .setEnd(150L)
                                   .setReferenceId(refId)
@@ -106,7 +107,7 @@ public class ReadMethodsEndpointAliveIT implements CtkLogs {
         String replacedReadGroupId = readGroupIdMap.get(readGroupId);
         SearchReadsRequest srr =
                 SearchReadsRequest.newBuilder()
-                                  .setReadGroupIds(Arrays.asList(replacedReadGroupId.split(";")))
+                                  .addAllReadGroupIds(Arrays.asList(replacedReadGroupId.split(";")))
                                   .build();
         final GAWrapperException e = catchGAWrapperException(() -> client.reads.searchReads(srr));
         assertThat(e.getHttpStatusCode()).isEqualTo(expStatus.getCode());

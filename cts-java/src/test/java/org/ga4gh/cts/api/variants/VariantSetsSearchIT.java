@@ -1,15 +1,16 @@
 package org.ga4gh.cts.api.variants;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import junitparams.JUnitParamsRunner;
-import org.apache.avro.AvroRemoteException;
 import org.ga4gh.ctk.CtkLogs;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
-import org.ga4gh.methods.GAException;
-import org.ga4gh.methods.SearchVariantSetsRequest;
-import org.ga4gh.methods.SearchVariantSetsResponse;
-import org.ga4gh.models.VariantSet;
+import ga4gh.Common.GAException;
+import ga4gh.VariantServiceOuterClass.*;
+import ga4gh.Variants.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -35,14 +36,14 @@ public class VariantSetsSearchIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkSearchingVariantSetsReturnsSome() throws AvroRemoteException {
+    public void checkSearchingVariantSetsReturnsSome() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchVariantSetsRequest req =
                 SearchVariantSetsRequest.newBuilder().setDatasetId(TestData.getDatasetId()).build();
         final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
 
-        final List<VariantSet> sets = resp.getVariantSets();
+        final List<VariantSet> sets = resp.getVariantSetsList();
         assertThat(sets).isNotEmpty();
-        sets.stream().forEach(vs -> assertThat(vs.getMetadata()).isNotNull());
+        sets.stream().forEach(vs -> assertThat(vs.getMetadataList()).isNotNull());
     }
 
     /**
@@ -51,7 +52,7 @@ public class VariantSetsSearchIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkExpectedVariantSets() throws AvroRemoteException {
+    public void checkExpectedVariantSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final int expectedNumberOfVariantSets = 1;
 
         final SearchVariantSetsRequest req =
@@ -60,7 +61,7 @@ public class VariantSetsSearchIT implements CtkLogs {
                                         .build();
         final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
 
-        final List<VariantSet> variantSets = resp.getVariantSets();
+        final List<VariantSet> variantSets = resp.getVariantSetsList();
         assertThat(variantSets).hasSize(expectedNumberOfVariantSets);
     }
 
@@ -70,14 +71,14 @@ public class VariantSetsSearchIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkSearchingVariantSetsReturnsWellFormed() throws AvroRemoteException {
+    public void checkSearchingVariantSetsReturnsWellFormed() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchVariantSetsRequest req =
                 SearchVariantSetsRequest.newBuilder().setDatasetId(TestData.getDatasetId()).build();
         final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
 
-        final List<VariantSet> sets = resp.getVariantSets();
+        final List<VariantSet> sets = resp.getVariantSetsList();
 
-        sets.stream().forEach(vs -> assertThat(vs.getMetadata()).isNotNull());
+        sets.stream().forEach(vs -> assertThat(vs.getMetadataList()).isNotNull());
         sets.stream().forEach(vs -> assertThat(vs.getReferenceSetId()).isNotNull());
         sets.stream().forEach(vs -> assertThat(vs.getDatasetId()).isEqualTo(TestData.getDatasetId()));
         sets.stream().forEach(vs -> assertThat(vs.getId()).isNotNull());

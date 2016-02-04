@@ -1,13 +1,14 @@
 package org.ga4gh.cts.api.reads;
 
-import org.apache.avro.AvroRemoteException;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
-import org.ga4gh.methods.GAException;
-import org.ga4gh.methods.SearchReadGroupSetsRequest;
-import org.ga4gh.methods.SearchReadGroupSetsResponse;
-import org.ga4gh.models.ReadGroupSet;
+import ga4gh.Common.GAException;
+import ga4gh.ReadServiceOuterClass.*;
+import ga4gh.Reads.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -30,7 +31,7 @@ public class ReadGroupSetsGetByIdIT {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void testGetByIdMatchesSearch() throws AvroRemoteException {
+    public void testGetByIdMatchesSearch() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReadGroupSetsRequest request =
                 SearchReadGroupSetsRequest.newBuilder()
                                           .setDatasetId(TestData.getDatasetId())
@@ -39,10 +40,10 @@ public class ReadGroupSetsGetByIdIT {
         // search for all ReadGroupSets
         final SearchReadGroupSetsResponse response = client.reads.searchReadGroupSets(request);
         assertThat(response).isNotNull();
-        assertThat(response.getReadGroupSets()).isNotEmpty();
+        assertThat(response.getReadGroupSetsList()).isNotEmpty();
 
         // for each one, fetch it by its ID and compare the result to the one we got by searching
-        for (ReadGroupSet fromSearch : response.getReadGroupSets()) {
+        for (ReadGroupSet fromSearch : response.getReadGroupSetsList()) {
             assertThat(fromSearch).isNotNull();
             final String searchReadGroupSetId = fromSearch.getId();
             final ReadGroupSet fromGet = client.reads.getReadGroupSet(searchReadGroupSetId);

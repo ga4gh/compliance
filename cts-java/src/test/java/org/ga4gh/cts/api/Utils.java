@@ -1,11 +1,18 @@
 package org.ga4gh.cts.api;
 
-import org.apache.avro.AvroRemoteException;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import ga4gh.Reads.*;
+import ga4gh.ReadServiceOuterClass.*;
+import ga4gh.References.*;
+import ga4gh.ReferenceServiceOuterClass.*;
+import ga4gh.Variants.*;
+import ga4gh.VariantServiceOuterClass.*;
+import ga4gh.Metadata.*;
+import ga4gh.MetadataServiceOuterClass.*;
 import org.assertj.core.api.ThrowableAssert;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.protocols.Client;
-import org.ga4gh.methods.*;
-import org.ga4gh.models.*;
 
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -41,7 +48,7 @@ public class Utils {
      * If we supply a typed value, the complaint goes away.
      * This is a null suitable for use where we might want to pass a {@link Program} to a varargs method.
      */
-    public static final Program nullProgram = null;
+    public static final ReadGroup.Program nullProgram = null;
 
     /**
      * Certain AssertJ methods accept a variable number of args: <tt>assertThat(Collection).doesNotContain(...)</tt>,
@@ -116,15 +123,15 @@ public class Utils {
      * @return the ID of a reference
      * @throws AvroRemoteException is the server throws an exception or there's an I/O error
      */
-    public static String getValidReferenceId(Client client) throws AvroRemoteException {
+    public static String getValidReferenceId(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReferencesRequest refsReq = SearchReferencesRequest
                 .newBuilder()
                 .setReferenceSetId(Utils.getReferenceSetIdByAssemblyId(client, TestData.REFERENCESET_ASSEMBLY_ID))
-                .setMd5checksum(TestData.REFERENCE_BRCA1_MD5_CHECKSUM)
+                .setMd5Checksum(TestData.REFERENCE_BRCA1_MD5_CHECKSUM)
                 .build();
         final SearchReferencesResponse refsResp = client.references.searchReferences(refsReq);
         assertThat(refsResp).isNotNull();
-        final List<Reference> references = refsResp.getReferences();
+        final List<Reference> references = refsResp.getReferencesList();
         assertThat(references).isNotNull().isNotEmpty();
         assertThat(references).hasSize(1);
         return references.get(0).getId();
@@ -136,7 +143,7 @@ public class Utils {
      * @return the ID of an arbitrary {@link ReadGroup}
      * @throws AvroRemoteException is the server throws an exception or there's an I/O error
      */
-    public static String getReadGroupId(Client client) throws AvroRemoteException {
+    public static String getReadGroupId(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReadGroupSetsRequest readGroupSetsReq =
                 SearchReadGroupSetsRequest
                         .newBuilder()
@@ -145,10 +152,10 @@ public class Utils {
         final SearchReadGroupSetsResponse readGroupSetsResp =
                 client.reads.searchReadGroupSets(readGroupSetsReq);
         assertThat(readGroupSetsResp).isNotNull();
-        final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSets();
+        final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSetsList();
         assertThat(readGroupSets).isNotEmpty().isNotNull();
         final ReadGroupSet readGroupSet = readGroupSets.get(0);
-        List<ReadGroup> readGroups = readGroupSet.getReadGroups();
+        List<ReadGroup> readGroups = readGroupSet.getReadGroupsList();
         assertThat(readGroups).isNotEmpty().isNotNull();
         final ReadGroup readGroup = readGroups.get(0);
         assertThat(readGroup).isNotNull();
@@ -163,7 +170,7 @@ public class Utils {
      * @return the ID of the {@link ReadGroup}, or null if not found
      * @throws AvroRemoteException is the server throws an exception or there's an I/O error
      */
-    public static String getReadGroupIdForName(Client client, String readGroupSetName, String readGroupName) throws AvroRemoteException {
+    public static String getReadGroupIdForName(Client client, String readGroupSetName, String readGroupName) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReadGroupSetsRequest readGroupSetsReq =
                 SearchReadGroupSetsRequest.newBuilder()
                                           .setDatasetId(TestData.getDatasetId())
@@ -171,10 +178,10 @@ public class Utils {
                                           .build();
         final SearchReadGroupSetsResponse readGroupSetsResp =
                 client.reads.searchReadGroupSets(readGroupSetsReq);
-        final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSets();
+        final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSetsList();
         assertThat(readGroupSets).isNotEmpty().isNotNull();
         final ReadGroupSet readGroupSet = readGroupSets.get(0);
-        final List<ReadGroup> readGroups = readGroupSet.getReadGroups();
+        final List<ReadGroup> readGroups = readGroupSet.getReadGroupsList();
         final Optional<ReadGroup> result =
                 readGroups.stream().filter(readGroup -> readGroupName.equals(readGroup.getName())).findFirst();
         return result.isPresent() ? result.get().getId() : null;
@@ -186,9 +193,7 @@ public class Utils {
      * @return all {@link ReadGroupSet}s
      * @throws AvroRemoteException is the server throws an exception or there's an I/O error
      */
-    public static List<ReadGroupSet> getAllReadGroupSets(Client client)
-            throws AvroRemoteException {
-
+    public static List<ReadGroupSet> getAllReadGroupSets(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<ReadGroupSet> result = new LinkedList<>();
 
         String pageToken = null;
@@ -204,7 +209,7 @@ public class Utils {
                     client.reads.searchReadGroupSets(readGroupSetsReq);
             pageToken = readGroupSetsResp.getNextPageToken();
             assertThat(readGroupSetsResp).isNotNull();
-            final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSets();
+            final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSetsList();
             assertThat(readGroupSets).isNotEmpty().isNotNull();
             result.addAll(readGroupSets);
         } while (pageToken != null);
@@ -219,9 +224,7 @@ public class Utils {
      * @return all {@link ReadGroup}s in the {@link ReadGroupSet}
      * @throws AvroRemoteException is the server throws an exception or there's an I/O error
      */
-    public static List<ReadGroup> getReadGroupsForName(Client client, String name)
-            throws AvroRemoteException {
-
+    public static List<ReadGroup> getReadGroupsForName(Client client, String name) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<ReadGroup> result = new LinkedList<>();
         String pageToken = null;
 
@@ -237,10 +240,10 @@ public class Utils {
             final SearchReadGroupSetsResponse readGroupSetsResp =
                     client.reads.searchReadGroupSets(readGroupSetsReq);
             pageToken = readGroupSetsResp.getNextPageToken();
-            final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSets();
+            final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSetsList();
             assertThat(readGroupSets).isNotEmpty().isNotNull();
             result.addAll(readGroupSets.stream()
-                                       .flatMap(rgs -> rgs.getReadGroups().stream())
+                                       .flatMap(rgs -> rgs.getReadGroupsList().stream())
                                        .collect(Collectors.toList()));
         } while (pageToken != null);
 
@@ -255,14 +258,14 @@ public class Utils {
      *
      * @throws AvroRemoteException if the server throws an exception or there's an I/O error
      */
-    public static String getReferenceSetIdByAssemblyId(Client client, String assemblyId) throws AvroRemoteException {
+    public static String getReferenceSetIdByAssemblyId(Client client, String assemblyId) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReferenceSetsRequest req =
                 SearchReferenceSetsRequest.newBuilder()
                         .setAssemblyId(assemblyId)
                         .build();
         final SearchReferenceSetsResponse resp =
                 client.references.searchReferenceSets(req);
-        final List<ReferenceSet> refSets = resp.getReferenceSets();
+        final List<ReferenceSet> refSets = resp.getReferenceSetsList();
         assertThat(refSets).isNotNull();
         assertThat(refSets).hasSize(1);
         final ReferenceSet refSet = refSets.get(0);
@@ -275,14 +278,14 @@ public class Utils {
      * @return the ID of a {@link VariantSet}
      * @throws AvroRemoteException if the server throws an exception or there's an I/O error
      */
-    public static String getVariantSetId(Client client) throws AvroRemoteException {
+    public static String getVariantSetId(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchVariantSetsRequest req =
                 SearchVariantSetsRequest.newBuilder()
                                         .setDatasetId(TestData.getDatasetId())
                                         .build();
         final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
 
-        final List<VariantSet> variantSets = resp.getVariantSets();
+        final List<VariantSet> variantSets = resp.getVariantSetsList();
         assertThat(variantSets).isNotEmpty();
         return variantSets.get(0).getId();
     }
@@ -299,7 +302,7 @@ public class Utils {
      */
     public static List<Variant> getAllVariantsInRange(Client client,
                                                       String variantSetId,
-                                                      long start, long end) throws AvroRemoteException {
+                                                      long start, long end) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         // get all variants in the range
         final List<Variant> result = new LinkedList<>();
         String pageToken = null;
@@ -315,7 +318,7 @@ public class Utils {
                                          .build();
             final SearchVariantsResponse vResp = client.variants.searchVariants(vReq);
             pageToken = vResp.getNextPageToken();
-            result.addAll(vResp.getVariants());
+            result.addAll(vResp.getVariantsList());
         } while (pageToken != null);
 
         return result;
@@ -328,7 +331,7 @@ public class Utils {
      * @return the {@link List} of results
      * @throws AvroRemoteException if the server throws an exception or there's an I/O error
      */
-    public static List<VariantSet> getAllVariantSets(Client client) throws AvroRemoteException {
+    public static List<VariantSet> getAllVariantSets(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final List<VariantSet> result = new LinkedList<>();
         String pageToken = null;
@@ -341,7 +344,7 @@ public class Utils {
                                             .build();
             final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
             pageToken = resp.getNextPageToken();
-            result.addAll(resp.getVariantSets());
+            result.addAll(resp.getVariantSetsList());
         } while (pageToken != null);
 
         return result;
@@ -355,8 +358,7 @@ public class Utils {
      * @return the {@link List} of results
      * @throws AvroRemoteException if the server throws an exception or there's an I/O error
      */
-    public static List<CallSet> getAllCallSets(Client client,
-                                               String variantSetId) throws AvroRemoteException {
+    public static List<CallSet> getAllCallSets(Client client, String variantSetId) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<CallSet> result = new LinkedList<>();
         String pageToken = null;
         do {
@@ -368,7 +370,7 @@ public class Utils {
                                          .build();
             final SearchCallSetsResponse csResp = client.variants.searchCallSets(callSetsSearchRequest);
             pageToken = csResp.getNextPageToken();
-            result.addAll(csResp.getCallSets());
+            result.addAll(csResp.getCallSetsList());
         } while (pageToken != null);
 
         return result;
@@ -379,7 +381,7 @@ public class Utils {
      * @param client the connection to the server
      * @return a {@link List} of all {@link Reference}s in the first {@link ReferenceSet}
      */
-    public static List<ReferenceSet> getAllReferenceSets(Client client) throws AvroRemoteException {
+    public static List<ReferenceSet> getAllReferenceSets(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<ReferenceSet> result = new LinkedList<>();
         String pageToken = null;
         do {
@@ -391,7 +393,7 @@ public class Utils {
             final SearchReferenceSetsResponse refSetsResp =
                     client.references.searchReferenceSets(refSetsReq);
             pageToken = refSetsResp.getNextPageToken();
-            result.addAll(refSetsResp.getReferenceSets());
+            result.addAll(refSetsResp.getReferenceSetsList());
         } while (pageToken != null);
 
         return result;
@@ -404,8 +406,7 @@ public class Utils {
      * @param refSetId the ID of the {@link ReferenceSet} we're using
      * @return a {@link List} of all {@link Reference}s in the first {@link ReferenceSet}
      */
-    public static List<Reference> getAllReferences(Client client,
-                                                   String refSetId) throws AvroRemoteException {
+    public static List<Reference> getAllReferences(Client client,String refSetId) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<Reference> result = new LinkedList<>();
         String pageToken = null;
         do {
@@ -417,7 +418,7 @@ public class Utils {
                                            .build();
             final SearchReferencesResponse refsResp = client.references.searchReferences(refsReq);
             pageToken = refsResp.getNextPageToken();
-            result.addAll(refsResp.getReferences());
+            result.addAll(refsResp.getReferencesList());
         } while (pageToken != null);
 
         return result;
@@ -430,20 +431,18 @@ public class Utils {
      * @param readGroupId the ID of the {@link ReadGroup} we're using
      * @return all the {@link ReadAlignment} objects that match
      */
-    public static List<ReadAlignment> getAllReads(Client client, String referenceId,
-                                                  String readGroupId) throws AvroRemoteException {
-
+    public static List<ReadAlignment> getAllReads(Client client, String referenceId, String readGroupId) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<ReadAlignment> result = new LinkedList<>();
         String pageToken = null;
         do {
             final SearchReadsRequest req = SearchReadsRequest.newBuilder()
                                                              .setReferenceId(referenceId)
-                                                             .setReadGroupIds(aSingle(readGroupId))
+                                                             .addAllReadGroupIds(aSingle(readGroupId))
                                                              .setPageToken(pageToken)
                                                              .setPageSize(100)
                                                              .build();
             final SearchReadsResponse resp = client.reads.searchReads(req);
-            result.addAll(resp.getAlignments());
+            result.addAll(resp.getAlignmentsList());
             pageToken = resp.getNextPageToken();
         } while (pageToken != null);
 
@@ -455,7 +454,7 @@ public class Utils {
      * @param client the connection to the server
      * @return all the {@link Dataset}s
      */
-    public static List<Dataset> getAllDatasets(Client client) throws AvroRemoteException {
+    public static List<Dataset> getAllDatasets(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<Dataset> result = new LinkedList<>();
         String pageToken = null;
         do {
@@ -466,7 +465,7 @@ public class Utils {
                                          .build();
             final SearchDatasetsResponse resp = client.metadata.searchDatasets(req);
             pageToken = resp.getNextPageToken();
-            result.addAll(resp.getDatasets());
+            result.addAll(resp.getDatasetsList());
         } while (pageToken != null);
         return result;
     }

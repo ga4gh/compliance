@@ -1,15 +1,14 @@
 package org.ga4gh.cts.api.reads;
 
-import org.apache.avro.AvroRemoteException;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.GAException;
-import org.ga4gh.methods.SearchReadGroupSetsRequest;
-import org.ga4gh.methods.SearchReadsRequest;
-import org.ga4gh.methods.SearchReadsResponse;
-import org.ga4gh.models.ReadAlignment;
-import org.ga4gh.models.Reference;
+import ga4gh.Common.GAException;
+import ga4gh.ReadServiceOuterClass.*;
+import ga4gh.Reads.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -42,7 +41,7 @@ public class ReadsPagingIT {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkPagingOneByOneThroughReads() throws AvroRemoteException {
+    public void checkPagingOneByOneThroughReads() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final String referenceId = Utils.getValidReferenceId(client);
         final String readGroupId = Utils.getReadGroupId(client);
@@ -62,12 +61,12 @@ public class ReadsPagingIT {
             final SearchReadsRequest pageReq =
                     SearchReadsRequest.newBuilder()
                                       .setReferenceId(referenceId)
-                                      .setReadGroupIds(aSingle(readGroupId))
+                                      .addAllReadGroupIds(aSingle(readGroupId))
                                       .setPageSize(1)
                                       .setPageToken(pageToken)
                                       .build();
             final SearchReadsResponse pageResp = client.reads.searchReads(pageReq);
-            final List<ReadAlignment> pageOfReads = pageResp.getAlignments();
+            final List<ReadAlignment> pageOfReads = pageResp.getAlignmentsList();
             pageToken = pageResp.getNextPageToken();
 
             assertThat(pageOfReads).hasSize(1);
@@ -86,7 +85,7 @@ public class ReadsPagingIT {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkTwoSimultaneousPagingSequencesThroughReads() throws AvroRemoteException {
+    public void checkTwoSimultaneousPagingSequencesThroughReads() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final String referenceId = Utils.getValidReferenceId(client);
         final String readGroupId = Utils.getReadGroupId(client);
@@ -102,25 +101,25 @@ public class ReadsPagingIT {
             final SearchReadsRequest page0Req =
                     SearchReadsRequest.newBuilder()
                                       .setReferenceId(referenceId)
-                                      .setReadGroupIds(aSingle(readGroupId))
+                                      .addAllReadGroupIds(aSingle(readGroupId))
                                       .setPageSize(1)
                                       .setPageToken(pageToken0)
                                       .build();
             final SearchReadsRequest page1Req =
                     SearchReadsRequest.newBuilder()
                                       .setReferenceId(referenceId)
-                                      .setReadGroupIds(aSingle(readGroupId))
+                                      .addAllReadGroupIds(aSingle(readGroupId))
                                       .setPageSize(1)
                                       .setPageToken(pageToken1)
                                       .build();
             final SearchReadsResponse page0Resp = client.reads.searchReads(page0Req);
-            final List<ReadAlignment> pageOfReads0 = page0Resp.getAlignments();
-            setOfReads0.addAll(page0Resp.getAlignments());
+            final List<ReadAlignment> pageOfReads0 = page0Resp.getAlignmentsList();
+            setOfReads0.addAll(page0Resp.getAlignmentsList());
             pageToken0 = page0Resp.getNextPageToken();
 
             final SearchReadsResponse page1Resp = client.reads.searchReads(page1Req);
-            final List<ReadAlignment> pageOfReads1 = page0Resp.getAlignments();
-            setOfReads1.addAll(page1Resp.getAlignments());
+            final List<ReadAlignment> pageOfReads1 = page0Resp.getAlignmentsList();
+            setOfReads1.addAll(page1Resp.getAlignmentsList());
             pageToken1 = page1Resp.getNextPageToken();
 
             assertThat(pageOfReads0).hasSameSizeAs(pageOfReads1);
@@ -153,7 +152,7 @@ public class ReadsPagingIT {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkPagingByRelativelyPrimeChunksOfReads() throws AvroRemoteException {
+    public void checkPagingByRelativelyPrimeChunksOfReads() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final int pageSize0 = 3;
         final int pageSize1 = 7;
@@ -168,13 +167,13 @@ public class ReadsPagingIT {
         do {
             final SearchReadsRequest pageReq =
                     SearchReadsRequest.newBuilder()
-                                      .setReadGroupIds(aSingle(readGroupId))
+                                      .addAllReadGroupIds(aSingle(readGroupId))
                                       .setReferenceId(referenceId)
                                       .setPageSize(pageSize0)
                                       .setPageToken(pageToken)
                                       .build();
             final SearchReadsResponse pageResp = client.reads.searchReads(pageReq);
-            final List<ReadAlignment> pageOfReads = pageResp.getAlignments();
+            final List<ReadAlignment> pageOfReads = pageResp.getAlignmentsList();
             pageToken = pageResp.getNextPageToken();
 
             firstSetOfReads.addAll(pageOfReads);
@@ -187,13 +186,13 @@ public class ReadsPagingIT {
         do {
             final SearchReadsRequest pageReq =
                     SearchReadsRequest.newBuilder()
-                                      .setReadGroupIds(aSingle(readGroupId))
+                                      .addAllReadGroupIds(aSingle(readGroupId))
                                       .setReferenceId(referenceId)
                                       .setPageSize(pageSize1)
                                       .setPageToken(pageToken)
                                       .build();
             final SearchReadsResponse pageResp = client.reads.searchReads(pageReq);
-            final List<ReadAlignment> pageOfReads = pageResp.getAlignments();
+            final List<ReadAlignment> pageOfReads = pageResp.getAlignmentsList();
             pageToken = pageResp.getNextPageToken();
 
             secondSetOfReads.addAll(pageOfReads);
@@ -219,17 +218,15 @@ public class ReadsPagingIT {
     private void checkSinglePageOfReads(String refId,
                                         String readGroupId,
                                         int pageSize,
-                                        List<ReadAlignment> expectedReads)
-            throws AvroRemoteException {
-
+                                        List<ReadAlignment> expectedReads) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReadsRequest pageReq =
                 SearchReadsRequest.newBuilder()
                                   .setReferenceId(refId)
-                                  .setReadGroupIds(aSingle(readGroupId))
+                                  .addAllReadGroupIds(aSingle(readGroupId))
                                   .setPageSize(pageSize)
                                   .build();
         final SearchReadsResponse pageResp = client.reads.searchReads(pageReq);
-        final List<ReadAlignment> pageOfReads = pageResp.getAlignments();
+        final List<ReadAlignment> pageOfReads = pageResp.getAlignmentsList();
         final String pageToken = pageResp.getNextPageToken();
 
         assertThat(pageOfReads).hasSize(expectedReads.size());

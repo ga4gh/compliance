@@ -1,14 +1,15 @@
 package org.ga4gh.cts.api.references;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import junitparams.JUnitParamsRunner;
-import org.apache.avro.AvroRemoteException;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.Utils;
 import org.ga4gh.cts.api.TestData;
-import org.ga4gh.methods.*;
-import org.ga4gh.models.Reference;
-import org.ga4gh.models.ReferenceSet;
+import ga4gh.ReferenceServiceOuterClass.*;
+import ga4gh.References.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -36,7 +37,7 @@ public class ReferenceBasesSearchIT {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkMD5ChecksumAppearanceOfAllReferences() throws AvroRemoteException {
+    public void checkMD5ChecksumAppearanceOfAllReferences() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final String referenceSetId =
                 Utils.getReferenceSetIdByAssemblyId(client, TestData.REFERENCESET_ASSEMBLY_ID);
 
@@ -45,10 +46,10 @@ public class ReferenceBasesSearchIT {
                         .setReferenceSetId(referenceSetId)
                         .build();
         final SearchReferencesResponse resp = client.references.searchReferences(req);
-        final List<Reference> refs = resp.getReferences();
+        final List<Reference> refs = resp.getReferencesList();
         assertThat(refs).isNotEmpty();
 
-        refs.stream().forEach(ref -> assertThat(Utils.looksLikeValidMd5(ref.getMd5checksum()))
+        refs.stream().forEach(ref -> assertThat(Utils.looksLikeValidMd5(ref.getMd5Checksum()))
                 .isTrue());
     }
 
@@ -58,7 +59,7 @@ public class ReferenceBasesSearchIT {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkBaseSequenceForReferenceFoundByAccession() throws AvroRemoteException {
+    public void checkBaseSequenceForReferenceFoundByAccession() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final String referenceSetId =
                 Utils.getReferenceSetIdByAssemblyId(client, TestData.REFERENCESET_ASSEMBLY_ID);
         final long start = 150;
@@ -72,7 +73,7 @@ public class ReferenceBasesSearchIT {
                         .setAccession(TestData.REFERENCE_BRCA1_ACCESSION)
                         .build();
         final SearchReferencesResponse resp = client.references.searchReferences(req);
-        final List<Reference> refs = resp.getReferences();
+        final List<Reference> refs = resp.getReferencesList();
         assertThat(refs).hasSize(1);
         final Reference ref = refs.get(0);
 

@@ -1,14 +1,15 @@
 package org.ga4gh.cts.api.references;
 
-import org.apache.avro.AvroRemoteException;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.Utils;
 import org.ga4gh.cts.api.datasets.DatasetsTests;
-import org.ga4gh.methods.GAException;
-import org.ga4gh.methods.SearchReferenceSetsRequest;
-import org.ga4gh.methods.SearchReferenceSetsResponse;
-import org.ga4gh.models.ReferenceSet;
+import ga4gh.Common.GAException;
+import ga4gh.ReferenceServiceOuterClass.*;
+import ga4gh.References.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -39,8 +40,7 @@ public class ReferenceSetsPagingIT {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkPagingOneByOneThroughReferenceSets() throws AvroRemoteException {
-
+    public void checkPagingOneByOneThroughReferenceSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         // retrieve them all - this may return fewer than "all," however.
         final List<ReferenceSet> listOfReferenceSets = Utils.getAllReferenceSets(client);
         assertThat(listOfReferenceSets).isNotEmpty();
@@ -59,7 +59,7 @@ public class ReferenceSetsPagingIT {
                                            .setPageToken(pageToken)
                                            .build();
             final SearchReferenceSetsResponse pageResp = client.references.searchReferenceSets(pageReq);
-            final List<ReferenceSet> pageOfReferenceSets = pageResp.getReferenceSets();
+            final List<ReferenceSet> pageOfReferenceSets = pageResp.getReferenceSetsList();
             pageToken = pageResp.getNextPageToken();
 
             assertThat(pageOfReferenceSets).hasSize(1);
@@ -78,8 +78,7 @@ public class ReferenceSetsPagingIT {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkPagingByOneChunkThroughReferenceSets() throws AvroRemoteException {
-
+    public void checkPagingByOneChunkThroughReferenceSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<ReferenceSet> listOfReferenceSets = Utils.getAllReferenceSets(client);
         assertThat(listOfReferenceSets).isNotEmpty();
 
@@ -96,8 +95,7 @@ public class ReferenceSetsPagingIT {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkPagingByOneTooLargeChunkThroughReferenceSets() throws AvroRemoteException {
-
+    public void checkPagingByOneTooLargeChunkThroughReferenceSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<ReferenceSet> listOfReferenceSets = Utils.getAllReferenceSets(client);
         assertThat(listOfReferenceSets).isNotEmpty();
 
@@ -116,15 +114,13 @@ public class ReferenceSetsPagingIT {
      * @throws AvroRemoteException if there's a communication problem or server exception
      */
     private void checkSinglePageOfReferenceSets(int pageSize,
-                                                List<ReferenceSet> expectedReferenceSets)
-            throws AvroRemoteException {
-
+                                                List<ReferenceSet> expectedReferenceSets) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReferenceSetsRequest pageReq =
                 SearchReferenceSetsRequest.newBuilder()
                                        .setPageSize(pageSize)
                                        .build();
         final SearchReferenceSetsResponse pageResp = client.references.searchReferenceSets(pageReq);
-        final List<ReferenceSet> pageOfReferenceSets = pageResp.getReferenceSets();
+        final List<ReferenceSet> pageOfReferenceSets = pageResp.getReferenceSetsList();
         final String pageToken = pageResp.getNextPageToken();
 
         assertThat(pageOfReferenceSets).hasSize(expectedReferenceSets.size());

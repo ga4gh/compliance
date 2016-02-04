@@ -1,14 +1,14 @@
 package org.ga4gh.cts.api.datasets;
 
-import org.apache.avro.AvroRemoteException;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.SearchDatasetsRequest;
-import org.ga4gh.methods.SearchDatasetsResponse;
-import org.ga4gh.models.Dataset;
+import ga4gh.MetadataServiceOuterClass.*;
+import ga4gh.Metadata.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -33,10 +33,10 @@ public class DatasetsSearchIT {
      * @throws AvroRemoteException if there's an unanticipated error
      */
     @Test
-    public void checkComplianceDatasetIsPresent() throws AvroRemoteException {
+    public void checkComplianceDatasetIsPresent() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchDatasetsRequest sdr = SearchDatasetsRequest.newBuilder().build();
         final SearchDatasetsResponse resp = client.metadata.searchDatasets(sdr);
-        final List<Dataset> datasets = resp.getDatasets();
+        final List<Dataset> datasets = resp.getDatasetsList();
 
         assertThat(datasets).isNotNull();
         assertThat(datasets.size()).isGreaterThanOrEqualTo(1);
@@ -52,7 +52,7 @@ public class DatasetsSearchIT {
      * @throws AvroRemoteException if there's an unanticipated error
      */
     @Test
-    public void fetchDatasetById() throws AvroRemoteException {
+    public void fetchDatasetById() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final Dataset dataset = client.metadata.getDataset(TestData.getDatasetId());
         assertThat(dataset).isNotNull();
         assertThat(dataset.getId()).isEqualTo(TestData.getDatasetId());
@@ -65,7 +65,7 @@ public class DatasetsSearchIT {
      */
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Test
-    public void fetchDatasetWithBogusId() throws AvroRemoteException {
+    public void fetchDatasetWithBogusId() {
         final String nonexistentDatasetId = Utils.randomId();
 
         // this should throw a "no such dataset" GAException
@@ -82,10 +82,10 @@ public class DatasetsSearchIT {
      * @throws AvroRemoteException if something goes wrong
      */
     @Test
-    public void checkSearchResultAgainstGet() throws AvroRemoteException {
+    public void checkSearchResultAgainstGet() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchDatasetsRequest sdr = SearchDatasetsRequest.newBuilder().build();
         final SearchDatasetsResponse resp = client.metadata.searchDatasets(sdr);
-        final List<Dataset> datasets = resp.getDatasets();
+        final List<Dataset> datasets = resp.getDatasetsList();
 
         for (Dataset ds : datasets) {
             final Dataset dataset = client.metadata.getDataset(ds.getId());

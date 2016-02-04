@@ -1,16 +1,16 @@
 package org.ga4gh.cts.api.variants;
 
-import org.apache.avro.AvroRemoteException;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import org.ga4gh.ctk.CtkLogs;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.GAException;
-import org.ga4gh.methods.SearchVariantsRequest;
-import org.ga4gh.methods.SearchVariantsResponse;
-import org.ga4gh.models.Variant;
-import org.ga4gh.models.VariantSet;
+import ga4gh.Common.GAException;
+import ga4gh.VariantServiceOuterClass.*;
+import ga4gh.Variants.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -37,7 +37,7 @@ public class VariantsPagingIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkPagingOneByOneThroughVariants() throws AvroRemoteException {
+    public void checkPagingOneByOneThroughVariants() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final long start = 50;
         final long end = 100;
 
@@ -60,7 +60,7 @@ public class VariantsPagingIT implements CtkLogs {
                                          .setPageToken(pageToken)
                                          .build();
             final SearchVariantsResponse pageResp = client.variants.searchVariants(pageReq);
-            final List<Variant> pageOfVariants = pageResp.getVariants();
+            final List<Variant> pageOfVariants = pageResp.getVariantsList();
             pageToken = pageResp.getNextPageToken();
 
             assertThat(pageOfVariants).hasSize(1);
@@ -81,7 +81,7 @@ public class VariantsPagingIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkPagingByOneChunkThroughVariants() throws AvroRemoteException {
+    public void checkPagingByOneChunkThroughVariants() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final long start = 50;
         final long end = 100;
 
@@ -102,7 +102,7 @@ public class VariantsPagingIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkPagingByOneTooLargeChunkThroughVariants() throws AvroRemoteException {
+    public void checkPagingByOneTooLargeChunkThroughVariants() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final long start = 50;
         final long end = 100;
 
@@ -129,7 +129,7 @@ public class VariantsPagingIT implements CtkLogs {
     private void checkSinglePageOfVariants(String variantSetId,
                                            long start, long end,
                                            int pageSize,
-                                           List<Variant> expectedVariants) throws AvroRemoteException {
+                                           List<Variant> expectedVariants) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final SearchVariantsRequest pageReq =
                 SearchVariantsRequest.newBuilder()
@@ -139,7 +139,7 @@ public class VariantsPagingIT implements CtkLogs {
                                      .setPageSize(pageSize)
                                      .build();
         final SearchVariantsResponse pageResp = client.variants.searchVariants(pageReq);
-        final List<Variant> pageOfVariants = pageResp.getVariants();
+        final List<Variant> pageOfVariants = pageResp.getVariantsList();
         final String pageToken = pageResp.getNextPageToken();
 
         assertThat(pageOfVariants).hasSize(expectedVariants.size());

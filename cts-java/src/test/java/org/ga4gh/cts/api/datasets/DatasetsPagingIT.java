@@ -1,13 +1,14 @@
 package org.ga4gh.cts.api.datasets;
 
-import org.apache.avro.AvroRemoteException;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.GAException;
-import org.ga4gh.methods.SearchDatasetsRequest;
-import org.ga4gh.methods.SearchDatasetsResponse;
-import org.ga4gh.models.Dataset;
+import ga4gh.Common.GAException;
+import ga4gh.MetadataServiceOuterClass.*;
+import ga4gh.Metadata.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -36,7 +37,7 @@ public class DatasetsPagingIT {
      * GAException})
      */
     @Test
-    public void checkPagingOneByOneThroughDatasets() throws AvroRemoteException {
+    public void checkPagingOneByOneThroughDatasets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         // retrieve all the datasets
         final List<Dataset> listOfDatasets = Utils.getAllDatasets(client);
@@ -55,7 +56,7 @@ public class DatasetsPagingIT {
                                          .setPageToken(pageToken)
                                          .build();
             final SearchDatasetsResponse pageResp = client.metadata.searchDatasets(pageReq);
-            final List<Dataset> pageOfDatasets = pageResp.getDatasets();
+            final List<Dataset> pageOfDatasets = pageResp.getDatasetsList();
             pageToken = pageResp.getNextPageToken();
 
             assertThat(pageOfDatasets).hasSize(1);

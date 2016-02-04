@@ -1,13 +1,14 @@
 package org.ga4gh.cts.api.variants;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import junitparams.JUnitParamsRunner;
-import org.apache.avro.AvroRemoteException;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.SearchCallSetsRequest;
-import org.ga4gh.methods.SearchCallSetsResponse;
-import org.ga4gh.models.CallSet;
+import ga4gh.VariantServiceOuterClass.*;
+import ga4gh.Variants.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -43,7 +44,7 @@ public class CallSetsPagingIT {
      * @throws AvroRemoteException if there's a communication problem or server exception
      */
     @Test
-    public void checkPagingOneByOneThroughCallSets() throws AvroRemoteException {
+    public void checkPagingOneByOneThroughCallSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final String variantSetId = Utils.getVariantSetId(client);
         // retrieve them all
@@ -67,7 +68,7 @@ public class CallSetsPagingIT {
                                          .build();
             final SearchCallSetsResponse pageResp =
                     client.variants.searchCallSets(pageReq);
-            final List<CallSet> pageOfCallSets = pageResp.getCallSets();
+            final List<CallSet> pageOfCallSets = pageResp.getCallSetsList();
             pageToken = pageResp.getNextPageToken();
 
             assertThat(pageOfCallSets).hasSize(1);

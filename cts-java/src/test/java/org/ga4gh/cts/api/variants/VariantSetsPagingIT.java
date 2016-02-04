@@ -1,15 +1,16 @@
 package org.ga4gh.cts.api.variants;
 
-import org.apache.avro.AvroRemoteException;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import org.ga4gh.ctk.CtkLogs;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.GAException;
-import org.ga4gh.methods.SearchVariantSetsRequest;
-import org.ga4gh.methods.SearchVariantSetsResponse;
-import org.ga4gh.models.VariantSet;
+import ga4gh.Common.GAException;
+import ga4gh.VariantServiceOuterClass.*;
+import ga4gh.Variants.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -36,7 +37,7 @@ public class VariantSetsPagingIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkPagingOneByOneThroughVariantSets() throws AvroRemoteException {
+    public void checkPagingOneByOneThroughVariantSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         // retrieve them all first
         final List<VariantSet> listOfVariantSets = Utils.getAllVariantSets(client);
@@ -56,7 +57,7 @@ public class VariantSetsPagingIT implements CtkLogs {
                                             .setPageToken(pageToken)
                                             .build();
             final SearchVariantSetsResponse pageResp = client.variants.searchVariantSets(pageReq);
-            final List<VariantSet> pageOfVariantSets = pageResp.getVariantSets();
+            final List<VariantSet> pageOfVariantSets = pageResp.getVariantSetsList();
             pageToken = pageResp.getNextPageToken();
 
             assertThat(pageOfVariantSets).hasSize(1);
@@ -77,7 +78,7 @@ public class VariantSetsPagingIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkPagingByOneChunkThroughVariantSets() throws AvroRemoteException {
+    public void checkPagingByOneChunkThroughVariantSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final List<VariantSet> listOfVariantSets = Utils.getAllVariantSets(client);
 
@@ -94,7 +95,7 @@ public class VariantSetsPagingIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkPagingByOneTooLargeChunkThroughVariantSets() throws AvroRemoteException {
+    public void checkPagingByOneTooLargeChunkThroughVariantSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final List<VariantSet> listOfVariantSets = Utils.getAllVariantSets(client);
 
@@ -114,16 +115,14 @@ public class VariantSetsPagingIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception
      */
     private void checkSinglePageOfVariantSets(int pageSize,
-                                              List<VariantSet> expectedVariantSets)
-            throws AvroRemoteException {
-
+                                              List<VariantSet> expectedVariantSets) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchVariantSetsRequest pageReq =
                 SearchVariantSetsRequest.newBuilder()
                                         .setDatasetId(TestData.getDatasetId())
                                         .setPageSize(pageSize)
                                         .build();
         final SearchVariantSetsResponse pageResp = client.variants.searchVariantSets(pageReq);
-        final List<VariantSet> pageOfVariantSets = pageResp.getVariantSets();
+        final List<VariantSet> pageOfVariantSets = pageResp.getVariantSetsList();
         final String pageToken = pageResp.getNextPageToken();
 
         assertThat(pageOfVariantSets).hasSize(expectedVariantSets.size());

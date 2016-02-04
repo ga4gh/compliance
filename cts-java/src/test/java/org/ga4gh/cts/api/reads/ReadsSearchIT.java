@@ -1,16 +1,15 @@
 package org.ga4gh.cts.api.reads;
 
-import org.apache.avro.AvroRemoteException;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import org.ga4gh.ctk.CtkLogs;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.*;
-import org.ga4gh.models.ReadAlignment;
-import org.ga4gh.models.ReadGroup;
-import org.ga4gh.models.ReadGroupSet;
+import ga4gh.ReadServiceOuterClass.*;
+import ga4gh.Reads.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -22,6 +21,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.ga4gh.cts.api.Utils.aSingle;
 import static org.ga4gh.cts.api.Utils.catchGAWrapperException;
+import static org.ga4gh.cts.api.Utils.getReadGroupId;
 
 /**
  * Verify that data returned from <tt>/reads/search</tt> queries meets expectations.
@@ -38,7 +38,7 @@ public class ReadsSearchIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void searchRangeWithNoReadsReturnsZeroResults() throws AvroRemoteException {
+    public void searchRangeWithNoReadsReturnsZeroResults() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final String refId = Utils.getValidReferenceId(client);
 
         final long emptyRangeStart = 0; // is this range actually empty?
@@ -47,13 +47,13 @@ public class ReadsSearchIT implements CtkLogs {
         final SearchReadsRequest srReq =
                 SearchReadsRequest.newBuilder()
                         .setReferenceId(refId)
-                        .setReadGroupIds(aSingle(Utils.getReadGroupId(client)))
+                        .addAllReadGroupIds(aSingle(getReadGroupId(client)))
                         .setStart(emptyRangeStart)
                         .setEnd(emptyRangeEnd)
                         .build();
         final SearchReadsResponse srResp = client.reads.searchReads(srReq);
 
-        final List<ReadAlignment> alignments = srResp.getAlignments();
+        final List<ReadAlignment> alignments = srResp.getAlignmentsList();
         assertThat(alignments).isEmpty();
     }
 
@@ -65,8 +65,7 @@ public class ReadsSearchIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void searchReadsProducesWellFormedReads() throws AvroRemoteException {
-
+    public void searchReadsProducesWellFormedReads() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         // first get a valid reference
         final String refId = Utils.getValidReferenceId(client);
 
@@ -76,19 +75,19 @@ public class ReadsSearchIT implements CtkLogs {
         final SearchReadsRequest srReq =
                 SearchReadsRequest.newBuilder()
                                   .setReferenceId(refId)
-                                  .setReadGroupIds(aSingle(Utils.getReadGroupId(client)))
+                                  .addAllReadGroupIds(aSingle(getReadGroupId(client)))
                                   .setStart(start)
                                   .setEnd(end)
                                   .build();
         final SearchReadsResponse srResp = client.reads.searchReads(srReq);
 
-        final List<ReadAlignment> alignments = srResp.getAlignments();
+        final List<ReadAlignment> alignments = srResp.getAlignmentsList();
         alignments.stream().forEach(read -> assertThat(read.getNextMatePosition()).isNotNull());
         alignments.stream()
                   .forEach(read -> assertThat(read.getNextMatePosition()
                                                   .getReferenceName()).isEqualTo(TestData.REFERENCE_NAME));
         alignments.stream().forEach(read -> assertThat(read.getAlignment()).isNotNull());
-        alignments.stream().forEach(read -> assertThat(read.getAlignment().getCigar()).isNotNull());
+        alignments.stream().forEach(read -> assertThat(read.getAlignment().getCigarList()).isNotNull());
     }
 
     /**
@@ -98,9 +97,7 @@ public class ReadsSearchIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void searchReadGroupSetsMustReturnReadGroupSetsWithExpectedNames() throws
-            AvroRemoteException {
-
+    public void searchReadGroupSetsMustReturnReadGroupSetsWithExpectedNames() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         for (String expectedReadGroupSetName : TestData.EXPECTED_READGROUPSETS_NAMES) {
 
             final SearchReadGroupSetsRequest req =
@@ -110,7 +107,7 @@ public class ReadsSearchIT implements CtkLogs {
                                               .build();
             final SearchReadGroupSetsResponse resp = client.reads.searchReadGroupSets(req);
 
-            final List<ReadGroupSet> readGroupSets = resp.getReadGroupSets();
+            final List<ReadGroupSet> readGroupSets = resp.getReadGroupSetsList();
 
             assertThat(readGroupSets).hasSize(1);
             final ReadGroupSet readGroupSet = readGroupSets.get(0);
@@ -133,7 +130,7 @@ public class ReadsSearchIT implements CtkLogs {
 
         final SearchReadsRequest request =
                 SearchReadsRequest.newBuilder()
-                                  .setReadGroupIds(Collections.emptyList())
+                                  .addAllReadGroupIds(Collections.emptyList())
                                   .setStart(0L)
                                   .setEnd(150L)
                                   .setReferenceId(refId)
@@ -151,25 +148,24 @@ public class ReadsSearchIT implements CtkLogs {
      */
     @Test
     public void searchReadsWithOneReadGroupIdSucceeds() throws Exception {
-
         // first get a valid reference
         final String refId = Utils.getValidReferenceId(client);
 
         // get a ReadGroup id
-        final String readGroupId = Utils.getReadGroupId(client);
+        final String readGroupId = getReadGroupId(client);
 
         final SearchReadsRequest request =
                 SearchReadsRequest.newBuilder()
-                                  .setReadGroupIds(aSingle(readGroupId))
+                                  .addAllReadGroupIds(aSingle(readGroupId))
                                   .setStart(0L)
                                   .setEnd(150L)
                                   .setReferenceId(refId)
                                   .build();
         final SearchReadsResponse response = client.reads.searchReads(request);
 
-        assertThat(response.getAlignments()).isNotNull();
+        assertThat(response.getAlignmentsList()).isNotNull();
 
-        response.getAlignments().stream()
+        response.getAlignmentsList().stream()
                 .forEach(readAlignment ->
                                  assertThat(readAlignment.getAlignedSequence()).isNotNull()
                                                                                .matches(TestData.ALIGNED_SEQUENCE_CONTENTS_PATTERN));
@@ -193,23 +189,23 @@ public class ReadsSearchIT implements CtkLogs {
         final List<String> allReadGroupIds =
                 allReadGroupSets.stream()
                                 .flatMap(readGroupSet ->
-                                                 readGroupSet.getReadGroups()
+                                                 readGroupSet.getReadGroupsList()
                                                              .stream())
                                 .map(ReadGroup::getId)
                                 .collect(Collectors.toList());
 
         final SearchReadsRequest request =
                 SearchReadsRequest.newBuilder()
-                                  .setReadGroupIds(allReadGroupIds)
+                                  .addAllReadGroupIds(allReadGroupIds)
                                   .setStart(0L)
                                   .setEnd(150L)
                                   .setReferenceId(refId)
                                   .build();
         final SearchReadsResponse response = client.reads.searchReads(request);
 
-        assertThat(response.getAlignments()).isNotNull();
+        assertThat(response.getAlignmentsList()).isNotNull();
 
-        response.getAlignments().stream()
+        response.getAlignmentsList().stream()
                 .forEach(readAlignment ->
                                  assertThat(readAlignment.getAlignedSequence()).isNotNull()
                                                                                .matches(TestData.ALIGNED_SEQUENCE_CONTENTS_PATTERN));
@@ -233,16 +229,16 @@ public class ReadsSearchIT implements CtkLogs {
                 final String readGroupId = Utils.getReadGroupIdForName(client, readGroupSetName, readGroupName);
                 final SearchReadsRequest request =
                         SearchReadsRequest.newBuilder()
-                                          .setReadGroupIds(aSingle(readGroupId))
+                                          .addAllReadGroupIds(aSingle(readGroupId))
                                           .setReferenceId(refId)
                                           .setStart(0L)
                                           .setEnd(150L)
                                           .build();
                 final SearchReadsResponse response = client.reads.searchReads(request);
 
-                assertThat(response.getAlignments()).isNotNull();
+                assertThat(response.getAlignmentsList()).isNotNull();
 
-                response.getAlignments().stream()
+                response.getAlignmentsList().stream()
                         .forEach(readAlignment ->
                                          assertThat(readAlignment.getAlignedSequence()).isNotNull()
                                                                                        .matches(TestData.ALIGNED_SEQUENCE_CONTENTS_PATTERN));

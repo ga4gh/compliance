@@ -3,7 +3,7 @@ package org.ga4gh.cts.api;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.SetMultimap;
-import org.ga4gh.models.ReferenceSet;
+import ga4gh.References.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;

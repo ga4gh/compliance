@@ -1,18 +1,17 @@
 package org.ga4gh.cts.api.reads;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import junitparams.JUnitParamsRunner;
-import org.apache.avro.AvroRemoteException;
 import org.ga4gh.ctk.CtkLogs;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.GAException;
-import org.ga4gh.methods.SearchReadGroupSetsRequest;
-import org.ga4gh.methods.SearchReadGroupSetsResponse;
-import org.ga4gh.models.ReadGroup;
-import org.ga4gh.models.ReadGroupSet;
+import ga4gh.Common.GAException;
+import ga4gh.ReadServiceOuterClass.*;
+import ga4gh.Reads.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -42,14 +41,13 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
      * @throws AvroRemoteException the exception thrown
      */
     @Test
-    public void readGroupSetsNameShouldRetrieveOnlyMatchingReadGroupSets() throws
-            AvroRemoteException {
+    public void readGroupSetsNameShouldRetrieveOnlyMatchingReadGroupSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         for (String readGroupSetName : TestData.EXPECTED_READGROUPSETS_NAMES) {
             final SearchReadGroupSetsRequest req =
                     SearchReadGroupSetsRequest.newBuilder().
                             setDatasetId(TestData.getDatasetId()).setName(readGroupSetName).build();
             SearchReadGroupSetsResponse resp = client.reads.searchReadGroupSets(req);
-            final List<ReadGroupSet> rgSets = resp.getReadGroupSets();
+            final List<ReadGroupSet> rgSets = resp.getReadGroupSetsList();
             assertThat(rgSets).hasSize(1);
             assertThat(rgSets.get(0).getName()).isEqualTo(readGroupSetName);
         }
@@ -66,7 +64,7 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
      */
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Test
-    public void readgroupSetResponseForNonexistentDatasetIdShouldThrowException() throws AvroRemoteException {
+    public void readgroupSetResponseForNonexistentDatasetIdShouldThrowException() {
         SearchReadGroupSetsRequest reqb =
                 SearchReadGroupSetsRequest.newBuilder()
                                           .setDatasetId(Utils.randomId())
@@ -83,13 +81,13 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void allReadGroupSetsShouldHaveCorrectDatasetId() throws AvroRemoteException {
+    public void allReadGroupSetsShouldHaveCorrectDatasetId() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReadGroupSetsRequest req =
                 SearchReadGroupSetsRequest.newBuilder()
                                           .setDatasetId(TestData.getDatasetId())
                                           .build();
         final SearchReadGroupSetsResponse resp = client.reads.searchReadGroupSets(req);
-        final List<ReadGroupSet> readGroupSets = resp.getReadGroupSets();
+        final List<ReadGroupSet> readGroupSets = resp.getReadGroupSetsList();
         readGroupSets.stream().forEach(rgs -> assertThat(rgs.getDatasetId()).isEqualTo(TestData.getDatasetId()));
     }
 
@@ -99,13 +97,13 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void allReadGroupSetsShouldContainId() throws AvroRemoteException {
+    public void allReadGroupSetsShouldContainId() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReadGroupSetsRequest req =
                 SearchReadGroupSetsRequest.newBuilder()
                                           .setDatasetId(TestData.getDatasetId())
                                           .build();
         final SearchReadGroupSetsResponse resp = client.reads.searchReadGroupSets(req);
-        final List<ReadGroupSet> readGroupSets = resp.getReadGroupSets();
+        final List<ReadGroupSet> readGroupSets = resp.getReadGroupSetsList();
         readGroupSets.stream().forEach(rgs -> assertThat(rgs.getId()).isNotNull());
     }
 
@@ -116,16 +114,16 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void allReadGroupsShouldHaveCorrectDatasetId() throws AvroRemoteException {
+    public void allReadGroupsShouldHaveCorrectDatasetId() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReadGroupSetsRequest req =
                 SearchReadGroupSetsRequest.newBuilder()
                                           .setDatasetId(TestData.getDatasetId())
                                           .build();
         final SearchReadGroupSetsResponse resp = client.reads.searchReadGroupSets(req);
-        final List<ReadGroupSet> readGroupSets = resp.getReadGroupSets();
+        final List<ReadGroupSet> readGroupSets = resp.getReadGroupSetsList();
 
         for (ReadGroupSet readGroupSet : readGroupSets) {
-            for (ReadGroup readGroup : readGroupSet.getReadGroups()) {
+            for (ReadGroup readGroup : readGroupSet.getReadGroupsList()) {
                 assertThat(readGroup).isNotNull();
                 assertThat(readGroup.getDatasetId()).isEqualTo(TestData.getDatasetId());
             }
@@ -139,18 +137,18 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void allReadGroupsShouldContainPrograms() throws AvroRemoteException {
+    public void allReadGroupsShouldContainPrograms() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReadGroupSetsRequest req =
                 SearchReadGroupSetsRequest.newBuilder()
                                           .setDatasetId(TestData.getDatasetId())
                                           .build();
         final SearchReadGroupSetsResponse resp = client.reads.searchReadGroupSets(req);
-        final List<ReadGroupSet> readGroupSets = resp.getReadGroupSets();
+        final List<ReadGroupSet> readGroupSets = resp.getReadGroupSetsList();
 
         for (ReadGroupSet readGroupSet : readGroupSets) {
-            for (ReadGroup readGroup : readGroupSet.getReadGroups()) {
-                assertThat(readGroup.getPrograms()).isNotEmpty();
-                assertThat(readGroup.getPrograms()).doesNotContain(Utils.nullProgram);
+            for (ReadGroup readGroup : readGroupSet.getReadGroupsList()) {
+                assertThat(readGroup.getProgramsList()).isNotEmpty();
+                assertThat(readGroup.getProgramsList()).doesNotContain(Utils.nullProgram);
             }
         }
     }
@@ -163,16 +161,16 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void allReadGroupsShouldContainInfoMap() throws AvroRemoteException {
+    public void allReadGroupsShouldContainInfoMap() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReadGroupSetsRequest req =
                 SearchReadGroupSetsRequest.newBuilder()
                                           .setDatasetId(TestData.getDatasetId())
                                           .build();
         final SearchReadGroupSetsResponse resp = client.reads.searchReadGroupSets(req);
-        final List<ReadGroupSet> readGroupSets = resp.getReadGroupSets();
+        final List<ReadGroupSet> readGroupSets = resp.getReadGroupSetsList();
 
         for (ReadGroupSet readGroupSet : readGroupSets) {
-            for (ReadGroup readGroup : readGroupSet.getReadGroups()) {
+            for (ReadGroup readGroup : readGroupSet.getReadGroupsList()) {
                 assertThat(readGroup.getInfo()).isNotNull();
             }
         }
@@ -186,16 +184,16 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void allReadGroupsShouldContainId() throws AvroRemoteException {
+    public void allReadGroupsShouldContainId() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReadGroupSetsRequest req =
                 SearchReadGroupSetsRequest.newBuilder()
                                           .setDatasetId(TestData.getDatasetId())
                                           .build();
         final SearchReadGroupSetsResponse resp = client.reads.searchReadGroupSets(req);
-        final List<ReadGroupSet> readGroupSets = resp.getReadGroupSets();
+        final List<ReadGroupSet> readGroupSets = resp.getReadGroupSetsList();
 
         for (ReadGroupSet readGroupSet : readGroupSets) {
-            for (ReadGroup readGroup : readGroupSet.getReadGroups()) {
+            for (ReadGroup readGroup : readGroupSet.getReadGroupsList()) {
                 assertThat(readGroup.getId()).isNotNull();
             }
         }
