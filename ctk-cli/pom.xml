@@ -96,17 +96,6 @@
             <optional>true</optional>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro</artifactId>
-            <version>${avro.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro-ipc</artifactId>
-            <version>${avro.version}</version>
-        </dependency>
-
         <!-- seems like we need the junit3 ant-junit, as well as the junit4! -->
         <dependency>
             <groupId>org.apache.ant</groupId>
@@ -146,12 +135,6 @@
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
-        <dependency>
-            <!-- for handling the 'normal' JSON to Avro class deserialization -->
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>${gson.version}</version>
-        </dependency>
 
         <!-- lombok saves us some typing in the Config class -->
         <dependency>
@@ -165,8 +148,12 @@
             <groupId>org.apache.bcel</groupId>
             <artifactId>bcel</artifactId>
         </dependency>
-
-        <dependency> <!-- also provides ga4gh schema we run against -->
+        <dependency>
+            <groupId>com.github.ga4gh</groupId>
+            <artifactId>schemas</artifactId>
+            <version>${ga4gh.schema.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.ga4gh</groupId>
             <artifactId>ctk-transport</artifactId>
             <version>0.6.0a1</version>

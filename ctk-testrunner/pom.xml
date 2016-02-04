@@ -98,19 +98,19 @@
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
-        <dependency>
-            <!-- for handling the 'normal' JSON to Avro class deserialization -->
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>${gson.version}</version>
-        </dependency>
         <!-- need BCEL during site build -->
         <dependency>
             <groupId>org.apache.bcel</groupId>
             <artifactId>bcel</artifactId>
         </dependency>
 
-        <dependency> <!-- also provides ga4gh schema we run against -->
+        <dependency>
+            <groupId>com.github.ga4gh</groupId>
+            <artifactId>schemas</artifactId>
+            <version>${ga4gh.schema.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.ga4gh</groupId>
             <artifactId>ctk-transport</artifactId>
             <version>0.6.0a1</version>
