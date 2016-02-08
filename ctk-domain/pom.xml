@@ -55,6 +55,18 @@
     <build>
         <plugins>
             <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                <filesets>
+                    <fileset>
+                        <directory>src/main/assertj-assertions</directory>
+                        <followSymlinks>false</followSymlinks>
+                    </fileset>
+                </filesets>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <version>1.9.1</version>

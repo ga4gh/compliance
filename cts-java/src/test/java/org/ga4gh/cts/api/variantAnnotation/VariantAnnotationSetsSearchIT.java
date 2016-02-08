@@ -91,7 +91,7 @@ public class VariantAnnotationSetsSearchIT implements CtkLogs {
         // Check the Analysis record within the VariantAnnotationSet matches the test data
         final String name        = "compliance1";
         final String description = "variant annotation test data";
-        final String created     = "2015-11-18";
+        final String created     = "2015-11-18T00:00:00.000000Z";
         final String software    = "SnpEff";
 
         assertThat(vSet.getAnalysis().getName()).isEqualTo(name);

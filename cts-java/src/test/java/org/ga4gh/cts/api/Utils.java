@@ -571,4 +571,25 @@ public class Utils {
         final List<VariantAnnotationSet> variantAnnotationSets = getAllVariantAnnotationSets(client);
         return variantAnnotationSets.get(0).getId();
     }
+
+
+    /**
+     * Given a name return the variant annotation set corresponding to that name. When that name
+     * is not found returns the first annotation set found.
+     * @param client the connection to the server
+     * @param name the string name of the annotation set
+     * @return a {@link VariantAnnotationSet} with the requested name
+     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     */
+    public static VariantAnnotationSet getVariantAnnotationSetByName(Client client, String name) throws AvroRemoteException {
+
+        // get all compliance variant annotation sets
+        final List<VariantAnnotationSet> variantAnnotationSets = getAllVariantAnnotationSets(client);
+        for (VariantAnnotationSet vas : variantAnnotationSets) {
+            if (vas.getName().equals(name)) {
+                return vas;
+            }
+        }
+        return variantAnnotationSets.get(0);
+    }
 }

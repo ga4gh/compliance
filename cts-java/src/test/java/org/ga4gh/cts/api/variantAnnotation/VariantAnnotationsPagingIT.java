@@ -39,7 +39,8 @@ public class VariantAnnotationsPagingIT implements CtkLogs {
         final long end = 11008;
 
         // Find a compliance variantAnnotationSet id.
-        final String variantAnnotationSetId = Utils.getVariantAnnotationSetId(client);
+
+        final String variantAnnotationSetId = Utils.getVariantAnnotationSetByName(client, TestData.VARIANT_ANNOTATION_SET_NAMES.get(0)).getId();
         final List<VariantAnnotation> listOfVariantAnnotations = Utils.getAllVariantAnnotationsInRange(client, variantAnnotationSetId, start, end);
 
         // We will remove VariantAnnotations from this Set and assert at the end that we have zero

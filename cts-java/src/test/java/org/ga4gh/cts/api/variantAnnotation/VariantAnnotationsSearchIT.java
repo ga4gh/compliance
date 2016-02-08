@@ -8,19 +8,12 @@ import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
 import org.ga4gh.methods.*;
-import org.ga4gh.models.Variant;
-import org.ga4gh.models.VariantSet;
-import org.ga4gh.models.VariantAnnotationSet;
-import org.ga4gh.models.VariantAnnotation;
-import org.ga4gh.models.TranscriptEffect;
-import org.ga4gh.models.HGVSAnnotation;
-import org.ga4gh.models.AlleleLocation;
-import org.ga4gh.models.AnalysisResult;
-import org.ga4gh.models.Impact;
+import org.ga4gh.models.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.net.HttpURLConnection;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -72,7 +65,8 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
     public void checkSearchingVariantAnnotations() throws AvroRemoteException {
  
         // Obtain a VariantAnnotationSet from the compliance dataset.
-        final String variantAnnotationSetId = Utils.getVariantAnnotationSetId(client);
+        final String variantAnnotationSetId =
+                Utils.getVariantAnnotationSetByName(client, TestData.VARIANT_ANNOTATION_SET_NAMES.get(0)).getId();
 
 
         // Seek variant annotation records for the extracted VariantAnnotationSet.
@@ -186,7 +180,8 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
     public void checkSearchingSingleVariantAnnotation() throws AvroRemoteException {
 
         // Obtain a VariantAnnotationSet from the compliance dataset.
-        final String variantAnnotationSetId = Utils.getVariantAnnotationSetId(client);
+        final String variantAnnotationSetId =
+                Utils.getVariantAnnotationSetByName(client, TestData.VARIANT_ANNOTATION_SET_NAMES.get(1)).getId();
         final long single_start = 69540;
         final long single_end = 69541;
 
@@ -235,7 +230,8 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
     public void checkVariantAnnotationVariants() throws AvroRemoteException {
 
         // Obtain a VariantAnnotationSet from the compliance dataset.
-        final String variantAnnotationSetId = Utils.getVariantAnnotationSetId(client);
+        final String variantAnnotationSetId =
+                Utils.getVariantAnnotationSetByName(client, TestData.VARIANT_ANNOTATION_SET_NAMES.get(0)).getId();
 
         // Seek variant annotation records for the extracted VariantAnnotationSet.
         final SearchVariantAnnotationsRequest req =
@@ -247,7 +243,7 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
                                                .build();
 
         final SearchVariantAnnotationsResponse resp = client.variantAnnotations.searchVariantAnnotations(req);
-
+        assertThat(resp.getVariantAnnotations()).isNotEmpty();
         //Check a valid variant id is returned for each record.
         for( VariantAnnotation variantAnn : resp.getVariantAnnotations() ){
             final String  variantId = variantAnn.getVariantId();
@@ -256,6 +252,40 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
             Variant v = client.variants.getVariant(variantId);
             assertThat(v).isNotNull();
             assertThat(v.getId()).isEqualTo(variantId);
+            assertThat(v.getStart()).isGreaterThanOrEqualTo(start);
+        }
+    }
+
+    /**
+     * Check whether filtering by effect ID finds the expected annotations.
+     *
+     *@throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     */
+    @Test
+    public void checkFilteringByEffectTerm() throws AvroRemoteException {
+
+        final OntologyTerm term = new OntologyTerm("SO:0001819", "synonymous_variant", "source", "0");
+        // Obtain a VariantAnnotationSet from the compliance dataset.
+        final String variantAnnotationSetId =
+                Utils.getVariantAnnotationSetByName(client, TestData.VARIANT_ANNOTATION_SET_NAMES.get(1)).getId();
+
+        // Seek variant annotation records for the extracted VariantAnnotationSet.
+        final SearchVariantAnnotationsRequest req =
+                SearchVariantAnnotationsRequest.newBuilder()
+                        .setVariantAnnotationSetId(variantAnnotationSetId)
+                        .setReferenceName(TestData.VARIANT_ANNOTATION_REFERENCE_NAME)
+                        .setStart(0)
+                        .setEnd(100000)
+                        .setEffects(Arrays.asList(term))
+                        .build();
+
+        final SearchVariantAnnotationsResponse resp = client.variantAnnotations.searchVariantAnnotations(req);
+
+        // There are 7 records with the "synonymous_variant" term in the test data.
+        assertThat(resp.getVariantAnnotations()).hasSize(7);
+        //Check the transcript effect field is not empty for each annotation.
+        for( VariantAnnotation variantAnn : resp.getVariantAnnotations() ){
+            assertThat(variantAnn.getTranscriptEffects()).isNotEmpty();
         }
     }
 

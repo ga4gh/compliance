@@ -57,6 +57,13 @@ public class TestData {
      */
     public static final String VARIANT_ANNOTATION_REFERENCE_NAME = "1";
 
+
+    /**
+     * The names of the variant annotation sets used for variant annotation in the standard test data.
+     */
+    public static final List<String> VARIANT_ANNOTATION_SET_NAMES =
+            Arrays.asList("WASH7P_annotation", "OR4F_annotation");
+
     /**
      * The names of known-good read groups.
      */
@@ -133,6 +140,12 @@ public class TestData {
      * The legal contents of an aligned sequence in the compliance data, as a Java regular expression.
      */
     public static final String ALIGNED_SEQUENCE_CONTENTS_PATTERN = "[ACTGN]+";
+
+
+    /**
+     * The call set name is used to test searching by call set name functionality.
+     */
+    public static final String CALL_SET_NAME = "HG00096";
 
     /**
      * Return the ID of the compliance dataset on the server being tested.
