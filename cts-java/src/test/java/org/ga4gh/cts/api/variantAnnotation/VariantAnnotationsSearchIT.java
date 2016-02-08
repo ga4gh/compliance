@@ -230,7 +230,8 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
     public void checkVariantAnnotationVariants() throws AvroRemoteException {
 
         // Obtain a VariantAnnotationSet from the compliance dataset.
-        final String variantAnnotationSetId = Utils.getVariantAnnotationSetId(client);
+        final String variantAnnotationSetId =
+                Utils.getVariantAnnotationSetByName(client, TestData.VARIANT_ANNOTATION_SET_NAMES.get(0)).getId();
 
         // Seek variant annotation records for the extracted VariantAnnotationSet.
         final SearchVariantAnnotationsRequest req =
@@ -242,7 +243,7 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
                                                .build();
 
         final SearchVariantAnnotationsResponse resp = client.variantAnnotations.searchVariantAnnotations(req);
-
+        assertThat(resp.getVariantAnnotations()).isNotEmpty();
         //Check a valid variant id is returned for each record.
         for( VariantAnnotation variantAnn : resp.getVariantAnnotations() ){
             final String  variantId = variantAnn.getVariantId();
@@ -251,7 +252,7 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
             Variant v = client.variants.getVariant(variantId);
             assertThat(v).isNotNull();
             assertThat(v.getId()).isEqualTo(variantId);
-            assertThat(v.getStart()).isEqualTo(start);
+            assertThat(v.getStart()).isGreaterThanOrEqualTo(start);
         }
     }
 
