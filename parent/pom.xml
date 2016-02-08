@@ -39,8 +39,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <ant.version>1.9.5</ant.version>
-        <assertj.core.version>3.1.0</assertj.core.version>
-        <assertj.generator.version>1.6.0</assertj.generator.version>
+        <assertj.core.version>3.3.0</assertj.core.version>
+        <assertj.generator.version>2.0.0</assertj.generator.version>
         <proto.version>3.0.0-beta-1</proto.version>
         <avro.version>1.7.7</avro.version>
         <bcel.version>6.0-SNAPSHOT</bcel.version>
