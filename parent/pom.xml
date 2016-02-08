@@ -229,7 +229,7 @@
             <dependency>
                 <groupId>com.github.ga4gh</groupId>
                 <artifactId>schemas</artifactId>
-                <version>${ga4gh.schema.version}}</version>
+                <version>${ga4gh.schema.version}</version>
             </dependency>
 
         </dependencies>

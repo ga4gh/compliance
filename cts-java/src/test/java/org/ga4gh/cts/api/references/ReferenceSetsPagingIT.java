@@ -51,7 +51,7 @@ public class ReferenceSetsPagingIT {
 
         final Set<ReferenceSet> setOfReferenceSetsGathered1By1 = new HashSet<>(setOfExpectedReferenceSets.size());
         // page through the ReferenceSets using the same query parameters and collect them
-        String pageToken = null;
+        String pageToken = "";
         do {
             final SearchReferenceSetsRequest pageReq =
                     SearchReferenceSetsRequest.newBuilder()
@@ -65,7 +65,7 @@ public class ReferenceSetsPagingIT {
             assertThat(pageOfReferenceSets).hasSize(1);
             setOfReferenceSetsGathered1By1.add(pageOfReferenceSets.get(0));
 
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
 
         assertThat(setOfReferenceSetsGathered1By1).containsAll(setOfExpectedReferenceSets);
     }
@@ -126,6 +126,6 @@ public class ReferenceSetsPagingIT {
         assertThat(pageOfReferenceSets).hasSize(expectedReferenceSets.size());
         assertThat(expectedReferenceSets).containsAll(pageOfReferenceSets);
 
-        assertThat(pageToken).isNull();
+        assertThat(pageToken).isEmpty();
     }
 }

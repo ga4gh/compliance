@@ -56,7 +56,7 @@ public class ReadsPagingIT {
 
         final Set<ReadAlignment> setOfReadsGathered1By1 = new HashSet<>(setOfExpectedReads.size());
         // page through the ReadAlignments using the same query parameters and collect them
-        String pageToken = null;
+        String pageToken = "";
         do {
             final SearchReadsRequest pageReq =
                     SearchReadsRequest.newBuilder()
@@ -71,7 +71,7 @@ public class ReadsPagingIT {
 
             assertThat(pageOfReads).hasSize(1);
             setOfReadsGathered1By1.add(pageOfReads.get(0));
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
 
         assertThat(setOfReadsGathered1By1).containsAll(setOfExpectedReads);
     }
@@ -95,8 +95,8 @@ public class ReadsPagingIT {
 
         // page through the ReadAlignments using the same query parameters, and collect them
 
-        String pageToken0 = null;
-        String pageToken1 = null;
+        String pageToken0 = "";
+        String pageToken1 = "";
         do {
             final SearchReadsRequest page0Req =
                     SearchReadsRequest.newBuilder()
@@ -124,7 +124,7 @@ public class ReadsPagingIT {
 
             assertThat(pageOfReads0).hasSameSizeAs(pageOfReads1);
             assertBothAreNullOrBothAreNot(pageToken0, pageToken1);
-        } while (pageToken0 != null);
+        } while (pageToken0 != null && !pageToken0.equals(""));
 
         assertThat(setOfReads0).containsAll(setOfReads1);
         assertThat(setOfReads1).containsAll(setOfReads0);
@@ -136,11 +136,11 @@ public class ReadsPagingIT {
      * @param token1 a string to test
      */
     private void assertBothAreNullOrBothAreNot(String token0, String token1) {
-        if (token0 == null) {
-            assertThat(token1).isNull();
+        if ("".equals(token0)) {
+            assertThat(token1).isEmpty();
         }
-        if (token1 == null) {
-            assertThat(token0).isNull();
+        if ("".equals(token1)) {
+            assertThat(token0).isEmpty();;
         }
     }
 
@@ -162,7 +162,7 @@ public class ReadsPagingIT {
 
         final Set<ReadAlignment> firstSetOfReads = new HashSet<>();
         // page through the ReadAlignments using the same query parameters and collect them
-        String pageToken = null;
+        String pageToken = "";
         // page by pageSize0
         do {
             final SearchReadsRequest pageReq =
@@ -177,11 +177,11 @@ public class ReadsPagingIT {
             pageToken = pageResp.getNextPageToken();
 
             firstSetOfReads.addAll(pageOfReads);
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
 
         final Set<ReadAlignment> secondSetOfReads = new HashSet<>();
         // page through the ReadAlignments again using the same query parameters and collect them
-        pageToken = null;
+        pageToken = "";
         // page by pageSize1
         do {
             final SearchReadsRequest pageReq =
@@ -196,7 +196,7 @@ public class ReadsPagingIT {
             pageToken = pageResp.getNextPageToken();
 
             secondSetOfReads.addAll(pageOfReads);
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
 
         // assert that the sets contain the identical elements
         assertThat(secondSetOfReads).containsAll(firstSetOfReads);
@@ -232,6 +232,6 @@ public class ReadsPagingIT {
         assertThat(pageOfReads).hasSize(expectedReads.size());
         assertThat(expectedReads).containsAll(pageOfReads);
 
-        assertThat(pageToken).isNull();
+        assertThat(pageToken).isEmpty();
     }
 }

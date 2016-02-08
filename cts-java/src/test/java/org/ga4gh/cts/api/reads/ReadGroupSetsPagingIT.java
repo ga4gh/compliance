@@ -50,7 +50,7 @@ public class ReadGroupSetsPagingIT {
         final Set<ReadGroupSet> setOfReadGroupSetsGathered1By1 =
                 new HashSet<>(setOfExpectedReadGroupSets.size());
         // page through the ReadGroupSets using the same query parameters
-        String pageToken = null;
+        String pageToken = "";
         do {
             final SearchReadGroupSetsRequest pageReq =
                     SearchReadGroupSetsRequest.newBuilder()
@@ -64,7 +64,7 @@ public class ReadGroupSetsPagingIT {
 
             assertThat(pageOfReadGroupSets).hasSize(1);
             setOfReadGroupSetsGathered1By1.add(pageOfReadGroupSets.get(0));
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
 
         assertThat(setOfReadGroupSetsGathered1By1).containsAll(setOfExpectedReadGroupSets);
     }
@@ -85,7 +85,7 @@ public class ReadGroupSetsPagingIT {
         final Set<ReadGroupSet> firstSetOfReadGroups = new HashSet<>();
         // page through the ReadAlignments using the same query parameters and collect them
 
-        String pageToken = null;
+        String pageToken = "";
         // page by pageSize0
         do {
             final SearchReadGroupSetsRequest readGroupSetsReq =
@@ -100,13 +100,13 @@ public class ReadGroupSetsPagingIT {
             pageToken = pageResp.getNextPageToken();
 
             firstSetOfReadGroups.addAll(pageOfReadGroupSets);
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
 
         final Set<ReadGroupSet> secondSetOfReadGroupSets = new HashSet<>();
         // page through the ReadAlignments again using the same query parameters and collect them
 
         // page by pageSize1
-        pageToken = null;
+        pageToken = "";
         do {
             final SearchReadGroupSetsRequest readGroupSetsReq =
                     SearchReadGroupSetsRequest
@@ -120,7 +120,7 @@ public class ReadGroupSetsPagingIT {
             pageToken = pageResp.getNextPageToken();
 
             secondSetOfReadGroupSets.addAll(pageOfReadGroupSets);
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
 
         // assert that the sets contain the identical elements
         assertThat(secondSetOfReadGroupSets).containsAll(firstSetOfReadGroups);
@@ -143,8 +143,8 @@ public class ReadGroupSetsPagingIT {
 
         // page through the ReadGroupSets using the same query parameters, and collect them
 
-        String pageToken0 = null;
-        String pageToken1 = null;
+        String pageToken0 = "";
+        String pageToken1 = "";
         do {
             final SearchReadGroupSetsRequest page0Req =
                     SearchReadGroupSetsRequest.newBuilder()
@@ -170,7 +170,7 @@ public class ReadGroupSetsPagingIT {
 
             assertThat(pageOfReadGroupSets0).hasSameSizeAs(pageOfReadGroupSets1);
             assertBothAreNullOrBothAreNot(pageToken0, pageToken1);
-        } while (pageToken0 != null);
+        } while (pageToken0 != null && !pageToken0.equals(""));
 
         assertThat(setOfReadGroupSets0).containsAll(setOfReadGroupSets0);
         assertThat(setOfReadGroupSets1).containsAll(setOfReadGroupSets0);
@@ -182,11 +182,11 @@ public class ReadGroupSetsPagingIT {
      * @param token1 a string to test
      */
     private void assertBothAreNullOrBothAreNot(String token0, String token1) {
-        if (token0 == null) {
-            assertThat(token1).isNull();
+        if ("".equals(token0)) {
+            assertThat(token1).isEmpty();
         }
-        if (token1 == null) {
-            assertThat(token0).isNull();
+        if ("".equals(token1)) {
+            assertThat(token0).isEmpty();
         }
     }
 
@@ -250,6 +250,6 @@ public class ReadGroupSetsPagingIT {
         assertThat(pageOfReadGroupSets).hasSize(expectedReadGroupSets.size());
         assertThat(expectedReadGroupSets).containsAll(pageOfReadGroupSets);
 
-        assertThat(pageToken).isNull();
+        assertThat(pageToken).isEmpty();
     }
 }

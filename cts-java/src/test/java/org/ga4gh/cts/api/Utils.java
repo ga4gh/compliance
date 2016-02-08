@@ -196,7 +196,7 @@ public class Utils {
     public static List<ReadGroupSet> getAllReadGroupSets(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<ReadGroupSet> result = new LinkedList<>();
 
-        String pageToken = null;
+        String pageToken = "";
         do {
             final SearchReadGroupSetsRequest readGroupSetsReq =
                     SearchReadGroupSetsRequest
@@ -212,7 +212,7 @@ public class Utils {
             final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSetsList();
             assertThat(readGroupSets).isNotEmpty().isNotNull();
             result.addAll(readGroupSets);
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
 
         return result;
     }
@@ -226,7 +226,7 @@ public class Utils {
      */
     public static List<ReadGroup> getReadGroupsForName(Client client, String name) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<ReadGroup> result = new LinkedList<>();
-        String pageToken = null;
+        String pageToken = "";
 
         do {
             final SearchReadGroupSetsRequest readGroupSetsReq =
@@ -245,7 +245,7 @@ public class Utils {
             result.addAll(readGroupSets.stream()
                                        .flatMap(rgs -> rgs.getReadGroupsList().stream())
                                        .collect(Collectors.toList()));
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
 
         return result;
     }
@@ -305,7 +305,7 @@ public class Utils {
                                                       long start, long end) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         // get all variants in the range
         final List<Variant> result = new LinkedList<>();
-        String pageToken = null;
+        String pageToken = "";
 
         do {
             final SearchVariantsRequest vReq =
@@ -319,7 +319,7 @@ public class Utils {
             final SearchVariantsResponse vResp = client.variants.searchVariants(vReq);
             pageToken = vResp.getNextPageToken();
             result.addAll(vResp.getVariantsList());
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
 
         return result;
     }
@@ -334,7 +334,7 @@ public class Utils {
     public static List<VariantSet> getAllVariantSets(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final List<VariantSet> result = new LinkedList<>();
-        String pageToken = null;
+        String pageToken = "";
         do {
             final SearchVariantSetsRequest req =
                     SearchVariantSetsRequest.newBuilder()
@@ -345,7 +345,7 @@ public class Utils {
             final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
             pageToken = resp.getNextPageToken();
             result.addAll(resp.getVariantSetsList());
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
 
         return result;
     }
@@ -360,7 +360,7 @@ public class Utils {
      */
     public static List<CallSet> getAllCallSets(Client client, String variantSetId) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<CallSet> result = new LinkedList<>();
-        String pageToken = null;
+        String pageToken = "";
         do {
             final SearchCallSetsRequest callSetsSearchRequest =
                     SearchCallSetsRequest.newBuilder()
@@ -371,7 +371,7 @@ public class Utils {
             final SearchCallSetsResponse csResp = client.variants.searchCallSets(callSetsSearchRequest);
             pageToken = csResp.getNextPageToken();
             result.addAll(csResp.getCallSetsList());
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
 
         return result;
     }
@@ -383,7 +383,7 @@ public class Utils {
      */
     public static List<ReferenceSet> getAllReferenceSets(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<ReferenceSet> result = new LinkedList<>();
-        String pageToken = null;
+        String pageToken = "";
         do {
             final SearchReferenceSetsRequest refSetsReq =
                     SearchReferenceSetsRequest.newBuilder()
@@ -394,7 +394,7 @@ public class Utils {
                     client.references.searchReferenceSets(refSetsReq);
             pageToken = refSetsResp.getNextPageToken();
             result.addAll(refSetsResp.getReferenceSetsList());
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
 
         return result;
     }
@@ -408,7 +408,7 @@ public class Utils {
      */
     public static List<Reference> getAllReferences(Client client,String refSetId) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<Reference> result = new LinkedList<>();
-        String pageToken = null;
+        String pageToken = "";
         do {
             final SearchReferencesRequest refsReq =
                     SearchReferencesRequest.newBuilder()
@@ -419,7 +419,7 @@ public class Utils {
             final SearchReferencesResponse refsResp = client.references.searchReferences(refsReq);
             pageToken = refsResp.getNextPageToken();
             result.addAll(refsResp.getReferencesList());
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
 
         return result;
     }
@@ -433,7 +433,7 @@ public class Utils {
      */
     public static List<ReadAlignment> getAllReads(Client client, String referenceId, String readGroupId) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<ReadAlignment> result = new LinkedList<>();
-        String pageToken = null;
+        String pageToken = "";
         do {
             final SearchReadsRequest req = SearchReadsRequest.newBuilder()
                                                              .setReferenceId(referenceId)
@@ -444,7 +444,7 @@ public class Utils {
             final SearchReadsResponse resp = client.reads.searchReads(req);
             result.addAll(resp.getAlignmentsList());
             pageToken = resp.getNextPageToken();
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
 
         return result;
     }
@@ -456,7 +456,7 @@ public class Utils {
      */
     public static List<Dataset> getAllDatasets(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<Dataset> result = new LinkedList<>();
-        String pageToken = null;
+        String pageToken = "";
         do {
             final SearchDatasetsRequest req =
                     SearchDatasetsRequest.newBuilder()
@@ -466,7 +466,7 @@ public class Utils {
             final SearchDatasetsResponse resp = client.metadata.searchDatasets(req);
             pageToken = resp.getNextPageToken();
             result.addAll(resp.getDatasetsList());
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
         return result;
     }
 

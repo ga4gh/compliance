@@ -48,7 +48,7 @@ public class DatasetsPagingIT {
         assertThat(listOfDatasets).hasSize(setOfDatasets.size());
 
         // page through the Datasets using the same query parameters
-        String pageToken = null;
+        String pageToken = "";
         for (Dataset ignored : listOfDatasets) {
             final SearchDatasetsRequest pageReq =
                     SearchDatasetsRequest.newBuilder()
@@ -65,7 +65,7 @@ public class DatasetsPagingIT {
             setOfDatasets.remove(pageOfDatasets.get(0));
         }
 
-        assertThat(pageToken).isNull();
+        assertThat(pageToken).isEmpty();
         assertThat(setOfDatasets).isEmpty();
     }
 

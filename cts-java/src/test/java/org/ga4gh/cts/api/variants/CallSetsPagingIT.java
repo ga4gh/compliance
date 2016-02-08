@@ -58,7 +58,7 @@ public class CallSetsPagingIT {
         final Set<CallSet> setOfCallSetsGathered1By1 = new HashSet<>(setOfExpectedCallSets.size());
 
         // page through the CallSets one at a time and collect them
-        String pageToken = null;
+        String pageToken = "";
         do {
             final SearchCallSetsRequest pageReq =
                     SearchCallSetsRequest.newBuilder()
@@ -74,7 +74,7 @@ public class CallSetsPagingIT {
             assertThat(pageOfCallSets).hasSize(1);
             setOfCallSetsGathered1By1.add(pageOfCallSets.get(0));
 
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
 
         assertThat(setOfCallSetsGathered1By1).containsAll(setOfExpectedCallSets);
         assertThat(setOfExpectedCallSets).containsAll(setOfCallSetsGathered1By1);

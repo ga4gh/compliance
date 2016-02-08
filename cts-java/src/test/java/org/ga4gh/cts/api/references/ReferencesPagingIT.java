@@ -58,7 +58,7 @@ public class ReferencesPagingIT {
 
         final Set<Reference> setOfReferencesGathered1By1 = new HashSet<>(setOfExpectedReferences.size());
         // page through the References using the same query parameters and collect them
-        String pageToken = null;
+        String pageToken = "";
         do {
             final SearchReferencesRequest pageReq =
                     SearchReferencesRequest.newBuilder()
@@ -72,7 +72,7 @@ public class ReferencesPagingIT {
 
             assertThat(pageOfReferences).hasSize(1);
             setOfReferencesGathered1By1.add(pageOfReferences.get(0));
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
 
         assertThat(setOfReferencesGathered1By1).containsAll(setOfExpectedReferences);
     }
@@ -146,6 +146,6 @@ public class ReferencesPagingIT {
         assertThat(pageOfReferences).hasSize(expectedReferences.size());
         assertThat(expectedReferences).containsAll(pageOfReferences);
 
-        assertThat(pageToken).isNull();
+        assertThat(pageToken).isEmpty();
     }
 }

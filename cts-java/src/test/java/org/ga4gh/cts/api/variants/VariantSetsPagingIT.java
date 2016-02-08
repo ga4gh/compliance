@@ -48,7 +48,7 @@ public class VariantSetsPagingIT implements CtkLogs {
         assertThat(listOfVariantSets).hasSize(setOfVariants.size());
 
         // page through the VariantSets using the same query parameters
-        String pageToken = null;
+        String pageToken = "";
         for (VariantSet ignored : listOfVariantSets) {
             final SearchVariantSetsRequest pageReq =
                     SearchVariantSetsRequest.newBuilder()
@@ -66,7 +66,7 @@ public class VariantSetsPagingIT implements CtkLogs {
             setOfVariants.remove(pageOfVariantSets.get(0));
         }
 
-        assertThat(pageToken).isNull();
+        assertThat(pageToken).isEmpty();;
         assertThat(setOfVariants).isEmpty();
     }
 
@@ -128,7 +128,7 @@ public class VariantSetsPagingIT implements CtkLogs {
         assertThat(pageOfVariantSets).hasSize(expectedVariantSets.size());
         assertThat(expectedVariantSets).containsAll(pageOfVariantSets);
 
-        assertThat(pageToken).isNull();
+        assertThat(pageToken).isEmpty();
     }
 
 }

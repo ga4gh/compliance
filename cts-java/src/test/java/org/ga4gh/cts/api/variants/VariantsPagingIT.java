@@ -49,7 +49,7 @@ public class VariantsPagingIT implements CtkLogs {
         assertThat(listOfVariants).hasSize(setOfVariants.size());
 
         // page through the variants using the same query parameters
-        String pageToken = null;
+        String pageToken = "";
         for (Variant ignored : listOfVariants) {
             final SearchVariantsRequest pageReq =
                     SearchVariantsRequest.newBuilder()
@@ -69,7 +69,7 @@ public class VariantsPagingIT implements CtkLogs {
             setOfVariants.remove(pageOfVariants.get(0));
         }
 
-        assertThat(pageToken).isNull();
+        assertThat(pageToken).isEmpty();
         assertThat(setOfVariants).isEmpty();
     }
 
@@ -145,7 +145,7 @@ public class VariantsPagingIT implements CtkLogs {
         assertThat(pageOfVariants).hasSize(expectedVariants.size());
         assertThat(expectedVariants).containsAll(pageOfVariants);
 
-        assertThat(pageToken).isNull();
+        assertThat(pageToken).isEmpty();
     }
 
 }
