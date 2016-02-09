@@ -159,18 +159,20 @@ public class GenotypePhenotypeSearchIT {
     @Test
     public void simpleEvidenceSearchExternalIdentifier() throws AvroRemoteException {
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest.newBuilder().build();
-        ExternalIdentifier id = new ExternalIdentifier() ;
+        ExternalIdentifier id = new ExternalIdentifier();
         id.setDatabase(TestData.EVIDENCE_DB);
         id.setIdentifier(TestData.EVIDENCE_DB_ID);
         id.setVersion(TestData.EVIDENCE_DB_VERSION);
-        List<ExternalIdentifier> ids = new ArrayList<>() ;
+        List<ExternalIdentifier> ids = new ArrayList<>();
         ids.add(id) ;
         ExternalIdentifierQuery evidence = new ExternalIdentifierQuery();
         evidence.setIds(ids);
         request.setEvidence(evidence);
         SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
-        assertThat(response.getAssociations()).isNotNull() ;
+        assertThat(response.getAssociations()).isNotNull();
         assertThat(response.getAssociations()).isNotEmpty();
+        Evidence evidence = response.getAssociations().get(0).getEvidence().get(0);
+        assertThat(evidence.getEvidenceType().getName()).isEqualTo(TestData.EVIDENCE_LEVEL);
     }
 
     /**
