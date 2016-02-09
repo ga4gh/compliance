@@ -28,7 +28,7 @@
     </scm>
 
     <properties>
-        <ga4gh.schema.version>95efb3d</ga4gh.schema.version>
+        <ga4gh.schema.version>d6cc80d</ga4gh.schema.version>
         <ctk.tgt.urlRoot>http://localhost:8000</ctk.tgt.urlRoot>
         <!-- Controls skipping of cts-java IT tests during build; skip the tests by passing
              a command line parameter, e.g. mvn -Dcts.skipITs=true install.  Run them by default. -->
@@ -41,8 +41,7 @@
         <ant.version>1.9.5</ant.version>
         <assertj.core.version>3.1.0</assertj.core.version>
         <assertj.generator.version>2.0.0</assertj.generator.version>
-        <proto.version>3.0.0-beta-1</proto.version>
-        <avro.version>1.7.7</avro.version>
+        <proto.version>3.0.0-beta-2</proto.version>
         <bcel.version>6.0-SNAPSHOT</bcel.version>
         <gson.version>2.3.1</gson.version>
         <guava.version>18.0</guava.version>
