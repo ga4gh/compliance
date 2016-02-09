@@ -171,8 +171,8 @@ public class GenotypePhenotypeSearchIT {
         SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
         assertThat(response.getAssociations()).isNotNull();
         assertThat(response.getAssociations()).isNotEmpty();
-        Evidence evidence = response.getAssociations().get(0).getEvidence().get(0);
-        assertThat(evidence.getEvidenceType().getName()).isEqualTo(TestData.EVIDENCE_LEVEL);
+        Evidence evidenceObject = response.getAssociations().get(0).getEvidence().get(0);
+        assertThat(evidenceObject.getEvidenceType().getName()).isEqualTo(TestData.EVIDENCE_LEVEL);
     }
 
     /**
