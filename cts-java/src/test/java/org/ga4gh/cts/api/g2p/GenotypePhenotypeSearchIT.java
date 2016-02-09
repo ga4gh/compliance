@@ -10,6 +10,7 @@ import org.ga4gh.methods.ExternalIdentifierQuery;
 import org.ga4gh.methods.SearchGenotypePhenotypeRequest;
 import org.ga4gh.methods.SearchGenotypePhenotypeResponse;
 import org.ga4gh.models.ExternalIdentifier;
+import org.ga4gh.models.Evidence;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -66,6 +67,21 @@ public class GenotypePhenotypeSearchIT {
         SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
         assertThat(response.getAssociations()).isNotNull() ;
         assertThat(response.getAssociations()).isNotEmpty() ;
+    }
+
+    /**
+     * Checks that evidence level is present, searches by drug name.
+     * @throws AvroRemoteException if there's an unanticipated error
+     */
+    @Test
+    public void evidenceLevelCheck() throws AvroRemoteException {
+        SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest.newBuilder().build();
+        request.setFeature(TestData.FEATURE_NAME);
+        SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
+        assertThat(response.getAssociations()).isNotNull();
+        assertThat(response.getAssociations()).isNotEmpty();
+        Evidence evidence = response.getAssociations().get(0).getEvidence().get(0);
+        assertThat(evidence.getEvidenceType().getName()).isEqualTo(TestData.EVIDENCE_LEVEL);
     }
 
     /**
@@ -137,7 +153,7 @@ public class GenotypePhenotypeSearchIT {
     }
 
     /**
-     * Search for Evidence , using specific external identifier.
+     * Search for Evidence, using specific external identifier.
      * @throws AvroRemoteException if there's an unanticipated error
      */
     @Test
