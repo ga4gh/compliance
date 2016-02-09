@@ -141,12 +141,12 @@ public class TestData {
     /**
      * GenotypePhenotype PHENOTYPE external database name.
      */
-    public static final String PHENOTYPE_DB = "http://purl.obolibrary.org/obo/OMIM_";
+    public static final String PHENOTYPE_DB = "http://ohsu.edu/cgd/";
 
     /**
      * GenotypePhenotype PHENOTYPE external database identifier.
      */
-    public static final String PHENOTYPE_DB_ID = "606764";
+    public static final String PHENOTYPE_DB_ID = "37da8697";
 
     /**
      * GenotypePhenotype PHENOTYPE external database Version.
@@ -180,12 +180,12 @@ public class TestData {
     /**
      * GenotypePhenotype FEATURE external database name.
      */
-    public static final String FEATURE_DB = "http://www.monarchinitiative.org/_";
+    public static final String FEATURE_DB = "http://ohsu.edu/cgd/";
 
     /**
      * GenotypePhenotype FEATURE external database identifier.
      */
-    public static final String FEATURE_DB_ID = "CGD:d8c2d551UniProtKB:P10721#P10721-1Region";
+    public static final String FEATURE_DB_ID = "4841bf74";
 
     /**
      * GenotypePhenotype FEATURE external database Version.
