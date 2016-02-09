@@ -40,7 +40,7 @@ public class GenotypePhenotypeSearchIT {
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest.newBuilder().build();
         final GAWrapperException didThrow =
                 catchGAWrapperException(() -> client.genotypePhenotype.searchGenotypePhenotype(request) );
-        assertThat(didThrow.getHttpStatusCode()).isEqualTo(HttpURLConnection.HTTP_NOT_IMPLEMENTED);
+        assertThat(didThrow.getHttpStatusCode()).isEqualTo(HttpURLConnection.HTTP_BAD_REQUEST);
     }
 
     /**
