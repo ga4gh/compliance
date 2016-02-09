@@ -216,6 +216,11 @@ public class TestData {
     public static final String EVIDENCE_NAME =  "imatinib";
 
     /**
+     * GenotypePhenotype EVIDENCE LEVEL.
+     */
+    public static final String EVIDENCE_LEVEL = "Approved";
+
+    /**
      * GenotypePhenotype FEATURE external database name.
      */
     public static final String FEATURE_DB = "http://www.monarchinitiative.org/_";
