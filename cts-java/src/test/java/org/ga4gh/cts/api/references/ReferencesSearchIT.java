@@ -33,7 +33,9 @@ public class ReferencesSearchIT {
     /**
      * Fetch all references in the reference set, check there are some.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkSearchingAllReferencesReturnsSome() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -52,7 +54,9 @@ public class ReferencesSearchIT {
     /**
      * Fetch references and make sure they're well-formed.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkSearchingAllReferencesReturnsWellFormed() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -76,7 +80,9 @@ public class ReferencesSearchIT {
     /**
      * Fetch a reference by accession, check its attributes.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkReferenceFoundByAccession() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -102,7 +108,9 @@ public class ReferencesSearchIT {
     /**
      * Check that no reference is fetched on an invalid accession.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkSearchingReferencesWithInvalidAccessionReturnsEmpty() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -123,7 +131,9 @@ public class ReferencesSearchIT {
     /**
      * Fetch a reference by its MD5 checksum, check its attributes.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkReferenceFoundByMD5Checksum() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {

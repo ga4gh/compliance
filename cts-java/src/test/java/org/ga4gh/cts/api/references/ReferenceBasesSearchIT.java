@@ -34,7 +34,9 @@ public class ReferenceBasesSearchIT {
      * that each returned {@link Reference} has a valid-looking MD5.  (In the future, perhaps this
      * test should compute the MD5 and compare it to what's returned.)
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkMD5ChecksumAppearanceOfAllReferences() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -56,7 +58,9 @@ public class ReferenceBasesSearchIT {
     /**
      * Fetch reference by accession and check a specified subset of its bases against the expected value.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkBaseSequenceForReferenceFoundByAccession() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {

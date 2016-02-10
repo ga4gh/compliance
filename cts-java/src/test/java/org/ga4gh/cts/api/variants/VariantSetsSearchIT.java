@@ -2,15 +2,15 @@ package org.ga4gh.cts.api.variants;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import ga4gh.VariantServiceOuterClass.SearchVariantSetsRequest;
+import ga4gh.VariantServiceOuterClass.SearchVariantSetsResponse;
+import ga4gh.Variants.VariantSet;
 import junitparams.JUnitParamsRunner;
 import org.ga4gh.ctk.CtkLogs;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
-import ga4gh.Common.GAException;
-import ga4gh.VariantServiceOuterClass.*;
-import ga4gh.Variants.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -33,7 +33,9 @@ public class VariantSetsSearchIT implements CtkLogs {
     /**
      * Fetch variant sets and make sure we get some.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkSearchingVariantSetsReturnsSome() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -49,7 +51,9 @@ public class VariantSetsSearchIT implements CtkLogs {
     /**
      * Check that we receive the expected number of {@link VariantSet}s.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkExpectedVariantSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -68,7 +72,9 @@ public class VariantSetsSearchIT implements CtkLogs {
     /**
      * Fetch variant sets and make sure they're well-formed.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkSearchingVariantSetsReturnsWellFormed() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {

@@ -30,7 +30,10 @@ public class DatasetsSearchIT {
 
     /**
      * Check that the compliance dataset is present.
-     * @throws AvroRemoteException if there's an unanticipated error
+     *
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkComplianceDatasetIsPresent() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -49,7 +52,9 @@ public class DatasetsSearchIT {
     /**
      * Check that we can retrieve the compliance dataset via <tt>/datasets/{id}</tt>.
      *
-     * @throws AvroRemoteException if there's an unanticipated error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void fetchDatasetById() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -60,8 +65,6 @@ public class DatasetsSearchIT {
 
     /**
      * Try to fetch a dataset with a bogus ID and make sure it fails.
-     *
-     * @throws AvroRemoteException if something goes wrong
      */
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Test
@@ -79,7 +82,9 @@ public class DatasetsSearchIT {
      * For every dataset returned from <tt>/datasets/search</tt>, pass its ID to <tt>/datasets/{id}</tt>
      * and verify that the {@link Dataset} objects are identical.
      *
-     * @throws AvroRemoteException if something goes wrong
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkSearchResultAgainstGet() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {

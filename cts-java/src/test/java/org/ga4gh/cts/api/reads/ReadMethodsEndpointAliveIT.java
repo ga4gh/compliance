@@ -1,5 +1,6 @@
 package org.ga4gh.cts.api.reads;
 
+import ga4gh.ReadServiceOuterClass.SearchReadsRequest;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.ga4gh.ctk.CtkLogs;
@@ -8,8 +9,6 @@ import org.ga4gh.ctk.transport.RespCode;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.Utils;
-import ga4gh.ReadServiceOuterClass.*;
-import ga4gh.Reads.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;

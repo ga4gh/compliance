@@ -36,10 +36,10 @@ public class CallSetsSearchResponseCheckIT implements CtkLogs {
     /**
      * Fetch call sets and make sure we do get some back.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
-
-
     @Test
     public void searchForExpectedCallSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         // Find variant sets only using datasetID
@@ -68,10 +68,13 @@ public class CallSetsSearchResponseCheckIT implements CtkLogs {
             callSets.stream().forEach(cs -> assertThat(cs.getVariantSetIdsList()).contains(id));
         }
     }
+
     /**
      * Make sure VariantSet records exist for each CallSet.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void searchCallSetsByVariantSet() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -103,9 +106,13 @@ public class CallSetsSearchResponseCheckIT implements CtkLogs {
             }
         }
     }
+
     /**
      * Test getting a call set with a valid ID.
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     *
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void getCallSetWithValidIDShouldSucceed() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -142,7 +149,6 @@ public class CallSetsSearchResponseCheckIT implements CtkLogs {
 
     /**
      * Test getting a call set with an invalid ID.  It should fail with NOT_FOUND.
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Test

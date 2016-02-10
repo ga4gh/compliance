@@ -41,7 +41,9 @@ public class CallSetsPagingIT {
      * must be a subset of those gathered one-by-one.
      * </p>
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkPagingOneByOneThroughCallSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {

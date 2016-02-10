@@ -78,7 +78,7 @@ public class TestData {
             EXPECTED_READGROUPSET_READGROUP_NAMES.keys();
 
     /**
-     * The names of all known {@link org.ga4gh.models.ReadGroup} objects, obtained from
+     * The names of all known {@link ga4gh.Reads.ReadGroup} objects, obtained from
      * {@link #EXPECTED_READGROUPSET_READGROUP_NAMES}.
      */
     public static final List<String> EXPECTED_READGROUP_NAMES =

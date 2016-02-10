@@ -2,14 +2,15 @@ package org.ga4gh.cts.api.references;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import ga4gh.ReferenceServiceOuterClass.SearchReferencesRequest;
+import ga4gh.ReferenceServiceOuterClass.SearchReferencesResponse;
+import ga4gh.References.Reference;
+import ga4gh.References.ReferenceSet;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.Utils;
 import org.ga4gh.cts.api.datasets.DatasetsTests;
-import ga4gh.Common.GAException;
-import ga4gh.ReferenceServiceOuterClass.*;
-import ga4gh.References.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -30,7 +31,7 @@ public class ReferencesPagingIT {
     private static Client client = new Client(URLMAPPING.getInstance());
 
     /**
-     * Check that we can page 1 by 1 through the {@link org.ga4gh.models.Reference}s we receive from
+     * Check that we can page 1 by 1 through the {@link ga4gh.References}s we receive from
      * {@link org.ga4gh.ctk.transport.protocols.Client.References#searchReferences(SearchReferencesRequest)}.
      * <p>
      * The call to retrieve all {@link Reference}s may return fewer than all of them, subject to
@@ -38,7 +39,9 @@ public class ReferencesPagingIT {
      * must be a subset of those gathered one-by-one.
      * </p>
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkPagingOneByOneThroughReferences() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -82,7 +85,9 @@ public class ReferencesPagingIT {
      * {@link org.ga4gh.ctk.transport.protocols.Client.References#searchReferences(SearchReferencesRequest)}
      * using an increment as large as the non-paged set of results.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkPagingByOneChunkThroughReferences() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -104,7 +109,9 @@ public class ReferencesPagingIT {
      * {@link org.ga4gh.ctk.transport.protocols.Client.References#searchReferences(SearchReferencesRequest)}
      * using an increment twice as large as the non-paged set of results.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkPagingByOneTooLargeChunkThroughReferences() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -129,7 +136,9 @@ public class ReferencesPagingIT {
      * @param refSetId           the ID of the {@link ReferenceSet}
      * @param pageSize           the page size we'll request
      * @param expectedReferences all of the {@link Reference} objects we expect to receive
-     * @throws AvroRemoteException if there's a communication problem or server exception
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     private void checkSinglePageOfReferences(String refSetId, int pageSize,
                                              List<Reference> expectedReferences) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {

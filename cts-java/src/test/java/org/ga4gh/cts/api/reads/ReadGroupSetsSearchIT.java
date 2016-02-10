@@ -38,7 +38,9 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
      * <p>The Schemas documentation says
      * that a {@link SearchReadGroupSetsRequest} always matches names exactly.</p>
      *
-     * @throws AvroRemoteException the exception thrown
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void readGroupSetsNameShouldRetrieveOnlyMatchingReadGroupSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -59,8 +61,6 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
      *
      * <p>Pass in a well-formed but non-matching dataset ID to a SearchReadGroupSetsRequest
      * expect a valid SearchReadGroupSetsResponse with no ReadGroupSets in it.</p>
-     *
-     * @throws AvroRemoteException the exception thrown
      */
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Test
@@ -78,7 +78,9 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
      * Retrieve all {@link ReadGroupSet}s and make sure they all have the right dataset ID.
      * (Adapted from one of the JavaScript compliance tests.)
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void allReadGroupSetsShouldHaveCorrectDatasetId() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -94,7 +96,9 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
     /**
      * Retrieve all {@link ReadGroupSet}s and make sure they all contain an ID.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void allReadGroupSetsShouldContainId() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -111,7 +115,9 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
      * Retrieve all {@link ReadGroup}s and make sure they all have the right dataset ID.
      * (Adapted from one of the JavaScript compliance tests.)
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void allReadGroupsShouldHaveCorrectDatasetId() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -134,7 +140,9 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
      * Retrieve all {@link ReadGroup}s and make sure they all contain <tt>Program</tt> information.
      * (Adapted from one of the JavaScript compliance tests.)
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void allReadGroupsShouldContainPrograms() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -154,11 +162,13 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
     }
 
     /**
-     * Retrieve all {@link ReadGroup}s and make sure they all contain a non-null <tt>{@link ReadGroup#info}</tt>
+     * Retrieve all {@link ReadGroup}s and make sure they all contain a non-null <tt>{@link ReadGroup#getInfo()}</tt>
      * field.  If it's non-null, it must perforce be a {@link Map}.  The contents of the {@link Map} don't concern
      * us.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void allReadGroupsShouldContainInfoMap() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -177,11 +187,13 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
     }
 
     /**
-     * Retrieve all {@link ReadGroup}s and make sure they all contain a non-null <tt>{@link ReadGroup#id}</tt>
+     * Retrieve all {@link ReadGroup}s and make sure they all contain a non-null <tt>{@link ReadGroup#getId()}</tt>
      * field.  If it's non-null, it must perforce be a {@link String}.  The contents of the {@link String} don't concern
      * us.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void allReadGroupsShouldContainId() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {

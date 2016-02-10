@@ -2,21 +2,29 @@ package org.ga4gh.ctk.transport.protocols;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import ga4gh.Metadata.Dataset;
+import ga4gh.MetadataServiceOuterClass.SearchDatasetsRequest;
+import ga4gh.MetadataServiceOuterClass.SearchDatasetsResponse;
+import ga4gh.ReadServiceOuterClass.SearchReadGroupSetsRequest;
+import ga4gh.ReadServiceOuterClass.SearchReadGroupSetsResponse;
+import ga4gh.ReadServiceOuterClass.SearchReadsRequest;
+import ga4gh.ReadServiceOuterClass.SearchReadsResponse;
+import ga4gh.Reads.ReadAlignment;
+import ga4gh.Reads.ReadGroup;
+import ga4gh.Reads.ReadGroupSet;
+import ga4gh.ReferenceServiceOuterClass.*;
+import ga4gh.References.Reference;
+import ga4gh.References.ReferenceSet;
+import ga4gh.VariantServiceOuterClass.*;
+import ga4gh.Variants.CallSet;
+import ga4gh.Variants.Variant;
+import ga4gh.Variants.VariantSet;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.WireTracker;
-import ga4gh.MetadataServiceOuterClass.*;
-import ga4gh.Metadata.*;
-import ga4gh.VariantServiceOuterClass.*;
-import ga4gh.Variants.*;
-import ga4gh.ReadServiceOuterClass.*;
-import ga4gh.Reads.*;
-import ga4gh.ReferenceServiceOuterClass.*;
-import ga4gh.References.*;
 import org.ga4gh.ctk.transport.protobuf.Get;
 import org.ga4gh.ctk.transport.protobuf.Post;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -103,11 +111,13 @@ public class Client {
          * and returns a {@link SearchDatasetsResponse}.
          *
          * @param request the {@link SearchDatasetsRequest} request
-         * @throws IOException if there's a communication problem
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
         public SearchDatasetsResponse searchDatasets(SearchDatasetsRequest request) throws UnirestException, InvalidProtocolBufferException, GAWrapperException {
             SearchDatasetsResponse.Builder responseBuilder = SearchDatasetsResponse.newBuilder();
-            new Post(urls.getUrlRoot(), urls.getSearchDataSets(), request, responseBuilder, wireTracker).performQuery();
+            new Post<>(urls.getUrlRoot(), urls.getSearchDataSets(), request, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
         }
 
@@ -116,11 +126,13 @@ public class Client {
          * <tt>GET /datasets/{id}</tt> returns a {@link Dataset}.
          *
          * @param id the ID of the dataset
-         * @throws AvroRemoteException if there's a communication problem
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
         public Dataset getDataset(String id) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
             Dataset.Builder responseBuilder = Dataset.newBuilder();
-            new Get(urls.getUrlRoot(), urls.getGetDataSet(), id, null, responseBuilder, wireTracker).performQuery();
+            new Get<>(urls.getUrlRoot(), urls.getGetDataSet(), id, null, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
         }
     }
@@ -137,10 +149,13 @@ public class Client {
          * <tt>POST /variantsets/search</tt>.
          *
          * @param request the {@link SearchVariantSetsRequest} we'll issue
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
         public SearchVariantSetsResponse searchVariantSets(SearchVariantSetsRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             SearchVariantSetsResponse.Builder responseBuilder = SearchVariantSetsResponse.newBuilder();
-            new Post(urls.getUrlRoot(), urls.getSearchVariantSets(), request, responseBuilder, wireTracker).performQuery();
+            new Post<>(urls.getUrlRoot(), urls.getSearchVariantSets(), request, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
         }
 
@@ -149,10 +164,13 @@ public class Client {
          * <tt>GET /variantsets/{id}</tt> will return a JSON version of {@link VariantSet}.
          *
          * @param id the ID of the variant set
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
         public VariantSet getVariantSet(String id) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
             VariantSet.Builder responseBuilder = VariantSet.newBuilder();
-            new Get(urls.getUrlRoot(), urls.getGetVariantSet(), id, null, responseBuilder, wireTracker).performQuery();
+            new Get<>(urls.getUrlRoot(), urls.getGetVariantSet(), id, null, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
         }
 
@@ -163,10 +181,13 @@ public class Client {
          * and returns a {@link SearchVariantsResponse}.
          *
          * @param request the {@link SearchVariantsRequest} we'll issue
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
         public SearchVariantsResponse searchVariants(SearchVariantsRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             SearchVariantsResponse.Builder responseBuilder = SearchVariantsResponse.newBuilder();
-            new Post(urls.getUrlRoot(), urls.getSearchVariants(), request, responseBuilder, wireTracker).performQuery();
+            new Post<>(urls.getUrlRoot(), urls.getSearchVariants(), request, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
         }
 
@@ -175,10 +196,13 @@ public class Client {
          * <tt>GET /variants/{id}</tt> will return a {@link Variant}.
          *
          * @param id the ID of the variant
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
         public Variant getVariant(String id) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
             Variant.Builder responseBuilder = Variant.newBuilder();
-            new Get(urls.getUrlRoot(), urls.getGetVariant(), id, null, responseBuilder, wireTracker).performQuery();
+            new Get<>(urls.getUrlRoot(), urls.getGetVariant(), id, null, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
         }
 
@@ -189,10 +213,13 @@ public class Client {
          * and returns a {@link SearchCallSetsResponse}.
          *
          * @param request the SearchCallSetsRequest we'll issue
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
         public SearchCallSetsResponse searchCallSets(SearchCallSetsRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             SearchCallSetsResponse.Builder responseBuilder = SearchCallSetsResponse.newBuilder();
-            new Post(urls.getUrlRoot(), urls.getSearchCallSets(), request, responseBuilder, wireTracker).performQuery();
+            new Post<>(urls.getUrlRoot(), urls.getSearchCallSets(), request, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
         }
 
@@ -201,10 +228,13 @@ public class Client {
          * <tt>GET /callsets/{id}</tt> will return a {@link CallSet}.
          *
          * @param id the ID of the call set
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
         public CallSet getCallSet(String id) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
             CallSet.Builder responseBuilder = CallSet.newBuilder();
-            new Get(urls.getUrlRoot(), urls.getGetCallSet(), id, null, responseBuilder, wireTracker).performQuery();
+            new Get<>(urls.getUrlRoot(), urls.getGetCallSet(), id, null, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
         }
     }
@@ -223,11 +253,13 @@ public class Client {
          * a {@link SearchReadsResponse}.</p>
          *
          * @param request filled-in Avro object to be serialized as JSON to the server
-         * @throws AvroRemoteException if there's a communication problem
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
         public SearchReadsResponse searchReads(SearchReadsRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             SearchReadsResponse.Builder responseBuilder = SearchReadsResponse.newBuilder();
-            new Post(urls.getUrlRoot(), urls.getSearchReads(), request, responseBuilder, wireTracker).performQuery();
+            new Post<>(urls.getUrlRoot(), urls.getSearchReads(), request, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
         }
 
@@ -238,11 +270,13 @@ public class Client {
          * and returns a {@link SearchReadGroupSetsResponse}.</p>
          *
          * @param request filled-in Avro object to be serialized as JSON to the server
-         * @throws AvroRemoteException if there's a communication problem
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
         public SearchReadGroupSetsResponse searchReadGroupSets(SearchReadGroupSetsRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             SearchReadGroupSetsResponse.Builder responseBuilder = SearchReadGroupSetsResponse.newBuilder();
-            new Post(urls.getUrlRoot(), urls.getSearchReadGroupSets(), request, responseBuilder, wireTracker).performQuery();
+            new Post<>(urls.getUrlRoot(), urls.getSearchReadGroupSets(), request, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
         }
 
@@ -251,11 +285,13 @@ public class Client {
          * <tt>GET /readgroupsets/{id}</tt> will return a JSON version of {@link ReadGroupSet}.
          *
          * @param id the ID of the read group set
-         * @throws AvroRemoteException if there's a communication problem
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
         public ReadGroupSet getReadGroupSet(String id) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
             ReadGroupSet.Builder responseBuilder = ReadGroupSet.newBuilder();
-            new Get(urls.getUrlRoot(), urls.getGetReadGroupSet(), id, null, responseBuilder, wireTracker).performQuery();
+            new Get<>(urls.getUrlRoot(), urls.getGetReadGroupSet(), id, null, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
         }
 
@@ -264,11 +300,13 @@ public class Client {
          * <tt>GET /readgroups/{id}</tt> will return a JSON version of {@link ReadGroup}.
          *
          * @param id the ID of the read group
-         * @throws AvroRemoteException if there's a communication problem
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
         public ReadGroup getReadGroup(String id) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
             ReadGroup.Builder responseBuilder = ReadGroup.newBuilder();
-            new Get(urls.getUrlRoot(), urls.getGetReadGroup(), id, null, responseBuilder, wireTracker).performQuery();
+            new Get<>(urls.getUrlRoot(), urls.getGetReadGroup(), id, null, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
         }
     }
@@ -288,11 +326,13 @@ public class Client {
          * and returns a {@link SearchReferenceSetsResponse}.
          *
          * @param request Avro object to be serialized as JSON to the server
-         * @throws AvroRemoteException if there's a communication problem
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
         public SearchReferenceSetsResponse searchReferenceSets(SearchReferenceSetsRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             SearchReferenceSetsResponse.Builder responseBuilder = SearchReferenceSetsResponse.newBuilder();
-            new Post(urls.getUrlRoot(), urls.getSearchReferenceSets(), request, responseBuilder, wireTracker).performQuery();
+            new Post<>(urls.getUrlRoot(), urls.getSearchReferenceSets(), request, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
         }
 
@@ -301,11 +341,13 @@ public class Client {
          * <tt>GET /referencesets/{id}</tt> returns a {@link ReferenceSet}.
          *
          * @param id the reference set ID
-         * @throws AvroRemoteException if there's a communication problem
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
         public ReferenceSet getReferenceSet(String id) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
             ReferenceSet.Builder responseBuilder = ReferenceSet.newBuilder();
-            new Get(urls.getUrlRoot(), urls.getReferenceSets(), id, null, responseBuilder, wireTracker).performQuery();
+            new Get<>(urls.getUrlRoot(), urls.getReferenceSets(), id, null, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
         }
 
@@ -316,11 +358,13 @@ public class Client {
          * and returns a {@link SearchReferencesResponse}.
          *
          * @param request Avro object to be serialized as JSON to the server
-         * @throws AvroRemoteException if there's a communication problem
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
         public SearchReferencesResponse searchReferences(SearchReferencesRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             SearchReferencesResponse.Builder responseBuilder = SearchReferencesResponse.newBuilder();
-            new Post(urls.getUrlRoot(), urls.getSearchReferences(), request, responseBuilder, wireTracker).performQuery();
+            new Post<>(urls.getUrlRoot(), urls.getSearchReferences(), request, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
         }
 
@@ -329,11 +373,13 @@ public class Client {
          * <tt>GET /references/{id}</tt> returns a {@link Reference}.
          *
          * @param id the reference set ID
-         * @throws AvroRemoteException if there's a communication problem
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
         public Reference getReference(String id) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
             Reference.Builder responseBuilder = Reference.newBuilder();
-            new Get(urls.getUrlRoot(), urls.getReference(), id, null, responseBuilder, wireTracker).performQuery();
+            new Get<>(urls.getUrlRoot(), urls.getReference(), id, null, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
         }
 
@@ -358,7 +404,9 @@ public class Client {
          *
          * @param id      the reference set ID
          * @param request Avro object to be serialized as JSON to the server
-         * @throws AvroRemoteException if there's a communication problem
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
         public ListReferenceBasesResponse getReferenceBases(String id, ListReferenceBasesRequest request) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
             ListReferenceBasesResponse.Builder responseBuilder = ListReferenceBasesResponse.newBuilder();
@@ -366,7 +414,7 @@ public class Client {
             putInMapIfValueNotNull(params, "start", request.getStart());
             putInMapIfValueNotNull(params, "end", request.getEnd());
             putInMapIfValueNotNull(params, "pageToken", request.getPageToken());
-            new Get(urls.getUrlRoot(), urls.getSearchReferenceBases(), id, params, responseBuilder, wireTracker).performQuery();
+            new Get<>(urls.getUrlRoot(), urls.getSearchReferenceBases(), id, params, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
         }
     }

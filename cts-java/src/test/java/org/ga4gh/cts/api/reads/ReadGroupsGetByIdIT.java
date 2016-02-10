@@ -2,13 +2,14 @@ package org.ga4gh.cts.api.reads;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import ga4gh.ReadServiceOuterClass.SearchReadGroupSetsRequest;
+import ga4gh.ReadServiceOuterClass.SearchReadGroupSetsResponse;
+import ga4gh.Reads.ReadGroup;
+import ga4gh.Reads.ReadGroupSet;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
-import ga4gh.Common.GAException;
-import ga4gh.ReadServiceOuterClass.*;
-import ga4gh.Reads.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -28,7 +29,9 @@ public class ReadGroupsGetByIdIT {
      * Check that the {@link ReadGroup}s we get via search (1) have valid IDs in them; (2)
      * those IDs can be used to fetch identical {@link ReadGroup}s.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void testGetByIdMatchesSearch() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {

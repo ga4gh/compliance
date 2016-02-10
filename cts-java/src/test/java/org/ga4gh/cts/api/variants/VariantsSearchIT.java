@@ -49,8 +49,9 @@ public class VariantsSearchIT implements CtkLogs {
      * Fetch variants between two positions in the reference and count them.  The number must
      * equal what we're expecting by visual examination of the variants data.
      *
-     * @throws AvroRemoteException if there's a communication problem or
-     * server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkExpectedNumberOfVariants() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -84,7 +85,9 @@ public class VariantsSearchIT implements CtkLogs {
      * Check that the variants we receive from {@link org.ga4gh.ctk.transport.protocols.Client.Variants#searchVariants(SearchVariantsRequest)}
      * search contain the expected reference name.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkVariantsForExpectedReferenceName() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -118,7 +121,9 @@ public class VariantsSearchIT implements CtkLogs {
      * Check that the variants we receive from {@link org.ga4gh.ctk.transport.protocols.Client.Variants#searchVariants(SearchVariantsRequest)}
      * search contain well-formed {@link Call}s.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkCallsForWellFormedness() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {

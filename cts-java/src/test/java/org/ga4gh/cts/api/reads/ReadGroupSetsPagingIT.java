@@ -2,14 +2,15 @@ package org.ga4gh.cts.api.reads;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import ga4gh.ReadServiceOuterClass.SearchReadGroupSetsRequest;
+import ga4gh.ReadServiceOuterClass.SearchReadGroupSetsResponse;
+import ga4gh.Reads.ReadAlignment;
+import ga4gh.Reads.ReadGroupSet;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
-import ga4gh.Common.GAException;
-import ga4gh.ReadServiceOuterClass.*;
-import ga4gh.Reads.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -34,7 +35,9 @@ public class ReadGroupSetsPagingIT {
      * we receive from
      * {@link Client.Reads#searchReadGroupSets(SearchReadGroupSetsRequest)}.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkPagingOneByOneThroughReadGroupSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -74,7 +77,10 @@ public class ReadGroupSetsPagingIT {
      * we receive from
      * {@link org.ga4gh.ctk.transport.protocols.Client.Reads#searchReadGroupSets(SearchReadGroupSetsRequest)} using
      * two different chunk sizes.
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     *
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkPagingByRelativelyPrimeChunksOfReadGroupSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -133,7 +139,9 @@ public class ReadGroupSetsPagingIT {
      * {@link org.ga4gh.ctk.transport.protocols.Client.Reads#searchReadGroupSets(SearchReadGroupSetsRequest)}, and
      * compare the collections of objects at the end.  They should be identical.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkTwoSimultaneousPagingSequencesThroughReadGroupSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -169,7 +177,7 @@ public class ReadGroupSetsPagingIT {
             pageToken1 = page1Resp.getNextPageToken();
 
             assertThat(pageOfReadGroupSets0).hasSameSizeAs(pageOfReadGroupSets1);
-            assertBothAreNullOrBothAreNot(pageToken0, pageToken1);
+            assertBothAreEmptyOrBothAreNot(pageToken0, pageToken1);
         } while (pageToken0 != null && !pageToken0.equals(""));
 
         assertThat(setOfReadGroupSets0).containsAll(setOfReadGroupSets0);
@@ -177,11 +185,11 @@ public class ReadGroupSetsPagingIT {
     }
 
     /**
-     * Assert that both string arguments are null, or neither is.
+     * Assert that both string arguments are empty strings, or neither is.
      * @param token0 a string to test
      * @param token1 a string to test
      */
-    private void assertBothAreNullOrBothAreNot(String token0, String token1) {
+    private void assertBothAreEmptyOrBothAreNot(String token0, String token1) {
         if ("".equals(token0)) {
             assertThat(token1).isEmpty();
         }
@@ -195,7 +203,9 @@ public class ReadGroupSetsPagingIT {
      * {@link Client.Reads#searchReadGroupSets(SearchReadGroupSetsRequest)}
      * using an increment as large as the non-paged set of results.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkPagingByOneChunkThroughReadGroupSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -213,7 +223,9 @@ public class ReadGroupSetsPagingIT {
      * {@link Client.Reads#searchReadGroupSets(SearchReadGroupSetsRequest)}
      * using an increment twice as large as the non-paged set of results.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkPagingByOneTooLargeChunkThroughReadGroupSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -234,7 +246,9 @@ public class ReadGroupSetsPagingIT {
      *
      * @param pageSize              the page size we'll request
      * @param expectedReadGroupSets all of the {@link ReadGroupSet} objects we expect to receive
-     * @throws AvroRemoteException if there's a communication problem or server exception
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     private void checkSinglePageOfReadGroupSets(int pageSize, List<ReadGroupSet> expectedReadGroupSets) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 

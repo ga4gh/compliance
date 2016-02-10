@@ -46,7 +46,7 @@ public class Utils {
      * Certain AssertJ methods accept a variable number of args: <tt>assertThat(Collection).doesNotContain(...)</tt>,
      * for instance.  Sometimes we want to pass null to such a method, but the IDE complains that this is "confusing."
      * If we supply a typed value, the complaint goes away.
-     * This is a null suitable for use where we might want to pass a {@link Program} to a varargs method.
+     * This is a null suitable for use where we might want to pass a {@link ga4gh.Reads.ReadGroup.Program} to a varargs method.
      */
     public static final ReadGroup.Program nullProgram = null;
 
@@ -121,7 +121,9 @@ public class Utils {
      * Utility method to fetch the ID of a reference to which we can map the reads we're testing.
      * @param client the {@link Client} connection to the server
      * @return the ID of a reference
-     * @throws AvroRemoteException is the server throws an exception or there's an I/O error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     public static String getValidReferenceId(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReferencesRequest refsReq = SearchReferencesRequest
@@ -141,7 +143,9 @@ public class Utils {
      * Utility method to fetch the ID of an arbitrary {@link ReadGroup}.
      * @param client the {@link Client} connection to the server
      * @return the ID of an arbitrary {@link ReadGroup}
-     * @throws AvroRemoteException is the server throws an exception or there's an I/O error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     public static String getReadGroupId(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReadGroupSetsRequest readGroupSetsReq =
@@ -168,7 +172,9 @@ public class Utils {
      * @param readGroupSetName the name of a {@link ReadGroupSet}
      * @param readGroupName the name of a {@link ReadGroup} in the given {@link ReadGroupSet}
      * @return the ID of the {@link ReadGroup}, or null if not found
-     * @throws AvroRemoteException is the server throws an exception or there's an I/O error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     public static String getReadGroupIdForName(Client client, String readGroupSetName, String readGroupName) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReadGroupSetsRequest readGroupSetsReq =
@@ -191,7 +197,9 @@ public class Utils {
      * Utility method to fetch all {@link ReadGroupSet}s.
      * @param client the {@link Client} connection to the server
      * @return all {@link ReadGroupSet}s
-     * @throws AvroRemoteException is the server throws an exception or there's an I/O error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     public static List<ReadGroupSet> getAllReadGroupSets(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<ReadGroupSet> result = new LinkedList<>();
@@ -222,7 +230,9 @@ public class Utils {
      * @param client the {@link Client} connection to the server
      * @param name the name of a {@link ReadGroupSet}
      * @return all {@link ReadGroup}s in the {@link ReadGroupSet}
-     * @throws AvroRemoteException is the server throws an exception or there's an I/O error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     public static List<ReadGroup> getReadGroupsForName(Client client, String name) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<ReadGroup> result = new LinkedList<>();
@@ -251,12 +261,14 @@ public class Utils {
     }
 
     /**
-     * Utility method to fetch a ReferenceSetId given a {@link ReferenceSet#assemblyId}.
+     * Utility method to fetch a ReferenceSetId given a {@link ReferenceSet#getAssemblyId()}.
      * @param client the connection to the server
-     * @param assemblyId the {@link ReferenceSet#assemblyId} of the {@link ReferenceSet}
+     * @param assemblyId the {@link ReferenceSet#getAssemblyId()} of the {@link ReferenceSet}
      * @return The ReferenceSet ID
      *
-     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     public static String getReferenceSetIdByAssemblyId(Client client, String assemblyId) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReferenceSetsRequest req =
@@ -276,7 +288,9 @@ public class Utils {
      * Utility method to fetch the ID of an arbitrary {@link VariantSet}.
      * @param client the connection to the server
      * @return the ID of a {@link VariantSet}
-     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     public static String getVariantSetId(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchVariantSetsRequest req =
@@ -298,7 +312,9 @@ public class Utils {
      * @param start the start of the range to search
      * @param end the end of the range to search
      * @return the {@link List} of results
-     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     public static List<Variant> getAllVariantsInRange(Client client,
                                                       String variantSetId,
@@ -329,7 +345,9 @@ public class Utils {
      *
      * @param client the connection to the server
      * @return the {@link List} of results
-     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     public static List<VariantSet> getAllVariantSets(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
@@ -356,7 +374,9 @@ public class Utils {
      * @param client the connection to the server
      * @param variantSetId the ID of the {@link VariantSet}
      * @return the {@link List} of results
-     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     public static List<CallSet> getAllCallSets(Client client, String variantSetId) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<CallSet> result = new LinkedList<>();
@@ -380,6 +400,9 @@ public class Utils {
      * Retrieve all {@link ReferenceSet}s.
      * @param client the connection to the server
      * @return a {@link List} of all {@link Reference}s in the first {@link ReferenceSet}
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     public static List<ReferenceSet> getAllReferenceSets(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<ReferenceSet> result = new LinkedList<>();
@@ -405,6 +428,9 @@ public class Utils {
      * @param client   the connection to the server
      * @param refSetId the ID of the {@link ReferenceSet} we're using
      * @return a {@link List} of all {@link Reference}s in the first {@link ReferenceSet}
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     public static List<Reference> getAllReferences(Client client,String refSetId) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<Reference> result = new LinkedList<>();
@@ -430,6 +456,9 @@ public class Utils {
      * @param referenceId the ID of the {@link Reference} we're using
      * @param readGroupId the ID of the {@link ReadGroup} we're using
      * @return all the {@link ReadAlignment} objects that match
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     public static List<ReadAlignment> getAllReads(Client client, String referenceId, String readGroupId) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<ReadAlignment> result = new LinkedList<>();
@@ -453,6 +482,9 @@ public class Utils {
      * Retrieve all {@link Dataset}s we're allowed to access.
      * @param client the connection to the server
      * @return all the {@link Dataset}s
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     public static List<Dataset> getAllDatasets(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<Dataset> result = new LinkedList<>();

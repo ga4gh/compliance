@@ -35,7 +35,9 @@ public class ReadsSearchIT implements CtkLogs {
      * Call <tt>/reads/search</tt> with a range that contains zero reads, and verify that it returns none.
      * (Adapted from an old JavaScript test.)
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void searchRangeWithNoReadsReturnsZeroResults() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -62,7 +64,9 @@ public class ReadsSearchIT implements CtkLogs {
      * they are well-formed.
      * (Adapted from an old JavaScript test.)
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void searchReadsProducesWellFormedReads() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -94,7 +98,9 @@ public class ReadsSearchIT implements CtkLogs {
      * Fetch every {@link ReadGroupSet} named in {@link TestData#EXPECTED_READGROUP_NAMES} using
      * <tt>searchReadGroupSets</tt> and verify that it returns the expected {@link ReadGroupSet}.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void searchReadGroupSetsMustReturnReadGroupSetsWithExpectedNames() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -144,10 +150,12 @@ public class ReadsSearchIT implements CtkLogs {
      * Verify that passing one read group name in a {@link SearchReadsRequest}
      * returns valid reads.
      *
-     * @throws Exception if there's a problem
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void searchReadsWithOneReadGroupIdSucceeds() throws Exception {
+    public void searchReadsWithOneReadGroupIdSucceeds() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         // first get a valid reference
         final String refId = Utils.getValidReferenceId(client);
 
@@ -175,10 +183,12 @@ public class ReadsSearchIT implements CtkLogs {
      * Verify that passing all known read group names in a {@link SearchReadsRequest}
      * returns all matching read groups.
      *
-     * @throws Exception if there's a problem
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void searchReadsWithAllIdsReturnsReadsForEach() throws Exception {
+    public void searchReadsWithAllIdsReturnsReadsForEach() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         // first get a valid reference
         final String refId = Utils.getValidReferenceId(client);
 
@@ -217,10 +227,12 @@ public class ReadsSearchIT implements CtkLogs {
      * the <tt>alignedSequence</tt> field can only contain
      * {@link TestData#ALIGNED_SEQUENCE_CONTENTS_PATTERN}.
      *
-     * @throws Exception if there's a problem
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void readsResponseMatchesACTGNPattern() throws Exception {
+    public void readsResponseMatchesACTGNPattern() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final String refId = Utils.getValidReferenceId(client);
 

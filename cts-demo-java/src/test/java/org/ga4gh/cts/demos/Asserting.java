@@ -1,14 +1,10 @@
 package org.ga4gh.cts.demos;
 
-import ga4gh.VariantServiceOuterClass;
-import ga4gh.VariantServiceOuterClassSearchVariantSetsRequestAssert;
-import ga4gh.VariantServiceOuterClassSearchVariantsRequestAssert;
-import org.ga4gh.ctk.CtkLogs;
-
+import ga4gh.ReferenceServiceOuterClass.SearchReferencesRequest;
 import ga4gh.ReferenceServiceOuterClassSearchReferencesRequestAssert;
-import ga4gh.ReferenceServiceOuterClass.*;
-import ga4gh.VariantServiceOuterClass.*;
-
+import ga4gh.VariantServiceOuterClass.SearchVariantSetsRequest;
+import ga4gh.VariantServiceOuterClassSearchVariantSetsRequestAssert;
+import org.ga4gh.ctk.CtkLogs;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

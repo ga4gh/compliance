@@ -2,14 +2,14 @@ package org.ga4gh.cts.api.references;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import ga4gh.ReferenceServiceOuterClass.SearchReferenceSetsRequest;
+import ga4gh.ReferenceServiceOuterClass.SearchReferenceSetsResponse;
+import ga4gh.References.ReferenceSet;
 import junitparams.JUnitParamsRunner;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
-import ga4gh.Common.GAException;
-import ga4gh.ReferenceServiceOuterClass.*;
-import ga4gh.References.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -17,7 +17,6 @@ import org.junit.runner.RunWith;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.ga4gh.cts.api.Utils.aSingle;
 
 /**
  * Reference sets-related compliance tests.
@@ -33,7 +32,9 @@ public class ReferenceSetsSearchIT {
     /**
      * Fetch reference sets and make sure we get some.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkSearchingReferenceSetsReturnsSome() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -49,7 +50,9 @@ public class ReferenceSetsSearchIT {
     /**
      * Fetch reference sets and make sure they're well-formed.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkSearchingReferenceSetsReturnsWellFormed() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -65,7 +68,9 @@ public class ReferenceSetsSearchIT {
     /**
      * Fetch a reference set by accession, check its attributes.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkReferenceSetFoundByAccession() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -85,7 +90,9 @@ public class ReferenceSetsSearchIT {
     /**
      * Fetch a reference set by md5 checksum, check its attributes
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkReferenceSetFoundByMD5Checksum() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -105,7 +112,9 @@ public class ReferenceSetsSearchIT {
     /**
      * Fetch a reference set by assemblyId, check its attributes.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkReferenceSetFoundByAssemblyId() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -135,7 +144,9 @@ public class ReferenceSetsSearchIT {
     /**
      * Verify that all found references identify the right species (NCBI Taxonomy ID).
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkTaxonIdOfReferenceSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {

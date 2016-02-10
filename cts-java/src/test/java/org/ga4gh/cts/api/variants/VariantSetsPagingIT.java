@@ -2,15 +2,15 @@ package org.ga4gh.cts.api.variants;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import ga4gh.VariantServiceOuterClass.SearchVariantSetsRequest;
+import ga4gh.VariantServiceOuterClass.SearchVariantSetsResponse;
+import ga4gh.Variants.VariantSet;
 import org.ga4gh.ctk.CtkLogs;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
-import ga4gh.Common.GAException;
-import ga4gh.VariantServiceOuterClass.*;
-import ga4gh.Variants.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -34,7 +34,9 @@ public class VariantSetsPagingIT implements CtkLogs {
      * Check that we can page 1 by 1 through the {@link VariantSet}s we receive from
      * {@link org.ga4gh.ctk.transport.protocols.Client.Variants#searchVariantSets(SearchVariantSetsRequest)}.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkPagingOneByOneThroughVariantSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -66,7 +68,7 @@ public class VariantSetsPagingIT implements CtkLogs {
             setOfVariants.remove(pageOfVariantSets.get(0));
         }
 
-        assertThat(pageToken).isEmpty();;
+        assertThat(pageToken).isEmpty();
         assertThat(setOfVariants).isEmpty();
     }
 
@@ -75,7 +77,9 @@ public class VariantSetsPagingIT implements CtkLogs {
      * {@link org.ga4gh.ctk.transport.protocols.Client.Variants#searchVariantSets(SearchVariantSetsRequest)}
      * using an increment as large as the non-paged set of results.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkPagingByOneChunkThroughVariantSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -92,7 +96,9 @@ public class VariantSetsPagingIT implements CtkLogs {
      * {@link org.ga4gh.ctk.transport.protocols.Client.Variants#searchVariantSets(SearchVariantSetsRequest)}
      * using an increment twice as large as the non-paged set of results.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
     public void checkPagingByOneTooLargeChunkThroughVariantSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
@@ -112,7 +118,9 @@ public class VariantSetsPagingIT implements CtkLogs {
      *
      * @param pageSize         the page size we'll request
      * @param expectedVariantSets all of the {@link VariantSet} objects we expect to receive
-     * @throws AvroRemoteException if there's a communication problem or server exception
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     private void checkSinglePageOfVariantSets(int pageSize,
                                               List<VariantSet> expectedVariantSets) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
