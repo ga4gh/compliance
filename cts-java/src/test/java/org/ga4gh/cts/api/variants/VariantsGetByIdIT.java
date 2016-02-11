@@ -48,8 +48,12 @@ public class VariantsGetByIdIT {
         assertThat(variants).hasSize(expectedNumberOfVariants);
 
         for (final Variant variantFromSearch : variants) {
-            final Variant variantFromGet = client.variants.getVariant(variantFromSearch.getId());
+            Variant variantFromGet = client.variants.getVariant(variantFromSearch.getId());
             assertThat(variantFromGet).isNotNull();
+
+            // variantFromSearch will not contain any callsets, but variantFromGet will.
+            // So we need to wipe out the callsets before doing the comparison.
+            variantFromGet = variantFromGet.toBuilder().clearCalls().build();
 
             assertThat(variantFromGet).isEqualTo(variantFromSearch);
         }
