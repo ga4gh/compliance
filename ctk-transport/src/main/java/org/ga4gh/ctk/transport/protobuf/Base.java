@@ -91,12 +91,11 @@ public abstract class Base<T extends GeneratedMessage.Builder> {
                     log.warn("Failure when processing GAException: BODY <" + json + ">: ", e.toString());
                     throw e;
                 }
-                log.info("Throwing GAException for " + json + ", status " + httpStatus);
+                log.warn("Throwing GAException for " + json + ", status " + httpStatus);
                 throw new GAWrapperException(exceptionBuilder.build(), httpStatus);
             }
         } catch (UnirestException e) {
             log.warn("problem communicating with " + url, e.getMessage());
-            log.debug(e.toString());
             throw e;
         }
     }
