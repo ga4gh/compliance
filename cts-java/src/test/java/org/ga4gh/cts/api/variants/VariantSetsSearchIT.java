@@ -52,7 +52,7 @@ public class VariantSetsSearchIT implements CtkLogs {
      */
     @Test
     public void checkExpectedVariantSets() throws AvroRemoteException {
-        final int expectedNumberOfVariantSets = 2;
+        final int expectedNumberOfVariantSets = 3;
 
         final SearchVariantSetsRequest req =
                 SearchVariantSetsRequest.newBuilder()

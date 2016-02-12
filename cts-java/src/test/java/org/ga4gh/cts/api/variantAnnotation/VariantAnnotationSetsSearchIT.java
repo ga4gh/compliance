@@ -2,25 +2,20 @@ package org.ga4gh.cts.api.variantAnnotation;
 
 import org.apache.avro.AvroRemoteException;
 import org.ga4gh.ctk.CtkLogs;
-import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
-import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
 import org.ga4gh.methods.*;
-import org.ga4gh.models.VariantSet;
 import org.ga4gh.models.VariantAnnotationSet;
-import org.ga4gh.models.AnalysisResult;
-import org.ga4gh.models.Analysis;
-import org.ga4gh.models.OntologyTerm;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.net.HttpURLConnection;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.ga4gh.cts.api.Utils.catchGAWrapperException;
 
 /**
  * Tests dealing with searching for VariantAnnotationSets.
@@ -80,7 +75,7 @@ public class VariantAnnotationSetsSearchIT implements CtkLogs {
      *@throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkVariantAnnotationAnalysis() throws AvroRemoteException {
+    public void checkVariantAnnotationAnalysis() throws AvroRemoteException, ParseException {
 
         // Seek a list of VariantAnnotationSets for the compliance dataset.
         final List<VariantAnnotationSet> variantAnnotationSets =  Utils.getAllVariantAnnotationSets(client);
@@ -91,12 +86,17 @@ public class VariantAnnotationSetsSearchIT implements CtkLogs {
         // Check the Analysis record within the VariantAnnotationSet matches the test data
         final String name        = "compliance1";
         final String description = "variant annotation test data";
-        final String created     = "2015-11-18T00:00:00.000000Z";
+        final String created     = "2015-11-18";
+        // TODO make a more robust ISO8601 parser
+        // Date formatting can be ISO compliant but still break these
+        // However, the second, df2 matches python's datetime.isoformat function
+        DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         final String software    = "SnpEff";
 
         assertThat(vSet.getAnalysis().getName()).isEqualTo(name);
         assertThat(vSet.getAnalysis().getDescription()).isEqualTo(description);
-        assertThat(vSet.getAnalysis().getRecordCreateTime()).isEqualTo(created);
+        assertThat(df2.parse(vSet.getAnalysis().getCreated())).isEqualTo(df1.parse(created));
         assertThat(vSet.getAnalysis().getSoftware().get(0)).isEqualTo(software);
 
     }

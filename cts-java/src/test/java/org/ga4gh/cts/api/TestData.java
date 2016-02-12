@@ -62,7 +62,7 @@ public class TestData {
      * The names of the variant annotation sets used for variant annotation in the standard test data.
      */
     public static final List<String> VARIANT_ANNOTATION_SET_NAMES =
-            Arrays.asList("WASH7P_annotation", "OR4F_annotation");
+            Arrays.asList("WASH7P", "OR4F");
 
     /**
      * The names of known-good read groups.
