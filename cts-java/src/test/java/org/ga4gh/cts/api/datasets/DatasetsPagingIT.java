@@ -30,7 +30,7 @@ public class DatasetsPagingIT {
     /**
      * Check that we can page 1 by 1 through the {@link org.ga4gh.models.Dataset}s
      * we receive from
-     * {@link org.ga4gh.ctk.transport.protocols.Client.Reads#searchDatasets(SearchDatasetsRequest)}.
+     * {@link org.ga4gh.ctk.transport.protocols.Client.Metadata#searchDatasets(SearchDatasetsRequest)}.
      *
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link
      * GAException})
@@ -54,7 +54,7 @@ public class DatasetsPagingIT {
                                          .setPageSize(1)
                                          .setPageToken(pageToken)
                                          .build();
-            final SearchDatasetsResponse pageResp = client.reads.searchDatasets(pageReq);
+            final SearchDatasetsResponse pageResp = client.metadata.searchDatasets(pageReq);
             final List<Dataset> pageOfDatasets = pageResp.getDatasets();
             pageToken = pageResp.getNextPageToken();
 

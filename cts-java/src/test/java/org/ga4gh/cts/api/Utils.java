@@ -464,7 +464,7 @@ public class Utils {
                                          .setPageSize(100)
                                          .setPageToken(pageToken)
                                          .build();
-            final SearchDatasetsResponse resp = client.reads.searchDatasets(req);
+            final SearchDatasetsResponse resp = client.metadata.searchDatasets(req);
             pageToken = resp.getNextPageToken();
             result.addAll(resp.getDatasets());
         } while (pageToken != null);
