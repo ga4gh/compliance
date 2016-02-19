@@ -175,7 +175,6 @@ public class TestData {
             return DEFAULT_DATASET_ID;
         }
     }
-
     /**
      * GenotypePhenotype PHENOTYPE external database name.
      */
@@ -239,5 +238,4 @@ public class TestData {
      * GenotypePhenotype FEATURE name.
      */
     public static final String FEATURE_NAME = "KIT *wild" ;
-
 }

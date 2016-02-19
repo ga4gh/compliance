@@ -116,6 +116,14 @@ public class Client {
     public final SequenceAnnotations sequenceAnnotations = new SequenceAnnotations();
 
     /**
+     * Provides access to GenotypePhenotype-related methods.  For example,
+     * <pre>
+     *     myClient.genotypePhenotype(...); TODO document
+     * </pre>
+     */
+    public final GenotypePhenotype genotypePhenotype = new GenotypePhenotype();
+
+    /**
      * Provides access to metadata-related methods.  For example,
      * <pre>
      *     myClient.metadata.searchDatasets(...);
@@ -357,6 +365,24 @@ public class Client {
             ReadGroup.Builder responseBuilder = ReadGroup.newBuilder();
             new Get<>(urls.getUrlRoot(), urls.getGetReadGroup(), id, null, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
+        }
+    }
+
+    /**
+     * Inner class holding all GenotypePheotype-related methods.  Gathering them in an inner class like this
+     * makes it a little easier for someone writing tests to use their IDE's auto-complete
+     * to type method names.
+     */
+    public class GenotypePhenotype implements GenotypePhenotypeMethods {
+
+        @Override
+        public SearchGenotypePhenotypeResponse searchGenotypePhenotype(SearchGenotypePhenotypeRequest request) throws AvroRemoteException, GAException {
+            String path = urls.getSearchGenotypePhenotype();
+            SearchGenotypePhenotypeResponse response = new SearchGenotypePhenotypeResponse();
+            final AvroJson aj =
+                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
+            response = (SearchGenotypePhenotypeResponse)aj.doPostResp();
+            return response;
         }
     }
 

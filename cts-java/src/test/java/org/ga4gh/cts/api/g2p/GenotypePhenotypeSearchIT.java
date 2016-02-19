@@ -81,7 +81,7 @@ public class GenotypePhenotypeSearchIT {
         assertThat(response.getAssociations()).isNotNull();
         assertThat(response.getAssociations()).isNotEmpty();
         Evidence evidence = response.getAssociations().get(0).getEvidence().get(0);
-        assertThat(evidence.getEvidenceType().getName()).isEqualTo(TestData.EVIDENCE_LEVEL);
+        assertThat(evidence.getEvidenceType().getTerm()).isEqualTo(TestData.EVIDENCE_LEVEL);
     }
 
     /**
@@ -172,7 +172,7 @@ public class GenotypePhenotypeSearchIT {
         assertThat(response.getAssociations()).isNotNull();
         assertThat(response.getAssociations()).isNotEmpty();
         Evidence evidenceObject = response.getAssociations().get(0).getEvidence().get(0);
-        assertThat(evidenceObject.getEvidenceType().getName()).isEqualTo(TestData.EVIDENCE_LEVEL);
+        assertThat(evidenceObject.getEvidenceType().getTerm()).isEqualTo(TestData.EVIDENCE_LEVEL);
     }
 
     /**
