@@ -148,5 +148,67 @@ public class TestData {
             return DEFAULT_DATASET_ID;
         }
     }
+    /**
+     * GenotypePhenotype PHENOTYPE external database name.
+     */
+    public static final String PHENOTYPE_DB = "http://ohsu.edu/cgd/";
 
+    /**
+     * GenotypePhenotype PHENOTYPE external database identifier.
+     */
+    public static final String PHENOTYPE_DB_ID = "37da8697";
+
+    /**
+     * GenotypePhenotype PHENOTYPE external database Version.
+     */
+    public static final String PHENOTYPE_DB_VERSION = "*";
+    /**
+     * GenotypePhenotype PHENOTYPE name.
+     */
+    public static final String PHENOTYPE_NAME =  "GIST";
+
+    /**
+     * GenotypePhenotype EVIDENCE external database name.
+     */
+    public static final String EVIDENCE_DB = "http://www.drugbank.ca/drugs/";
+
+    /**
+     * GenotypePhenotype EVIDENCE external database identifier.
+     */
+    public static final String EVIDENCE_DB_ID = "DB00619";
+
+    /**
+     * GenotypePhenotype EVIDENCE external database Version.
+     */
+    public static final String EVIDENCE_DB_VERSION = "*";
+
+    /**
+     * GenotypePhenotype EVIDENCE name.
+     */
+    public static final String EVIDENCE_NAME =  "imatinib";
+
+    /**
+     * GenotypePhenotype EVIDENCE LEVEL.
+     */
+    public static final String EVIDENCE_LEVEL = "early trials";
+
+    /**
+     * GenotypePhenotype FEATURE external database name.
+     */
+    public static final String FEATURE_DB = "http://ohsu.edu/cgd/";
+
+    /**
+     * GenotypePhenotype FEATURE external database identifier.
+     */
+    public static final String FEATURE_DB_ID = "4841bf74";
+
+    /**
+     * GenotypePhenotype FEATURE external database Version.
+     */
+    public static final String FEATURE_DB_VERSION = "*";
+
+    /**
+     * GenotypePhenotype FEATURE name.
+     */
+    public static final String FEATURE_NAME = "KIT *wild" ;
 }
