@@ -130,7 +130,6 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
         //Check transcriptEffect record has values for required fields for all annotations in the list.
         checkAllTranscriptEffects(variantAnnotations, t -> assertThat(t.getFeatureId()).isNotNull());
         checkAllTranscriptEffects(variantAnnotations, t -> assertThat(t.getAlternateBases()).isNotNull());
-        checkAllTranscriptEffects(variantAnnotations, t -> assertThat(t.getImpact()).isNotNull());
         checkAllTranscriptEffects(variantAnnotations, t -> assertThat(t.getEffects()).isNotNull());
 
     }
@@ -202,7 +201,6 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
 
         //Check transcriptEffect records all contain the expected data.
         final String alternateBases = "G";
-        final String impact     = "MODERATE";
         final String featureId  = "NM_001005484.1";
         final String hgvsg      = "1:g.69541A>G";
         final String hgvsc      = "NM_001005484.1:c.451A>G";
@@ -213,7 +211,6 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
 
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getAlternateBases()).isEqualTo(alternateBases));
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getFeatureId()).isEqualTo(featureId));
-        checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getImpact().toString()).isEqualTo(impact));
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getHgvsAnnotation().getGenomic()).isEqualTo(hgvsg));
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getHgvsAnnotation().getTranscript()).isEqualTo(hgvsc));
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getHgvsAnnotation().getProtein()).isEqualTo(hgvsp));
