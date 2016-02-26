@@ -91,6 +91,10 @@ public interface URLMAPPING {
 
     void setGetCallset(String getCallset);
 
+    String getSearchGenotypePhenotype();
+
+    void setSearchGenotypePhenotype(String searchGenotypePhenotype);
+
     Map<String, String> getEndpoints();
 
     void setEndpoints(Map<String, String> endpoints);

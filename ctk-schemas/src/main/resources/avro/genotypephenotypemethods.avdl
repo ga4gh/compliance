@@ -141,6 +141,7 @@ record SearchGenotypePhenotypeResponse {
   union { null, string } nextPageToken = null;
 }
 
+
 /**
 Gets a list of evidence accessible through the API.
 
