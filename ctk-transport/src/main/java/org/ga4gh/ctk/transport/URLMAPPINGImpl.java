@@ -536,16 +536,6 @@ public class URLMAPPINGImpl implements URLMAPPING {
     }
 
     @Override
-    public String getSearchGenotypePhenotype() {
-        return endpoints.get("ctk.tgt.searchGenotypePhenotype");
-    }
-
-    @Override
-    public void setSearchGenotypePhenotype(String searchGenotypePhenotype) {
-        endpoints.put("ctk.tgt.searchGenotypePhenotype", searchGenotypePhenotype);
-    }
-
-    @Override
     public Map<String, String> getEndpoints() {
         return endpoints;
     }
