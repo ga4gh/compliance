@@ -217,7 +217,7 @@ public class TestData {
     /**
      * GenotypePhenotype EVIDENCE LEVEL.
      */
-    public static final String EVIDENCE_LEVEL = "early trials";
+    public static final String EVIDENCE_LEVEL = "Approved";
 
     /**
      * GenotypePhenotype FEATURE external database name.
