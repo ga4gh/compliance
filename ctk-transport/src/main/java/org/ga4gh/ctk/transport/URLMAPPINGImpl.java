@@ -60,6 +60,7 @@ public class URLMAPPINGImpl implements URLMAPPING {
         defaultEndpoints.put("ctk.tgt.searchVariantSets", "variantsets/search");
         defaultEndpoints.put("ctk.tgt.searchVariants", "variants/search");
         defaultEndpoints.put("ctk.tgt.searchCallsets", "callsets/search");
+        defaultEndpoints.put("ctk.tgt.searchGenotypePhenotype", "genotypephenotype/search");
         defaultEndpoints.put("ctk.tgt.getReferences", "references/{id}");
         defaultEndpoints.put("ctk.tgt.getReferencesets", "referencesets/{id}");
         defaultEndpoints.put("ctk.tgt.getReferencesBases", "references/{id}/bases");
@@ -70,6 +71,8 @@ public class URLMAPPINGImpl implements URLMAPPING {
         defaultEndpoints.put("ctk.tgt.getDataset", "datasets/{id}");
         defaultEndpoints.put("ctk.tgt.getVariant", "variants/{id}");
         defaultEndpoints.put("ctk.tgt.getVariantSet", "variantsets/{id}");
+        defaultEndpoints.put("ctk.tgt.getCallset", "callsets/{id}");
+        defaultEndpoints.put("ctk.tgt.getCallset", "callsets/{id}");
         defaultEndpoints.put("ctk.tgt.getCallset", "callsets/{id}");
 
         defaultEndpoints.put("ctk.tgt.searchGenotypePhenotype", "genotypephenotype/search");
@@ -353,6 +356,15 @@ public class URLMAPPINGImpl implements URLMAPPING {
     public void setSearchReferencesets(String searchReferencesets) {
         endpoints.put("ctk.tgt.searchReferencesets", searchReferencesets);
     }
+    @Override
+    public String getSearchGenotypePhenotype() {
+        return endpoints.get("ctk.tgt.searchGenotypePhenotype");
+    }
+
+    @Override
+    public void setSearchGenotypePhenotype(String searchGenotypePhenotype) {
+        endpoints.put("ctk.tgt.searchGenotypePhenotype", searchGenotypePhenotype);
+    }
 
     @Override
     public String getSearchVariantSets() {
@@ -412,16 +424,6 @@ public class URLMAPPINGImpl implements URLMAPPING {
     @Override
     public void setGetCallset(String getCallset) {
         endpoints.put("ctk.tgt.getCallset", getCallset);
-    }
-
-    @Override
-    public String getSearchGenotypePhenotype() {
-        return endpoints.get("ctk.tgt.searchGenotypePhenotype");
-    }
-
-    @Override
-    public void setSearchGenotypePhenotype(String searchGenotypePhenotype) {
-        endpoints.put("ctk.tgt.searchGenotypePhenotype", searchGenotypePhenotype);
     }
 
     @Override

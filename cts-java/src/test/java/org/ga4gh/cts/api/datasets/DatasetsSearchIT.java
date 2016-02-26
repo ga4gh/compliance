@@ -35,7 +35,7 @@ public class DatasetsSearchIT {
     @Test
     public void checkComplianceDatasetIsPresent() throws AvroRemoteException {
         final SearchDatasetsRequest sdr = SearchDatasetsRequest.newBuilder().build();
-        final SearchDatasetsResponse resp = client.reads.searchDatasets(sdr);
+        final SearchDatasetsResponse resp = client.metadata.searchDatasets(sdr);
         final List<Dataset> datasets = resp.getDatasets();
 
         assertThat(datasets).isNotNull();
@@ -53,7 +53,7 @@ public class DatasetsSearchIT {
      */
     @Test
     public void fetchDatasetById() throws AvroRemoteException {
-        final Dataset dataset = client.reads.getDataset(TestData.getDatasetId());
+        final Dataset dataset = client.metadata.getDataset(TestData.getDatasetId());
         assertThat(dataset).isNotNull();
         assertThat(dataset.getId()).isEqualTo(TestData.getDatasetId());
     }
@@ -70,7 +70,7 @@ public class DatasetsSearchIT {
 
         // this should throw a "no such dataset" GAException
         final GAWrapperException didThrow =
-                catchGAWrapperException(() -> client.reads.getDataset(nonexistentDatasetId));
+                catchGAWrapperException(() -> client.metadata.getDataset(nonexistentDatasetId));
 
         assertThat(didThrow.getHttpStatusCode()).isEqualTo(HttpURLConnection.HTTP_NOT_FOUND);
     }
@@ -84,11 +84,11 @@ public class DatasetsSearchIT {
     @Test
     public void checkSearchResultAgainstGet() throws AvroRemoteException {
         final SearchDatasetsRequest sdr = SearchDatasetsRequest.newBuilder().build();
-        final SearchDatasetsResponse resp = client.reads.searchDatasets(sdr);
+        final SearchDatasetsResponse resp = client.metadata.searchDatasets(sdr);
         final List<Dataset> datasets = resp.getDatasets();
 
         for (Dataset ds : datasets) {
-            final Dataset dataset = client.reads.getDataset(ds.getId());
+            final Dataset dataset = client.metadata.getDataset(ds.getId());
             assertThat(ds).isEqualTo(dataset);
         }
     }

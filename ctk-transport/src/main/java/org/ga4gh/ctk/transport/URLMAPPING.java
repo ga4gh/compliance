@@ -39,6 +39,10 @@ public interface URLMAPPING {
 
     void setSearchReads(String searchReads);
 
+    String getSearchGenotypePhenotype();
+
+    void setSearchGenotypePhenotype(String searchGenotypePhenotype);
+
     String getSearchReadGroupSets();
 
     void setSearchReadGroupSets(String searchReadGroupSets);
@@ -87,10 +91,6 @@ public interface URLMAPPING {
 
     void setGetCallset(String getCallset);
 
-    String getSearchGenotypePhenotype();
-
-    void setSearchGenotypePhenotype(String searchGenotypePhenotype);
-
     Map<String, String> getEndpoints();
 
     void setEndpoints(Map<String, String> endpoints);
@@ -102,7 +102,7 @@ public interface URLMAPPING {
 
     /**
      * <p>Initialize URLMAPPING.</p>
-     * <p>Given a resource name, this looks loads (in order):
+     * <p>Given a resource name, this loads (in order):
      * <ul>
      * <li>a properties file of that name on the classpath</li>
      * <li>a properties file of that name from the file system</li>

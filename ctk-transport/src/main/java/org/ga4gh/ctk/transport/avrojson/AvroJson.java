@@ -71,7 +71,7 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
     /**
      * url root to system-under-test; e.g., "http://localhost:8000"
      */
-    String urlRoot;
+    private String urlRoot;
 
     private String path;
 
@@ -163,10 +163,9 @@ public class AvroJson<Q extends SpecificRecordBase, P extends SpecificRecordBase
         String tsPath = path.trim();
         this.path = CharMatcher.is('/').trimFrom(tsPath);
 
-        log.info("set urlRoot = " + this.urlRoot + " path = " + this.path + " merged = " +
-                         makeUrl(this.urlRoot, this.path));
+        log.debug("set urlRoot = " + this.urlRoot + " path = " + this.path + " merged = " +
+                          makeUrl(this.urlRoot, this.path));
     }
-
 
     /**
      * <p>Access the message-traffic recording Table.</p>

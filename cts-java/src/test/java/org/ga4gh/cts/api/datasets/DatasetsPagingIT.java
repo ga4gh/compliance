@@ -30,7 +30,7 @@ public class DatasetsPagingIT {
     /**
      * Check that we can page 1 by 1 through the {@link org.ga4gh.models.Dataset}s
      * we receive from
-     * {@link org.ga4gh.ctk.transport.protocols.Client.Reads#searchDatasets(SearchDatasetsRequest)}.
+     * {@link org.ga4gh.ctk.transport.protocols.Client.Metadata#searchDatasets(SearchDatasetsRequest)}.
      *
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link
      * GAException})
@@ -54,7 +54,7 @@ public class DatasetsPagingIT {
                                          .setPageSize(1)
                                          .setPageToken(pageToken)
                                          .build();
-            final SearchDatasetsResponse pageResp = client.reads.searchDatasets(pageReq);
+            final SearchDatasetsResponse pageResp = client.metadata.searchDatasets(pageReq);
             final List<Dataset> pageOfDatasets = pageResp.getDatasets();
             pageToken = pageResp.getNextPageToken();
 
@@ -66,72 +66,6 @@ public class DatasetsPagingIT {
 
         assertThat(pageToken).isNull();
         assertThat(setOfDatasets).isEmpty();
-    }
-
-    /**
-     * Check that we can page through the {@link Dataset}s we receive from
-     * {@link org.ga4gh.ctk.transport.protocols.Client.Reads#searchDatasets(SearchDatasetsRequest)}
-     * using an increment as large as the non-paged set of results.
-     *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link
-     * GAException})
-     */
-    @Test
-    public void checkPagingByOneChunkThroughDatasets() throws AvroRemoteException {
-
-        // retrieve all the datasets
-        final List<Dataset> listOfDatasets = Utils.getAllDatasets(client);
-        assertThat(listOfDatasets).isNotEmpty();
-
-        // page through the datasets in one gulp
-        checkSinglePageOfDatasets(listOfDatasets.size(),
-                                  listOfDatasets);
-    }
-
-    /**
-     * Check that we can page through the {@link Dataset}s we receive from
-     * {@link org.ga4gh.ctk.transport.protocols.Client.Reads#searchDatasets(SearchDatasetsRequest)}
-     * using an increment twice as large as the non-paged set of results.
-     *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link
-     * GAException})
-     */
-    @Test
-    public void checkPagingByOneTooLargeChunkThroughReads() throws AvroRemoteException {
-
-        final List<Dataset> listOfDatasets = Utils.getAllDatasets(client);
-        assertThat(listOfDatasets).isNotEmpty();
-
-        // page through the datasets in one too-large gulp
-        checkSinglePageOfDatasets(listOfDatasets.size() * 2, listOfDatasets);
-    }
-
-    /**
-     * Check that we can receive expected results when we request a single
-     * page of {@link Dataset}s from
-     * {@link org.ga4gh.ctk.transport.protocols.Client.Reads#searchDatasets(SearchDatasetsRequest)}
-     * using <tt>pageSize</tt> as the page size.
-     *
-     * @param pageSize         the page size we'll request
-     * @param expectedDatasets all of the {@link Dataset} objects we expect to receive
-     * @throws AvroRemoteException if there's a communication problem or server exception
-     */
-    private void checkSinglePageOfDatasets(int pageSize,
-                                           List<Dataset> expectedDatasets)
-            throws AvroRemoteException {
-
-        final SearchDatasetsRequest pageReq =
-                SearchDatasetsRequest.newBuilder()
-                                     .setPageSize(pageSize)
-                                     .build();
-        final SearchDatasetsResponse pageResp = client.reads.searchDatasets(pageReq);
-        final List<Dataset> pageOfDatasets = pageResp.getDatasets();
-        final String pageToken = pageResp.getNextPageToken();
-
-        assertThat(pageOfDatasets).hasSize(expectedDatasets.size());
-        assertThat(expectedDatasets).containsAll(pageOfDatasets);
-
-        assertThat(pageToken).isNull();
     }
 
 }

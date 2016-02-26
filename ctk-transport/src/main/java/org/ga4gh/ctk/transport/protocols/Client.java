@@ -61,6 +61,15 @@ public class Client {
      */
     public final GenotypePhenotype genotypePhenotype = new GenotypePhenotype();
 
+
+    /**
+     * Provides access to metadata-related methods.  For example,
+     * <pre>
+     *     myClient.metadata.searchDatasets(...);
+     * </pre>
+     */
+    public final Metadata metadata = new Metadata();
+
     /**
      * Create a new client that can make requests on a GA4GH server.
      *
@@ -79,6 +88,51 @@ public class Client {
     public Client(URLMAPPING urls, WireTracker wt) {
         this.urls = urls;
         wireTracker = wt;
+    }
+
+
+    /**
+     * Inner class holding all metadata-related methods.  Gathering them in an inner class like this
+     * makes it a little easier for someone writing tests to use their IDE's auto-complete
+     * to type method names.
+     */
+    public class Metadata implements MetadataMethods {
+        /**
+         * Gets a list of datasets accessible through the API.
+         * <tt>POST /datasets/search</tt> accepts a {@link SearchDatasetsRequest}
+         * and returns a {@link SearchDatasetsResponse}.
+         *
+         * @param request the {@link SearchDatasetsRequest} request
+         * @throws AvroRemoteException if there's a communication problem
+         */
+        @Override
+        public SearchDatasetsResponse searchDatasets(SearchDatasetsRequest request)
+                throws AvroRemoteException {
+            String path = urls.getSearchDatasets();
+            SearchDatasetsResponse response = new SearchDatasetsResponse();
+            final AvroJson aj =
+                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
+            response = (SearchDatasetsResponse) aj.doPostResp();
+
+            return response;
+        }
+
+        /**
+         * Gets a {@link Dataset} by ID.
+         * <tt>GET /datasets/{id}</tt> returns a {@link Dataset}.
+         *
+         * @param id the ID of the dataset
+         * @throws AvroRemoteException if there's a communication problem
+         */
+        @Override
+        public Dataset getDataset(String id) throws AvroRemoteException {
+            String path = urls.getGetDataset();
+            Dataset response = new Dataset();
+            final AvroJson aj =
+                    new AvroJson<>(response, urls.getUrlRoot(), path, wireTracker);
+            response = (Dataset) aj.doGetResp(id);
+            return response;
+        }
     }
 
     /**
@@ -340,43 +394,6 @@ public class Client {
         }
 
         /**
-         * Gets a list of datasets accessible through the API.
-         * <tt>POST /datasets/search</tt> accepts a {@link SearchDatasetsRequest}
-         * and returns a {@link SearchDatasetsResponse}.
-         *
-         * @param request the {@link SearchDatasetsRequest} request
-         * @throws AvroRemoteException if there's a communication problem
-         */
-        @Override
-        public SearchDatasetsResponse searchDatasets(SearchDatasetsRequest request)
-                throws AvroRemoteException {
-            String path = urls.getSearchDatasets();
-            SearchDatasetsResponse response = new SearchDatasetsResponse();
-            final AvroJson aj =
-                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (SearchDatasetsResponse)aj.doPostResp();
-
-            return response;
-        }
-
-        /**
-         * Gets a {@link Dataset} by ID.
-         * <tt>GET /datasets/{id}</tt> returns a {@link Dataset}.
-         *
-         * @param id the ID of the dataset
-         * @throws AvroRemoteException if there's a communication problem
-         */
-        @Override
-        public Dataset getDataset(String id) throws AvroRemoteException {
-            String path = urls.getGetDataset();
-            Dataset response = new Dataset();
-            final AvroJson aj =
-                    new AvroJson<>(response, urls.getUrlRoot(), path, wireTracker);
-            response = (Dataset)aj.doGetResp(id);
-            return response;
-        }
-
-        /**
          * Gets a list of {@link ReadGroupSet} matching the search criteria.
          * <p>
          * <tt>POST /readgroupsets/search</tt> accepts a {@link SearchReadGroupSetsRequest}
@@ -391,6 +408,24 @@ public class Client {
                 throws AvroRemoteException {
             wireTracker = wt;
             return searchReadGroupSets(request);
+        }
+    }
+
+    /**
+     * Inner class holding all GenotypePheotype-related methods.  Gathering them in an inner class like this
+     * makes it a little easier for someone writing tests to use their IDE's auto-complete
+     * to type method names.
+     */
+    public class GenotypePhenotype implements GenotypePhenotypeMethods {
+
+        @Override
+        public SearchGenotypePhenotypeResponse searchGenotypePhenotype(SearchGenotypePhenotypeRequest request) throws AvroRemoteException, GAException {
+            String path = urls.getSearchGenotypePhenotype();
+            SearchGenotypePhenotypeResponse response = new SearchGenotypePhenotypeResponse();
+            final AvroJson aj =
+                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
+            response = (SearchGenotypePhenotypeResponse)aj.doPostResp();
+            return response;
         }
     }
 
@@ -552,25 +587,6 @@ public class Client {
             putInMapIfValueNotNull(params, "pageToken", request.getPageToken());
             response = (ListReferenceBasesResponse)aj.doGetResp(id, params);
 
-            return response;
-        }
-    }
-
-
-    /**
-     * Inner class holding all GenotypePheotype-related methods.  Gathering them in an inner class like this
-     * makes it a little easier for someone writing tests to use their IDE's auto-complete
-     * to type method names.
-     */
-    public class GenotypePhenotype implements GenotypePhenotypeMethods {
-
-        @Override
-        public SearchGenotypePhenotypeResponse searchGenotypePhenotype(SearchGenotypePhenotypeRequest request) throws AvroRemoteException, GAException {
-            String path = urls.getSearchGenotypePhenotype();
-            SearchGenotypePhenotypeResponse response = new SearchGenotypePhenotypeResponse();
-            final AvroJson aj =
-                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (SearchGenotypePhenotypeResponse)aj.doPostResp();
             return response;
         }
     }

@@ -12,7 +12,7 @@ customized to the GA4GH domain objects. Here's an example testcase:
 ```java
 
 	@Test
-    @Parameters({{"low-coverage:HG00533.mapped.ILLUMINA.bwa.CHS.low_coverage.20120522"})
+    @Parameters({"low-coverage:HG00533.mapped.ILLUMINA.bwa.CHS.low_coverage.20120522"})
     public void readsResponseMatchesACTGNPattern(String rgid) throws Exception {
         // do a readsearch
         GASearchReadsRequest gsrr = GASearchReadsRequest.newBuilder()
