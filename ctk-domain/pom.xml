@@ -5,7 +5,7 @@
     <parent>
         <artifactId>ctk-parent</artifactId>
         <groupId>org.ga4gh</groupId>
-        <version>0.6.0a1</version>
+        <version>0.6.0a2</version>
         <relativePath>../parent</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
