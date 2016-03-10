@@ -592,4 +592,30 @@ public class Utils {
         }
         return variantAnnotationSets.get(0);
     }
+
+    /**
+     * Search for and return all {@link FeatureSet}s.
+     *
+     * @param client the connection to the server
+     * @return the {@link List} of results
+     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     */
+    public static List<FeatureSet> getAllFeatureSets(Client client) throws AvroRemoteException {
+
+        final List<FeatureSet> result = new LinkedList<>();
+        String pageToken = null;
+        do {
+            final SearchFeatureSetsRequest req =
+                    SearchFeatureSetsRequest.newBuilder()
+                            .setDatasetId(TestData.getDatasetId())
+                            .setPageSize(100)
+                            .setPageToken(pageToken)
+                            .build();
+            final SearchFeatureSetsResponse resp = client.sequenceAnnotations.searchFeatureSets(req);
+            pageToken = resp.getNextPageToken();
+            result.addAll(resp.getFeatureSets());
+        } while (pageToken != null);
+
+        return result;
+    }
 }

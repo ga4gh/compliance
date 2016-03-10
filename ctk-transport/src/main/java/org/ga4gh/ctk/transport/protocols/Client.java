@@ -18,7 +18,8 @@ import java.util.Map;
  * <li>{@link #reads reads}</li>
  * <li>{@link #variants variants}</li>
  * <li>{@link #references references}</li>
- * <li>{@link #variantAnnotations variantAnnotations}</li> 
+ * <li>{@link #variantAnnotations variantAnnotations}</li>
+ * <li>{@link #sequenceAnnotations sequenceAnnotations}</li>
 * </ul>
  *
  * @author Herb Jellinek
@@ -62,11 +63,20 @@ public class Client {
     public final VariantAnnotations variantAnnotations = new VariantAnnotations();
     
     /**
+     * Provides access to sequenceannotations-related methods.  For example,
+     * <pre>
+     *     myClient.sequenceAnnotations.searchFeatures(...);
+     * </pre>
+     */
+    public final SequenceAnnotations sequenceAnnotations = new SequenceAnnotations();
+
+    /**
      * Provides access to metadata-related methods.  For example,
      * <pre>
      *     myClient.metadata.searchDatasets(...);
      * </pre>
      */
+
     public final Metadata metadata = new Metadata();
 
     /**
@@ -570,6 +580,38 @@ public class Client {
 
             return response;
         }
+    }
+
+    /**
+     * Inner class holding all sequence annotation-related methods.
+     */
+    public class SequenceAnnotations implements SequenceAnnotationMethods {
+        @Override
+        public SearchFeatureSetsResponse searchFeatureSets(SearchFeatureSetsRequest request)
+            throws AvroRemoteException {
+            return new SearchFeatureSetsResponse();
+            // FIXME
+        }
+
+        @Override
+        public FeatureSet getFeatureSet(String id) throws AvroRemoteException {
+            return new FeatureSet();
+            // TODO: Stubbed out
+        }
+
+        @Override
+        public SearchFeaturesResponse searchFeatures(SearchFeaturesRequest request)
+            throws AvroRemoteException {
+            return new SearchFeaturesResponse();
+            // TODO: Stubbed out
+        }
+
+        @Override
+        public Feature getFeature(String id) throws AvroRemoteException {
+            return new Feature();
+            // TODO: Stubbed out
+        }
+
     }
 
     /**
