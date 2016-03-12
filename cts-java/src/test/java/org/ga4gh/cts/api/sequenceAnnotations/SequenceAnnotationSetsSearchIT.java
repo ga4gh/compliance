@@ -8,6 +8,7 @@ import org.ga4gh.cts.api.Utils;
 import org.ga4gh.methods.GAException;
 import org.ga4gh.models.FeatureSet;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author Maciek Smuga-Otto
  */
+@Category(SequenceAnnotationTests.class)
 public class SequenceAnnotationSetsSearchIT {
 
 

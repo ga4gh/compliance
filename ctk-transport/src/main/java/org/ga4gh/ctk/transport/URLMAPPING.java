@@ -101,6 +101,11 @@ public interface URLMAPPING {
     void setSearchVariantAnnotations(String searchVariantAnnotations);
 
 
+    String getSearchFeatureSets();
+
+    void setSearchFeatureSets(String searchFeatureSets);
+
+
     Map<String, String> getEndpoints();
 
     void setEndpoints(Map<String, String> endpoints);

@@ -589,8 +589,12 @@ public class Client {
         @Override
         public SearchFeatureSetsResponse searchFeatureSets(SearchFeatureSetsRequest request)
             throws AvroRemoteException {
-            return new SearchFeatureSetsResponse();
-            // FIXME
+            String path = urls.getSearchFeatureSets();
+            SearchFeatureSetsResponse response = new SearchFeatureSetsResponse();
+            final AvroJson aj =
+                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
+            response = (SearchFeatureSetsResponse)aj.doPostResp();
+            return response;
         }
 
         @Override
