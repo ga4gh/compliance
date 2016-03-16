@@ -148,9 +148,14 @@ public class TestData {
     public static final String CALL_SET_NAME = "HG00096";
 
     /**
-     * The call set name is used to test searching by call set name functionality.
+     * The BioSample name is used to test searching by BioSample name functionality.
      */
     public static final String BIOSAMPLE_NAME = "HG00096";
+
+    /**
+     * The VariantSet name in the test data.
+     */
+    public static final String VARIANTSET_NAME = "1kgPhase3";
 
     /**
      * Return the ID of the compliance dataset on the server being tested.

@@ -13,6 +13,7 @@ import org.ga4gh.methods.SearchReadGroupSetsRequest;
 import org.ga4gh.methods.SearchReadGroupSetsResponse;
 import org.ga4gh.models.ReadGroup;
 import org.ga4gh.models.ReadGroupSet;
+import org.ga4gh.models.BioSample;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -197,6 +198,29 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
         for (ReadGroupSet readGroupSet : readGroupSets) {
             for (ReadGroup readGroup : readGroupSet.getReadGroups()) {
                 assertThat(readGroup.getId()).isNotNull();
+            }
+        }
+    }
+
+    /**
+     * Read group sets return a list of read groups that should all match the requested
+     * biosample ID.
+     * @throws AvroRemoteException
+     */
+    @Test
+    public void checkBioSampleFilter() throws AvroRemoteException {
+        final BioSample b = Utils.getBioSampleByName(client, TestData.BIOSAMPLE_NAME);
+        final SearchReadGroupSetsRequest req =
+                SearchReadGroupSetsRequest.newBuilder()
+                        .setDatasetId(TestData.getDatasetId())
+                        .setBioSampleId(b.getId())
+                        .build();
+        final SearchReadGroupSetsResponse resp = client.reads.searchReadGroupSets(req);
+        final List<ReadGroupSet> readGroupSets = resp.getReadGroupSets();
+        assertThat(readGroupSets).isNotEmpty();
+        for (ReadGroupSet readGroupSet : readGroupSets) {
+            for (ReadGroup readGroup : readGroupSet.getReadGroups()) {
+                assertThat(readGroup.getBioSampleId()).isEqualTo(b.getId());
             }
         }
     }

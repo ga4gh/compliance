@@ -574,8 +574,19 @@ public class Client {
             return response;
         }
     }
-
+    /**
+     * Inner class holding all biodata-related methods.  Gathering them in an inner class like
+     * this
+     * makes it a little easier for someone writing tests to use their IDE's auto-complete
+     * to type method names.
+     */
     public class Biodata implements BiodataMethods {
+        /**
+         * Searches biosamples at the /biosamples/search endpoint using the given request.
+         * @param request   A SearchBioSamples request
+         * @return SearchBioSamplesResponse
+         * @throws AvroRemoteException
+         */
         @Override
         public SearchBioSamplesResponse searchBiosamples(SearchBioSamplesRequest request) throws AvroRemoteException {
             String path = urls.getSearchBioSamples();
@@ -586,9 +597,15 @@ public class Client {
             return response;
         }
 
+        /**
+         * Get a biosample by ID by getting the /biosamples/id endpoint
+         * @param id
+         * @return BioSample
+         * @throws AvroRemoteException
+         */
         @Override
         public BioSample getBioSample(String id) throws AvroRemoteException {
-            String path = urls.getSearchBioSamples();
+            String path = urls.getGetBioSample();
             BioSample response = new BioSample();
             final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
             response = (BioSample)aj.doGetResp(id);

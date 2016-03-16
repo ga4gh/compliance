@@ -9,6 +9,7 @@ import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
 import org.ga4gh.methods.*;
+import org.ga4gh.models.BioSample;
 import org.ga4gh.models.CallSet;
 import org.ga4gh.models.VariantSet;
 import org.junit.Test;
@@ -154,5 +155,28 @@ public class CallSetsSearchResponseCheckIT implements CtkLogs {
         assertThat(gae.getHttpStatusCode()).isEqualTo(HttpURLConnection.HTTP_NOT_FOUND);
     }
 
+    /**
+     * Tests to ensure that when requesting callsets using the BioSample Id filter that
+     * only callsets with the given BioSample Id are returned.
+     * @throws AvroRemoteException
+     */
+    @Test
+    public void searchCallSetsByBioSampleId() throws AvroRemoteException {
+        final BioSample bioSample = Utils.getBioSampleByName(client, TestData.BIOSAMPLE_NAME);
 
+        // grab the first VariantSet and use it as source of CallSets
+        final VariantSet variantSet = Utils.getVariantSetByName(client, TestData.VARIANTSET_NAME);
+        final String variantSetId = variantSet.getId();
+
+        final SearchCallSetsRequest callSetsSearchRequest =
+                SearchCallSetsRequest.newBuilder()
+                        .setVariantSetId(variantSetId)
+                        .setBioSampleId(bioSample.getId())
+                        .build();
+        final SearchCallSetsResponse csResp = client.variants.searchCallSets(callSetsSearchRequest);
+        assertThat(csResp.getCallSets()).isNotEmpty();
+        for (CallSet cs: csResp.getCallSets()) {
+            assertThat(cs.getBioSampleId()).isEqualTo(bioSample.getId());
+        }
+    }
 }

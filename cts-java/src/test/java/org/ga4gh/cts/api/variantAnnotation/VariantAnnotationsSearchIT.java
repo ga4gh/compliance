@@ -260,7 +260,6 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
      */
     @Test
     public void checkFilteringByEffectTerm() throws AvroRemoteException {
-
         final OntologyTerm term = new OntologyTerm("SO:0001819", "synonymous_variant", "source", "0");
         // Obtain a VariantAnnotationSet from the compliance dataset.
         final String variantAnnotationSetId =
