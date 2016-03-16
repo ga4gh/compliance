@@ -1,0 +1,45 @@
+package org.ga4gh.cts.api.biodata;
+
+import org.apache.avro.AvroRemoteException;
+import org.ga4gh.ctk.transport.URLMAPPING;
+import org.ga4gh.ctk.transport.protocols.Client;
+import org.ga4gh.cts.api.TestData;
+import org.ga4gh.cts.api.Utils;
+import org.ga4gh.cts.api.datasets.DatasetsTests;
+import org.ga4gh.methods.*;
+import org.ga4gh.models.BioSample;
+import org.ga4gh.models.Dataset;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+
+@Category(DatasetsTests.class)
+public class BiodataSearchIT {
+
+    private static Client client = new Client(URLMAPPING.getInstance());
+    
+    @Test
+    public void checkSearchBioSamples() throws AvroRemoteException {
+        // search biosamples for a known name
+        final SearchBioSamplesRequest req =
+                SearchBioSamplesRequest.newBuilder()
+                        .setDatasetId(TestData.getDatasetId())
+                        .setName(TestData.BIOSAMPLE_NAME)
+                        .build();
+
+        final SearchBioSamplesResponse resp = client.biodata.searchBiosamples(req);
+        assertThat(resp).isNotNull();
+        for (BioSample b : resp.getBiosamples()) {
+            assertThat(b.getName()).isEqualTo(TestData.BIOSAMPLE_NAME);
+        }
+        // check proper key values
+
+    }
+
+}

@@ -76,6 +76,9 @@ public class URLMAPPINGImpl implements URLMAPPING {
         defaultEndpoints.put("ctk.tgt.searchVariantAnnotations", "variantannotations/search");
         defaultEndpoints.put("ctk.tgt.getVariantAnnotationSet", "variantannotationsets/{id}");
 
+        defaultEndpoints.put("ctk.tgt.searchBioSamples", "biosamples/search");
+        defaultEndpoints.put("ctk.tgt.getBioSample", "biosamples/{id}");
+
         dumpToStdOut = Boolean.getBoolean("ctk.tgt.urlmapper.dump"); // so, -Dctk.tgt.urlmapper.dump=true
 
         log.info("set default URLMAPPING urlRoot to " + defaultEndpoints.get("ctk.tgt.urlRoot"));
@@ -435,6 +438,26 @@ public class URLMAPPINGImpl implements URLMAPPING {
     @Override
     public void setSearchVariantAnnotationSets(String searchVariantAnnotationSets) {
         endpoints.put("ctk.tgt.searchVariantAnnotationSets", searchVariantAnnotationSets);
+    }
+
+    @Override
+    public String getGetBioSample() {
+        return endpoints.get("ctk.tgt.getBioSample");
+    }
+
+    @Override
+    public void setGetBioSample(String getBioSample) {
+        endpoints.put("ctk.tgt.getBioSample", getBioSample);
+    }
+
+    @Override
+    public String getSearchBioSamples() {
+        return endpoints.get("ctk.tgt.searchBioSamples");
+    }
+
+    @Override
+    public void setSearchBioSamples(String searchBioSamples) {
+        endpoints.put("ctk.tgt.searchBioSamples", searchBioSamples);
     }
 
     @Override

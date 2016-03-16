@@ -100,6 +100,14 @@ public interface URLMAPPING {
 
     void setSearchVariantAnnotations(String searchVariantAnnotations);
 
+    String getSearchBioSamples();
+
+    void setSearchBioSamples(String searchBioSamples);
+
+    String getGetBioSample();
+
+    void setGetBioSample(String getBioSamples);
+
 
     Map<String, String> getEndpoints();
 

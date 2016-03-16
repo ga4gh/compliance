@@ -69,6 +69,9 @@ public class Client {
      */
     public final Metadata metadata = new Metadata();
 
+
+    public final Biodata biodata = new Biodata();
+
     /**
      * Create a new client that can make requests on a GA4GH server.
      *
@@ -572,6 +575,27 @@ public class Client {
         }
     }
 
+    public class Biodata implements BiodataMethods {
+        @Override
+        public SearchBioSamplesResponse searchBiosamples(SearchBioSamplesRequest request) throws AvroRemoteException {
+            String path = urls.getSearchBioSamples();
+            SearchBioSamplesResponse response = new SearchBioSamplesResponse();
+            final AvroJson aj =
+                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
+            response = (SearchBioSamplesResponse) aj.doPostResp();
+            return response;
+        }
+
+        @Override
+        public BioSample getBioSample(String id) throws AvroRemoteException {
+            String path = urls.getSearchBioSamples();
+            BioSample response = new BioSample();
+            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
+            response = (BioSample)aj.doGetResp(id);
+            return response;
+        }
+    }
+
     /**
      * Inner class holding all variant annotation-related methods.  Gathering them in an inner class like this
      * makes it a little easier for someone writing tests to use their IDE's auto-complete
@@ -614,7 +638,7 @@ public class Client {
         /**
          * Gets a list of {@link VariantAnnotationSet} matching the search criteria.
          * <p>
-         * <tt>POST /variantannotationsets/search</tt> accepts a {@link SearchAnnotationVariantSetsRequest}
+         * <tt>POST /variantannotationsets/search</tt> accepts a {@link SearchVariantAnnotationSetsRequest}
          * as the post body and returns a {@link SearchVariantAnnotationSetsResponse}.
          *
          * @param request the SearchVariantAnnotationSetsRequest we'll issue

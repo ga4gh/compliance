@@ -148,6 +148,11 @@ public class TestData {
     public static final String CALL_SET_NAME = "HG00096";
 
     /**
+     * The call set name is used to test searching by call set name functionality.
+     */
+    public static final String BIOSAMPLE_NAME = "HG00096";
+
+    /**
      * Return the ID of the compliance dataset on the server being tested.
      * By default this is the value of {@link #DEFAULT_DATASET_ID}, but
      * you can override it by setting the Java property <tt>-Dctk.tgt.dataset_id</tt>.
