@@ -79,6 +79,9 @@ public class URLMAPPINGImpl implements URLMAPPING {
         defaultEndpoints.put("ctk.tgt.searchBioSamples", "biosamples/search");
         defaultEndpoints.put("ctk.tgt.getBioSample", "biosamples/{id}");
 
+        defaultEndpoints.put("ctk.tgt.searchIndividuals", "individuals/search");
+        defaultEndpoints.put("ctk.tgt.getIndividual", "individuals/{id}");
+
         dumpToStdOut = Boolean.getBoolean("ctk.tgt.urlmapper.dump"); // so, -Dctk.tgt.urlmapper.dump=true
 
         log.info("set default URLMAPPING urlRoot to " + defaultEndpoints.get("ctk.tgt.urlRoot"));
@@ -458,6 +461,26 @@ public class URLMAPPINGImpl implements URLMAPPING {
     @Override
     public void setSearchBioSamples(String searchBioSamples) {
         endpoints.put("ctk.tgt.searchBioSamples", searchBioSamples);
+    }
+
+    @Override
+    public String getGetIndividual() {
+        return endpoints.get("ctk.tgt.getIndividual");
+    }
+
+    @Override
+    public void setGetIndividual(String getIndividual) {
+        endpoints.put("ctk.tgt.getBioSample", getIndividual);
+    }
+
+    @Override
+    public String getSearchIndividuals() {
+        return endpoints.get("ctk.tgt.searchIndividuals");
+    }
+
+    @Override
+    public void setSearchIndividuals(String searchIndividuals) {
+        endpoints.put("ctk.tgt.searchIndividuals", searchIndividuals);
     }
 
     @Override

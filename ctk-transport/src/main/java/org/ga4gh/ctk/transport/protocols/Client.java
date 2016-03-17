@@ -611,6 +611,37 @@ public class Client {
             response = (BioSample)aj.doGetResp(id);
             return response;
         }
+
+        /**
+         * Searches individuals at the /individuals/search endpoint using the given request.
+         * @param request   A SearchIndividuals request
+         * @return SearchIndividualsResponse
+         * @throws AvroRemoteException
+         */
+        @Override
+        public SearchIndividualsResponse searchIndividuals(SearchIndividualsRequest request) throws AvroRemoteException {
+            String path = urls.getSearchIndividuals();
+            SearchIndividualsResponse response = new SearchIndividualsResponse();
+            final AvroJson aj =
+                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
+            response = (SearchIndividualsResponse) aj.doPostResp();
+            return response;
+        }
+
+        /**
+         * Get an individual by ID by getting the /biosamples/id endpoint
+         * @param id
+         * @return Individual
+         * @throws AvroRemoteException
+         */
+        @Override
+        public Individual getIndividual(String id) throws AvroRemoteException {
+            String path = urls.getGetIndividual();
+            Individual response = new Individual();
+            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
+            response = (Individual)aj.doGetResp(id);
+            return response;
+        }
     }
 
     /**

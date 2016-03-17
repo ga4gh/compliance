@@ -108,6 +108,14 @@ public interface URLMAPPING {
 
     void setGetBioSample(String getBioSamples);
 
+    String getSearchIndividuals();
+
+    void setSearchIndividuals(String searchIndividuals);
+
+    String getGetIndividual();
+
+    void setGetIndividual(String getIndividual);
+
 
     Map<String, String> getEndpoints();
 
