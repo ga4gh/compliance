@@ -619,8 +619,11 @@ public class Client {
 
         @Override
         public Feature getFeature(String id) throws AvroRemoteException {
-            return new Feature();
-            // TODO: Stubbed out
+            String path = urls.getGetFeature();
+            Feature response = new Feature();
+            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
+            response = (Feature)aj.doGetResp(id);
+            return response;
         }
 
     }
