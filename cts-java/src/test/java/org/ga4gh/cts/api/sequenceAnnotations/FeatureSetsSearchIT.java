@@ -15,10 +15,12 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
+ *  Tests for <tt>POST /featureSets/search</tt>.
+ *
  * @author Maciek Smuga-Otto
  */
 @Category(SequenceAnnotationTests.class)
-public class SequenceAnnotationSetsSearchIT {
+public class FeatureSetsSearchIT {
 
 
     private static Client client = new Client(URLMAPPING.getInstance());
@@ -29,16 +31,16 @@ public class SequenceAnnotationSetsSearchIT {
      *@throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkSearchingSequenceAnnotationSets() throws AvroRemoteException {
+    public void checkSearchingFeatureSets() throws AvroRemoteException {
 
         // Seek a list of SequenceAnnotationSets for the compliance dataset.
-        final List<FeatureSet> sequenceAnnotationSets =  Utils.getAllFeatureSets(client);
+        final List<FeatureSet> featureSets =  Utils.getAllFeatureSets(client);
 
         // check some are available
-        assertThat(sequenceAnnotationSets).isNotEmpty();
+        assertThat(featureSets).isNotEmpty();
 
-        // Check the variantSetId is as expected.
-        sequenceAnnotationSets.stream()
+        // Check the featureSetId is as expected.
+        featureSets.stream()
                 .forEach(sas -> StrictAssertions.assertThat(sas.getName()).isNotNull());
     }
 

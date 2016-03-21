@@ -599,15 +599,22 @@ public class Client {
 
         @Override
         public FeatureSet getFeatureSet(String id) throws AvroRemoteException {
-            return new FeatureSet();
-            // TODO: Stubbed out
+            String path = urls.getGetFeatureSet();
+            FeatureSet response = new FeatureSet();
+            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
+            response = (FeatureSet)aj.doGetResp(id);
+            return response;
         }
 
         @Override
         public SearchFeaturesResponse searchFeatures(SearchFeaturesRequest request)
             throws AvroRemoteException {
-            return new SearchFeaturesResponse();
-            // TODO: Stubbed out
+            String path = urls.getSearchFeatures();
+            SearchFeaturesResponse response = new SearchFeaturesResponse();
+            final AvroJson aj =
+                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
+            response = (SearchFeaturesResponse)aj.doPostResp();
+            return response;
         }
 
         @Override
@@ -660,7 +667,7 @@ public class Client {
         /**
          * Gets a list of {@link VariantAnnotationSet} matching the search criteria.
          * <p>
-         * <tt>POST /variantannotationsets/search</tt> accepts a {@link SearchAnnotationVariantSetsRequest}
+         * <tt>POST /variantannotationsets/search</tt> accepts a {@link SearchVariantAnnotationSetsRequest}
          * as the post body and returns a {@link SearchVariantAnnotationSetsResponse}.
          *
          * @param request the SearchVariantAnnotationSetsRequest we'll issue

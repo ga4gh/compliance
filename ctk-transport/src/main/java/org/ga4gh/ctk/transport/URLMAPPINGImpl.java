@@ -77,6 +77,9 @@ public class URLMAPPINGImpl implements URLMAPPING {
         defaultEndpoints.put("ctk.tgt.getVariantAnnotationSet", "variantannotationsets/{id}");
 
         defaultEndpoints.put("ctk.tgt.searchFeatureSets", "featuresets/search");
+        defaultEndpoints.put("ctk.tgt.getFeatureSets", "featuresets/{id}");
+        defaultEndpoints.put("ctk.tgt.searchFeatures", "features/search");
+        defaultEndpoints.put("ctk.tgt.getFeatures", "features/{id}");
 
         dumpToStdOut = Boolean.getBoolean("ctk.tgt.urlmapper.dump"); // so, -Dctk.tgt.urlmapper.dump=true
 
@@ -457,6 +460,36 @@ public class URLMAPPINGImpl implements URLMAPPING {
     @Override
     public void setSearchFeatureSets(String searchFeatureSets) {
         endpoints.put("ctk.tgt.searchFeatureSets", searchFeatureSets);
+    }
+
+    @Override
+    public void setGetFeatureSet(String getFeatureSets) {
+        endpoints.put("ctk.tgt.getFeatureSets", getFeatureSets);
+    }
+
+    @Override
+    public String getGetFeatureSet() {
+        return endpoints.get("ctk.tgt.getFeatureSets");
+    }
+
+    @Override
+    public String getSearchFeatures() {
+        return endpoints.get("ctk.tgt.searchFeatures");
+    }
+
+    @Override
+    public void setSearchFeatures(String searchFeatures) {
+        endpoints.put("ctk.tgt.searchFeatures", searchFeatures);
+    }
+
+    @Override
+    public void setGetFeature(String getFeatures) {
+        endpoints.put("ctk.tgt.getFeatures", getFeatures);
+    }
+
+    @Override
+    public String getGetFeature() {
+        return endpoints.get("ctk.tgt.getFeatures");
     }
 
     @Override
