@@ -159,6 +159,11 @@ public class TestData {
     public static final String PHENOTYPE_DB_ID = "37da8697";
 
     /**
+     * Phenotype Associations Set ID
+     */
+    public static final String PHENOTYPE_ASSOCIATIONSET_ID = "ZGF0YXNldDE6Y2dk";
+
+    /**
      * GenotypePhenotype PHENOTYPE external database Version.
      */
     public static final String PHENOTYPE_DB_VERSION = "*";

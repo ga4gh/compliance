@@ -51,6 +51,7 @@ public class GenotypePhenotypeSearchIT {
     public void simpleFeatureSearch() throws AvroRemoteException {
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest.newBuilder().build();
         request.setFeature(TestData.FEATURE_NAME);
+        request.setPhenotypeAssociationSetId(TestData.PHENOTYPE_ASSOCIATIONSET_ID);
         SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
         assertThat(response.getAssociations()).isNotNull() ;
         assertThat(response.getAssociations()).isNotEmpty() ;
@@ -64,6 +65,8 @@ public class GenotypePhenotypeSearchIT {
     public void simpleEvidenceSearch() throws AvroRemoteException {
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest.newBuilder().build();
         request.setEvidence(TestData.EVIDENCE_NAME);
+        request.setPhenotypeAssociationSetId(TestData.PHENOTYPE_ASSOCIATIONSET_ID);
+        System.err.println(request.toString());
         SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
         assertThat(response.getAssociations()).isNotNull() ;
         assertThat(response.getAssociations()).isNotEmpty() ;
@@ -77,6 +80,7 @@ public class GenotypePhenotypeSearchIT {
     public void evidenceLevelCheck() throws AvroRemoteException {
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest.newBuilder().build();
         request.setFeature(TestData.FEATURE_NAME);
+        request.setPhenotypeAssociationSetId(TestData.PHENOTYPE_ASSOCIATIONSET_ID);
         SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
         assertThat(response.getAssociations()).isNotNull();
         assertThat(response.getAssociations()).isNotEmpty();
@@ -92,6 +96,7 @@ public class GenotypePhenotypeSearchIT {
     public void simplePhenotypeSearch() throws AvroRemoteException {
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest.newBuilder().build();
         request.setPhenotype(TestData.PHENOTYPE_NAME);
+        request.setPhenotypeAssociationSetId(TestData.PHENOTYPE_ASSOCIATIONSET_ID);
         SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
         assertThat(response.getAssociations()).isNotNull() ;
         assertThat(response.getAssociations()).isNotEmpty() ;
@@ -126,6 +131,7 @@ public class GenotypePhenotypeSearchIT {
         ExternalIdentifierQuery feature = new ExternalIdentifierQuery();
         feature.setIds(ids);
         request.setFeature(feature);
+        request.setPhenotypeAssociationSetId(TestData.PHENOTYPE_ASSOCIATIONSET_ID);
         SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
         assertThat(response.getAssociations()).isNotNull() ;
         assertThat(response.getAssociations().size()).isEqualTo(1);
@@ -147,6 +153,7 @@ public class GenotypePhenotypeSearchIT {
         ExternalIdentifierQuery phenotype = new ExternalIdentifierQuery();
         phenotype.setIds(ids);
         request.setPhenotype(phenotype);
+        request.setPhenotypeAssociationSetId(TestData.PHENOTYPE_ASSOCIATIONSET_ID);
         SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
         assertThat(response.getAssociations()).isNotNull() ;
         assertThat(response.getAssociations()).isNotEmpty() ;
@@ -168,6 +175,7 @@ public class GenotypePhenotypeSearchIT {
         ExternalIdentifierQuery evidence = new ExternalIdentifierQuery();
         evidence.setIds(ids);
         request.setEvidence(evidence);
+        request.setPhenotypeAssociationSetId(TestData.PHENOTYPE_ASSOCIATIONSET_ID);
         SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
         assertThat(response.getAssociations()).isNotNull();
         assertThat(response.getAssociations()).isNotEmpty();
@@ -183,6 +191,7 @@ public class GenotypePhenotypeSearchIT {
     public void testGenotypePhenotypeSearchFeaturePagingOne() throws AvroRemoteException {
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest.newBuilder().build();
         request.setFeature(TestData.FEATURE_NAME);
+        request.setPhenotypeAssociationSetId(TestData.PHENOTYPE_ASSOCIATIONSET_ID);
         request.setPageSize(1);
         SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
         assertThat(response).isNotNull();
@@ -198,6 +207,7 @@ public class GenotypePhenotypeSearchIT {
     public void testGenotypePhenotypeSearchFeaturePagingMore() throws AvroRemoteException {
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest.newBuilder().build();
         request.setFeature(TestData.FEATURE_NAME);
+        request.setPhenotypeAssociationSetId(TestData.PHENOTYPE_ASSOCIATIONSET_ID);
         SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
         assertThat(response.getAssociations()).isNotNull() ;
         assertThat(response.getAssociations().size()).isGreaterThan(1);
@@ -211,6 +221,7 @@ public class GenotypePhenotypeSearchIT {
     public void testGenotypePhenotypeSearchFeaturePagingAll() throws AvroRemoteException {
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest.newBuilder().build();
         request.setFeature(TestData.FEATURE_NAME);
+        request.setPhenotypeAssociationSetId(TestData.PHENOTYPE_ASSOCIATIONSET_ID);
         request.setPageSize(1);
         SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
         assertThat(response.getAssociations()).isNotNull() ;
