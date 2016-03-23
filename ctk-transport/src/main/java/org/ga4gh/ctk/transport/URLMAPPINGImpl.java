@@ -365,6 +365,14 @@ public class URLMAPPINGImpl implements URLMAPPING {
     }
 
     @Override
+    public String getSearchPhenotypeAssociationSets() { return endpoints.get("ctk.tgt.searchPhenotypeAssociationSets"); }
+
+    @Override
+    public void setSearchPhenotypeAssociationSets(String searchPhenotypeAssociationSets) {
+        endpoints.put("ctk.tgt.searchPhenotypeAssociationSets", searchPhenotypeAssociationSets);
+    }
+
+    @Override
     public String getSearchVariantSets() {
         return endpoints.get("ctk.tgt.searchVariantSets");
     }

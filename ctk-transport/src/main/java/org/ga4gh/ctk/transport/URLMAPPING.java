@@ -44,6 +44,10 @@ public interface URLMAPPING {
 
     void setSearchGenotypePhenotype(String searchGenotypePhenotype);
 
+    String getSearchPhenotypeAssociationSets();
+
+    void setSearchPhenotypeAssociationSets(String searchPhenotypeAssociationSets);
+
     String getSearchReadGroupSets();
 
     void setSearchReadGroupSets(String searchReadGroupSets);
