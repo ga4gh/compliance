@@ -53,15 +53,15 @@ public class FeaturesSearchIT implements CtkLogs {
 
         final String id = Utils.getFeatureSetId(client);
 
-        final SearchFeaturesRequest vReq =
+        final SearchFeaturesRequest fReq =
                 SearchFeaturesRequest.newBuilder()
                                      .setFeatureSetId(id)
                                      .setReferenceName(TestData.REFERENCE_NAME)
                                      .setStart(start).setEnd(end)
                                      .setParentId(parentId)
                                      .build();
-        final SearchFeaturesResponse vResp = client.sequenceAnnotations.searchFeatures(vReq);
-        final List<Feature> searchFeatures = vResp.getFeatures();
+        final SearchFeaturesResponse fResp = client.sequenceAnnotations.searchFeatures(fReq);
+        final List<Feature> searchFeatures = fResp.getFeatures();
 
         assertThat(searchFeatures).hasSize(expectedNumberOfFeatures);
     }
@@ -75,25 +75,42 @@ public class FeaturesSearchIT implements CtkLogs {
     public void checkFeaturesSearchByParentId() throws AvroRemoteException {
         final long start = 0;
         final long end = 100000000;
-        final String parentId = "YnJjYTE6Z2VuY29kZXYxOTpFTlNUMDAwMDAzNTQwNzEuMw";
-        final int expectedNumberOfFeatures = 40;
+        final int expectedNumberOfFeatures = 20;
 
         final String id = Utils.getFeatureSetId(client);
 
-        // first obtain the ID of the first gene in the test range.
-        final SearchFeaturesRequest vReq =
+        // first search: obtain the ID of the first transcript in the test range.
+        final String parentId1 = "";
+        final String featureType1 = "transcript";
+        final List<String> featureTypes1 = new ArrayList<String>(){{add(featureType1);}};
+
+        final SearchFeaturesRequest fReq1 =
+                SearchFeaturesRequest.newBuilder()
+                        .setFeatureSetId(id)
+                        .setReferenceName(TestData.REFERENCE_NAME)
+                        .setStart(start).setEnd(end)
+                        .setParentId(parentId1)
+                        .setFeatureTypes(featureTypes1)
+                        .build();
+        final SearchFeaturesResponse fResp1 = client.sequenceAnnotations.searchFeatures(fReq1);
+        final List<Feature> searchFeatures = fResp1.getFeatures();
+
+        final String parentId2 = searchFeatures.get(0).getId();
+
+        // second search: obtain the direct children of this transcript:
+        final SearchFeaturesRequest fReq2 =
                 SearchFeaturesRequest.newBuilder()
                                      .setFeatureSetId(id)
                                      .setReferenceName(TestData.REFERENCE_NAME)
                                      .setStart(start).setEnd(end)
-                                     .setParentId(parentId)
+                                     .setParentId(parentId2)
                                      .build();
-        final SearchFeaturesResponse vResp = client.sequenceAnnotations.searchFeatures(vReq);
-        final List<Feature> searchFeatures = vResp.getFeatures();
+        final SearchFeaturesResponse fResp2 = client.sequenceAnnotations.searchFeatures(fReq2);
+        final List<Feature> searchFeatures2 = fResp2.getFeatures();
 
-        assertThat(searchFeatures).hasSize(expectedNumberOfFeatures);
-        checkAllFeatures(searchFeatures, f -> assertThat(
-                f.getParentId()).isEqualTo(parentId));
+        assertThat(searchFeatures2).hasSize(expectedNumberOfFeatures);
+        checkAllFeatures(searchFeatures2, f -> assertThat(
+                f.getParentId()).isEqualTo(parentId2));
     }
 
     /**
@@ -112,7 +129,7 @@ public class FeaturesSearchIT implements CtkLogs {
 
         final String id = Utils.getFeatureSetId(client);
 
-        final SearchFeaturesRequest vReq =
+        final SearchFeaturesRequest fReq =
                 SearchFeaturesRequest.newBuilder()
                                      .setFeatureSetId(id)
                                      .setReferenceName(TestData.REFERENCE_NAME)
@@ -120,8 +137,8 @@ public class FeaturesSearchIT implements CtkLogs {
                                      .setParentId(parentId)
                                      .setFeatureTypes(featureTypes)
                                      .build();
-        final SearchFeaturesResponse vResp = client.sequenceAnnotations.searchFeatures(vReq);
-        final List<Feature> searchFeatures = vResp.getFeatures();
+        final SearchFeaturesResponse fResp = client.sequenceAnnotations.searchFeatures(fReq);
+        final List<Feature> searchFeatures = fResp.getFeatures();
 
         assertThat(searchFeatures).hasSize(expectedNumberOfFeatures);
         checkAllFeatures(searchFeatures, f -> assertThat(
