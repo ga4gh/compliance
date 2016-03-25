@@ -41,15 +41,7 @@ public class FeaturesGetByIdIT {
         final String parentId = "";
         final int expectedNumberOfFeatures = 19;
 
-        final SearchFeatureSetsRequest req =
-                SearchFeatureSetsRequest.newBuilder()
-                        .setDatasetId(TestData.getDatasetId())
-                        .build();
-        final SearchFeatureSetsResponse resp = client.sequenceAnnotations.searchFeatureSets(req);
-
-        final List<FeatureSet> featureSets = resp.getFeatureSets();
-        assertThat(featureSets).isNotEmpty();
-        final String featureSetId = featureSets.get(0).getId();
+        final String featureSetId = Utils.getFeatureSetId(client);
 
         final SearchFeaturesRequest vReq =
                 SearchFeaturesRequest.newBuilder()
@@ -71,6 +63,4 @@ public class FeaturesGetByIdIT {
         }
 
     }
-
-
 }

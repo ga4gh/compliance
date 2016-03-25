@@ -36,7 +36,7 @@ public class FeatureSetsGetByIdIT {
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkFeatureSetsGetResultsMatchSearchResults() throws AvroRemoteException {
+    public void checkFeatureSetsGetResults() throws AvroRemoteException {
         final int expectedNumberOfFeatureSets = 1;
 
         final List<FeatureSet> featureSets = Utils.getAllFeatureSets(client);

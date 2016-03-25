@@ -1,5 +1,6 @@
 package org.ga4gh.cts.api.sequenceAnnotations;
 
+import java.util.ArrayList;
 import org.apache.avro.AvroRemoteException;
 import org.ga4gh.ctk.CtkLogs;
 import org.ga4gh.ctk.transport.URLMAPPING;
@@ -7,6 +8,7 @@ import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.sequenceAnnotations.SequenceAnnotationTests;
 import org.ga4gh.methods.*;
+import org.ga4gh.cts.api.Utils;
 import org.ga4gh.models.Call;
 import org.ga4gh.models.Feature;
 import org.ga4gh.models.FeatureSet;
@@ -44,20 +46,12 @@ public class FeaturesSearchIT implements CtkLogs {
      */
     @Test
     public void checkExpectedNumberOfFeatures() throws AvroRemoteException {
-        final long start = 50;
-        final long end = 100;
-        final int expectedNumberOfFeatures = 19;
+        final long start = 62162;
+        final long end = 62239;
         final String parentId = "";
+        final int expectedNumberOfFeatures = 69;
 
-        final SearchFeatureSetsRequest req =
-                SearchFeatureSetsRequest.newBuilder()
-                                        .setDatasetId(TestData.getDatasetId())
-                                        .build();
-        final SearchFeatureSetsResponse resp = client.sequenceAnnotations.searchFeatureSets(req);
-
-        final List<FeatureSet> featureSets = resp.getFeatureSets();
-        assertThat(featureSets).isNotEmpty();
-        final String id = featureSets.get(0).getId();
+        final String id = Utils.getFeatureSetId(client);
 
         final SearchFeaturesRequest vReq =
                 SearchFeaturesRequest.newBuilder()
@@ -73,28 +67,20 @@ public class FeaturesSearchIT implements CtkLogs {
     }
 
     /**
-     * Check that the features we receive from
-     * {@link org.ga4gh.ctk.transport.protocols.Client.SequenceAnnotations#searchFeatures(SearchFeaturesRequest)}
-     * search contain the expected reference name.
+     * Check that the features returned from a search by parentId return as expected.
      *
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkFeaturesForExpectedReferenceName() throws AvroRemoteException {
-        final long start = 50;
-        final long end = 100;
-        final String parentId = "";
+    public void checkFeaturesSearchByParentId() throws AvroRemoteException {
+        final long start = 0;
+        final long end = 100000000;
+        final String parentId = "YnJjYTE6Z2VuY29kZXYxOTpFTlNUMDAwMDAzNTQwNzEuMw";
+        final int expectedNumberOfFeatures = 40;
 
-        final SearchFeatureSetsRequest req =
-                SearchFeatureSetsRequest.newBuilder()
-                                        .setDatasetId(TestData.getDatasetId())
-                                        .build();
-        final SearchFeatureSetsResponse resp = client.sequenceAnnotations.searchFeatureSets(req);
+        final String id = Utils.getFeatureSetId(client);
 
-        final List<FeatureSet> featureSets = resp.getFeatureSets();
-        assertThat(featureSets).isNotEmpty();
-        final String id = featureSets.get(0).getId();
-
+        // first obtain the ID of the first gene in the test range.
         final SearchFeaturesRequest vReq =
                 SearchFeaturesRequest.newBuilder()
                                      .setFeatureSetId(id)
@@ -105,31 +91,26 @@ public class FeaturesSearchIT implements CtkLogs {
         final SearchFeaturesResponse vResp = client.sequenceAnnotations.searchFeatures(vReq);
         final List<Feature> searchFeatures = vResp.getFeatures();
 
-        checkAllFeatures(searchFeatures, v -> assertThat(v.getReferenceName()).isEqualTo(TestData.REFERENCE_NAME));
+        assertThat(searchFeatures).hasSize(expectedNumberOfFeatures);
+        checkAllFeatures(searchFeatures, f -> assertThat(
+                f.getParentId()).isEqualTo(parentId));
     }
 
     /**
-     * Check that the features we receive from
-     * {@link org.ga4gh.ctk.transport.protocols.Client.SequenceAnnotations#searchFeatures(SearchFeaturesRequest)}
-     * search are well formed.
+     * Check that the features returned from a search by ontologyTerm return as expected.
      *
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */
     @Test
-    public void checkFeaturesForWellFormedness() throws AvroRemoteException {
-        final long start = 50;
-        final long end = 100;
-        String parentId = "";
+    public void checkFeaturesSearchByFeatureType() throws AvroRemoteException {
+        final long start = 0;
+        final long end = 100000000;
+        final String parentId = "";
+        final String featureType = "gene";
+        final List<String> featureTypes = new ArrayList<String>(){{add(featureType);}};
+        final int expectedNumberOfFeatures = 2;
 
-        final SearchFeatureSetsRequest req =
-                SearchFeatureSetsRequest.newBuilder()
-                                        .setDatasetId(TestData.getDatasetId())
-                                        .build();
-        final SearchFeatureSetsResponse resp = client.sequenceAnnotations.searchFeatureSets(req);
-
-        final List<FeatureSet> featureSets = resp.getFeatureSets();
-        assertThat(featureSets).isNotEmpty();
-        final String id = featureSets.get(0).getId();
+        final String id = Utils.getFeatureSetId(client);
 
         final SearchFeaturesRequest vReq =
                 SearchFeaturesRequest.newBuilder()
@@ -137,9 +118,15 @@ public class FeaturesSearchIT implements CtkLogs {
                                      .setReferenceName(TestData.REFERENCE_NAME)
                                      .setStart(start).setEnd(end)
                                      .setParentId(parentId)
+                                     .setFeatureTypes(featureTypes)
                                      .build();
         final SearchFeaturesResponse vResp = client.sequenceAnnotations.searchFeatures(vReq);
         final List<Feature> searchFeatures = vResp.getFeatures();
+
+        assertThat(searchFeatures).hasSize(expectedNumberOfFeatures);
+        checkAllFeatures(searchFeatures, f -> assertThat(
+                f.getFeatureType().getTerm()).isEqualTo(featureType));
+
     }
 
 }

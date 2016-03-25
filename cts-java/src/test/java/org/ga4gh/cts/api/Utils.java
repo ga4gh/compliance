@@ -618,4 +618,38 @@ public class Utils {
 
         return result;
     }
+
+    /**
+     * Utility method to fetch the Id of a {@link FeatureSet} for the compliance dataset.
+     * @param client the connection to the server
+     * @return the ID of a {@link FeatureSet}
+     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     */
+    public static String getFeatureSetId(Client client) throws AvroRemoteException {
+
+        // get all compliance feature sets
+        final List<FeatureSet> featureSets = getAllFeatureSets(client);
+        return featureSets.get(0).getId();
+    }
+
+    /**
+     * Given a name, return the feature set corresponding to that name. When that name
+     * is not found returns the first feature set found.
+     * @param client the connection to the server
+     * @param name the string name of the annotation set
+     * @return a {@link FeatureSet} with the requested name
+     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     */
+    public static FeatureSet getFeatureSetByName(Client client, String name) throws AvroRemoteException {
+
+        // get all compliance feature sets
+        final List<FeatureSet> featureSets = getAllFeatureSets(client);
+        for (FeatureSet fs : featureSets) {
+            if (fs.getName().equals(name)) {
+                return fs;
+            }
+        }
+        return featureSets.get(0);
+    }
+
 }
