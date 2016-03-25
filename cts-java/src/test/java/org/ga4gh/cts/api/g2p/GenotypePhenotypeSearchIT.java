@@ -37,9 +37,10 @@ public class GenotypePhenotypeSearchIT {
      */
     @Test
     public void ensureCatchNoParametersSearch() throws AvroRemoteException {
+        final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest
                 .newBuilder()
-                .setPhenotypeAssociationSetId(TestData.PHENOTYPE_ASSOCIATIONSET_ID)
+                .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
                 .build();
         final GAWrapperException didThrow =
                 catchGAWrapperException(() -> client.genotypePhenotype.searchGenotypePhenotype(request) );
@@ -52,9 +53,10 @@ public class GenotypePhenotypeSearchIT {
      */
     @Test
     public void simpleFeatureSearch() throws AvroRemoteException {
+        final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest
                 .newBuilder()
-                .setPhenotypeAssociationSetId(TestData.PHENOTYPE_ASSOCIATIONSET_ID)
+                .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
                 .build();
         request.setFeature(TestData.FEATURE_NAME);
         SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
@@ -68,9 +70,10 @@ public class GenotypePhenotypeSearchIT {
      */
     @Test
     public void simpleEvidenceSearch() throws AvroRemoteException {
+        final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest
                 .newBuilder()
-                .setPhenotypeAssociationSetId(TestData.PHENOTYPE_ASSOCIATIONSET_ID)
+                .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
                 .build();
         request.setEvidence(TestData.EVIDENCE_NAME);
         System.err.println(request.toString());
@@ -85,9 +88,10 @@ public class GenotypePhenotypeSearchIT {
      */
     @Test
     public void evidenceLevelCheck() throws AvroRemoteException {
+        final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest
                 .newBuilder()
-                .setPhenotypeAssociationSetId(TestData.PHENOTYPE_ASSOCIATIONSET_ID)
+                .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
                 .build();
         request.setFeature(TestData.FEATURE_NAME);
         SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
@@ -103,9 +107,10 @@ public class GenotypePhenotypeSearchIT {
      */
     @Test
     public void simplePhenotypeSearch() throws AvroRemoteException {
+        final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest
                 .newBuilder()
-                .setPhenotypeAssociationSetId(TestData.PHENOTYPE_ASSOCIATIONSET_ID)
+                .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
                 .build();
         request.setPhenotype(TestData.PHENOTYPE_NAME);
         SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
@@ -119,9 +124,10 @@ public class GenotypePhenotypeSearchIT {
      */
     @Test
     public void simplePhenotypeSearchNoFind() throws AvroRemoteException {
+        final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest
                 .newBuilder()
-                .setPhenotypeAssociationSetId(TestData.PHENOTYPE_ASSOCIATIONSET_ID)
+                .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
                 .build();
         request.setPhenotype(Utils.randomName());
         SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
@@ -135,9 +141,10 @@ public class GenotypePhenotypeSearchIT {
      */
     @Test
     public void simpleFeatureSearchExternalIdentifier() throws AvroRemoteException {
+        final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest
                 .newBuilder()
-                .setPhenotypeAssociationSetId(TestData.PHENOTYPE_ASSOCIATIONSET_ID)
+                .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
                 .build();
         ExternalIdentifier id = new ExternalIdentifier() ;
         id.setDatabase(TestData.FEATURE_DB);
@@ -159,9 +166,10 @@ public class GenotypePhenotypeSearchIT {
      */
     @Test
     public void simplePhenotypeSearchExternalIdentifier() throws AvroRemoteException {
+        final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest
                 .newBuilder()
-                .setPhenotypeAssociationSetId(TestData.PHENOTYPE_ASSOCIATIONSET_ID)
+                .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
                 .build();
         ExternalIdentifier id = new ExternalIdentifier() ;
         id.setDatabase(TestData.PHENOTYPE_DB);
@@ -183,9 +191,10 @@ public class GenotypePhenotypeSearchIT {
      */
     @Test
     public void simpleEvidenceSearchExternalIdentifier() throws AvroRemoteException {
+        final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest
                 .newBuilder()
-                .setPhenotypeAssociationSetId(TestData.PHENOTYPE_ASSOCIATIONSET_ID)
+                .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
                 .build();
         ExternalIdentifier id = new ExternalIdentifier();
         id.setDatabase(TestData.EVIDENCE_DB);
@@ -209,9 +218,10 @@ public class GenotypePhenotypeSearchIT {
      */
     @Test
     public void testGenotypePhenotypeSearchFeaturePagingOne() throws AvroRemoteException {
+        final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest
                 .newBuilder()
-                .setPhenotypeAssociationSetId(TestData.PHENOTYPE_ASSOCIATIONSET_ID)
+                .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
                 .build();
         request.setFeature(TestData.FEATURE_NAME);
         request.setPageSize(1);
@@ -227,9 +237,10 @@ public class GenotypePhenotypeSearchIT {
      */
     @Test
     public void testGenotypePhenotypeSearchFeaturePagingMore() throws AvroRemoteException {
+        final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest
                 .newBuilder()
-                .setPhenotypeAssociationSetId(TestData.PHENOTYPE_ASSOCIATIONSET_ID)
+                .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
                 .build();
         request.setFeature(TestData.FEATURE_NAME);
         SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
@@ -243,9 +254,10 @@ public class GenotypePhenotypeSearchIT {
      */
     @Test
     public void testGenotypePhenotypeSearchFeaturePagingAll() throws AvroRemoteException {
+        final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest
                                                     .newBuilder()
-                                                    .setPhenotypeAssociationSetId(TestData.PHENOTYPE_ASSOCIATIONSET_ID)
+                                                    .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
                                                     .build();
         request.setFeature(TestData.FEATURE_NAME);
         request.setPageSize(1);

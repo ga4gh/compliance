@@ -317,24 +317,21 @@ public class Utils {
     }
 
     /**
-     * Convenience function for getting a variant set by name. When no set is found
-     * matching the name returns the first variant set found.
-     * @param client
-     * @param name
-     * @return
-     * @throws GAWrapperException if the server finds the request invalid in some way
-     * @throws UnirestException if there's a problem speaking HTTP to the server
-     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     * Utility method to fetch the ID of an arbitrary {@link PhenotypeAssociationSet}.
+     * @param client the connection to the server
+     * @return the ID of a {@link PhenotypeAssociationSet}
+     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
      */
+    public static String getPhenotypeAssociationSetId(Client client) throws AvroRemoteException {
+        final SearchPhenotypeAssociationSetsRequest req =
+                SearchPhenotypeAssociationSetsRequest.newBuilder()
+                        .setDatasetId(TestData.getDatasetId())
+                        .build();
+        final SearchPhenotypeAssociationSetsResponse resp = client.genotypePhenotype.searchPhenotypeAssociationSets(req);
 
-    public static VariantSet getVariantSetByName(Client client, String name) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
-        final List<VariantSet> variantSets = Utils.getAllVariantSets(client);
-        for (VariantSet v: variantSets) {
-            if (v.getName() == name) {
-                return v;
-            }
-        }
-        return variantSets.get(0);
+        final List<PhenotypeAssociationSet> phenotypeAssociationSets = resp.getPhenotypeAssociationSets();
+        assertThat(phenotypeAssociationSets).isNotEmpty();
+        return phenotypeAssociationSets.get(0).getId();
     }
 
     /**
