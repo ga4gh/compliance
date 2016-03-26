@@ -288,6 +288,25 @@ public class Utils {
     }
 
     /**
+     * Convenience function for getting a variant set by name. When no set is found
+     * matching the name returns the first variant set found.
+     * @param client
+     * @param name
+     * @return
+     * @throws AvroRemoteException
+     */
+
+    public static VariantSet getVariantSetByName(Client client, String name) throws AvroRemoteException {
+        final List<VariantSet> variantSets = Utils.getAllVariantSets(client);
+        for (VariantSet v: variantSets) {
+            if (v.getName() == name) {
+                return v;
+            }
+        }
+        return variantSets.get(0);
+    }
+
+    /**
      * Search for and return all {@link Variant} objects in the {@link VariantSet} with ID
      * <tt>variantSetId</tt>, from <tt>start</tt> to <tt>end</tt>.
      * @param client the connection to the server
@@ -526,7 +545,7 @@ public class Utils {
     }
 
     /**
-     * Utility method to fetch alist of {@link VariantAnnotationSet} given the ID of a {@link dataset}.
+     * Utility method to fetch alist of {@link VariantAnnotationSet} given the ID of a {@link Dataset}.
      * @param client the connection to the server
      * @return a list of {@link VariantAnnotationSet}
      * @throws AvroRemoteException if the server throws an exception or there's an I/O error
@@ -591,5 +610,23 @@ public class Utils {
             }
         }
         return variantAnnotationSets.get(0);
+    }
+
+    /**
+     * Sugar for getting the first BioSample result that matches the name search request.
+     * @param client
+     * @param name The name of the BioSample
+     * @return  BioSample
+     * @throws AvroRemoteException
+     */
+    public static BioSample getBioSampleByName(Client client, String name) throws AvroRemoteException {
+        final SearchBioSamplesRequest req =
+                SearchBioSamplesRequest.newBuilder()
+                        .setDatasetId(TestData.getDatasetId())
+                        .setName(name)
+                        .build();
+
+        final SearchBioSamplesResponse resp = client.biodata.searchBiosamples(req);
+        return (BioSample)resp.getBiosamples().get(0);
     }
 }

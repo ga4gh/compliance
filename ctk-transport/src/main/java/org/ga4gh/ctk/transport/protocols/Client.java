@@ -69,6 +69,9 @@ public class Client {
      */
     public final Metadata metadata = new Metadata();
 
+
+    public final Biodata biodata = new Biodata();
+
     /**
      * Create a new client that can make requests on a GA4GH server.
      *
@@ -571,6 +574,75 @@ public class Client {
             return response;
         }
     }
+    /**
+     * Inner class holding all biodata-related methods.  Gathering them in an inner class like
+     * this
+     * makes it a little easier for someone writing tests to use their IDE's auto-complete
+     * to type method names.
+     */
+    public class Biodata implements BiodataMethods {
+        /**
+         * Searches biosamples at the /biosamples/search endpoint using the given request.
+         * @param request   A SearchBioSamples request
+         * @return SearchBioSamplesResponse
+         * @throws AvroRemoteException
+         */
+        @Override
+        public SearchBioSamplesResponse searchBiosamples(SearchBioSamplesRequest request) throws AvroRemoteException {
+            String path = urls.getSearchBioSamples();
+            SearchBioSamplesResponse response = new SearchBioSamplesResponse();
+            final AvroJson aj =
+                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
+            response = (SearchBioSamplesResponse) aj.doPostResp();
+            return response;
+        }
+
+        /**
+         * Get a biosample by ID by getting the /biosamples/id endpoint
+         * @param id
+         * @return BioSample
+         * @throws AvroRemoteException
+         */
+        @Override
+        public BioSample getBioSample(String id) throws AvroRemoteException {
+            String path = urls.getGetBioSample();
+            BioSample response = new BioSample();
+            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
+            response = (BioSample)aj.doGetResp(id);
+            return response;
+        }
+
+        /**
+         * Searches individuals at the /individuals/search endpoint using the given request.
+         * @param request   A SearchIndividuals request
+         * @return SearchIndividualsResponse
+         * @throws AvroRemoteException
+         */
+        @Override
+        public SearchIndividualsResponse searchIndividuals(SearchIndividualsRequest request) throws AvroRemoteException {
+            String path = urls.getSearchIndividuals();
+            SearchIndividualsResponse response = new SearchIndividualsResponse();
+            final AvroJson aj =
+                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
+            response = (SearchIndividualsResponse) aj.doPostResp();
+            return response;
+        }
+
+        /**
+         * Get an individual by ID by getting the /biosamples/id endpoint
+         * @param id
+         * @return Individual
+         * @throws AvroRemoteException
+         */
+        @Override
+        public Individual getIndividual(String id) throws AvroRemoteException {
+            String path = urls.getGetIndividual();
+            Individual response = new Individual();
+            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
+            response = (Individual)aj.doGetResp(id);
+            return response;
+        }
+    }
 
     /**
      * Inner class holding all variant annotation-related methods.  Gathering them in an inner class like this
@@ -614,7 +686,7 @@ public class Client {
         /**
          * Gets a list of {@link VariantAnnotationSet} matching the search criteria.
          * <p>
-         * <tt>POST /variantannotationsets/search</tt> accepts a {@link SearchAnnotationVariantSetsRequest}
+         * <tt>POST /variantannotationsets/search</tt> accepts a {@link SearchVariantAnnotationSetsRequest}
          * as the post body and returns a {@link SearchVariantAnnotationSetsResponse}.
          *
          * @param request the SearchVariantAnnotationSetsRequest we'll issue
