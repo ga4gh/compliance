@@ -183,12 +183,7 @@ public class TestData {
     /**
      * GenotypePhenotype PHENOTYPE external database identifier.
      */
-    public static final String PHENOTYPE_DB_ID = "37da8697";
-
-    /**
-     * Phenotype Associations Set ID
-     */
-    public static final String PHENOTYPE_ASSOCIATIONSET_ID = "ZGF0YXNldDE6Y2dk";
+    public static final String PHENOTYPE_DB_ID = "032c97e8";//"37da8697";
 
     /**
      * GenotypePhenotype PHENOTYPE external database Version.
@@ -222,7 +217,7 @@ public class TestData {
     /**
      * GenotypePhenotype EVIDENCE LEVEL.
      */
-    public static final String EVIDENCE_LEVEL = "Approved";
+    public static final String EVIDENCE_LEVEL = "decreased_sensitivity";
 
     /**
      * GenotypePhenotype FEATURE external database name.
@@ -232,7 +227,7 @@ public class TestData {
     /**
      * GenotypePhenotype FEATURE external database identifier.
      */
-    public static final String FEATURE_DB_ID = "4841bf74";
+    public static final String FEATURE_DB_ID = "055b872c";//"4841bf74";
 
     /**
      * GenotypePhenotype FEATURE external database Version.

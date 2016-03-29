@@ -325,13 +325,27 @@ public class Utils {
     public static String getPhenotypeAssociationSetId(Client client) throws AvroRemoteException {
         final SearchPhenotypeAssociationSetsRequest req =
                 SearchPhenotypeAssociationSetsRequest.newBuilder()
-                        .setDatasetId(TestData.getDatasetId())
+                        .setDatasetId(getDatasetId(client))
                         .build();
         final SearchPhenotypeAssociationSetsResponse resp = client.genotypePhenotype.searchPhenotypeAssociationSets(req);
-
         final List<PhenotypeAssociationSet> phenotypeAssociationSets = resp.getPhenotypeAssociationSets();
         assertThat(phenotypeAssociationSets).isNotEmpty();
         return phenotypeAssociationSets.get(0).getId();
+    }
+
+    /**
+     * Utility method to fetch the ID of an arbitrary {@link PhenotypeAssociationSet}.
+     * @param client the connection to the server
+     * @return the ID of a {@link PhenotypeAssociationSet}
+     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     */
+    public static String getDatasetId(Client client) throws AvroRemoteException {
+        final SearchDatasetsRequest req =
+                SearchDatasetsRequest.newBuilder()
+                        .build();
+        final SearchDatasetsResponse resp = client.metadata.searchDatasets(req);
+        assertThat(resp.getDatasets()).isNotEmpty();
+        return resp.getDatasets().get(0).getId() ;
     }
 
     /**
