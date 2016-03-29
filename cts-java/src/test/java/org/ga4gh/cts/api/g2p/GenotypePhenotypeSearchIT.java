@@ -76,7 +76,6 @@ public class GenotypePhenotypeSearchIT {
                 .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
                 .build();
         request.setEvidence(TestData.EVIDENCE_NAME);
-        System.err.println(request.toString());
         SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
         assertThat(response.getAssociations()).isNotNull() ;
         assertThat(response.getAssociations()).isNotEmpty() ;
@@ -98,7 +97,7 @@ public class GenotypePhenotypeSearchIT {
         assertThat(response.getAssociations()).isNotNull();
         assertThat(response.getAssociations()).isNotEmpty();
         Evidence evidence = response.getAssociations().get(0).getEvidence().get(0);
-        assertThat(evidence.getEvidenceType().getTerm()).isEqualTo(TestData.EVIDENCE_LEVEL);
+        assertThat(evidence.getDescription()).isEqualTo(TestData.EVIDENCE_LEVEL);
     }
 
     /**
@@ -146,11 +145,11 @@ public class GenotypePhenotypeSearchIT {
                 .newBuilder()
                 .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
                 .build();
-        ExternalIdentifier id = new ExternalIdentifier() ;
+        ExternalIdentifier id = new ExternalIdentifier();
         id.setDatabase(TestData.FEATURE_DB);
         id.setIdentifier(TestData.FEATURE_DB_ID);
         id.setVersion(TestData.FEATURE_DB_VERSION);
-        List<ExternalIdentifier> ids = new ArrayList<>() ;
+        List<ExternalIdentifier> ids = new ArrayList<>();
         ids.add(id) ;
         ExternalIdentifierQuery feature = new ExternalIdentifierQuery();
         feature.setIds(ids);
@@ -209,7 +208,7 @@ public class GenotypePhenotypeSearchIT {
         assertThat(response.getAssociations()).isNotNull();
         assertThat(response.getAssociations()).isNotEmpty();
         Evidence evidenceObject = response.getAssociations().get(0).getEvidence().get(0);
-        assertThat(evidenceObject.getEvidenceType().getTerm()).isEqualTo(TestData.EVIDENCE_LEVEL);
+        assertThat(evidenceObject.getDescription()).isEqualTo(TestData.EVIDENCE_LEVEL);
     }
 
     /**
@@ -267,7 +266,7 @@ public class GenotypePhenotypeSearchIT {
         while(response.getNextPageToken() != null) {
             System.err.println(response.getNextPageToken());
             String previous_id = response.getAssociations().get(0).getId();
-            request = SearchGenotypePhenotypeRequest.newBuilder().build();
+            request = SearchGenotypePhenotypeRequest.newBuilder().setPhenotypeAssociationSetId(phenotypeAssociationSetId).build();
             request.setFeature(TestData.FEATURE_NAME);
             request.setPageSize(1);
             request.setPageToken(response.getNextPageToken());
