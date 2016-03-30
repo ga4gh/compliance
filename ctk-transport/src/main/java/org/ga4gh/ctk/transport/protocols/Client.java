@@ -18,7 +18,8 @@ import java.util.Map;
  * <li>{@link #reads reads}</li>
  * <li>{@link #variants variants}</li>
  * <li>{@link #references references}</li>
- * <li>{@link #variantAnnotations variantAnnotations}</li> 
+ * <li>{@link #variantAnnotations variantAnnotations}</li>
+ * <li>{@link #sequenceAnnotations sequenceAnnotations}</li>
 * </ul>
  *
  * @author Herb Jellinek
@@ -62,11 +63,20 @@ public class Client {
     public final VariantAnnotations variantAnnotations = new VariantAnnotations();
     
     /**
+     * Provides access to sequenceannotations-related methods.  For example,
+     * <pre>
+     *     myClient.sequenceAnnotations.searchFeatures(...);
+     * </pre>
+     */
+    public final SequenceAnnotations sequenceAnnotations = new SequenceAnnotations();
+
+    /**
      * Provides access to metadata-related methods.  For example,
      * <pre>
      *     myClient.metadata.searchDatasets(...);
      * </pre>
      */
+
     public final Metadata metadata = new Metadata();
 
     /**
@@ -573,6 +583,52 @@ public class Client {
     }
 
     /**
+     * Inner class holding all sequence annotation-related methods.
+     */
+    public class SequenceAnnotations implements SequenceAnnotationMethods {
+        @Override
+        public SearchFeatureSetsResponse searchFeatureSets(SearchFeatureSetsRequest request)
+            throws AvroRemoteException {
+            String path = urls.getSearchFeatureSets();
+            SearchFeatureSetsResponse response = new SearchFeatureSetsResponse();
+            final AvroJson aj =
+                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
+            response = (SearchFeatureSetsResponse)aj.doPostResp();
+            return response;
+        }
+
+        @Override
+        public FeatureSet getFeatureSet(String id) throws AvroRemoteException {
+            String path = urls.getGetFeatureSet();
+            FeatureSet response = new FeatureSet();
+            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
+            response = (FeatureSet)aj.doGetResp(id);
+            return response;
+        }
+
+        @Override
+        public SearchFeaturesResponse searchFeatures(SearchFeaturesRequest request)
+            throws AvroRemoteException {
+            String path = urls.getSearchFeatures();
+            SearchFeaturesResponse response = new SearchFeaturesResponse();
+            final AvroJson aj =
+                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
+            response = (SearchFeaturesResponse)aj.doPostResp();
+            return response;
+        }
+
+        @Override
+        public Feature getFeature(String id) throws AvroRemoteException {
+            String path = urls.getGetFeature();
+            Feature response = new Feature();
+            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
+            response = (Feature)aj.doGetResp(id);
+            return response;
+        }
+
+    }
+
+    /**
      * Inner class holding all variant annotation-related methods.  Gathering them in an inner class like this
      * makes it a little easier for someone writing tests to use their IDE's auto-complete
      * to type method names.
@@ -614,7 +670,7 @@ public class Client {
         /**
          * Gets a list of {@link VariantAnnotationSet} matching the search criteria.
          * <p>
-         * <tt>POST /variantannotationsets/search</tt> accepts a {@link SearchAnnotationVariantSetsRequest}
+         * <tt>POST /variantannotationsets/search</tt> accepts a {@link SearchVariantAnnotationSetsRequest}
          * as the post body and returns a {@link SearchVariantAnnotationSetsResponse}.
          *
          * @param request the SearchVariantAnnotationSetsRequest we'll issue

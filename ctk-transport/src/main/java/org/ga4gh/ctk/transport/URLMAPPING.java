@@ -1,6 +1,7 @@
 package org.ga4gh.ctk.transport;
 
 import java.util.Map;
+import java.util.StringJoiner;
 
 /**
  * This interface provides access to all of the URL paths we need to talk to the server.
@@ -99,6 +100,23 @@ public interface URLMAPPING {
     String getSearchVariantAnnotations();
 
     void setSearchVariantAnnotations(String searchVariantAnnotations);
+
+
+    String getSearchFeatureSets();
+
+    void setSearchFeatureSets(String searchFeatureSets);
+
+    String getGetFeatureSet();
+
+    void setGetFeatureSet(String getFeatureSet);
+
+    String getSearchFeatures();
+
+    void setSearchFeatures(String searchFeatures);
+
+    String getGetFeature();
+
+    void setGetFeature(String getFeature);
 
 
     Map<String, String> getEndpoints();
