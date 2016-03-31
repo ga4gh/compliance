@@ -427,6 +427,16 @@ public class Client {
             response = (SearchGenotypePhenotypeResponse)aj.doPostResp();
             return response;
         }
+
+        @Override
+        public SearchPhenotypeAssociationSetsResponse searchPhenotypeAssociationSets(SearchPhenotypeAssociationSetsRequest request) throws AvroRemoteException, GAException {
+            String path = urls.getSearchPhenotypeAssociationSets();
+            SearchPhenotypeAssociationSetsResponse response = new SearchPhenotypeAssociationSetsResponse();
+            final AvroJson aj =
+                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
+            response = (SearchPhenotypeAssociationSetsResponse)aj.doPostResp();
+            return response;
+        }
     }
 
     /**

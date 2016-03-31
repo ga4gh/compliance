@@ -76,6 +76,7 @@ public class URLMAPPINGImpl implements URLMAPPING {
         defaultEndpoints.put("ctk.tgt.getCallset", "callsets/{id}");
 
         defaultEndpoints.put("ctk.tgt.searchGenotypePhenotype", "genotypephenotype/search");
+        defaultEndpoints.put("ctk.tgt.searchPhenotypeAssociationSets", "phenotypeassociationsets/search");
 
         dumpToStdOut = Boolean.getBoolean("ctk.tgt.urlmapper.dump"); // so, -Dctk.tgt.urlmapper.dump=true
 
@@ -364,6 +365,14 @@ public class URLMAPPINGImpl implements URLMAPPING {
     @Override
     public void setSearchGenotypePhenotype(String searchGenotypePhenotype) {
         endpoints.put("ctk.tgt.searchGenotypePhenotype", searchGenotypePhenotype);
+    }
+
+    @Override
+    public String getSearchPhenotypeAssociationSets() { return endpoints.get("ctk.tgt.searchPhenotypeAssociationSets"); }
+
+    @Override
+    public void setSearchPhenotypeAssociationSets(String searchPhenotypeAssociationSets) {
+        endpoints.put("ctk.tgt.searchPhenotypeAssociationSets", searchPhenotypeAssociationSets);
     }
 
     @Override
