@@ -75,7 +75,7 @@ public class FeaturesSearchIT implements CtkLogs {
     public void checkFeaturesSearchByParentId() throws AvroRemoteException {
         final long start = 0;
         final long end = 100000000;
-        final int expectedNumberOfFeatures = 20;
+        final int expectedNumberOfFeatures = 50;
 
         final String id = Utils.getFeatureSetId(client);
 
