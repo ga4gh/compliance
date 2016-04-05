@@ -52,13 +52,15 @@ public class Client {
      */
     public final References references = new References();
 
+
     /**
      * Provides access to GenotypePhenotype-related methods.  For example,
      * <pre>
-     *     myClient.genotypePhenotype(...); TODO document
+     *     myClient.genotypePhenotype.searchReferenceSets(...);
      * </pre>
      */
     public final GenotypePhenotype genotypePhenotype = new GenotypePhenotype();
+
 
     /**
      * Provides access to metadata-related methods.  For example,
@@ -423,6 +425,16 @@ public class Client {
             final AvroJson aj =
                     new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
             response = (SearchGenotypePhenotypeResponse)aj.doPostResp();
+            return response;
+        }
+
+        @Override
+        public SearchPhenotypeAssociationSetsResponse searchPhenotypeAssociationSets(SearchPhenotypeAssociationSetsRequest request) throws AvroRemoteException, GAException {
+            String path = urls.getSearchPhenotypeAssociationSets();
+            SearchPhenotypeAssociationSetsResponse response = new SearchPhenotypeAssociationSetsResponse();
+            final AvroJson aj =
+                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
+            response = (SearchPhenotypeAssociationSetsResponse)aj.doPostResp();
             return response;
         }
     }
