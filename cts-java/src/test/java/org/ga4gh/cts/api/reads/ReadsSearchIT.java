@@ -140,7 +140,7 @@ public class ReadsSearchIT implements CtkLogs {
                                   .build();
 
         final GAWrapperException t = catchGAWrapperException(() -> client.reads.searchReads(request));
-        assertThat(t.getHttpStatusCode()).isEqualTo(HttpURLConnection.HTTP_NOT_IMPLEMENTED);
+        assertThat(t.getHttpStatusCode()).isEqualTo(HttpURLConnection.HTTP_BAD_REQUEST);
     }
 
     /**
