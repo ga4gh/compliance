@@ -17,6 +17,7 @@ import org.junit.experimental.categories.Category;
 import java.net.HttpURLConnection;
 import java.util.Collections;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -250,4 +251,36 @@ public class ReadsSearchIT implements CtkLogs {
         }
     }
 
+    /**
+     * Verifies that a request for all the readGroupIds in a Read Group Set
+     * returns only alignments with those readgroupIds.
+     *
+     * @throws Exception if there's a problem
+     */
+    @Test
+    public void testSearchReadsMultipleReadGroupsInReadGroupSet() throws Exception {
+        final String referenceId = Utils.getValidReferenceId(client);
+        final List<ReadGroupSet> allReadGroupSets = Utils.getAllReadGroupSets(client);
+        final ReadGroupSet readGroupSet = allReadGroupSets.get(0);
+        final List<ReadGroup> readGroups = readGroupSet.getReadGroups();
+        final List<String> readGroupIds = readGroups
+            .stream()
+            .map(readGroup -> readGroup.getId())
+            .collect(Collectors.toList());
+        final SearchReadsRequest request =
+                SearchReadsRequest.newBuilder()
+                                  .setReadGroupIds(readGroupIds)
+                                  .setStart(0L)
+                                  .setEnd(150L)
+                                  .setReferenceId(referenceId)
+                                  .build();
+        final SearchReadsResponse response = client.reads.searchReads(request);
+        assertThat(response.getAlignments()).isNotNull();
+        for (ReadAlignment readAlignment : response.getAlignments()) {
+            final String readGroupId = readAlignment.getReadGroupId();
+            assertThat(readGroupId).isIn(readGroupIds);
+            assertThat(readAlignment.getAlignedSequence()).isNotNull()
+                .matches(TestData.ALIGNED_SEQUENCE_CONTENTS_PATTERN);
+        }
+    }
 }
