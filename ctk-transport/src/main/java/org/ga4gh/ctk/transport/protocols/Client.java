@@ -18,6 +18,8 @@ import java.util.Map;
  * <li>{@link #reads reads}</li>
  * <li>{@link #variants variants}</li>
  * <li>{@link #references references}</li>
+ * <li>{@link #variantAnnotations variantAnnotations}</li>
+ * <li>{@link #sequenceAnnotations sequenceAnnotations}</li>
  * </ul>
  *
  * @author Herb Jellinek
@@ -45,7 +47,7 @@ public class Client {
     public final Reads reads = new Reads();
 
     /**
-     * Provides access to variants-related methods.  For example,
+     * Provides access to references-related methods.  For example,
      * <pre>
      *     myClient.references.searchReferenceSets(...);
      * </pre>
@@ -53,12 +55,29 @@ public class Client {
     public final References references = new References();
 
     /**
-     * Provides access to rna quantification-related methods.  For example,
+     * Provides access to variantannotations-related methods.  For example,
      * <pre>
-     *     myClient.rnaquantification.searchRnaQuantification(...);
+     *     myClient.variantAnnotations.searchVariantAnnotations(...);
      * </pre>
      */
-    public final RnaQuantifications rnaquantifications = new RnaQuantifications();
+    public final VariantAnnotations variantAnnotations = new VariantAnnotations();
+
+    /**
+     * Provides access to sequenceannotations-related methods.  For example,
+     * <pre>
+     *     myClient.sequenceAnnotations.searchFeatures(...);
+     * </pre>
+     */
+    public final SequenceAnnotations sequenceAnnotations = new SequenceAnnotations();
+
+    /**
+     * Provides access to metadata-related methods.  For example,
+     * <pre>
+     *     myClient.metadata.searchDatasets(...);
+     * </pre>
+     */
+
+    public final Metadata metadata = new Metadata();
 
     /**
      * Create a new client that can make requests on a GA4GH server.
@@ -78,6 +97,51 @@ public class Client {
     public Client(URLMAPPING urls, WireTracker wt) {
         this.urls = urls;
         wireTracker = wt;
+    }
+
+
+    /**
+     * Inner class holding all metadata-related methods.  Gathering them in an inner class like this
+     * makes it a little easier for someone writing tests to use their IDE's auto-complete
+     * to type method names.
+     */
+    public class Metadata implements MetadataMethods {
+        /**
+         * Gets a list of datasets accessible through the API.
+         * <tt>POST /datasets/search</tt> accepts a {@link SearchDatasetsRequest}
+         * and returns a {@link SearchDatasetsResponse}.
+         *
+         * @param request the {@link SearchDatasetsRequest} request
+         * @throws AvroRemoteException if there's a communication problem
+         */
+        @Override
+        public SearchDatasetsResponse searchDatasets(SearchDatasetsRequest request)
+                throws AvroRemoteException {
+            String path = urls.getSearchDatasets();
+            SearchDatasetsResponse response = new SearchDatasetsResponse();
+            final AvroJson aj =
+                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
+            response = (SearchDatasetsResponse) aj.doPostResp();
+
+            return response;
+        }
+
+        /**
+         * Gets a {@link Dataset} by ID.
+         * <tt>GET /datasets/{id}</tt> returns a {@link Dataset}.
+         *
+         * @param id the ID of the dataset
+         * @throws AvroRemoteException if there's a communication problem
+         */
+        @Override
+        public Dataset getDataset(String id) throws AvroRemoteException {
+            String path = urls.getGetDataset();
+            Dataset response = new Dataset();
+            final AvroJson aj =
+                    new AvroJson<>(response, urls.getUrlRoot(), path, wireTracker);
+            response = (Dataset) aj.doGetResp(id);
+            return response;
+        }
     }
 
     /**
@@ -339,43 +403,6 @@ public class Client {
         }
 
         /**
-         * Gets a list of datasets accessible through the API.
-         * <tt>POST /datasets/search</tt> accepts a {@link SearchDatasetsRequest}
-         * and returns a {@link SearchDatasetsResponse}.
-         *
-         * @param request the {@link SearchDatasetsRequest} request
-         * @throws AvroRemoteException if there's a communication problem
-         */
-        @Override
-        public SearchDatasetsResponse searchDatasets(SearchDatasetsRequest request)
-                throws AvroRemoteException {
-            String path = urls.getSearchDatasets();
-            SearchDatasetsResponse response = new SearchDatasetsResponse();
-            final AvroJson aj =
-                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (SearchDatasetsResponse)aj.doPostResp();
-
-            return response;
-        }
-
-        /**
-         * Gets a {@link Dataset} by ID.
-         * <tt>GET /datasets/{id}</tt> returns a {@link Dataset}.
-         *
-         * @param id the ID of the dataset
-         * @throws AvroRemoteException if there's a communication problem
-         */
-        @Override
-        public Dataset getDataset(String id) throws AvroRemoteException {
-            String path = urls.getGetDataset();
-            Dataset response = new Dataset();
-            final AvroJson aj =
-                    new AvroJson<>(response, urls.getUrlRoot(), path, wireTracker);
-            response = (Dataset)aj.doGetResp(id);
-            return response;
-        }
-
-        /**
          * Gets a list of {@link ReadGroupSet} matching the search criteria.
          * <p>
          * <tt>POST /readgroupsets/search</tt> accepts a {@link SearchReadGroupSetsRequest}
@@ -552,6 +579,144 @@ public class Client {
             response = (ListReferenceBasesResponse)aj.doGetResp(id, params);
 
             return response;
+        }
+    }
+
+    /**
+     * Inner class holding all sequence annotation-related methods.
+     */
+    public class SequenceAnnotations implements SequenceAnnotationMethods {
+        @Override
+        public SearchFeatureSetsResponse searchFeatureSets(SearchFeatureSetsRequest request)
+                throws AvroRemoteException {
+            String path = urls.getSearchFeatureSets();
+            SearchFeatureSetsResponse response = new SearchFeatureSetsResponse();
+            final AvroJson aj =
+                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
+            response = (SearchFeatureSetsResponse)aj.doPostResp();
+            return response;
+        }
+
+        @Override
+        public FeatureSet getFeatureSet(String id) throws AvroRemoteException {
+            String path = urls.getGetFeatureSet();
+            FeatureSet response = new FeatureSet();
+            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
+            response = (FeatureSet)aj.doGetResp(id);
+            return response;
+        }
+
+        @Override
+        public SearchFeaturesResponse searchFeatures(SearchFeaturesRequest request)
+                throws AvroRemoteException {
+            String path = urls.getSearchFeatures();
+            SearchFeaturesResponse response = new SearchFeaturesResponse();
+            final AvroJson aj =
+                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
+            response = (SearchFeaturesResponse)aj.doPostResp();
+            return response;
+        }
+
+        @Override
+        public Feature getFeature(String id) throws AvroRemoteException {
+            String path = urls.getGetFeature();
+            Feature response = new Feature();
+            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
+            response = (Feature)aj.doGetResp(id);
+            return response;
+        }
+
+    }
+
+    /**
+     * Inner class holding all variant annotation-related methods.  Gathering them in an inner class like this
+     * makes it a little easier for someone writing tests to use their IDE's auto-complete
+     * to type method names.
+     */
+    public class VariantAnnotations implements AlleleAnnotationMethods {
+
+        /**
+         * Gets a list of {@link VariantAnnotationSet} matching the search criteria via
+         * <tt>POST /variantannotationsets/search</tt>.
+         *
+         * @param request the {@link SearchVariantAnnotationSetsRequest} we'll issue
+         */
+        @Override
+        public SearchVariantAnnotationSetsResponse searchVariantAnnotationSets(SearchVariantAnnotationSetsRequest request)
+                throws AvroRemoteException {
+            String path = urls.getSearchVariantAnnotationSets();
+            SearchVariantAnnotationSetsResponse response = new SearchVariantAnnotationSetsResponse();
+            final AvroJson aj =
+                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
+            response = (SearchVariantAnnotationSetsResponse)aj.doPostResp();
+            return response;
+        }
+
+        /**
+         * Gets a {@link VariantAnnotationSet} by ID.
+         * <tt>GET /variantannotationsets/{id}</tt> will return a JSON version of {@link VariantAnnotationSet}.
+         *
+         * @param id the ID of the variant annotation set
+         */
+        @Override
+        public VariantAnnotationSet getVariantAnnotationSet(String id) throws AvroRemoteException {
+            String path = urls.getGetVariantAnnotationSet();
+            VariantAnnotationSet response = new VariantAnnotationSet();
+            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
+            response = (VariantAnnotationSet)aj.doGetResp(id);
+            return response;
+        }
+
+        /**
+         * Gets a list of {@link VariantAnnotationSet} matching the search criteria.
+         * <p>
+         * <tt>POST /variantannotationsets/search</tt> accepts a {@link SearchVariantAnnotationSetsRequest}
+         * as the post body and returns a {@link SearchVariantAnnotationSetsResponse}.
+         *
+         * @param request the SearchVariantAnnotationSetsRequest we'll issue
+         * @param wt      If supplied, captures the data going across the wire
+         */
+        public SearchVariantAnnotationSetsResponse searchVariantAnnotationSets(SearchVariantAnnotationSetsRequest request,
+                                                                               WireTracker wt)
+                throws AvroRemoteException {
+            wireTracker = wt;
+            return searchVariantAnnotationSets(request);
+        }
+
+        /**
+         * Gets a list of {@link VariantAnnotation} matching the search criteria.
+         * <p>
+         * <tt>POST /variantannotations/search</tt> accepts a {@link SearchVariantAnnotationsRequest}
+         * and returns a {@link SearchVariantAnnotationsResponse}.
+         *
+         * @param request the {@link SearchVariantAnnotationsRequest} we'll issue
+         */
+        @Override
+        public SearchVariantAnnotationsResponse searchVariantAnnotations(SearchVariantAnnotationsRequest request)
+                throws AvroRemoteException {
+            String path = urls.getSearchVariantAnnotations();
+            SearchVariantAnnotationsResponse response = new SearchVariantAnnotationsResponse();
+            final AvroJson aj =
+                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
+            response = (SearchVariantAnnotationsResponse)aj.doPostResp();
+            return response;
+        }
+
+        /**
+         * Gets a list of {@link VariantAnnotation} matching the search criteria.
+         * <p>
+         * <tt>POST /variantannotations/search</tt> accepts a {@link SearchVariantAnnotationsRequest}
+         * and returns a {@link SearchVariantAnnotationsResponse}.
+         *
+         * @param request the SearchVariantAnnotationsRequest we'll issue
+         * @param wt      If supplied, captures the data going across the wire
+         */
+
+        public SearchVariantAnnotationsResponse searchVariantAnnotations(SearchVariantAnnotationsRequest request,
+                                                                         WireTracker wt)
+                throws AvroRemoteException {
+            wireTracker = wt;
+            return searchVariantAnnotations(request);
         }
     }
 

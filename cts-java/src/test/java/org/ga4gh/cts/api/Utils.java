@@ -117,20 +117,16 @@ public class Utils {
      * @throws AvroRemoteException is the server throws an exception or there's an I/O error
      */
     public static String getValidReferenceId(Client client) throws AvroRemoteException {
-        final SearchReferenceSetsRequest refSetsReq = SearchReferenceSetsRequest.newBuilder().build();
-        final SearchReferenceSetsResponse refSetsResp = client.references.searchReferenceSets(refSetsReq);
-
-        final List<ReferenceSet> refSets = refSetsResp.getReferenceSets();
-
         final SearchReferencesRequest refsReq = SearchReferencesRequest
                 .newBuilder()
-                .setReferenceSetId(refSets.get(0).getId())
+                .setReferenceSetId(Utils.getReferenceSetIdByAssemblyId(client, TestData.REFERENCESET_ASSEMBLY_ID))
+                .setMd5checksum(TestData.REFERENCE_BRCA1_MD5_CHECKSUM)
                 .build();
         final SearchReferencesResponse refsResp = client.references.searchReferences(refsReq);
         assertThat(refsResp).isNotNull();
         final List<Reference> references = refsResp.getReferences();
         assertThat(references).isNotNull().isNotEmpty();
-
+        assertThat(references).hasSize(1);
         return references.get(0).getId();
     }
 
@@ -268,6 +264,7 @@ public class Utils {
                 client.references.searchReferenceSets(req);
         final List<ReferenceSet> refSets = resp.getReferenceSets();
         assertThat(refSets).isNotNull();
+        assertThat(refSets).hasSize(1);
         final ReferenceSet refSet = refSets.get(0);
         return refSet.getId();
     }
@@ -467,7 +464,7 @@ public class Utils {
                                          .setPageSize(100)
                                          .setPageToken(pageToken)
                                          .build();
-            final SearchDatasetsResponse resp = client.reads.searchDatasets(req);
+            final SearchDatasetsResponse resp = client.metadata.searchDatasets(req);
             pageToken = resp.getNextPageToken();
             result.addAll(resp.getDatasets());
         } while (pageToken != null);
@@ -533,6 +530,167 @@ public class Utils {
             fail("Expected but did not receive GAWrapperException");
         }
         return maybeAnException;
+    }
+
+   /**
+     * Search for and return all {@link VariantAnnotation} objects in the {@link VariantAnnotationSet} with ID
+     * <tt>variantAnnotationSetId</tt>, from <tt>start</tt> to <tt>end</tt>.
+     * @param client the connection to the server
+     * @param variantAnnotationSetId the ID of the {@link VariantAnnotationSet}
+     * @param start the start of the range to search
+     * @param end the end of the range to search
+     * @return the {@link List} of results
+     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     */
+     public static List<VariantAnnotation> getAllVariantAnnotationsInRange(Client client,
+                                                                          String variantAnnotationSetId,
+                                                                          long start, long end) throws AvroRemoteException {
+        // get all variantAnnotations in the range
+        final List<VariantAnnotation> result = new LinkedList<>();
+        String pageToken = null;
+
+        do {
+            final SearchVariantAnnotationsRequest vReq =
+                    SearchVariantAnnotationsRequest.newBuilder()
+                                                   .setVariantAnnotationSetId(variantAnnotationSetId)
+                                                   .setReferenceName(TestData.VARIANT_ANNOTATION_REFERENCE_NAME)
+                                                   .setStart(start).setEnd(end)
+                                                   .setPageSize(100)
+                                                    .setPageToken(pageToken)
+                                                   .build();
+            final SearchVariantAnnotationsResponse vResp = client.variantAnnotations.searchVariantAnnotations(vReq);
+            pageToken = vResp.getNextPageToken();
+            result.addAll(vResp.getVariantAnnotations());
+        } while (pageToken != null);
+
+        return result;
+    }
+
+    /**
+     * Utility method to fetch alist of {@link VariantAnnotationSet} given the ID of a {@link dataset}.
+     * @param client the connection to the server
+     * @return a list of {@link VariantAnnotationSet}
+     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     */
+    public static List<VariantAnnotationSet> getAllVariantAnnotationSets(Client client) throws AvroRemoteException {
+ 
+        // Get all compliance variant sets.
+        final List<VariantSet> variantSetsCompliance = getAllVariantSets(client);
+
+        //Check some sets are available.
+        assertThat(variantSetsCompliance).isNotEmpty();
+
+        // Build a list of VariantAnnotationSets.
+        final List<VariantAnnotationSet> result = new LinkedList<>();
+        String pageToken = null;
+
+        // there may be multiple variantSets to check
+        for (final VariantSet variantSet : variantSetsCompliance) {
+            final SearchVariantAnnotationSetsRequest req =
+                    SearchVariantAnnotationSetsRequest.newBuilder()
+                                         .setVariantSetId(variantSet.getId())
+                                         .build();
+
+            final SearchVariantAnnotationSetsResponse resp = client.variantAnnotations.searchVariantAnnotationSets(req); 
+            if ( resp.getVariantAnnotationSets() != null )  {
+                result.addAll(resp.getVariantAnnotationSets());
+            }
+
+        };
+        return result; 
+    }
+
+    /**
+     * Utility method to fetch the Id of a {@link VariantAnnotationSet} for the compliance dataset.
+     * @param client the connection to the server
+     * @return the ID of a {@link VariantAnnotationSet}
+     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     */
+    public static String getVariantAnnotationSetId(Client client) throws AvroRemoteException {
+
+        // get all compliance variant annotation sets
+        final List<VariantAnnotationSet> variantAnnotationSets = getAllVariantAnnotationSets(client);
+        return variantAnnotationSets.get(0).getId();
+    }
+
+
+    /**
+     * Given a name return the variant annotation set corresponding to that name. When that name
+     * is not found returns the first annotation set found.
+     * @param client the connection to the server
+     * @param name the string name of the annotation set
+     * @return a {@link VariantAnnotationSet} with the requested name
+     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     */
+    public static VariantAnnotationSet getVariantAnnotationSetByName(Client client, String name) throws AvroRemoteException {
+
+        // get all compliance variant annotation sets
+        final List<VariantAnnotationSet> variantAnnotationSets = getAllVariantAnnotationSets(client);
+        for (VariantAnnotationSet vas : variantAnnotationSets) {
+            if (vas.getName().equals(name)) {
+                return vas;
+            }
+        }
+        return variantAnnotationSets.get(0);
+    }
+
+    /**
+     * Search for and return all {@link FeatureSet}s.
+     *
+     * @param client the connection to the server
+     * @return the {@link List} of results
+     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     */
+    public static List<FeatureSet> getAllFeatureSets(Client client) throws AvroRemoteException {
+
+        final List<FeatureSet> result = new LinkedList<>();
+        String pageToken = null;
+        do {
+            final SearchFeatureSetsRequest req =
+                    SearchFeatureSetsRequest.newBuilder()
+                            .setDatasetId(TestData.getDatasetId())
+                            .setPageSize(100)
+                            .setPageToken(pageToken)
+                            .build();
+            final SearchFeatureSetsResponse resp = client.sequenceAnnotations.searchFeatureSets(req);
+            pageToken = resp.getNextPageToken();
+            result.addAll(resp.getFeatureSets());
+        } while (pageToken != null);
+
+        return result;
+    }
+
+    /**
+     * Utility method to fetch the Id of a {@link FeatureSet} for the compliance dataset.
+     * @param client the connection to the server
+     * @return the ID of a {@link FeatureSet}
+     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     */
+    public static String getFeatureSetId(Client client) throws AvroRemoteException {
+
+        // get all compliance feature sets
+        final List<FeatureSet> featureSets = getAllFeatureSets(client);
+        return featureSets.get(0).getId();
+    }
+
+    /**
+     * Given a name, return the feature set corresponding to that name. When that name
+     * is not found returns the first feature set found.
+     * @param client the connection to the server
+     * @param name the string name of the annotation set
+     * @return a {@link FeatureSet} with the requested name
+     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     */
+    public static FeatureSet getFeatureSetByName(Client client, String name) throws AvroRemoteException {
+
+        // get all compliance feature sets
+        final List<FeatureSet> featureSets = getAllFeatureSets(client);
+        for (FeatureSet fs : featureSets) {
+            if (fs.getName().equals(name)) {
+                return fs;
+            }
+        }
+        return featureSets.get(0);
     }
 
 }
