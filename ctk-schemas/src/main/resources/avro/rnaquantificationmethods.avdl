@@ -94,13 +94,14 @@ record SearchExpressionLevelRequest {
   /**
   The rnaQuantification to restrict search to.
   */
-  string rnaQuantificationId = null;
+  string rnaQuantificationId;
 
   /**
   If present returns ExpressionLevel records with expressions exceeding
   this value.
   */
-  union { null, float } threshold = null;
+  union { null, float } threshold = 0.0;
+
 
   /**
   Specifies the maximum number of results to return in a single page.
@@ -121,10 +122,6 @@ This is the response from 'POST /expressionlevel/search' expressed as JSON.
 */
 record SearchExpressionLevelResponse {
   /** The list of matching quantifications. */
-  /**
-  The line below is causing problems - naming or something wrong with the
-  import perhaps?
-  */
   array<org.ga4gh.models.ExpressionLevel> expressionLevel = [];
 
   /**
@@ -149,19 +146,19 @@ SearchExpressionLevelResponse searchExpressionLevel(
     */
     SearchExpressionLevelRequest request) throws GAException;
 
-/****************  /featuregroup/search  *******************/
+/****************  /quantificationgroup/search  *******************/
 /**
-This request maps to the body of 'POST /featuregroup/search'
+This request maps to the body of 'POST /quantificationgroup/search'
 as JSON.
 */
-record SearchFeatureGroupRequest {
+record SearchfeatureGroupRequest {
   /**
   RNA Quantification to search.
   */
-  string rnaQuantificationId = null;
+  string rnaQuantificationId;
 
   /**
-  Feature Groups of interest.
+  Quantification Groups of interest.
   */
   union { null, string } featureGroupId = null;
 
@@ -180,10 +177,10 @@ record SearchFeatureGroupRequest {
 }
 
 /**
-This is the response from 'POST /featuregroup/search' expressed as JSON.
+This is the response from 'POST /quantificationgroup/search' expressed as JSON.
 */
 record SearchFeatureGroupResponse {
-  /** The list of matching feature groups. */
+  /** The list of matching quantification groups. */
   array<org.ga4gh.models.FeatureGroup> featureGroup = [];
 
   /**
@@ -197,13 +194,13 @@ record SearchFeatureGroupResponse {
 /**
 Gets a list of 'FeatureGroup' matching the search criteria.
 
-'POST /featuregroup/search' must accept JSON version of
+'POST /quantificationgroup/search' must accept JSON version of
 'SearchFeatureGroupRequest' as the post body and will return a JSON
 version of 'SearchFeatureGroupResponse'.
 */
 SearchFeatureGroupResponse searchFeatureGroup(
     /**
-    This request maps to the body of 'POST /featuregroup/search'
+    This request maps to the body of 'POST /quantificationgroup/search'
     as JSON.
     */
     SearchFeatureGroupRequest request) throws GAException;

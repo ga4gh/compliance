@@ -20,6 +20,7 @@ import java.util.Map;
  * <li>{@link #references references}</li>
  * <li>{@link #variantAnnotations variantAnnotations}</li>
  * <li>{@link #sequenceAnnotations sequenceAnnotations}</li>
+ * <li>{@link #rnaQuantifications rnaQuantifications}</li>
  * </ul>
  *
  * @author Herb Jellinek
@@ -76,8 +77,15 @@ public class Client {
      *     myClient.metadata.searchDatasets(...);
      * </pre>
      */
-
     public final Metadata metadata = new Metadata();
+
+    /**
+     * Provides access to rnaquantifications-related methods.  For example,
+     * <pre>
+     *     myClient.rnaQuantifications.searchRnaQuantifications(...);
+     * </pre>
+     */
+    public final RnaQuantifications rnaQuantifications = new RnaQuantifications();
 
     /**
      * Create a new client that can make requests on a GA4GH server.
@@ -738,7 +746,7 @@ public class Client {
         public RnaQuantification getRnaQuantification(String id) throws AvroRemoteException {
             String path = urls.getGetRnaQuantification();
             RnaQuantification response = new RnaQuantification();
-            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path, wireTracker);
+            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
             response = (RnaQuantification)aj.doGetResp(id);
             return response;
         }
