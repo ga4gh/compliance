@@ -40,7 +40,7 @@ public class RnaQuantificationGetByIdIT {
         assertThat(rnaQuantifications).hasSize(expectedNumberOfRnaQuantifications);
 
         for (final RnaQuantification rnaQuantificationFromSearch : rnaQuantifications) {
-            final RnaQuantification rnaQuantificationFromGet = client.rnaquantifications.getRnaQuantification(rnaQuantificationFromSearch.getId());
+            final RnaQuantification rnaQuantificationFromGet = client.rnaQuantifications.getRnaQuantification(rnaQuantificationFromSearch.getId());
             assertThat(rnaQuantificationFromGet).isNotNull();
 
             assertThat(rnaQuantificationFromGet).isEqualTo(rnaQuantificationFromSearch);

@@ -151,7 +151,7 @@ SearchExpressionLevelResponse searchExpressionLevel(
 This request maps to the body of 'POST /quantificationgroup/search'
 as JSON.
 */
-record SearchfeatureGroupRequest {
+record SearchFeatureGroupRequest {
   /**
   RNA Quantification to search.
   */
