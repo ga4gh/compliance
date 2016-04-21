@@ -43,7 +43,7 @@ public class RnaQuantificationSearchIT {
                 SearchRnaQuantificationRequest.newBuilder()
                         .setDatasetId(TestData.getDatasetId())
                         .build();
-        final SearchRnaQuantificationResponse resp = client.rnaquantifications.searchRnaQuantification(req);
+        final SearchRnaQuantificationResponse resp = client.rnaQuantifications.searchRnaQuantification(req);
 
         final List<RnaQuantification> rnaQuants = resp.getRnaQuantification();
         assertThat(rnaQuants).isNotEmpty();
@@ -65,7 +65,7 @@ public class RnaQuantificationSearchIT {
                 SearchRnaQuantificationRequest.newBuilder()
                         .setDatasetId(TestData.getDatasetId())
                         .build();
-        final SearchRnaQuantificationResponse resp = client.rnaquantifications.searchRnaQuantification(req);
+        final SearchRnaQuantificationResponse resp = client.rnaQuantifications.searchRnaQuantification(req);
 
         final List<RnaQuantification> rnaQuants = resp.getRnaQuantification();
         assertThat(rnaQuants).hasSize(expectedNumberOfRnaQuantifications);
@@ -86,7 +86,7 @@ public class RnaQuantificationSearchIT {
                 SearchExpressionLevelRequest.newBuilder()
                         .setRnaQuantificationId(getTestDataRnaQuantificationId())
                         .build();
-        final SearchExpressionLevelResponse resp = client.rnaquantifications.searchExpressionLevel(req);
+        final SearchExpressionLevelResponse resp = client.rnaQuantifications.searchExpressionLevel(req);
 
         final List<ExpressionLevel> expressionLevels = resp.getExpressionLevel();
         assertThat(expressionLevels).hasSize(expectedNumberOfExpressionLevels);
@@ -107,7 +107,7 @@ public class RnaQuantificationSearchIT {
                 SearchFeatureGroupRequest.newBuilder()
                         .setRnaQuantificationId(getTestDataRnaQuantificationId())
                         .build();
-        final SearchFeatureGroupResponse resp = client.rnaquantifications.searchFeatureGroup(req);
+        final SearchFeatureGroupResponse resp = client.rnaQuantifications.searchFeatureGroup(req);
 
         final List<FeatureGroup> featureGroups = resp.getFeatureGroup();
         assertThat(featureGroups).hasSize(expectedNumberOfFeatureGroups);

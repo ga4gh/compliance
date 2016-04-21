@@ -482,7 +482,7 @@ public class Utils {
                 SearchRnaQuantificationRequest.newBuilder()
                         .setDatasetId(TestData.getDatasetId())
                         .build();
-        final SearchRnaQuantificationResponse resp = client.rnaquantifications.searchRnaQuantification(req);
+        final SearchRnaQuantificationResponse resp = client.rnaQuantifications.searchRnaQuantification(req);
 
         final List<RnaQuantification> rnaQuantifications = resp.getRnaQuantification();
         assertThat(rnaQuantifications).isNotEmpty();
@@ -504,7 +504,7 @@ public class Utils {
                     .setPageToken(pageToken)
                     .setPageSize(100)
                     .build();
-            final SearchRnaQuantificationResponse resp = client.rnaquantifications.searchRnaQuantification(req);
+            final SearchRnaQuantificationResponse resp = client.rnaQuantifications.searchRnaQuantification(req);
             result.addAll(resp.getRnaQuantification());
             pageToken = resp.getNextPageToken();
         } while (pageToken != null);
@@ -567,7 +567,7 @@ public class Utils {
     }
 
     /**
-     * Utility method to fetch alist of {@link VariantAnnotationSet} given the ID of a {@link dataset}.
+     * Utility method to fetch a list of {@link VariantAnnotationSet}s.
      * @param client the connection to the server
      * @return a list of {@link VariantAnnotationSet}
      * @throws AvroRemoteException if the server throws an exception or there's an I/O error
