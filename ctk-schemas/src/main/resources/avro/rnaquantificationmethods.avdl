@@ -97,10 +97,10 @@ record SearchExpressionLevelRequest {
   string rnaQuantificationId;
 
   /**
-  If present returns ExpressionLevel records with expressions exceeding
-  this value.
+  Only return ExpressionLevel records with expressions exceeding
+  this value.  (Defaults to 0.0)
   */
-  union { null, float } threshold = 0.0;
+  union { float, null } threshold = 0.0;
 
 
   /**
@@ -146,9 +146,9 @@ SearchExpressionLevelResponse searchExpressionLevel(
     */
     SearchExpressionLevelRequest request) throws GAException;
 
-/****************  /quantificationgroup/search  *******************/
+/****************  /featuregroup/search  *******************/
 /**
-This request maps to the body of 'POST /quantificationgroup/search'
+This request maps to the body of 'POST /featuregroup/search'
 as JSON.
 */
 record SearchFeatureGroupRequest {
@@ -177,7 +177,7 @@ record SearchFeatureGroupRequest {
 }
 
 /**
-This is the response from 'POST /quantificationgroup/search' expressed as JSON.
+This is the response from 'POST /featuregroup/search' expressed as JSON.
 */
 record SearchFeatureGroupResponse {
   /** The list of matching quantification groups. */
@@ -194,13 +194,13 @@ record SearchFeatureGroupResponse {
 /**
 Gets a list of 'FeatureGroup' matching the search criteria.
 
-'POST /quantificationgroup/search' must accept JSON version of
+'POST /featuregroup/search' must accept JSON version of
 'SearchFeatureGroupRequest' as the post body and will return a JSON
 version of 'SearchFeatureGroupResponse'.
 */
 SearchFeatureGroupResponse searchFeatureGroup(
     /**
-    This request maps to the body of 'POST /quantificationgroup/search'
+    This request maps to the body of 'POST /featuregroup/search'
     as JSON.
     */
     SearchFeatureGroupRequest request) throws GAException;
