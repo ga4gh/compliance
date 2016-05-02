@@ -61,7 +61,7 @@ public class URLMAPPINGImpl implements URLMAPPING {
         defaultEndpoints.put("ctk.tgt.searchVariants", "variants/search");
         defaultEndpoints.put("ctk.tgt.searchCallsets", "callsets/search");
         defaultEndpoints.put("ctk.tgt.searchRnaQuantification", "rnaquantification/search");
-        defaultEndpoints.put("ctk.tgt.searchFeatureGroup", "featuregroup/search");
+        defaultEndpoints.put("ctk.tgt.searchQuantificationGroup", "quantificationgroup/search");
         defaultEndpoints.put("ctk.tgt.searchExpressionLevel", "expressionlevel/search");
         defaultEndpoints.put("ctk.tgt.getReferences", "references/{id}");
         defaultEndpoints.put("ctk.tgt.getReferencesets", "referencesets/{id}");
@@ -513,11 +513,11 @@ public class URLMAPPINGImpl implements URLMAPPING {
     }
 
     @Override
-    public String getSearchFeatureGroup() { return endpoints.get("ctk.tgt.getFeatureGroup"); }
+    public String getSearchQuantificationGroup() { return endpoints.get("ctk.tgt.getQuantificationGroup"); }
 
     @Override
-    public void setSearchFeatureGroup(String searchFeatureGroup) {
-        endpoints.put("ctk.tgt.getFeatureGroup", searchFeatureGroup);
+    public void setSearchQuantificationGroup(String searchQuantificationGroup) {
+        endpoints.put("ctk.tgt.getQuantificationGroup", searchQuantificationGroup);
     }
 
     @Override

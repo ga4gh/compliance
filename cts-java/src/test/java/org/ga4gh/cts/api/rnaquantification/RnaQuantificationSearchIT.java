@@ -10,11 +10,11 @@ import org.ga4gh.methods.SearchRnaQuantificationRequest;
 import org.ga4gh.methods.SearchRnaQuantificationResponse;
 import org.ga4gh.methods.SearchExpressionLevelRequest;
 import org.ga4gh.methods.SearchExpressionLevelResponse;
-import org.ga4gh.methods.SearchFeatureGroupRequest;
-import org.ga4gh.methods.SearchFeatureGroupResponse;
+import org.ga4gh.methods.SearchQuantificationGroupRequest;
+import org.ga4gh.methods.SearchQuantificationGroupResponse;
 import org.ga4gh.models.RnaQuantification;
 import org.ga4gh.models.ExpressionLevel;
-import org.ga4gh.models.FeatureGroup;
+import org.ga4gh.models.QuantificationGroup;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -93,23 +93,23 @@ public class RnaQuantificationSearchIT {
     }
 
     /**
-     * Fetch feature groups and count them.  The number must
+     * Fetch quantification groups and count them.  The number must
      * equal what we're expecting by visual examination of the data.
      *
      * @throws AvroRemoteException if there's a communication problem or
      * server exception ({@link GAException})
      */
     @Test
-    public void checkExpectedNumberOfFeatureGroups() throws AvroRemoteException {
-        final int expectedNumberOfFeatureGroups = 4;
+    public void checkExpectedNumberOfQuantificationGroups() throws AvroRemoteException {
+        final int expectedNumberOfQuantificationGroups = 4;
 
-        final SearchFeatureGroupRequest req =
-                SearchFeatureGroupRequest.newBuilder()
+        final SearchQuantificationGroupRequest req =
+                SearchQuantificationGroupRequest.newBuilder()
                         .setRnaQuantificationId(getTestDataRnaQuantificationId())
                         .build();
-        final SearchFeatureGroupResponse resp = client.rnaQuantifications.searchFeatureGroup(req);
+        final SearchQuantificationGroupResponse resp = client.rnaQuantifications.searchQuantificationGroup(req);
 
-        final List<FeatureGroup> featureGroups = resp.getFeatureGroup();
-        assertThat(featureGroups).hasSize(expectedNumberOfFeatureGroups);
+        final List<QuantificationGroup> quantificationGroups = resp.getQuantificationGroup();
+        assertThat(quantificationGroups).hasSize(expectedNumberOfQuantificationGroups);
     }
 }

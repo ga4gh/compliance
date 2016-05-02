@@ -124,9 +124,9 @@ public interface URLMAPPING {
 
     void setSearchRnaQuantification(String searchRnaQuantification);
 
-    String getSearchFeatureGroup();
+    String getSearchQuantificationGroup();
 
-    void setSearchFeatureGroup(String searchFeatureGroup);
+    void setSearchQuantificationGroup(String searchQuantificationGroup);
 
     String getSearchExpressionLevel();
 

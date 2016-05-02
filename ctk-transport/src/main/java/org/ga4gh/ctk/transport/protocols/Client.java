@@ -776,25 +776,25 @@ public class Client {
         }
 
         /**
-         * Gets a list of {@link FeatureGroup} matching the search criteria.
+         * Gets a list of {@link QuantificationGroup} matching the search criteria.
          * <p>
-         * <tt>POST /featuregroup/search</tt> accepts a {@link SearchFeatureGroupRequest}
-         * and returns a {@link SearchFeatureGroupResponse}.
+         * <tt>POST /quantificationgroup/search</tt> accepts a {@link SearchQuantificationGroupRequest}
+         * and returns a {@link SearchQuantificationGroupResponse}.
          *
          * @param request Avro object to be serialized as JSON to the server
          * @throws AvroRemoteException if there's a communication problem
          */
         @Override
-        public SearchFeatureGroupResponse searchFeatureGroup(SearchFeatureGroupRequest request)
+        public SearchQuantificationGroupResponse searchQuantificationGroup(SearchQuantificationGroupRequest request)
                 throws AvroRemoteException {
-            String path = urls.getSearchFeatureGroup();
+            String path = urls.getSearchQuantificationGroup();
             // we use an empty concrete response class to pass into the Parameterized AvroJson
             // as a quick way to get the class name and such; this object actually gets replaced
             // with the filled-in Response object constructed in AvroJson and passed back
-            SearchFeatureGroupResponse response = new SearchFeatureGroupResponse();
+            SearchQuantificationGroupResponse response = new SearchQuantificationGroupResponse();
             final AvroJson aj =
                     new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (SearchFeatureGroupResponse)aj.doPostResp();
+            response = (SearchQuantificationGroupResponse)aj.doPostResp();
 
             return response;
         }
