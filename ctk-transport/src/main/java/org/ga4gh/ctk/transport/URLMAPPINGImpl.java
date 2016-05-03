@@ -513,11 +513,11 @@ public class URLMAPPINGImpl implements URLMAPPING {
     }
 
     @Override
-    public String getSearchQuantificationGroup() { return endpoints.get("ctk.tgt.getQuantificationGroup"); }
+    public String getSearchQuantificationGroup() { return endpoints.get("ctk.tgt.searchQuantificationGroup"); }
 
     @Override
     public void setSearchQuantificationGroup(String searchQuantificationGroup) {
-        endpoints.put("ctk.tgt.getQuantificationGroup", searchQuantificationGroup);
+        endpoints.put("ctk.tgt.searchQuantificationGroup", searchQuantificationGroup);
     }
 
     @Override
