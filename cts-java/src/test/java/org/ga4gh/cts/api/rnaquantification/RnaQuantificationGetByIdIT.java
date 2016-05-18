@@ -6,7 +6,7 @@ import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.Utils;
 import org.ga4gh.methods.GAException;
-import org.ga4gh.methods.SearchRnaQuantificationRequest;
+import org.ga4gh.methods.SearchRnaQuantificationsRequest;
 import org.ga4gh.models.RnaQuantification;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -26,7 +26,7 @@ public class RnaQuantificationGetByIdIT {
     private static Client client = new Client(URLMAPPING.getInstance());
 
     /**
-     * Verify that RnaQuantifications that we obtain by way of {@link SearchRnaQuantificationRequest} match the ones
+     * Verify that RnaQuantifications that we obtain by way of {@link SearchRnaQuantificationsRequest} match the ones
      * we get via <tt>GET /rnaquantification/{id}</tt>.
      * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
      */

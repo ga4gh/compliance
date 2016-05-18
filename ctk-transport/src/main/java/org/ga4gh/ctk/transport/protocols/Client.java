@@ -754,23 +754,23 @@ public class Client {
         /**
          * Gets a list of {@link ExpressionLevel} matching the search criteria.
          * <p>
-         * <tt>POST /expressionlevel/search</tt> accepts a {@link SearchExpressionLevelRequest}
-         * and returns a {@link SearchExpressionLevelResponse}.
+         * <tt>POST /expressionlevel/search</tt> accepts a {@link SearchExpressionLevelsRequest}
+         * and returns a {@link SearchExpressionLevelsResponse}.
          *
          * @param request Avro object to be serialized as JSON to the server
          * @throws AvroRemoteException if there's a communication problem
          */
         @Override
-        public SearchExpressionLevelResponse searchExpressionLevel(SearchExpressionLevelRequest request)
+        public SearchExpressionLevelsResponse searchExpressionLevels(SearchExpressionLevelsRequest request)
                 throws AvroRemoteException {
             String path = urls.getSearchExpressionLevel();
             // we use an empty concrete response class to pass into the Parameterized AvroJson
             // as a quick way to get the class name and such; this object actually gets replaced
             // with the filled-in Response object constructed in AvroJson and passed back
-            SearchExpressionLevelResponse response = new SearchExpressionLevelResponse();
+            SearchExpressionLevelsResponse response = new SearchExpressionLevelsResponse();
             final AvroJson aj =
                     new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (SearchExpressionLevelResponse)aj.doPostResp();
+            response = (SearchExpressionLevelsResponse)aj.doPostResp();
 
             return response;
         }
@@ -778,23 +778,23 @@ public class Client {
         /**
          * Gets a list of {@link QuantificationGroup} matching the search criteria.
          * <p>
-         * <tt>POST /quantificationgroup/search</tt> accepts a {@link SearchQuantificationGroupRequest}
-         * and returns a {@link SearchQuantificationGroupResponse}.
+         * <tt>POST /quantificationgroup/search</tt> accepts a {@link SearchQuantificationGroupsRequest}
+         * and returns a {@link SearchQuantificationGroupsResponse}.
          *
          * @param request Avro object to be serialized as JSON to the server
          * @throws AvroRemoteException if there's a communication problem
          */
         @Override
-        public SearchQuantificationGroupResponse searchQuantificationGroup(SearchQuantificationGroupRequest request)
+        public SearchQuantificationGroupsResponse searchQuantificationGroups(SearchQuantificationGroupsRequest request)
                 throws AvroRemoteException {
             String path = urls.getSearchQuantificationGroup();
             // we use an empty concrete response class to pass into the Parameterized AvroJson
             // as a quick way to get the class name and such; this object actually gets replaced
             // with the filled-in Response object constructed in AvroJson and passed back
-            SearchQuantificationGroupResponse response = new SearchQuantificationGroupResponse();
+            SearchQuantificationGroupsResponse response = new SearchQuantificationGroupsResponse();
             final AvroJson aj =
                     new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (SearchQuantificationGroupResponse)aj.doPostResp();
+            response = (SearchQuantificationGroupsResponse)aj.doPostResp();
 
             return response;
         }
@@ -802,23 +802,23 @@ public class Client {
         /**
          * Gets a list of {@link RnaQuantifications} matching the search criteria.
          * <p>
-         * <tt>POST /rnaquantification/search</tt> accepts a {@link SearchRnaQuantificationRequest}
-         * and returns a {@link SearchRnaQuantificationResponse}.
+         * <tt>POST /rnaquantification/search</tt> accepts a {@link SearchRnaQuantificationsRequest}
+         * and returns a {@link SearchRnaQuantificationsResponse}.
          *
          * @param request Avro object to be serialized as JSON to the server
          * @throws AvroRemoteException if there's a communication problem
          */
         @Override
-        public SearchRnaQuantificationResponse searchRnaQuantification(SearchRnaQuantificationRequest request)
+        public SearchRnaQuantificationsResponse searchRnaQuantifications(SearchRnaQuantificationsRequest request)
                 throws AvroRemoteException {
             String path = urls.getSearchRnaQuantification();
             // we use an empty concrete response class to pass into the Parameterized AvroJson
             // as a quick way to get the class name and such; this object actually gets replaced
             // with the filled-in Response object constructed in AvroJson and passed back
-            SearchRnaQuantificationResponse response = new SearchRnaQuantificationResponse();
+            SearchRnaQuantificationsResponse response = new SearchRnaQuantificationsResponse();
             final AvroJson aj =
                     new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (SearchRnaQuantificationResponse)aj.doPostResp();
+            response = (SearchRnaQuantificationsResponse)aj.doPostResp();
 
             return response;
         }

@@ -478,13 +478,13 @@ public class Utils {
      * @throws AvroRemoteException if the server throws an exception or there's an I/O error
      */
     public static String getRnaQuantificationId(Client client) throws AvroRemoteException {
-        final SearchRnaQuantificationRequest req =
-                SearchRnaQuantificationRequest.newBuilder()
+        final SearchRnaQuantificationsRequest req =
+                SearchRnaQuantificationsRequest.newBuilder()
                         .setDatasetId(TestData.getDatasetId())
                         .build();
-        final SearchRnaQuantificationResponse resp = client.rnaQuantifications.searchRnaQuantification(req);
+        final SearchRnaQuantificationsResponse resp = client.rnaQuantifications.searchRnaQuantifications(req);
 
-        final List<RnaQuantification> rnaQuantifications = resp.getRnaQuantification();
+        final List<RnaQuantification> rnaQuantifications = resp.getRnaQuantifications();
         assertThat(rnaQuantifications).isNotEmpty();
         return rnaQuantifications.get(0).getId();
     }
@@ -499,13 +499,13 @@ public class Utils {
         final List<RnaQuantification> result = new LinkedList<>();
         String pageToken = null;
         do {
-            final SearchRnaQuantificationRequest req = SearchRnaQuantificationRequest.newBuilder()
+            final SearchRnaQuantificationsRequest req = SearchRnaQuantificationsRequest.newBuilder()
                     .setDatasetId(TestData.getDatasetId())
                     .setPageToken(pageToken)
                     .setPageSize(100)
                     .build();
-            final SearchRnaQuantificationResponse resp = client.rnaQuantifications.searchRnaQuantification(req);
-            result.addAll(resp.getRnaQuantification());
+            final SearchRnaQuantificationsResponse resp = client.rnaQuantifications.searchRnaQuantifications(req);
+            result.addAll(resp.getRnaQuantifications());
             pageToken = resp.getNextPageToken();
         } while (pageToken != null);
 
