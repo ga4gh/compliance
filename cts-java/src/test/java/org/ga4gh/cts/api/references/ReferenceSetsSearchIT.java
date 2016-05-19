@@ -63,7 +63,7 @@ public class ReferenceSetsSearchIT {
         final List<ReferenceSet> sets = resp.getReferenceSetsList();
 
         sets.stream().forEach(set-> assertThat(set.getId()).isNotNull() );
-        sets.stream().forEach(set-> assertThat(set.getMd5checksum()).matches("[a-fA-F0-9]{32}") );
+        sets.stream().forEach(set-> assertThat(set.getMd5Checksum()).matches("[a-fA-F0-9]{32}") );
     }
 
     /**

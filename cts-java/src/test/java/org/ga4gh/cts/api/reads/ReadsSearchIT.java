@@ -16,8 +16,8 @@ import org.junit.experimental.categories.Category;
 import java.net.HttpURLConnection;
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.ga4gh.cts.api.Utils.aSingle;
@@ -270,21 +270,21 @@ public class ReadsSearchIT implements CtkLogs {
         final String referenceId = Utils.getValidReferenceId(client);
         final List<ReadGroupSet> allReadGroupSets = Utils.getAllReadGroupSets(client);
         final ReadGroupSet readGroupSet = allReadGroupSets.get(0);
-        final List<ReadGroup> readGroups = readGroupSet.getReadGroups();
+        final List<ReadGroup> readGroups = readGroupSet.getReadGroupsList();
         final List<String> readGroupIds = readGroups
             .stream()
             .map(readGroup -> readGroup.getId())
             .collect(Collectors.toList());
-        final SearchReadsRequest request =
-                SearchReadsRequest.newBuilder()
-                                  .setReadGroupIds(readGroupIds)
+        SearchReadsRequest.Builder builder = SearchReadsRequest.newBuilder();
+        IntStream.range(0, readGroupIds.size()).forEach(index -> builder.setReadGroupIds(index, readGroupIds.get(index)));
+        final SearchReadsRequest request = builder
                                   .setStart(0L)
                                   .setEnd(150L)
                                   .setReferenceId(referenceId)
                                   .build();
         final SearchReadsResponse response = client.reads.searchReads(request);
-        assertThat(response.getAlignments()).isNotNull();
-        for (ReadAlignment readAlignment : response.getAlignments()) {
+        assertThat(response.getAlignmentsList()).isNotNull();
+        for (ReadAlignment readAlignment : response.getAlignmentsList()) {
             final String readGroupId = readAlignment.getReadGroupId();
             assertThat(readGroupId).isIn(readGroupIds);
             assertThat(readAlignment.getAlignedSequence()).isNotNull()

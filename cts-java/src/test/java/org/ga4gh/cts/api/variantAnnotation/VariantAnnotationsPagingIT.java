@@ -1,20 +1,25 @@
 package org.ga4gh.cts.api.variantAnnotation;
 
-import org.apache.avro.AvroRemoteException;
+import com.google.protobuf.InvalidProtocolBufferException;
+
+import com.mashape.unirest.http.exceptions.UnirestException;
+
 import org.ga4gh.ctk.CtkLogs;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.*;
-import org.ga4gh.models.VariantAnnotation;
-import org.ga4gh.models.VariantAnnotationSet;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsRequest;
+import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsResponse;
+import ga4gh.AlleleAnnotations.VariantAnnotation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,10 +36,12 @@ public class VariantAnnotationsPagingIT implements CtkLogs {
      * Check that we can page 1 by 1 through the variantannotations we receive from
      * {@link org.ga4gh.ctk.transport.protocols.Client.VariantAnnotations#searchVariantAnnotations(SearchVariantAnnotationsRequest)}.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void checkPagingOneByOneThroughVariantAnnotations() throws AvroRemoteException {
+    public void checkPagingOneByOneThroughVariantAnnotations() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final long start = 10177;
         final long end = 11008;
 
@@ -59,7 +66,7 @@ public class VariantAnnotationsPagingIT implements CtkLogs {
                                          .setPageToken(pageToken)
                                          .build();
             final SearchVariantAnnotationsResponse pageResp = client.variantAnnotations.searchVariantAnnotations(pageReq);
-            final List<VariantAnnotation> pageOfVariantAnnotations = pageResp.getVariantAnnotations();
+            final List<VariantAnnotation> pageOfVariantAnnotations = pageResp.getVariantAnnotationsList();
             pageToken = pageResp.getNextPageToken();
 
             assertThat(pageOfVariantAnnotations).hasSize(1);

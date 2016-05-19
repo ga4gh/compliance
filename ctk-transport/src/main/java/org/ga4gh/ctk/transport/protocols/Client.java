@@ -2,6 +2,13 @@ package org.ga4gh.ctk.transport.protocols;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.mashape.unirest.http.exceptions.UnirestException;
+
+import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationSetsRequest;
+import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationSetsResponse;
+import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsRequest;
+import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsResponse;
+import ga4gh.AlleleAnnotations.VariantAnnotation;
+import ga4gh.AlleleAnnotations.VariantAnnotationSet;
 import ga4gh.Metadata.Dataset;
 import ga4gh.MetadataServiceOuterClass.SearchDatasetsRequest;
 import ga4gh.MetadataServiceOuterClass.SearchDatasetsResponse;
@@ -15,6 +22,12 @@ import ga4gh.Reads.ReadGroupSet;
 import ga4gh.ReferenceServiceOuterClass.*;
 import ga4gh.References.Reference;
 import ga4gh.References.ReferenceSet;
+import ga4gh.SequenceAnnotationServiceOuterClass;
+import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeatureSetsRequest;
+import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeatureSetsResponse;
+import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeaturesResponse;
+import ga4gh.SequenceAnnotations.Feature;
+import ga4gh.SequenceAnnotations.FeatureSet;
 import ga4gh.VariantServiceOuterClass.*;
 import ga4gh.Variants.CallSet;
 import ga4gh.Variants.Variant;
@@ -441,140 +454,84 @@ public class Client {
     /**
      * Inner class holding all sequence annotation-related methods.
      */
-    public class SequenceAnnotations implements SequenceAnnotationMethods {
-        @Override
-        public SearchFeatureSetsResponse searchFeatureSets(SearchFeatureSetsRequest request)
-            throws AvroRemoteException {
+    public class SequenceAnnotations {
+        public SearchFeatureSetsResponse searchFeatureSets(SearchFeatureSetsRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getSearchFeatureSets();
-            SearchFeatureSetsResponse response = new SearchFeatureSetsResponse();
-            final AvroJson aj =
-                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (SearchFeatureSetsResponse)aj.doPostResp();
-            return response;
+            SearchFeatureSetsResponse.Builder responseBuilder = SearchFeatureSetsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
         }
 
-        @Override
-        public FeatureSet getFeatureSet(String id) throws AvroRemoteException {
+
+        public FeatureSet getFeatureSet(String id) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
             String path = urls.getGetFeatureSet();
-            FeatureSet response = new FeatureSet();
-            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
-            response = (FeatureSet)aj.doGetResp(id);
-            return response;
+            FeatureSet.Builder builder = FeatureSet.newBuilder();
+            new Get<>(urls.getUrlRoot(), path, id, null, builder, wireTracker).performQuery();
+            return builder.build();
         }
 
-        @Override
-        public SearchFeaturesResponse searchFeatures(SearchFeaturesRequest request)
-            throws AvroRemoteException {
+        public SearchFeaturesResponse searchFeatures(SequenceAnnotationServiceOuterClass.SearchFeaturesRequest request)
+                throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getSearchFeatures();
-            SearchFeaturesResponse response = new SearchFeaturesResponse();
-            final AvroJson aj =
-                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (SearchFeaturesResponse)aj.doPostResp();
-            return response;
+            SearchFeaturesResponse.Builder responseBuilder = SearchFeaturesResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
         }
 
-        @Override
-        public Feature getFeature(String id) throws AvroRemoteException {
+        public Feature getFeature(String id) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getGetFeature();
-            Feature response = new Feature();
-            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
-            response = (Feature)aj.doGetResp(id);
-            return response;
+            Feature.Builder builder = Feature.newBuilder();
+            new Get<>(urls.getUrlRoot(), path, id, null, builder, wireTracker).performQuery();
+            return builder.build();
         }
 
     }
 
     /**
-     * Inner class holding all variant annotation-related methods.  Gathering them in an inner class like this
-     * makes it a little easier for someone writing tests to use their IDE's auto-complete
-     * to type method names.
+     * Inner class holding all variant annotation-related methods.  Gathering them in an inner class like this makes it a little easier for someone writing
+     * tests to use their IDE's auto-complete to type method names.
      */
-    public class VariantAnnotations implements AlleleAnnotationMethods {
+    public class VariantAnnotations {
 
         /**
-         * Gets a list of {@link VariantAnnotationSet} matching the search criteria via
-         * <tt>POST /variantannotationsets/search</tt>.
+         * Gets a list of {@link VariantAnnotationSet} matching the search criteria via <tt>POST /variantannotationsets/search</tt>.
          *
          * @param request the {@link SearchVariantAnnotationSetsRequest} we'll issue
          */
-        @Override
         public SearchVariantAnnotationSetsResponse searchVariantAnnotationSets(SearchVariantAnnotationSetsRequest request)
-                throws AvroRemoteException {
+                throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getSearchVariantAnnotationSets();
-            SearchVariantAnnotationSetsResponse response = new SearchVariantAnnotationSetsResponse();
-            final AvroJson aj =
-                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (SearchVariantAnnotationSetsResponse)aj.doPostResp();
-            return response;
+            SearchVariantAnnotationSetsResponse.Builder responseBuilder = SearchVariantAnnotationSetsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
         }
 
         /**
-         * Gets a {@link VariantAnnotationSet} by ID.
-         * <tt>GET /variantannotationsets/{id}</tt> will return a JSON version of {@link VariantAnnotationSet}.
+         * Gets a {@link VariantAnnotationSet} by ID. <tt>GET /variantannotationsets/{id}</tt> will return a JSON version of {@link VariantAnnotationSet}.
          *
          * @param id the ID of the variant annotation set
          */
-        @Override
-        public VariantAnnotationSet getVariantAnnotationSet(String id) throws AvroRemoteException {
+        public VariantAnnotationSet getVariantAnnotationSet(String id) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getGetVariantAnnotationSet();
-            VariantAnnotationSet response = new VariantAnnotationSet();
-            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
-            response = (VariantAnnotationSet)aj.doGetResp(id);
-            return response;
+            VariantAnnotationSet.Builder builder = VariantAnnotationSet.newBuilder();
+            new Get<>(urls.getUrlRoot(), path, id, null, builder, wireTracker).performQuery();
+            return builder.build();
         }
 
         /**
-         * Gets a list of {@link VariantAnnotationSet} matching the search criteria.
-         * <p>
-         * <tt>POST /variantannotationsets/search</tt> accepts a {@link SearchVariantAnnotationSetsRequest}
-         * as the post body and returns a {@link SearchVariantAnnotationSetsResponse}.
-         *
-         * @param request the SearchVariantAnnotationSetsRequest we'll issue
-         * @param wt      If supplied, captures the data going across the wire
-         */
-        public SearchVariantAnnotationSetsResponse searchVariantAnnotationSets(SearchVariantAnnotationSetsRequest request,
-                                                           WireTracker wt)
-                throws AvroRemoteException {
-            wireTracker = wt;
-            return searchVariantAnnotationSets(request);
-        }
-
-        /**
-         * Gets a list of {@link VariantAnnotation} matching the search criteria.
-         * <p>
-         * <tt>POST /variantannotations/search</tt> accepts a {@link SearchVariantAnnotationsRequest}
-         * and returns a {@link SearchVariantAnnotationsResponse}.
+         * Gets a list of {@link VariantAnnotation} matching the search criteria. <p> <tt>POST /variantannotations/search</tt> accepts a {@link
+         * SearchVariantAnnotationsRequest} and returns a {@link SearchVariantAnnotationsResponse}.
          *
          * @param request the {@link SearchVariantAnnotationsRequest} we'll issue
          */
-        @Override
         public SearchVariantAnnotationsResponse searchVariantAnnotations(SearchVariantAnnotationsRequest request)
-                throws AvroRemoteException {
+                throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getSearchVariantAnnotations();
-            SearchVariantAnnotationsResponse response = new SearchVariantAnnotationsResponse();
-            final AvroJson aj =
-                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (SearchVariantAnnotationsResponse)aj.doPostResp();
-            return response;
+            SearchVariantAnnotationsResponse.Builder builder = SearchVariantAnnotationsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, builder, wireTracker).performQuery();
+            return builder.build();
         }
 
-        /**
-         * Gets a list of {@link VariantAnnotation} matching the search criteria.
-         * <p>
-         * <tt>POST /variantannotations/search</tt> accepts a {@link SearchVariantAnnotationsRequest}
-         * and returns a {@link SearchVariantAnnotationsResponse}.
-         *
-         * @param request the SearchVariantAnnotationsRequest we'll issue
-         * @param wt      If supplied, captures the data going across the wire
-         */
-
-        public SearchVariantAnnotationsResponse searchVariantAnnotations(SearchVariantAnnotationsRequest request,
-                                                     WireTracker wt)
-                throws AvroRemoteException {
-            wireTracker = wt;
-            return searchVariantAnnotations(request);
-        }
-  }
-
+    }
 
 }

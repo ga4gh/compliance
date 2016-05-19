@@ -1,22 +1,25 @@
 package org.ga4gh.cts.api.sequenceAnnotations;
 
-import junitparams.JUnitParamsRunner;
-import org.apache.avro.AvroRemoteException;
+import com.google.protobuf.InvalidProtocolBufferException;
+
+import com.mashape.unirest.http.exceptions.UnirestException;
+
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.cts.api.sequenceAnnotations.SequenceAnnotationTests;
-import org.ga4gh.methods.*;
-import org.ga4gh.models.Feature;
-import org.ga4gh.models.Strand;
-import org.ga4gh.models.FeatureSet;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import ga4gh.Common.Strand;
+import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeaturesRequest;
+import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeaturesResponse;
+import ga4gh.SequenceAnnotations.Feature;
+import junitparams.JUnitParamsRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,10 +38,12 @@ public class FeaturesGetByIdIT {
     /**
      * Verify that Features that we obtain by way of {@link SearchFeaturesRequest} match the ones
      * we get via <tt>GET /features/{id}</tt>.
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void checkFeaturesGetResultsMatchSearchResults() throws AvroRemoteException {
+    public void checkFeaturesGetResultsMatchSearchResults() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final long start = 0;
         final long end = 1000000;
         final String parentId = "";
@@ -54,7 +59,7 @@ public class FeaturesGetByIdIT {
                         .setParentId(parentId)
                         .build();
         final SearchFeaturesResponse fResp = client.sequenceAnnotations.searchFeatures(fReq);
-        final List<Feature> features = fResp.getFeatures();
+        final List<Feature> features = fResp.getFeaturesList();
 
         assertThat(features).hasSize(expectedNumberOfFeatures);
 
@@ -71,15 +76,16 @@ public class FeaturesGetByIdIT {
      * Verify that the first gene obtained via <tt>GET /features/{id}</tt> has field values as expected
      * from reading the source GFF3 record.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void checkFetchedCorrectGene() throws AvroRemoteException {
+    public void checkFetchedCorrectGene() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final long start = 0;
         final long end = 100;
         final String parentId = "";
         final String featureType = "gene";
-        final List<String> featureTypes = new ArrayList<String>(){{add(featureType);}};
 
         final String featureSetId = Utils.getFeatureSetId(client);
 
@@ -89,10 +95,10 @@ public class FeaturesGetByIdIT {
                         .setReferenceName(TestData.REFERENCE_NAME)
                         .setStart(start).setEnd(end)
                         .setParentId(parentId)
-                        .setFeatureTypes(featureTypes)
+                        .setFeatureTypes(0,featureType)
                         .build();
         final SearchFeaturesResponse fResp = client.sequenceAnnotations.searchFeatures(fReq);
-        final Feature geneFromSearch = fResp.getFeatures().get(0);
+        final Feature geneFromSearch = fResp.getFeatures(0);
         final Feature gene = client.sequenceAnnotations.getFeature(geneFromSearch.getId());
 
         assertThat(gene).isNotNull();
@@ -102,14 +108,14 @@ public class FeaturesGetByIdIT {
         assertThat(gene.getStart()).isEqualTo(1);
         assertThat(gene.getEnd()).isEqualTo(81189);
         assertThat(gene.getParentId()).isEqualTo("");
-        assertThat(gene.getChildIds()).hasSize(31);
+        assertThat(gene.getChildIdsList()).hasSize(31);
         assertThat(gene.getStrand()).isEqualTo(Strand.NEG_STRAND);
 
         assertThat(gene.getFeatureType().getTerm()).isEqualTo("gene");
         assertThat(gene.getFeatureType().getId()).isEqualTo("SO:0000704");
 
-        assertThat(gene.getAttributes().getVals().get("gene_name").get(0)).isEqualTo("BRCA1");
-        assertThat(gene.getAttributes().getVals().get("gene_id").get(0)).isEqualTo("ENSG00000012048.15");
+        assertThat(gene.getAttributes().getVals().get("gene_name").getValues(0).getStringValue()).isEqualTo("BRCA1");
+        assertThat(gene.getAttributes().getVals().get("gene_id").getValues(0).getStringValue()).isEqualTo("ENSG00000012048.15");
     }
 
 }

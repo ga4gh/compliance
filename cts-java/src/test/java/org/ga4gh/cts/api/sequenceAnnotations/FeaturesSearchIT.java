@@ -1,22 +1,24 @@
 package org.ga4gh.cts.api.sequenceAnnotations;
 
-import java.util.ArrayList;
-import org.apache.avro.AvroRemoteException;
+import com.google.protobuf.InvalidProtocolBufferException;
+
+import com.mashape.unirest.http.exceptions.UnirestException;
+
 import org.ga4gh.ctk.CtkLogs;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
-import org.ga4gh.cts.api.sequenceAnnotations.SequenceAnnotationTests;
-import org.ga4gh.methods.*;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.models.Call;
-import org.ga4gh.models.Feature;
-import org.ga4gh.models.FeatureSet;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.List;
 import java.util.function.Consumer;
+
+import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeaturesRequest;
+import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeaturesResponse;
+import ga4gh.SequenceAnnotations.Feature;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,11 +43,13 @@ public class FeaturesSearchIT implements CtkLogs {
      * Fetch features between two positions in the reference and count them.  The number must
      * equal what we're expecting by visual examination of the features data.
      *
-     * @throws AvroRemoteException if there's a communication problem or
-     * server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
+
     @Test
-    public void checkExpectedNumberOfFeatures() throws AvroRemoteException {
+    public void checkExpectedNumberOfFeatures() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final long start = 62162;
         final long end = 62239;
         final String parentId = "";
@@ -61,7 +65,7 @@ public class FeaturesSearchIT implements CtkLogs {
                                      .setParentId(parentId)
                                      .build();
         final SearchFeaturesResponse fResp = client.sequenceAnnotations.searchFeatures(fReq);
-        final List<Feature> searchFeatures = fResp.getFeatures();
+        final List<Feature> searchFeatures = fResp.getFeaturesList();
 
         assertThat(searchFeatures).hasSize(expectedNumberOfFeatures);
     }
@@ -69,10 +73,12 @@ public class FeaturesSearchIT implements CtkLogs {
     /**
      * Check that the features returned from a search by parentId return as expected.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void checkFeaturesSearchByParentId() throws AvroRemoteException {
+    public void checkFeaturesSearchByParentId() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final long start = 0;
         final long end = 100000000;
         final int expectedNumberOfFeatures = 50;
@@ -82,7 +88,6 @@ public class FeaturesSearchIT implements CtkLogs {
         // first search: obtain the ID of the first transcript in the test range.
         final String parentId1 = "";
         final String featureType1 = "transcript";
-        final List<String> featureTypes1 = new ArrayList<String>(){{add(featureType1);}};
 
         final SearchFeaturesRequest fReq1 =
                 SearchFeaturesRequest.newBuilder()
@@ -90,10 +95,10 @@ public class FeaturesSearchIT implements CtkLogs {
                         .setReferenceName(TestData.REFERENCE_NAME)
                         .setStart(start).setEnd(end)
                         .setParentId(parentId1)
-                        .setFeatureTypes(featureTypes1)
+                        .setFeatureTypes(0, featureType1)
                         .build();
         final SearchFeaturesResponse fResp1 = client.sequenceAnnotations.searchFeatures(fReq1);
-        final List<Feature> searchFeatures = fResp1.getFeatures();
+        final List<Feature> searchFeatures = fResp1.getFeaturesList();
 
         final String parentId2 = searchFeatures.get(0).getId();
 
@@ -106,7 +111,7 @@ public class FeaturesSearchIT implements CtkLogs {
                                      .setParentId(parentId2)
                                      .build();
         final SearchFeaturesResponse fResp2 = client.sequenceAnnotations.searchFeatures(fReq2);
-        final List<Feature> searchFeatures2 = fResp2.getFeatures();
+        final List<Feature> searchFeatures2 = fResp2.getFeaturesList();
 
         assertThat(searchFeatures2).hasSize(expectedNumberOfFeatures);
         checkAllFeatures(searchFeatures2, f -> assertThat(
@@ -116,15 +121,16 @@ public class FeaturesSearchIT implements CtkLogs {
     /**
      * Check that the features returned from a search by ontologyTerm return as expected.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void checkFeaturesSearchByFeatureType() throws AvroRemoteException {
+    public void checkFeaturesSearchByFeatureType() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final long start = 0;
         final long end = 100000000;
         final String parentId = "";
         final String featureType = "gene";
-        final List<String> featureTypes = new ArrayList<String>(){{add(featureType);}};
         final int expectedNumberOfFeatures = 2;
 
         final String id = Utils.getFeatureSetId(client);
@@ -135,10 +141,10 @@ public class FeaturesSearchIT implements CtkLogs {
                                      .setReferenceName(TestData.REFERENCE_NAME)
                                      .setStart(start).setEnd(end)
                                      .setParentId(parentId)
-                                     .setFeatureTypes(featureTypes)
+                                     .setFeatureTypes(0,featureType)
                                      .build();
         final SearchFeaturesResponse fResp = client.sequenceAnnotations.searchFeatures(fReq);
-        final List<Feature> searchFeatures = fResp.getFeatures();
+        final List<Feature> searchFeatures = fResp.getFeaturesList();
 
         assertThat(searchFeatures).hasSize(expectedNumberOfFeatures);
         checkAllFeatures(searchFeatures, f -> assertThat(
