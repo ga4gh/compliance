@@ -36,7 +36,7 @@ Before running any tests, you may want to set an environment variable to record 
 You may also wish to set the dataset ID for the test dataset as an environment variable. Note that the ID given below is specific to the GA4GH reference server running on the compliance dataset, and will likely be different on another
 server implementation.
 
-     > export CTK_TGT_DATASET_ID="YnJjYTE="
+     > export CTK_TGT_DATASET_ID="WyJicmNhMSJd"
 
 It is also possible to set these parameters on a per-run basis.
 

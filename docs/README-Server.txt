@@ -1,14 +1,14 @@
 This is an experimental web-server wrapper for the GA4GH Conformance Test Kit (CTK).
 
 Run it using the included 'ctk' script, or simply as
-    java -jar ctk-server-0.6.0a1.jar
+    java -jar ctk-server-0.6.0a3.jar
 
 Once it is running, it exposes a server at port 8080. (Being a Spring Boot app,
 you can modify the port number with the normal --server.port= ... setting, like this:
 
    ./ctk --server.port=8088
    or
-   java -jar ctk-server-0.6.0a1.jar --server.port=8088
+   java -jar ctk-server-0.6.0a3.jar --server.port=8088
 
 To run the tests, you just browse to that server using a web browser; it
 will run using the defaults and values set in the application properties file.

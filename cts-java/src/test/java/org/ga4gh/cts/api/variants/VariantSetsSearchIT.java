@@ -57,7 +57,7 @@ public class VariantSetsSearchIT implements CtkLogs {
      */
     @Test
     public void checkExpectedVariantSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
-        final int expectedNumberOfVariantSets = 1;
+        final int expectedNumberOfVariantSets = 3;
 
         final SearchVariantSetsRequest req =
                 SearchVariantSetsRequest.newBuilder()

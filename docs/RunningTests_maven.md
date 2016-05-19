@@ -122,7 +122,7 @@ processes):
     2. edit `application-properties` (or set environment properties) to point to the in-source location of files, for example:
         1. `ctk.antfile=../ctk-testrunner/src/main/resources/antRunTests.xml`
         2. `ctk.defaulttransportfile=../ctk-transport/src/main/resources/defaulttransport.properties/defaulttransport.properties`
-        3. `ctk.testjar=../cts-java/target/cts-java-0.6.0a1-tests.jar`
+        3. `ctk.testjar=../cts-java/target/cts-java-0.6.0a3-tests.jar`
         4. `ctk.testclassroots=../cts-java/target/test-classes`
         5. `ctk.domaintypesfile=../ctk-domain/src/main/resources/avro-types.json`
     2. manually create a `ctk-cli/lib` directory and copy into it the logging control file(s) from
