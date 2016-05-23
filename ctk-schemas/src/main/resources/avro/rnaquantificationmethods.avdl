@@ -1,0 +1,207 @@
+@namespace("org.ga4gh.methods")
+protocol RnaQuantificationMethods {
+
+import idl "methods.avdl";
+import idl "common.avdl";
+import idl "rnaQuantifications.avdl";
+
+/****************  /rnaquantification/search  *******************/
+/**
+This request maps to the body of 'POST /rnaquantifications/search'
+as JSON.
+*/
+record SearchRnaQuantificationsRequest {
+  /**
+  If present, return only Rna Quantifications which belong to this set.
+  */
+  union { null, string } rnaQuantificationId = null;
+
+  /**
+  The `Dataset` to search.
+  */
+  string datasetId;
+
+  /**
+  Specifies the maximum number of results to return in a single page.
+  If unspecified, a system default will be used.
+  */
+  union { null, int } pageSize = null;
+
+  /**
+  The continuation token, which is used to page through large result sets.
+  To get the next page of results, set this parameter to the value of
+  'nextPageToken' from the previous response.
+  */
+  union { null, string } pageToken = null;
+}
+
+/**
+This is the response from 'POST /rnaquantifications/search' expressed as JSON.
+*/
+record SearchRnaQuantificationsResponse {
+  /** The list of matching quantifications. */
+  array<org.ga4gh.models.RnaQuantification> rnaQuantifications = [];
+
+  /**
+  The continuation token, which is used to page through large result sets.
+  To get the next page of results, set this parameter to the value of
+  'nextPageToken' from the previous response.
+  */
+  union { null, string } nextPageToken = null;
+}
+
+/**
+Gets a list of 'RnaQuantification's matching the search criteria.
+
+'POST /rnaquantifications/search' must accept JSON version of
+'SearchRnaQuantificationsRequest' as the post body and will return a JSON
+version of 'SearchRnaQuantificationsResponse'.
+*/
+SearchRnaQuantificationsResponse searchRnaQuantifications(
+    /**
+    This request maps to the body of 'POST /rnaquantifications/search'
+    as JSON.
+    */
+    SearchRnaQuantificationsRequest request) throws GAException;
+
+/**************** /rnaquantifications/{id} *******************/
+/**
+Gets an `RnaQuantification` by ID.
+`GET /rnaquantifications/{id}` will return a JSON version of `RnaQuantification`.
+*/
+org.ga4gh.models.RnaQuantification getRnaQuantification(
+  /**
+  The ID of the `RnaQuantification`.
+  */
+  string id) throws GAException;
+
+/****************  /expressionlevels/search  *******************/
+/**
+This request maps to the body of 'POST /expressionlevels/search'
+as JSON.
+*/
+record SearchExpressionLevelsRequest {
+  /**
+  If present, return matching Expression Level record.
+  */
+  union { null, string } expressionLevelId = null;
+
+  /**
+  If present return only ExpressionLevel records which belong to this set.
+  */
+  union { null, string } quantificationGroupId = null;
+
+  /**
+  The rnaQuantification to restrict search to.
+  */
+  string rnaQuantificationId;
+
+  /**
+  Only return ExpressionLevel records with expressions exceeding
+  this value.  (Defaults to 0.0)
+  */
+  union { float, null } threshold = 0.0;
+
+
+  /**
+  Specifies the maximum number of results to return in a single page.
+  If unspecified, a system default will be used.
+  */
+  union { null, int } pageSize = null;
+
+  /**
+  The continuation token, which is used to page through large result sets.
+  To get the next page of results, set this parameter to the value of
+  'nextPageToken' from the previous response.
+  */
+union { null, string } pageToken = null;
+}
+
+/**
+This is the response from 'POST /expressionlevels/search' expressed as JSON.
+*/
+record SearchExpressionLevelsResponse {
+  /** The list of matching quantifications. */
+  array<org.ga4gh.models.ExpressionLevel> expressionLevels = [];
+
+  /**
+  The continuation token, which is used to page through large result sets.
+  To get the next page of results, set this parameter to the value of
+  'nextPageToken' from the previous response.
+  */
+  union { null, string } nextPageToken = null;
+}
+
+/**
+Gets a list of 'ExpressionLevel's matching the search criteria.
+
+'POST /expressionlevels/search' must accept JSON version of
+'SearchExpressionLevelsRequest' as the post body and will return a JSON
+version of 'SearchExpressionLevelsResponse'.
+*/
+SearchExpressionLevelsResponse searchExpressionLevels(
+    /**
+    This request maps to the body of 'POST /expressionlevels/search'
+    as JSON.
+    */
+    SearchExpressionLevelsRequest request) throws GAException;
+
+/****************  /quantificationgroups/search  *******************/
+/**
+This request maps to the body of 'POST /quantificationgroups/search'
+as JSON.
+*/
+record SearchQuantificationGroupsRequest {
+  /**
+  RNA Quantification to search.
+  */
+  string rnaQuantificationId;
+
+  /**
+  Quantification Groups of interest.
+  */
+  union { null, string } quantificationGroupId = null;
+
+  /**
+  Specifies the maximum number of results to return in a single page.
+  If unspecified, a system default will be used.
+  */
+  union { null, int } pageSize = null;
+
+  /**
+  The continuation token, which is used to page through large result sets.
+  To get the next page of results, set this parameter to the value of
+  'nextPageToken' from the previous response.
+  */
+  union { null, string } pageToken = null;
+}
+
+/**
+This is the response from 'POST /quantificationgroups/search' expressed as JSON.
+*/
+record SearchQuantificationGroupsResponse {
+  /** The list of matching quantification groups. */
+  array<org.ga4gh.models.QuantificationGroup> quantificationGroups = [];
+
+  /**
+  The continuation token, which is used to page through large result sets.
+  To get the next page of results, set this parameter to the value of
+  'nextPageToken' from the previous response.
+  */
+  union { null, string } nextPageToken = null;
+}
+
+/**
+Gets a list of 'QuantificationGroup's matching the search criteria.
+
+'POST /quantificationgroups/search' must accept JSON version of
+'SearchQuantificationGroupsRequest' as the post body and will return a JSON
+version of 'SearchQuantificationGroupsResponse'.
+*/
+SearchQuantificationGroupsResponse searchQuantificationGroups(
+    /**
+    This request maps to the body of 'POST /quantificationgroups/search'
+    as JSON.
+    */
+    SearchQuantificationGroupsRequest request) throws GAException;
+}

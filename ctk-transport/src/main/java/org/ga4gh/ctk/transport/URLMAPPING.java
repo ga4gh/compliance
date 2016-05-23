@@ -88,7 +88,6 @@ public interface URLMAPPING {
 
     void setGetCallset(String getCallset);
 
-
     String getSearchVariantAnnotationSets();
 
     void setSearchVariantAnnotationSets(String searchVariantAnnotationSets);
@@ -100,7 +99,6 @@ public interface URLMAPPING {
     String getSearchVariantAnnotations();
 
     void setSearchVariantAnnotations(String searchVariantAnnotations);
-
 
     String getSearchFeatureSets();
 
@@ -118,6 +116,21 @@ public interface URLMAPPING {
 
     void setGetFeature(String getFeature);
 
+    String getGetRnaQuantification();
+
+    void setGetRnaQuantification(String getRnaQuantification);
+
+    String getSearchRnaQuantification();
+
+    void setSearchRnaQuantification(String searchRnaQuantification);
+
+    String getSearchQuantificationGroup();
+
+    void setSearchQuantificationGroup(String searchQuantificationGroup);
+
+    String getSearchExpressionLevel();
+
+    void setSearchExpressionLevel(String searchExpressionLevel);
 
     Map<String, String> getEndpoints();
 
