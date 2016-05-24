@@ -95,7 +95,7 @@ public class FeaturesGetByIdIT {
                         .setReferenceName(TestData.REFERENCE_NAME)
                         .setStart(start).setEnd(end)
                         .setParentId(parentId)
-                        .setFeatureTypes(0,featureType)
+                        .addFeatureTypes(featureType)
                         .build();
         final SearchFeaturesResponse fResp = client.sequenceAnnotations.searchFeatures(fReq);
         final Feature geneFromSearch = fResp.getFeatures(0);

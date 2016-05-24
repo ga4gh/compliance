@@ -552,7 +552,7 @@ public class Utils {
            throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
        // get all variantAnnotations in the range
        final List<VariantAnnotation> result = new LinkedList<>();
-       String pageToken = null;
+       String pageToken = "";
 
        do {
            final SearchVariantAnnotationsRequest vReq =
@@ -566,7 +566,7 @@ public class Utils {
            final SearchVariantAnnotationsResponse vResp = client.variantAnnotations.searchVariantAnnotations(vReq);
            pageToken = vResp.getNextPageToken();
            result.addAll(vResp.getVariantAnnotationsList());
-       } while (pageToken != null);
+       } while (!pageToken.equals(""));
 
        return result;
    }
@@ -588,7 +588,6 @@ public class Utils {
 
         // Build a list of VariantAnnotationSets.
         final List<VariantAnnotationSet> result = new LinkedList<>();
-        String pageToken = null;
 
         // there may be multiple variantSets to check
         for (final VariantSet variantSet : variantSetsCompliance) {
@@ -657,7 +656,7 @@ public class Utils {
     public static List<FeatureSet> getAllFeatureSets(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final List<FeatureSet> result = new LinkedList<>();
-        String pageToken = null;
+        String pageToken = "";
         do {
             final SearchFeatureSetsRequest req =
                     SearchFeatureSetsRequest.newBuilder()
@@ -668,7 +667,7 @@ public class Utils {
             final SequenceAnnotationServiceOuterClass.SearchFeatureSetsResponse resp = client.sequenceAnnotations.searchFeatureSets(req);
             pageToken = resp.getNextPageToken();
             result.addAll(resp.getFeatureSetsList());
-        } while (pageToken != null);
+        } while (!pageToken.equals(""));
 
         return result;
     }

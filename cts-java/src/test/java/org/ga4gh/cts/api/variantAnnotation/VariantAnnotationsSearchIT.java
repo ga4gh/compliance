@@ -285,7 +285,7 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
                         .setReferenceName(TestData.VARIANT_ANNOTATION_REFERENCE_NAME)
                         .setStart(0)
                         .setEnd(100000)
-                        .setEffects(0, term)
+                        .addEffects(term)
                         .build();
 
         final SearchVariantAnnotationsResponse resp = client.variantAnnotations.searchVariantAnnotations(req);

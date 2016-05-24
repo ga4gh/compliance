@@ -276,7 +276,7 @@ public class ReadsSearchIT implements CtkLogs {
             .map(readGroup -> readGroup.getId())
             .collect(Collectors.toList());
         SearchReadsRequest.Builder builder = SearchReadsRequest.newBuilder();
-        IntStream.range(0, readGroupIds.size()).forEach(index -> builder.setReadGroupIds(index, readGroupIds.get(index)));
+        IntStream.range(0, readGroupIds.size()).forEach(index -> builder.addReadGroupIds(readGroupIds.get(index)));
         final SearchReadsRequest request = builder
                                   .setStart(0L)
                                   .setEnd(150L)

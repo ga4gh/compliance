@@ -55,7 +55,7 @@ public class VariantAnnotationsPagingIT implements CtkLogs {
         assertThat(listOfVariantAnnotations).hasSize(setOfVariantAnnotations.size());
 
         // Page through the variantAnnotations using the same query parameters.
-        String pageToken = null;
+        String pageToken = "";
         for (VariantAnnotation ignored : listOfVariantAnnotations) {
             final SearchVariantAnnotationsRequest pageReq =
                     SearchVariantAnnotationsRequest.newBuilder()
@@ -75,7 +75,7 @@ public class VariantAnnotationsPagingIT implements CtkLogs {
             setOfVariantAnnotations.remove(pageOfVariantAnnotations.get(0));
         }
 
-        assertThat(pageToken).isNull();
+        assertThat(pageToken).isEmpty();
         assertThat(setOfVariantAnnotations).isEmpty();
     }
 }

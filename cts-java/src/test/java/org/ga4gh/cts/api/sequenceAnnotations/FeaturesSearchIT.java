@@ -95,7 +95,7 @@ public class FeaturesSearchIT implements CtkLogs {
                         .setReferenceName(TestData.REFERENCE_NAME)
                         .setStart(start).setEnd(end)
                         .setParentId(parentId1)
-                        .setFeatureTypes(0, featureType1)
+                        .addFeatureTypes(featureType1)
                         .build();
         final SearchFeaturesResponse fResp1 = client.sequenceAnnotations.searchFeatures(fReq1);
         final List<Feature> searchFeatures = fResp1.getFeaturesList();
@@ -141,7 +141,7 @@ public class FeaturesSearchIT implements CtkLogs {
                                      .setReferenceName(TestData.REFERENCE_NAME)
                                      .setStart(start).setEnd(end)
                                      .setParentId(parentId)
-                                     .setFeatureTypes(0,featureType)
+                                     .addFeatureTypes(featureType)
                                      .build();
         final SearchFeaturesResponse fResp = client.sequenceAnnotations.searchFeatures(fReq);
         final List<Feature> searchFeatures = fResp.getFeaturesList();
