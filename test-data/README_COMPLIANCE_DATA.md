@@ -42,6 +42,10 @@ is translated to:
 Since the compliance data are provided as human-readable FASTA, SAM and VCF files, these will likely need to be converted 
 to equivalent optimized and indexed files when imported into the server being tested.
 
+Variant Annotation Data
+
+Initial variant annotation data is in the files WASH7P_annotation.vcf and OR4F_annotation.vcf.
+
 ## Using the data with the compliance test suite
 
 The class `org.ga4gh.cts.api.TestData` in the GA4GH compliance test suite (`TestData.java` in the `cts-java` module) 

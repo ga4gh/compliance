@@ -2,10 +2,22 @@ package org.ga4gh.cts.api;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.mashape.unirest.http.exceptions.UnirestException;
+
+import ga4gh.AlleleAnnotationServiceOuterClass.*;
+import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationSetsRequest;
+import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationSetsResponse;
+import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsRequest;
+import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsResponse;
+import ga4gh.AlleleAnnotations.*;
+import ga4gh.AlleleAnnotations.VariantAnnotation;
+import ga4gh.AlleleAnnotations.VariantAnnotationSet;
 import ga4gh.Reads.*;
 import ga4gh.ReadServiceOuterClass.*;
 import ga4gh.References.*;
 import ga4gh.ReferenceServiceOuterClass.*;
+import ga4gh.SequenceAnnotationServiceOuterClass;
+import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeatureSetsRequest;
+import ga4gh.SequenceAnnotations.*;
 import ga4gh.Variants.*;
 import ga4gh.VariantServiceOuterClass.*;
 import ga4gh.Metadata.*;
@@ -520,6 +532,181 @@ public class Utils {
             fail("Expected but did not receive GAWrapperException");
         }
         return maybeAnException;
+    }
+
+   /**
+     * Search for and return all {@link VariantAnnotation} objects in the {@link VariantAnnotationSet} with ID
+     * <tt>variantAnnotationSetId</tt>, from <tt>start</tt> to <tt>end</tt>.
+     * @param client the connection to the server
+     * @param variantAnnotationSetId the ID of the {@link VariantAnnotationSet}
+     * @param start the start of the range to search
+     * @param end the end of the range to search
+    * @return the {@link List} of results
+    * @throws GAWrapperException if the server finds the request invalid in some way
+    * @throws UnirestException if there's a problem speaking HTTP to the server
+    * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+    */
+   public static List<VariantAnnotation> getAllVariantAnnotationsInRange(Client client,
+                                                                         String variantAnnotationSetId,
+                                                                         long start, long end)
+           throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+       // get all variantAnnotations in the range
+       final List<VariantAnnotation> result = new LinkedList<>();
+       String pageToken = "";
+
+       do {
+           final SearchVariantAnnotationsRequest vReq =
+                   SearchVariantAnnotationsRequest.newBuilder()
+                           .setVariantAnnotationSetId(variantAnnotationSetId)
+                           .setReferenceName(TestData.VARIANT_ANNOTATION_REFERENCE_NAME)
+                           .setStart(start).setEnd(end)
+                           .setPageSize(100)
+                           .setPageToken(pageToken)
+                           .build();
+           final SearchVariantAnnotationsResponse vResp = client.variantAnnotations.searchVariantAnnotations(vReq);
+           pageToken = vResp.getNextPageToken();
+           result.addAll(vResp.getVariantAnnotationsList());
+       } while (!pageToken.equals(""));
+
+       return result;
+   }
+
+    /**
+     * Utility method to fetch alist of {@link VariantAnnotationSet} given the ID of a {@link dataset}.
+     * @param client the connection to the server
+     * @return a list of {@link VariantAnnotationSet}
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    public static List<VariantAnnotationSet> getAllVariantAnnotationSets(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        // Get all compliance variant sets.
+        final List<VariantSet> variantSetsCompliance = getAllVariantSets(client);
+
+        //Check some sets are available.
+        assertThat(variantSetsCompliance).isNotEmpty();
+
+        // Build a list of VariantAnnotationSets.
+        final List<VariantAnnotationSet> result = new LinkedList<>();
+
+        // there may be multiple variantSets to check
+        for (final VariantSet variantSet : variantSetsCompliance) {
+            final SearchVariantAnnotationSetsRequest req =
+                    SearchVariantAnnotationSetsRequest.newBuilder()
+                            .setVariantSetId(variantSet.getId())
+                            .build();
+
+            final SearchVariantAnnotationSetsResponse resp = client.variantAnnotations.searchVariantAnnotationSets(req);
+            if (resp.getVariantAnnotationSetsList() != null) {
+                result.addAll(resp.getVariantAnnotationSetsList());
+            }
+
+        }
+        ;
+        return result;
+    }
+
+    /**
+     * Utility method to fetch the Id of a {@link VariantAnnotationSet} for the compliance dataset.
+     * @param client the connection to the server
+     * @return the ID of a {@link VariantAnnotationSet}
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    public static String getVariantAnnotationSetId(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+
+        // get all compliance variant annotation sets
+        final List<VariantAnnotationSet> variantAnnotationSets = getAllVariantAnnotationSets(client);
+        return variantAnnotationSets.get(0).getId();
+    }
+
+
+    /**
+     * Given a name return the variant annotation set corresponding to that name. When that name
+     * is not found returns the first annotation set found.
+     * @param client the connection to the server
+     * @param name the string name of the annotation set
+     * @return a {@link VariantAnnotationSet} with the requested name
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    public static VariantAnnotationSet getVariantAnnotationSetByName(Client client, String name) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+
+        // get all compliance variant annotation sets
+        final List<VariantAnnotationSet> variantAnnotationSets = getAllVariantAnnotationSets(client);
+        for (VariantAnnotationSet vas : variantAnnotationSets) {
+            if (vas.getName().equals(name)) {
+                return vas;
+            }
+        }
+        return variantAnnotationSets.get(0);
+    }
+
+    /**
+     * Search for and return all {@link FeatureSet}s.
+     *
+     * @param client the connection to the server
+     * @return the {@link List} of results
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    public static List<FeatureSet> getAllFeatureSets(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+
+        final List<FeatureSet> result = new LinkedList<>();
+        String pageToken = "";
+        do {
+            final SearchFeatureSetsRequest req =
+                    SearchFeatureSetsRequest.newBuilder()
+                            .setDatasetId(TestData.getDatasetId())
+                            .setPageSize(100)
+                            .setPageToken(pageToken)
+                            .build();
+            final SequenceAnnotationServiceOuterClass.SearchFeatureSetsResponse resp = client.sequenceAnnotations.searchFeatureSets(req);
+            pageToken = resp.getNextPageToken();
+            result.addAll(resp.getFeatureSetsList());
+        } while (!pageToken.equals(""));
+
+        return result;
+    }
+
+    /**
+     * Utility method to fetch the Id of a {@link FeatureSet} for the compliance dataset.
+     * @param client the connection to the server
+     * @return the ID of a {@link FeatureSet}
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    public static String getFeatureSetId(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+
+        // get all compliance feature sets
+        final List<FeatureSet> featureSets = getAllFeatureSets(client);
+        return featureSets.get(0).getId();
+    }
+
+    /**
+     * Given a name, return the feature set corresponding to that name. When that name
+     * is not found returns the first feature set found.
+     * @param client the connection to the server
+     * @param name the string name of the annotation set
+     * @return a {@link FeatureSet} with the requested name
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    public static FeatureSet getFeatureSetByName(Client client, String name) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+
+        // get all compliance feature sets
+        final List<FeatureSet> featureSets = getAllFeatureSets(client);
+        for (FeatureSet fs : featureSets) {
+            if (fs.getName().equals(name)) {
+                return fs;
+            }
+        }
+        return featureSets.get(0);
     }
 
 }

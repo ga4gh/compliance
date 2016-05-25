@@ -2,6 +2,13 @@ package org.ga4gh.ctk.transport.protocols;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.mashape.unirest.http.exceptions.UnirestException;
+
+import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationSetsRequest;
+import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationSetsResponse;
+import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsRequest;
+import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsResponse;
+import ga4gh.AlleleAnnotations.VariantAnnotation;
+import ga4gh.AlleleAnnotations.VariantAnnotationSet;
 import ga4gh.Metadata.Dataset;
 import ga4gh.MetadataServiceOuterClass.SearchDatasetsRequest;
 import ga4gh.MetadataServiceOuterClass.SearchDatasetsResponse;
@@ -15,6 +22,12 @@ import ga4gh.Reads.ReadGroupSet;
 import ga4gh.ReferenceServiceOuterClass.*;
 import ga4gh.References.Reference;
 import ga4gh.References.ReferenceSet;
+import ga4gh.SequenceAnnotationServiceOuterClass;
+import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeatureSetsRequest;
+import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeatureSetsResponse;
+import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeaturesResponse;
+import ga4gh.SequenceAnnotations.Feature;
+import ga4gh.SequenceAnnotations.FeatureSet;
 import ga4gh.VariantServiceOuterClass.*;
 import ga4gh.Variants.CallSet;
 import ga4gh.Variants.Variant;
@@ -36,7 +49,9 @@ import java.util.Map;
  * <li>{@link #reads reads}</li>
  * <li>{@link #variants variants}</li>
  * <li>{@link #references references}</li>
- * </ul>
+ * <li>{@link #variantAnnotations variantAnnotations}</li>
+ * <li>{@link #sequenceAnnotations sequenceAnnotations}</li>
+* </ul>
  *
  * @author Herb Jellinek
  */
@@ -63,7 +78,7 @@ public class Client {
     public final Reads reads = new Reads();
 
     /**
-     * Provides access to variants-related methods.  For example,
+     * Provides access to references-related methods.  For example,
      * <pre>
      *     myClient.references.searchReferenceSets(...);
      * </pre>
@@ -71,11 +86,28 @@ public class Client {
     public final References references = new References();
 
     /**
+     * Provides access to variantannotations-related methods.  For example,
+     * <pre>
+     *     myClient.variantAnnotations.searchVariantAnnotations(...);
+     * </pre>
+     */
+    public final VariantAnnotations variantAnnotations = new VariantAnnotations();
+    
+    /**
+     * Provides access to sequenceannotations-related methods.  For example,
+     * <pre>
+     *     myClient.sequenceAnnotations.searchFeatures(...);
+     * </pre>
+     */
+    public final SequenceAnnotations sequenceAnnotations = new SequenceAnnotations();
+
+    /**
      * Provides access to metadata-related methods.  For example,
      * <pre>
      *     myClient.metadata.searchDatasets(...);
      * </pre>
      */
+
     public final Metadata metadata = new Metadata();
 
     /**
@@ -417,6 +449,89 @@ public class Client {
             new Get<>(urls.getUrlRoot(), urls.getSearchReferenceBases(), id, params, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
         }
+    }
+
+    /**
+     * Inner class holding all sequence annotation-related methods.
+     */
+    public class SequenceAnnotations {
+        public SearchFeatureSetsResponse searchFeatureSets(SearchFeatureSetsRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getSearchFeatureSets();
+            SearchFeatureSetsResponse.Builder responseBuilder = SearchFeatureSetsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
+        }
+
+
+        public FeatureSet getFeatureSet(String id) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+            String path = urls.getGetFeatureSet();
+            FeatureSet.Builder builder = FeatureSet.newBuilder();
+            new Get<>(urls.getUrlRoot(), path, id, null, builder, wireTracker).performQuery();
+            return builder.build();
+        }
+
+        public SearchFeaturesResponse searchFeatures(SequenceAnnotationServiceOuterClass.SearchFeaturesRequest request)
+                throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getSearchFeatures();
+            SearchFeaturesResponse.Builder responseBuilder = SearchFeaturesResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
+        }
+
+        public Feature getFeature(String id) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getGetFeature();
+            Feature.Builder builder = Feature.newBuilder();
+            new Get<>(urls.getUrlRoot(), path, id, null, builder, wireTracker).performQuery();
+            return builder.build();
+        }
+
+    }
+
+    /**
+     * Inner class holding all variant annotation-related methods.  Gathering them in an inner class like this makes it a little easier for someone writing
+     * tests to use their IDE's auto-complete to type method names.
+     */
+    public class VariantAnnotations {
+
+        /**
+         * Gets a list of {@link VariantAnnotationSet} matching the search criteria via <tt>POST /variantannotationsets/search</tt>.
+         *
+         * @param request the {@link SearchVariantAnnotationSetsRequest} we'll issue
+         */
+        public SearchVariantAnnotationSetsResponse searchVariantAnnotationSets(SearchVariantAnnotationSetsRequest request)
+                throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getSearchVariantAnnotationSets();
+            SearchVariantAnnotationSetsResponse.Builder responseBuilder = SearchVariantAnnotationSetsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
+        }
+
+        /**
+         * Gets a {@link VariantAnnotationSet} by ID. <tt>GET /variantannotationsets/{id}</tt> will return a JSON version of {@link VariantAnnotationSet}.
+         *
+         * @param id the ID of the variant annotation set
+         */
+        public VariantAnnotationSet getVariantAnnotationSet(String id) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getGetVariantAnnotationSet();
+            VariantAnnotationSet.Builder builder = VariantAnnotationSet.newBuilder();
+            new Get<>(urls.getUrlRoot(), path, id, null, builder, wireTracker).performQuery();
+            return builder.build();
+        }
+
+        /**
+         * Gets a list of {@link VariantAnnotation} matching the search criteria. <p> <tt>POST /variantannotations/search</tt> accepts a {@link
+         * SearchVariantAnnotationsRequest} and returns a {@link SearchVariantAnnotationsResponse}.
+         *
+         * @param request the {@link SearchVariantAnnotationsRequest} we'll issue
+         */
+        public SearchVariantAnnotationsResponse searchVariantAnnotations(SearchVariantAnnotationsRequest request)
+                throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getSearchVariantAnnotations();
+            SearchVariantAnnotationsResponse.Builder builder = SearchVariantAnnotationsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, builder, wireTracker).performQuery();
+            return builder.build();
+        }
+
     }
 
 }

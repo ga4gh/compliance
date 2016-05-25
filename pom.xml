@@ -35,13 +35,13 @@
     <parent>
         <artifactId>ctk-parent</artifactId>
         <groupId>org.ga4gh</groupId>
-        <version>0.6.0a1</version>
+        <version>0.6.0a3</version>
         <relativePath>parent</relativePath>
     </parent>
 
     <groupId>org.ga4gh</groupId>
     <artifactId>ctk</artifactId>
-<!--    <version>0.6.0a1</version>-->
+<!--    <version>0.6.0a3</version>-->
     <packaging>pom</packaging>
 
     <organization>

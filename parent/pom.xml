@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.ga4gh</groupId>
     <artifactId>ctk-parent</artifactId>
-    <version>0.6.0a1</version>
+    <version>0.6.0a3</version>
 
     <packaging>pom</packaging>
 
@@ -27,8 +27,9 @@
         <url>https://github.com/wstidolph/ctk-core</url>
     </scm>
 
+
     <properties>
-        <ga4gh.schema.version>d6cc80d</ga4gh.schema.version>
+        <ga4gh.schema.version>0ff95ff</ga4gh.schema.version>
         <ctk.tgt.urlRoot>http://localhost:8000</ctk.tgt.urlRoot>
         <!-- Controls skipping of cts-java IT tests during build; skip the tests by passing
              a command line parameter, e.g. mvn -Dcts.skipITs=true install.  Run them by default. -->
