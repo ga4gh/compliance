@@ -3,19 +3,17 @@ package org.ga4gh.cts.api;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
-import ga4gh.AlleleAnnotationServiceOuterClass.*;
 import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationSetsRequest;
 import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationSetsResponse;
 import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsRequest;
 import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsResponse;
-import ga4gh.AlleleAnnotations.*;
 import ga4gh.AlleleAnnotations.VariantAnnotation;
 import ga4gh.AlleleAnnotations.VariantAnnotationSet;
 import ga4gh.Reads.*;
 import ga4gh.ReadServiceOuterClass.*;
+import ga4gh.Reads.ReadGroup.Program;
 import ga4gh.References.*;
 import ga4gh.ReferenceServiceOuterClass.*;
-import ga4gh.SequenceAnnotationServiceOuterClass;
 import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeatureSetsRequest;
 import ga4gh.SequenceAnnotations.*;
 import ga4gh.Variants.*;
@@ -30,6 +28,7 @@ import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
+import static ga4gh.SequenceAnnotationServiceOuterClass.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.StrictAssertions.catchThrowable;
 import static org.assertj.core.api.StrictAssertions.fail;
@@ -58,9 +57,9 @@ public class Utils {
      * Certain AssertJ methods accept a variable number of args: <tt>assertThat(Collection).doesNotContain(...)</tt>,
      * for instance.  Sometimes we want to pass null to such a method, but the IDE complains that this is "confusing."
      * If we supply a typed value, the complaint goes away.
-     * This is a null suitable for use where we might want to pass a {@link ga4gh.Reads.ReadGroup.Program} to a varargs method.
+     * This is a null suitable for use where we might want to pass a {@link Program} to a varargs method.
      */
-    public static final ReadGroup.Program nullProgram = null;
+    public static final Program nullProgram = null;
 
     /**
      * Certain AssertJ methods accept a variable number of args: <tt>assertThat(Collection).doesNotContain(...)</tt>,
@@ -534,42 +533,43 @@ public class Utils {
         return maybeAnException;
     }
 
-   /**
-     * Search for and return all {@link VariantAnnotation} objects in the {@link VariantAnnotationSet} with ID
-     * <tt>variantAnnotationSetId</tt>, from <tt>start</tt> to <tt>end</tt>.
-     * @param client the connection to the server
+    /**
+     * Search for and return all {@link VariantAnnotation} objects in the {@link VariantAnnotationSet} with ID <tt>variantAnnotationSetId</tt>, from
+     * <tt>start</tt> to <tt>end</tt>.
+     *
+     * @param client                 the connection to the server
      * @param variantAnnotationSetId the ID of the {@link VariantAnnotationSet}
-     * @param start the start of the range to search
-     * @param end the end of the range to search
-    * @return the {@link List} of results
-    * @throws GAWrapperException if the server finds the request invalid in some way
-    * @throws UnirestException if there's a problem speaking HTTP to the server
-    * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
-    */
-   public static List<VariantAnnotation> getAllVariantAnnotationsInRange(Client client,
-                                                                         String variantAnnotationSetId,
-                                                                         long start, long end)
-           throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
-       // get all variantAnnotations in the range
-       final List<VariantAnnotation> result = new LinkedList<>();
-       String pageToken = "";
+     * @param start                  the start of the range to search
+     * @param end                    the end of the range to search
+     * @return the {@link List} of results
+     * @throws GAWrapperException             if the server finds the request invalid in some way
+     * @throws UnirestException               if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    public static List<VariantAnnotation> getAllVariantAnnotationsInRange(Client client,
+                                                                          String variantAnnotationSetId,
+                                                                          long start, long end)
+            throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        // get all variantAnnotations in the range
+        final List<VariantAnnotation> result = new LinkedList<>();
+        String pageToken = "";
 
-       do {
-           final SearchVariantAnnotationsRequest vReq =
-                   SearchVariantAnnotationsRequest.newBuilder()
-                           .setVariantAnnotationSetId(variantAnnotationSetId)
-                           .setReferenceName(TestData.VARIANT_ANNOTATION_REFERENCE_NAME)
-                           .setStart(start).setEnd(end)
-                           .setPageSize(100)
-                           .setPageToken(pageToken)
-                           .build();
-           final SearchVariantAnnotationsResponse vResp = client.variantAnnotations.searchVariantAnnotations(vReq);
-           pageToken = vResp.getNextPageToken();
-           result.addAll(vResp.getVariantAnnotationsList());
-       } while (!pageToken.equals(""));
+        do {
+            final SearchVariantAnnotationsRequest vReq =
+                    SearchVariantAnnotationsRequest.newBuilder()
+                            .setVariantAnnotationSetId(variantAnnotationSetId)
+                            .setReferenceName(TestData.VARIANT_ANNOTATION_REFERENCE_NAME)
+                            .setStart(start).setEnd(end)
+                            .setPageSize(100)
+                            .setPageToken(pageToken)
+                            .build();
+            final SearchVariantAnnotationsResponse vResp = client.variantAnnotations.searchVariantAnnotations(vReq);
+            pageToken = vResp.getNextPageToken();
+            result.addAll(vResp.getVariantAnnotationsList());
+        } while (!pageToken.equals(""));
 
-       return result;
-   }
+        return result;
+    }
 
     /**
      * Utility method to fetch alist of {@link VariantAnnotationSet} given the ID of a {@link dataset}.
@@ -602,7 +602,6 @@ public class Utils {
             }
 
         }
-        ;
         return result;
     }
 
@@ -664,7 +663,7 @@ public class Utils {
                             .setPageSize(100)
                             .setPageToken(pageToken)
                             .build();
-            final SequenceAnnotationServiceOuterClass.SearchFeatureSetsResponse resp = client.sequenceAnnotations.searchFeatureSets(req);
+            final SearchFeatureSetsResponse resp = client.sequenceAnnotations.searchFeatureSets(req);
             pageToken = resp.getNextPageToken();
             result.addAll(resp.getFeatureSetsList());
         } while (!pageToken.equals(""));
