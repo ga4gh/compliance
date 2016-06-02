@@ -1,11 +1,42 @@
 package org.ga4gh.ctk.transport.protocols;
 
-import org.apache.avro.AvroRemoteException;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
+
+import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationSetsRequest;
+import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationSetsResponse;
+import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsRequest;
+import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsResponse;
+import ga4gh.AlleleAnnotations.VariantAnnotation;
+import ga4gh.AlleleAnnotations.VariantAnnotationSet;
+import ga4gh.Metadata.Dataset;
+import ga4gh.MetadataServiceOuterClass.SearchDatasetsRequest;
+import ga4gh.MetadataServiceOuterClass.SearchDatasetsResponse;
+import ga4gh.ReadServiceOuterClass.SearchReadGroupSetsRequest;
+import ga4gh.ReadServiceOuterClass.SearchReadGroupSetsResponse;
+import ga4gh.ReadServiceOuterClass.SearchReadsRequest;
+import ga4gh.ReadServiceOuterClass.SearchReadsResponse;
+import ga4gh.Reads.ReadAlignment;
+import ga4gh.Reads.ReadGroup;
+import ga4gh.Reads.ReadGroupSet;
+import ga4gh.ReferenceServiceOuterClass.*;
+import ga4gh.References.Reference;
+import ga4gh.References.ReferenceSet;
+import ga4gh.SequenceAnnotationServiceOuterClass;
+import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeatureSetsRequest;
+import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeatureSetsResponse;
+import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeaturesResponse;
+import ga4gh.SequenceAnnotations.Feature;
+import ga4gh.SequenceAnnotations.FeatureSet;
+import ga4gh.VariantServiceOuterClass.*;
+import ga4gh.Variants.CallSet;
+import ga4gh.Variants.Variant;
+import ga4gh.Variants.VariantSet;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.WireTracker;
-import org.ga4gh.ctk.transport.avrojson.AvroJson;
-import org.ga4gh.methods.*;
-import org.ga4gh.models.*;
+import org.ga4gh.ctk.transport.protobuf.Get;
+import org.ga4gh.ctk.transport.protobuf.Post;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +49,9 @@ import java.util.Map;
  * <li>{@link #reads reads}</li>
  * <li>{@link #variants variants}</li>
  * <li>{@link #references references}</li>
- * </ul>
+ * <li>{@link #variantAnnotations variantAnnotations}</li>
+ * <li>{@link #sequenceAnnotations sequenceAnnotations}</li>
+* </ul>
  *
  * @author Herb Jellinek
  */
@@ -26,7 +59,7 @@ public class Client {
 
     private final URLMAPPING urls;
 
-    public WireTracker wireTracker = null;
+    public final WireTracker wireTracker;
 
     /**
      * Provides access to variants-related methods.  For example,
@@ -45,7 +78,7 @@ public class Client {
     public final Reads reads = new Reads();
 
     /**
-     * Provides access to variants-related methods.  For example,
+     * Provides access to references-related methods.  For example,
      * <pre>
      *     myClient.references.searchReferenceSets(...);
      * </pre>
@@ -61,12 +94,37 @@ public class Client {
     public final RnaQuantifications rnaquantifications = new RnaQuantifications();
 
     /**
+     * Provides access to variantannotations-related methods.  For example,
+     * <pre>
+     *     myClient.variantAnnotations.searchVariantAnnotations(...);
+     * </pre>
+     */
+    public final VariantAnnotations variantAnnotations = new VariantAnnotations();
+    
+    /**
+     * Provides access to sequenceannotations-related methods.  For example,
+     * <pre>
+     *     myClient.sequenceAnnotations.searchFeatures(...);
+     * </pre>
+     */
+    public final SequenceAnnotations sequenceAnnotations = new SequenceAnnotations();
+
+    /**
+     * Provides access to metadata-related methods.  For example,
+     * <pre>
+     *     myClient.metadata.searchDatasets(...);
+     * </pre>
+     */
+
+    public final Metadata metadata = new Metadata();
+
+    /**
      * Create a new client that can make requests on a GA4GH server.
      *
      * @param urls an URLMAPPING object that gives us the paths to use
      */
     public Client(URLMAPPING urls) {
-        this.urls = urls;
+        this(urls, null);
     }
 
     /**
@@ -80,28 +138,65 @@ public class Client {
         wireTracker = wt;
     }
 
+
+    /**
+     * Inner class holding all metadata-related methods.  Gathering them in an inner class like this
+     * makes it a little easier for someone writing tests to use their IDE's auto-complete
+     * to type method names.
+     */
+    public class Metadata {
+        /**
+         * Gets a list of datasets accessible through the API.
+         * <tt>POST /datasets/search</tt> accepts a {@link SearchDatasetsRequest}
+         * and returns a {@link SearchDatasetsResponse}.
+         *
+         * @param request the {@link SearchDatasetsRequest} request
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+         */
+        public SearchDatasetsResponse searchDatasets(SearchDatasetsRequest request) throws UnirestException, InvalidProtocolBufferException, GAWrapperException {
+            SearchDatasetsResponse.Builder responseBuilder = SearchDatasetsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), urls.getSearchDataSets(), request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
+        }
+
+        /**
+         * Gets a {@link Dataset} by ID.
+         * <tt>GET /datasets/{id}</tt> returns a {@link Dataset}.
+         *
+         * @param id the ID of the dataset
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+         */
+        public Dataset getDataset(String id) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+            Dataset.Builder responseBuilder = Dataset.newBuilder();
+            new Get<>(urls.getUrlRoot(), urls.getGetDataSet(), id, null, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
+        }
+    }
+
     /**
      * Inner class holding all variants-related methods.  Gathering them in an inner class like this
      * makes it a little easier for someone writing tests to use their IDE's auto-complete
      * to type method names.
      */
-    public class Variants implements VariantMethods {
+    public class Variants {
 
         /**
          * Gets a list of {@link VariantSet} matching the search criteria via
          * <tt>POST /variantsets/search</tt>.
          *
          * @param request the {@link SearchVariantSetsRequest} we'll issue
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
-        @Override
-        public SearchVariantSetsResponse searchVariantSets(SearchVariantSetsRequest request)
-                throws AvroRemoteException {
-            String path = urls.getSearchVariantSets();
-            SearchVariantSetsResponse response = new SearchVariantSetsResponse();
-            final AvroJson aj =
-                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (SearchVariantSetsResponse)aj.doPostResp();
-            return response;
+        public SearchVariantSetsResponse searchVariantSets(SearchVariantSetsRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            SearchVariantSetsResponse.Builder responseBuilder = SearchVariantSetsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), urls.getSearchVariantSets(), request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
         }
 
         /**
@@ -109,30 +204,14 @@ public class Client {
          * <tt>GET /variantsets/{id}</tt> will return a JSON version of {@link VariantSet}.
          *
          * @param id the ID of the variant set
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
-        @Override
-        public VariantSet getVariantSet(String id) throws AvroRemoteException {
-            String path = urls.getGetVariantSet();
-            VariantSet response = new VariantSet();
-            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
-            response = (VariantSet)aj.doGetResp(id);
-            return response;
-        }
-
-        /**
-         * Gets a list of {@link VariantSet} matching the search criteria.
-         * <p>
-         * <tt>POST /variantsets/search</tt> accepts a {@link SearchVariantSetsRequest}
-         * as the post body and returns a {@link SearchVariantSetsResponse}.
-         *
-         * @param request the SearchVariantSetsRequest we'll issue
-         * @param wt      If supplied, captures the data going across the wire
-         */
-        public SearchVariantSetsResponse searchVariantSets(SearchVariantSetsRequest request,
-                                                           WireTracker wt)
-                throws AvroRemoteException {
-            wireTracker = wt;
-            return searchVariantSets(request);
+        public VariantSet getVariantSet(String id) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+            VariantSet.Builder responseBuilder = VariantSet.newBuilder();
+            new Get<>(urls.getUrlRoot(), urls.getGetVariantSet(), id, null, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
         }
 
         /**
@@ -142,16 +221,14 @@ public class Client {
          * and returns a {@link SearchVariantsResponse}.
          *
          * @param request the {@link SearchVariantsRequest} we'll issue
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
-        @Override
-        public SearchVariantsResponse searchVariants(SearchVariantsRequest request)
-                throws AvroRemoteException {
-            String path = urls.getSearchVariants();
-            SearchVariantsResponse response = new SearchVariantsResponse();
-            final AvroJson aj =
-                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (SearchVariantsResponse)aj.doPostResp();
-            return response;
+        public SearchVariantsResponse searchVariants(SearchVariantsRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            SearchVariantsResponse.Builder responseBuilder = SearchVariantsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), urls.getSearchVariants(), request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
         }
 
         /**
@@ -159,31 +236,14 @@ public class Client {
          * <tt>GET /variants/{id}</tt> will return a {@link Variant}.
          *
          * @param id the ID of the variant
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
-        @Override
-        public Variant getVariant(String id) throws AvroRemoteException {
-            String path = urls.getGetVariant();
-            Variant response = new Variant();
-            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
-            response = (Variant)aj.doGetResp(id);
-            return response;
-        }
-
-        /**
-         * Gets a list of {@link Variant} matching the search criteria.
-         * <p>
-         * <tt>POST /variants/search</tt> accepts a {@link SearchVariantsRequest}
-         * and returns a {@link SearchVariantsResponse}.
-         *
-         * @param request the SearchVariantsRequest we'll issue
-         * @param wt      If supplied, captures the data going across the wire
-         */
-
-        public SearchVariantsResponse searchVariants(SearchVariantsRequest request,
-                                                     WireTracker wt)
-                throws AvroRemoteException {
-            wireTracker = wt;
-            return searchVariants(request);
+        public Variant getVariant(String id) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+            Variant.Builder responseBuilder = Variant.newBuilder();
+            new Get<>(urls.getUrlRoot(), urls.getGetVariant(), id, null, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
         }
 
         /**
@@ -193,16 +253,14 @@ public class Client {
          * and returns a {@link SearchCallSetsResponse}.
          *
          * @param request the SearchCallSetsRequest we'll issue
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
-        @Override
-        public SearchCallSetsResponse searchCallSets(SearchCallSetsRequest request)
-                throws AvroRemoteException {
-            String path = urls.getSearchCallsets();
-            SearchCallSetsResponse response = new SearchCallSetsResponse();
-            final AvroJson aj =
-                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (SearchCallSetsResponse)aj.doPostResp();
-            return response;
+        public SearchCallSetsResponse searchCallSets(SearchCallSetsRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            SearchCallSetsResponse.Builder responseBuilder = SearchCallSetsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), urls.getSearchCallSets(), request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
         }
 
         /**
@@ -210,30 +268,14 @@ public class Client {
          * <tt>GET /callsets/{id}</tt> will return a {@link CallSet}.
          *
          * @param id the ID of the call set
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
-        @Override
-        public CallSet getCallSet(String id) throws AvroRemoteException {
-            String path = urls.getGetCallset();
-            CallSet response = new CallSet();
-            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
-            response = (CallSet)aj.doGetResp(id);
-            return response;
-        }
-
-        /**
-         * Gets a list of {@link CallSet} objects matching the search criteria.
-         * <p>
-         * <tt>POST /callsets/search</tt> accepts a {@link SearchCallSetsRequest} and
-         * returns a {@link SearchCallSetsResponse}.
-         *
-         * @param request the SearchVariantsRequest we'll issue
-         * @param wt      If supplied, captures the data going across the wire
-         */
-        public SearchCallSetsResponse searchCallSets(SearchCallSetsRequest request,
-                                                     WireTracker wt)
-                throws AvroRemoteException {
-            wireTracker = wt;
-            return searchCallSets(request);
+        public CallSet getCallSet(String id) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+            CallSet.Builder responseBuilder = CallSet.newBuilder();
+            new Get<>(urls.getUrlRoot(), urls.getGetCallSet(), id, null, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
         }
     }
 
@@ -242,7 +284,7 @@ public class Client {
      * makes it a little easier for someone writing tests to use their IDE's auto-complete
      * to type method names.
      */
-    public class Reads implements ReadMethods {
+    public class Reads {
 
         /**
          * Gets a list of {@link ReadAlignment} matching the search criteria.
@@ -251,34 +293,14 @@ public class Client {
          * a {@link SearchReadsResponse}.</p>
          *
          * @param request filled-in Avro object to be serialized as JSON to the server
-         * @throws AvroRemoteException if there's a communication problem
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
-        @Override
-        public SearchReadsResponse searchReads(SearchReadsRequest request)
-                throws AvroRemoteException {
-            String path = urls.getSearchReads();
-            SearchReadsResponse response = new SearchReadsResponse();
-            final AvroJson aj =
-                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (SearchReadsResponse)aj.doPostResp();
-            return response;
-        }
-
-        /**
-         * Gets a list of {@link ReadAlignment} matching the search criteria.
-         * <p>
-         * <tt>POST /reads/search</tt> accepts a {@link SearchReadsRequest} and returns
-         * a {@link SearchReadsResponse}.</p>
-         *
-         * @param request filled-in Avro object to be serialized as JSON to the server
-         * @param wt      If supplied, captures the data going across the wire
-         * @return the server's response (deserialized into an Avro-defined object)
-         * @throws AvroRemoteException if there's a communication problem
-         */
-        public SearchReadsResponse searchReads(SearchReadsRequest request, WireTracker wt)
-                throws AvroRemoteException {
-            wireTracker = wt;
-            return searchReads(request);
+        public SearchReadsResponse searchReads(SearchReadsRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            SearchReadsResponse.Builder responseBuilder = SearchReadsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), urls.getSearchReads(), request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
         }
 
         /**
@@ -288,22 +310,14 @@ public class Client {
          * and returns a {@link SearchReadGroupSetsResponse}.</p>
          *
          * @param request filled-in Avro object to be serialized as JSON to the server
-         * @throws AvroRemoteException if there's a communication problem
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
-        @Override
-        public SearchReadGroupSetsResponse searchReadGroupSets(SearchReadGroupSetsRequest request)
-                throws AvroRemoteException {
-            String path = urls.getSearchReadGroupSets();
-            // we use an empty concrete response class to pass into the Parameterized AvroJson
-            // as a quick way to get the class name and such; this object actually gets replaced
-            // with the filled-in Response object constructed in AvroJson and passed back
-            SearchReadGroupSetsResponse response = new SearchReadGroupSetsResponse();
-            final AvroJson aj =
-                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            //aj.setDeserMode(AvroJson.DESER_MODE.AVRO_DIRECT);
-            response = (SearchReadGroupSetsResponse)aj.doPostResp();
-
-            return response;
+        public SearchReadGroupSetsResponse searchReadGroupSets(SearchReadGroupSetsRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            SearchReadGroupSetsResponse.Builder responseBuilder = SearchReadGroupSetsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), urls.getSearchReadGroupSets(), request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
         }
 
         /**
@@ -311,15 +325,14 @@ public class Client {
          * <tt>GET /readgroupsets/{id}</tt> will return a JSON version of {@link ReadGroupSet}.
          *
          * @param id the ID of the read group set
-         * @throws AvroRemoteException if there's a communication problem
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
-        @Override
-        public ReadGroupSet getReadGroupSet(String id) throws AvroRemoteException {
-            String path = urls.getGetReadGroupSet();
-            ReadGroupSet response = new ReadGroupSet();
-            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
-            response = (ReadGroupSet)aj.doGetResp(id);
-            return response;
+        public ReadGroupSet getReadGroupSet(String id) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+            ReadGroupSet.Builder responseBuilder = ReadGroupSet.newBuilder();
+            new Get<>(urls.getUrlRoot(), urls.getGetReadGroupSet(), id, null, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
         }
 
         /**
@@ -327,69 +340,14 @@ public class Client {
          * <tt>GET /readgroups/{id}</tt> will return a JSON version of {@link ReadGroup}.
          *
          * @param id the ID of the read group
-         * @throws AvroRemoteException if there's a communication problem
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
-        @Override
-        public ReadGroup getReadGroup(String id) throws AvroRemoteException {
-            String path = urls.getGetReadGroup();
-            ReadGroup response = new ReadGroup();
-            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
-            response = (ReadGroup)aj.doGetResp(id);
-            return response;
-        }
-
-        /**
-         * Gets a list of datasets accessible through the API.
-         * <tt>POST /datasets/search</tt> accepts a {@link SearchDatasetsRequest}
-         * and returns a {@link SearchDatasetsResponse}.
-         *
-         * @param request the {@link SearchDatasetsRequest} request
-         * @throws AvroRemoteException if there's a communication problem
-         */
-        @Override
-        public SearchDatasetsResponse searchDatasets(SearchDatasetsRequest request)
-                throws AvroRemoteException {
-            String path = urls.getSearchDatasets();
-            SearchDatasetsResponse response = new SearchDatasetsResponse();
-            final AvroJson aj =
-                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (SearchDatasetsResponse)aj.doPostResp();
-
-            return response;
-        }
-
-        /**
-         * Gets a {@link Dataset} by ID.
-         * <tt>GET /datasets/{id}</tt> returns a {@link Dataset}.
-         *
-         * @param id the ID of the dataset
-         * @throws AvroRemoteException if there's a communication problem
-         */
-        @Override
-        public Dataset getDataset(String id) throws AvroRemoteException {
-            String path = urls.getGetDataset();
-            Dataset response = new Dataset();
-            final AvroJson aj =
-                    new AvroJson<>(response, urls.getUrlRoot(), path, wireTracker);
-            response = (Dataset)aj.doGetResp(id);
-            return response;
-        }
-
-        /**
-         * Gets a list of {@link ReadGroupSet} matching the search criteria.
-         * <p>
-         * <tt>POST /readgroupsets/search</tt> accepts a {@link SearchReadGroupSetsRequest}
-         * and returns a {@link SearchReadGroupSetsResponse}.</p>
-         *
-         * @param request filled-in Avro object to be serialized as JSON to the server
-         * @param wt      If supplied, captures the data going across the wire
-         * @throws AvroRemoteException if there's a communication problem
-         */
-        public SearchReadGroupSetsResponse searchReadGroupSets(SearchReadGroupSetsRequest
-                                                                       request, WireTracker wt)
-                throws AvroRemoteException {
-            wireTracker = wt;
-            return searchReadGroupSets(request);
+        public ReadGroup getReadGroup(String id) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+            ReadGroup.Builder responseBuilder = ReadGroup.newBuilder();
+            new Get<>(urls.getUrlRoot(), urls.getGetReadGroup(), id, null, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
         }
     }
 
@@ -399,7 +357,7 @@ public class Client {
      * makes it a little easier for someone writing tests to use their IDE's auto-complete
      * to type method names.
      */
-    public class References implements ReferenceMethods {
+    public class References {
 
         /**
          * Gets a list of {@link ReferenceSet} matching the search criteria.
@@ -408,21 +366,14 @@ public class Client {
          * and returns a {@link SearchReferenceSetsResponse}.
          *
          * @param request Avro object to be serialized as JSON to the server
-         * @throws AvroRemoteException if there's a communication problem
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
-        @Override
-        public SearchReferenceSetsResponse searchReferenceSets(SearchReferenceSetsRequest request)
-                throws AvroRemoteException {
-            String path = urls.getSearchReferencesets();
-            // we use an empty concrete response class to pass into the Parameterized AvroJson
-            // as a quick way to get the class name and such; this object actually gets replaced
-            // with the filled-in Response object constructed in AvroJson and passed back
-            SearchReferenceSetsResponse response = new SearchReferenceSetsResponse();
-            final AvroJson aj =
-                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (SearchReferenceSetsResponse)aj.doPostResp();
-
-            return response;
+        public SearchReferenceSetsResponse searchReferenceSets(SearchReferenceSetsRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            SearchReferenceSetsResponse.Builder responseBuilder = SearchReferenceSetsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), urls.getSearchReferenceSets(), request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
         }
 
         /**
@@ -430,45 +381,14 @@ public class Client {
          * <tt>GET /referencesets/{id}</tt> returns a {@link ReferenceSet}.
          *
          * @param id the reference set ID
-         * @throws AvroRemoteException if there's a communication problem
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
-        @Override
-        public ReferenceSet getReferenceSet(String id) throws AvroRemoteException {
-            String path = urls.getReferenceSets();
-            ReferenceSet response = new ReferenceSet();
-            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path);
-            response = (ReferenceSet)aj.doGetResp(id);
-            return response;
-        }
-
-        /**
-         * Gets a list of {@link ReferenceSet} matching the search criteria.
-         * <p>
-         * <tt>POST /referencesets/search</tt> accepts a
-         * {@link SearchReferenceSetsRequest} and returns a {@link SearchReferenceSetsResponse}.
-         *
-         * @param request Avro object to be serialized as JSON to the server
-         * @param wt      If supplied, captures the data going across the wire
-         * @throws AvroRemoteException if there's a communication problem
-         */
-        public SearchReferenceSetsResponse searchReferenceSets(SearchReferenceSetsRequest request,
-                                                               WireTracker wt)
-                throws AvroRemoteException {
-            wireTracker = wt;
-            return searchReferenceSets(request);
-        }
-
-        /**
-         * Gets a {@link ReferenceSet} by ID.
-         * <tt>GET /referencesets/{id}</tt> returns a {@link ReferenceSet}.
-         *
-         * @param id the reference set ID
-         * @param wt If supplied, captures the data going across the wire
-         * @throws AvroRemoteException if there's a communication problem
-         */
-        public ReferenceSet getReferenceSet(String id, WireTracker wt) throws AvroRemoteException {
-            wireTracker = wt;
-            return getReferenceSet(id);
+        public ReferenceSet getReferenceSet(String id) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+            ReferenceSet.Builder responseBuilder = ReferenceSet.newBuilder();
+            new Get<>(urls.getUrlRoot(), urls.getReferenceSets(), id, null, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
         }
 
         /**
@@ -478,19 +398,14 @@ public class Client {
          * and returns a {@link SearchReferencesResponse}.
          *
          * @param request Avro object to be serialized as JSON to the server
-         * @throws AvroRemoteException if there's a communication problem
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
-        @Override
-        public SearchReferencesResponse searchReferences(SearchReferencesRequest request)
-                throws AvroRemoteException {
-
-            String path = urls.getSearchReferences();
-            SearchReferencesResponse response = new SearchReferencesResponse();
-            final AvroJson aj =
-                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (SearchReferencesResponse)aj.doPostResp();
-
-            return response;
+        public SearchReferencesResponse searchReferences(SearchReferencesRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            SearchReferencesResponse.Builder responseBuilder = SearchReferencesResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), urls.getSearchReferences(), request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
         }
 
         /**
@@ -498,26 +413,21 @@ public class Client {
          * <tt>GET /references/{id}</tt> returns a {@link Reference}.
          *
          * @param id the reference set ID
-         * @throws AvroRemoteException if there's a communication problem
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
-        @Override
-        public Reference getReference(String id) throws AvroRemoteException {
-            String path = urls.getReference();
-            // we use an empty concrete response class to pass into the Parameterized AvroJson
-            // as a quick way to get the class name and such; this object actually gets replaced
-            // with the filled-in Response object constructed in AvroJson and passed back
-            Reference response = new Reference();
-            final AvroJson aj =
-                    new AvroJson<>(response, urls.getUrlRoot(), path, wireTracker);
-            response = (Reference)aj.doGetResp(id);
-
-            return response;
+        public Reference getReference(String id) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+            Reference.Builder responseBuilder = Reference.newBuilder();
+            new Get<>(urls.getUrlRoot(), urls.getReference(), id, null, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
         }
 
         /**
          * Add <tt>key</tt> = <tt>value</tt> to the {@link Map} if <tt>value</tt> is not <tt>null</tt>.
-         * @param map the Map into which we might insert
-         * @param key the key
+         *
+         * @param map   the Map into which we might insert
+         * @param key   the key
          * @param value the value
          */
         private void putInMapIfValueNotNull(Map<String, Object> map,
@@ -534,25 +444,102 @@ public class Client {
          *
          * @param id      the reference set ID
          * @param request Avro object to be serialized as JSON to the server
-         * @throws AvroRemoteException if there's a communication problem
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
-        @Override
-        public ListReferenceBasesResponse getReferenceBases(String id,
-                                                            ListReferenceBasesRequest request)
-                throws AvroRemoteException {
-            String path = urls.getSearchReferenceBases();
-            ListReferenceBasesResponse response = new ListReferenceBasesResponse();
-            final AvroJson aj =
-                    new AvroJson<>(response, urls.getUrlRoot(), path, wireTracker);
-            // collect query params from request
+        public ListReferenceBasesResponse getReferenceBases(String id, ListReferenceBasesRequest request) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+            ListReferenceBasesResponse.Builder responseBuilder = ListReferenceBasesResponse.newBuilder();
             final Map<String, Object> params = new HashMap<>();
             putInMapIfValueNotNull(params, "start", request.getStart());
             putInMapIfValueNotNull(params, "end", request.getEnd());
             putInMapIfValueNotNull(params, "pageToken", request.getPageToken());
-            response = (ListReferenceBasesResponse)aj.doGetResp(id, params);
-
-            return response;
+            new Get<>(urls.getUrlRoot(), urls.getSearchReferenceBases(), id, params, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
         }
+    }
+
+    /**
+     * Inner class holding all sequence annotation-related methods.
+     */
+    public class SequenceAnnotations {
+        public SearchFeatureSetsResponse searchFeatureSets(SearchFeatureSetsRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getSearchFeatureSets();
+            SearchFeatureSetsResponse.Builder responseBuilder = SearchFeatureSetsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
+        }
+
+
+        public FeatureSet getFeatureSet(String id) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+            String path = urls.getGetFeatureSet();
+            FeatureSet.Builder builder = FeatureSet.newBuilder();
+            new Get<>(urls.getUrlRoot(), path, id, null, builder, wireTracker).performQuery();
+            return builder.build();
+        }
+
+        public SearchFeaturesResponse searchFeatures(SequenceAnnotationServiceOuterClass.SearchFeaturesRequest request)
+                throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getSearchFeatures();
+            SearchFeaturesResponse.Builder responseBuilder = SearchFeaturesResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
+        }
+
+        public Feature getFeature(String id) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getGetFeature();
+            Feature.Builder builder = Feature.newBuilder();
+            new Get<>(urls.getUrlRoot(), path, id, null, builder, wireTracker).performQuery();
+            return builder.build();
+        }
+
+    }
+
+    /**
+     * Inner class holding all variant annotation-related methods.  Gathering them in an inner class like this makes it a little easier for someone writing
+     * tests to use their IDE's auto-complete to type method names.
+     */
+    public class VariantAnnotations {
+
+        /**
+         * Gets a list of {@link VariantAnnotationSet} matching the search criteria via <tt>POST /variantannotationsets/search</tt>.
+         *
+         * @param request the {@link SearchVariantAnnotationSetsRequest} we'll issue
+         */
+        public SearchVariantAnnotationSetsResponse searchVariantAnnotationSets(SearchVariantAnnotationSetsRequest request)
+                throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getSearchVariantAnnotationSets();
+            SearchVariantAnnotationSetsResponse.Builder responseBuilder = SearchVariantAnnotationSetsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
+        }
+
+        /**
+         * Gets a {@link VariantAnnotationSet} by ID. <tt>GET /variantannotationsets/{id}</tt> will return a JSON version of {@link VariantAnnotationSet}.
+         *
+         * @param id the ID of the variant annotation set
+         */
+        public VariantAnnotationSet getVariantAnnotationSet(String id) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getGetVariantAnnotationSet();
+            VariantAnnotationSet.Builder builder = VariantAnnotationSet.newBuilder();
+            new Get<>(urls.getUrlRoot(), path, id, null, builder, wireTracker).performQuery();
+            return builder.build();
+        }
+
+        /**
+         * Gets a list of {@link VariantAnnotation} matching the search criteria. <p> <tt>POST /variantannotations/search</tt> accepts a {@link
+         * SearchVariantAnnotationsRequest} and returns a {@link SearchVariantAnnotationsResponse}.
+         *
+         * @param request the {@link SearchVariantAnnotationsRequest} we'll issue
+         */
+        public SearchVariantAnnotationsResponse searchVariantAnnotations(SearchVariantAnnotationsRequest request)
+                throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getSearchVariantAnnotations();
+            SearchVariantAnnotationsResponse.Builder builder = SearchVariantAnnotationsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, builder, wireTracker).performQuery();
+            return builder.build();
+        }
+
     }
 
     /**

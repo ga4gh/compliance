@@ -1,10 +1,10 @@
 package org.ga4gh.cts.demos;
 
+import ga4gh.ReferenceServiceOuterClass.SearchReferencesRequest;
+import ga4gh.ReferenceServiceOuterClassSearchReferencesRequestAssert;
+import ga4gh.VariantServiceOuterClass.SearchVariantSetsRequest;
+import ga4gh.VariantServiceOuterClassSearchVariantSetsRequestAssert;
 import org.ga4gh.ctk.CtkLogs;
-import org.ga4gh.methods.SearchReferencesRequest;
-import org.ga4gh.methods.SearchReferencesRequestAssert;
-import org.ga4gh.methods.SearchVariantSetsRequest;
-import org.ga4gh.methods.SearchVariantSetsRequestAssert;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,7 +30,7 @@ public class Asserting implements CtkLogs {
         assertThat(req.getPageSize()).isEqualTo(121);
 
         // custom assertThat for SearchReferencesRequest
-        SearchReferencesRequestAssert.assertThat(req).hasPageSize(121);
+        ReferenceServiceOuterClassSearchReferencesRequestAssert.assertThat(req).hasPageSize(121);
     }
 
     /**
@@ -44,17 +44,17 @@ public class Asserting implements CtkLogs {
     public void demoTestingObjectAttributes2() {
         final SearchVariantSetsRequest req =
                 SearchVariantSetsRequest.newBuilder()
-                                          .setDatasetId("compliance-dataset1")
-                                          .setPageSize(341).build();
+                        .setDatasetId("compliance-dataset1")
+                        .setPageSize(341).build();
 
         // plain old AssertJ
         assertThat(req.getPageSize()).isEqualTo(341);
         assertThat(req.getDatasetId()).isEqualTo("compliance-dataset1");
 
         // custom assertThat for SearchVariantSetsRequest
-        SearchVariantSetsRequestAssert.assertThat(req)
-                                        .hasPageSize(341)
-                                        .hasDatasetId("compliance-dataset1");
+        VariantServiceOuterClassSearchVariantSetsRequestAssert.assertThat(req)
+                .hasPageSize(341)
+                .hasDatasetId("compliance-dataset1");
     }
 
 

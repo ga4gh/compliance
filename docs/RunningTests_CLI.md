@@ -4,11 +4,11 @@ The unzipped `dist/target/ga4gh-ctk-cli.zip` results in the following
 directory structure:
 
     <test_directory>/
-      | - ctk-cli-0.5.1-SNAPSHOT.jar
+      | - ctk-cli-0.6.0a1.jar
       | - application.properties
       | - ctk
       | - lib/
-      |       |- cts-java-0.5.1-SNAPSHOT-tests.jar
+      |       |- cts-java-0.6.0a1-tests.jar
       |       |- log4j2.xml
       |       |- antRunTests.xml
       | - target/
@@ -44,11 +44,11 @@ as in the next section.
 
 ### To use `java` to run the tests:
 
-    java -jar ctk-cli-0.5.1-SNAPSHOT.jar --ctk.tgt.urlRoot=<your server URL base>
+    java -jar ctk-cli-0.6.0a1.jar --ctk.tgt.urlRoot=<your server URL base>
 
 so, for example,
 
-    java -jar ctk-cli-0.5.1-SNAPSHOT.jar --ctk.tgt.urlRoot=http://myserver:8000
+    java -jar ctk-cli-0.6.0a1.jar --ctk.tgt.urlRoot=http://myserver:8000
 
 #### Tips
 
@@ -62,7 +62,7 @@ We'll assume you've done this and omit the `ctk.tgt.urlRoot` property from the e
 
 If you want to see a example of a test failing, add another property to your `java` command:
 
-    java -jar ctk-cli-0.5.1-SNAPSHOT.jar --cts.demofail=true
+    java -jar ctk-cli-0.6.0a1.jar --cts.demofail=true
 
 There will be some console output, and you can check in `testresults/<server_port>/<run #>/` for details;
 if you have a browser, open `testresults/<server_port>/<run #>/report/html/index.html`.
@@ -70,7 +70,7 @@ if you have a browser, open `testresults/<server_port>/<run #>/report/html/index
 If you want to attach a debugger to the command-line CTK, use:
 
     java -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=5005,suspend=n \
-         -jar ctk-cli-0.5.1-SNAPSHOT.jar
+         -jar ctk-cli-0.6.0a1.jar
 
 For help on using the `java` command, refer to your Java vendor's documentation or the help provided with your installation (e.g., `man java` or `java -h`).
 
@@ -96,7 +96,7 @@ If you want to alter which tests get run, you can do that on the command line
 
 ```
 
-    $ java -jar ctk-cli-0.5.1-SNAPSHOT.jar --ctk.matchstr=.*ReadMethodsEndpointAliveIT.*
+    $ java -jar ctk-cli-0.6.0a1.jar --ctk.matchstr=.*ReadMethodsEndpointAliveIT.*
     [TESTLOG] 4 failed, 6 passed, 0 skipped, 1068 ms
     [TESTLOG] FAIL: [0] TWO_GOOD, NOT_IMPLEMENTED (multipleReadGroupsNotSupported)(org.ga4gh.cts.api.reads.ReadMethodsEndpointAliveIT):
     ...
@@ -135,7 +135,7 @@ The other two classes are for a near-future capability that isn't quite ready fo
 
 To run a selected test, we just match its name as an Ant-style regex to the `ctk.matchstr` property:
 
-` java -jar ctk-cli-0.5.1-SNAPSHOT.jar --ctk.matchstr=**/*ReadMethods.class`
+` java -jar ctk-cli-0.6.0a1.jar --ctk.matchstr=**/*ReadMethods.class`
 
  or
 
@@ -176,7 +176,7 @@ This test just passes or fails based on a property; here's the example code:
 We'll compile and package it (not shown).  Then let's run it:
 
 ```
-$ java -jar ctk-cli-0.5.1-SNAPSHOT.jar --cts.demofail=true --ctk.matchstr=**/*Landing*.class
+$ java -jar ctk-cli-0.6.0a1.jar --cts.demofail=true --ctk.matchstr=**/*Landing*.class
 [TESTLOG] Suite start org.ga4gh.cts.api.datasets.DatasetsPagingIT
 [TESTLOG] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.474 sec
 [TESTLOG] Suite start org.ga4gh.cts.api.datasets.DatasetsSearchIT

@@ -1,16 +1,34 @@
 package org.ga4gh.cts.api;
 
-import org.apache.avro.AvroRemoteException;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
+
+import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationSetsRequest;
+import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationSetsResponse;
+import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsRequest;
+import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsResponse;
+import ga4gh.AlleleAnnotations.VariantAnnotation;
+import ga4gh.AlleleAnnotations.VariantAnnotationSet;
+import ga4gh.Reads.*;
+import ga4gh.ReadServiceOuterClass.*;
+import ga4gh.Reads.ReadGroup.Program;
+import ga4gh.References.*;
+import ga4gh.ReferenceServiceOuterClass.*;
+import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeatureSetsRequest;
+import ga4gh.SequenceAnnotations.*;
+import ga4gh.Variants.*;
+import ga4gh.VariantServiceOuterClass.*;
+import ga4gh.Metadata.*;
+import ga4gh.MetadataServiceOuterClass.*;
 import org.assertj.core.api.ThrowableAssert;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.protocols.Client;
-import org.ga4gh.methods.*;
-import org.ga4gh.models.*;
 
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
+import static ga4gh.SequenceAnnotationServiceOuterClass.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.StrictAssertions.catchThrowable;
 import static org.assertj.core.api.StrictAssertions.fail;
@@ -114,23 +132,21 @@ public class Utils {
      * Utility method to fetch the ID of a reference to which we can map the reads we're testing.
      * @param client the {@link Client} connection to the server
      * @return the ID of a reference
-     * @throws AvroRemoteException is the server throws an exception or there's an I/O error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
-    public static String getValidReferenceId(Client client) throws AvroRemoteException {
-        final SearchReferenceSetsRequest refSetsReq = SearchReferenceSetsRequest.newBuilder().build();
-        final SearchReferenceSetsResponse refSetsResp = client.references.searchReferenceSets(refSetsReq);
-
-        final List<ReferenceSet> refSets = refSetsResp.getReferenceSets();
-
+    public static String getValidReferenceId(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReferencesRequest refsReq = SearchReferencesRequest
                 .newBuilder()
-                .setReferenceSetId(refSets.get(0).getId())
+                .setReferenceSetId(Utils.getReferenceSetIdByAssemblyId(client, TestData.REFERENCESET_ASSEMBLY_ID))
+                .setMd5Checksum(TestData.REFERENCE_BRCA1_MD5_CHECKSUM)
                 .build();
         final SearchReferencesResponse refsResp = client.references.searchReferences(refsReq);
         assertThat(refsResp).isNotNull();
-        final List<Reference> references = refsResp.getReferences();
+        final List<Reference> references = refsResp.getReferencesList();
         assertThat(references).isNotNull().isNotEmpty();
-
+        assertThat(references).hasSize(1);
         return references.get(0).getId();
     }
 
@@ -138,9 +154,11 @@ public class Utils {
      * Utility method to fetch the ID of an arbitrary {@link ReadGroup}.
      * @param client the {@link Client} connection to the server
      * @return the ID of an arbitrary {@link ReadGroup}
-     * @throws AvroRemoteException is the server throws an exception or there's an I/O error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
-    public static String getReadGroupId(Client client) throws AvroRemoteException {
+    public static String getReadGroupId(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReadGroupSetsRequest readGroupSetsReq =
                 SearchReadGroupSetsRequest
                         .newBuilder()
@@ -149,10 +167,10 @@ public class Utils {
         final SearchReadGroupSetsResponse readGroupSetsResp =
                 client.reads.searchReadGroupSets(readGroupSetsReq);
         assertThat(readGroupSetsResp).isNotNull();
-        final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSets();
+        final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSetsList();
         assertThat(readGroupSets).isNotEmpty().isNotNull();
         final ReadGroupSet readGroupSet = readGroupSets.get(0);
-        List<ReadGroup> readGroups = readGroupSet.getReadGroups();
+        List<ReadGroup> readGroups = readGroupSet.getReadGroupsList();
         assertThat(readGroups).isNotEmpty().isNotNull();
         final ReadGroup readGroup = readGroups.get(0);
         assertThat(readGroup).isNotNull();
@@ -165,9 +183,11 @@ public class Utils {
      * @param readGroupSetName the name of a {@link ReadGroupSet}
      * @param readGroupName the name of a {@link ReadGroup} in the given {@link ReadGroupSet}
      * @return the ID of the {@link ReadGroup}, or null if not found
-     * @throws AvroRemoteException is the server throws an exception or there's an I/O error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
-    public static String getReadGroupIdForName(Client client, String readGroupSetName, String readGroupName) throws AvroRemoteException {
+    public static String getReadGroupIdForName(Client client, String readGroupSetName, String readGroupName) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReadGroupSetsRequest readGroupSetsReq =
                 SearchReadGroupSetsRequest.newBuilder()
                                           .setDatasetId(TestData.getDatasetId())
@@ -175,10 +195,10 @@ public class Utils {
                                           .build();
         final SearchReadGroupSetsResponse readGroupSetsResp =
                 client.reads.searchReadGroupSets(readGroupSetsReq);
-        final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSets();
+        final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSetsList();
         assertThat(readGroupSets).isNotEmpty().isNotNull();
         final ReadGroupSet readGroupSet = readGroupSets.get(0);
-        final List<ReadGroup> readGroups = readGroupSet.getReadGroups();
+        final List<ReadGroup> readGroups = readGroupSet.getReadGroupsList();
         final Optional<ReadGroup> result =
                 readGroups.stream().filter(readGroup -> readGroupName.equals(readGroup.getName())).findFirst();
         return result.isPresent() ? result.get().getId() : null;
@@ -188,14 +208,14 @@ public class Utils {
      * Utility method to fetch all {@link ReadGroupSet}s.
      * @param client the {@link Client} connection to the server
      * @return all {@link ReadGroupSet}s
-     * @throws AvroRemoteException is the server throws an exception or there's an I/O error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
-    public static List<ReadGroupSet> getAllReadGroupSets(Client client)
-            throws AvroRemoteException {
-
+    public static List<ReadGroupSet> getAllReadGroupSets(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<ReadGroupSet> result = new LinkedList<>();
 
-        String pageToken = null;
+        String pageToken = "";
         do {
             final SearchReadGroupSetsRequest readGroupSetsReq =
                     SearchReadGroupSetsRequest
@@ -208,10 +228,10 @@ public class Utils {
                     client.reads.searchReadGroupSets(readGroupSetsReq);
             pageToken = readGroupSetsResp.getNextPageToken();
             assertThat(readGroupSetsResp).isNotNull();
-            final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSets();
+            final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSetsList();
             assertThat(readGroupSets).isNotEmpty().isNotNull();
             result.addAll(readGroupSets);
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
 
         return result;
     }
@@ -221,13 +241,13 @@ public class Utils {
      * @param client the {@link Client} connection to the server
      * @param name the name of a {@link ReadGroupSet}
      * @return all {@link ReadGroup}s in the {@link ReadGroupSet}
-     * @throws AvroRemoteException is the server throws an exception or there's an I/O error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
-    public static List<ReadGroup> getReadGroupsForName(Client client, String name)
-            throws AvroRemoteException {
-
+    public static List<ReadGroup> getReadGroupsForName(Client client, String name) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<ReadGroup> result = new LinkedList<>();
-        String pageToken = null;
+        String pageToken = "";
 
         do {
             final SearchReadGroupSetsRequest readGroupSetsReq =
@@ -241,33 +261,36 @@ public class Utils {
             final SearchReadGroupSetsResponse readGroupSetsResp =
                     client.reads.searchReadGroupSets(readGroupSetsReq);
             pageToken = readGroupSetsResp.getNextPageToken();
-            final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSets();
+            final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSetsList();
             assertThat(readGroupSets).isNotEmpty().isNotNull();
             result.addAll(readGroupSets.stream()
-                                       .flatMap(rgs -> rgs.getReadGroups().stream())
+                                       .flatMap(rgs -> rgs.getReadGroupsList().stream())
                                        .collect(Collectors.toList()));
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
 
         return result;
     }
 
     /**
-     * Utility method to fetch a ReferenceSetId given a {@link ReferenceSet#assemblyId}.
+     * Utility method to fetch a ReferenceSetId given a {@link ReferenceSet#getAssemblyId()}.
      * @param client the connection to the server
-     * @param assemblyId the {@link ReferenceSet#assemblyId} of the {@link ReferenceSet}
+     * @param assemblyId the {@link ReferenceSet#getAssemblyId()} of the {@link ReferenceSet}
      * @return The ReferenceSet ID
      *
-     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
-    public static String getReferenceSetIdByAssemblyId(Client client, String assemblyId) throws AvroRemoteException {
+    public static String getReferenceSetIdByAssemblyId(Client client, String assemblyId) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReferenceSetsRequest req =
                 SearchReferenceSetsRequest.newBuilder()
                         .setAssemblyId(assemblyId)
                         .build();
         final SearchReferenceSetsResponse resp =
                 client.references.searchReferenceSets(req);
-        final List<ReferenceSet> refSets = resp.getReferenceSets();
+        final List<ReferenceSet> refSets = resp.getReferenceSetsList();
         assertThat(refSets).isNotNull();
+        assertThat(refSets).hasSize(1);
         final ReferenceSet refSet = refSets.get(0);
         return refSet.getId();
     }
@@ -276,16 +299,18 @@ public class Utils {
      * Utility method to fetch the ID of an arbitrary {@link VariantSet}.
      * @param client the connection to the server
      * @return the ID of a {@link VariantSet}
-     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
-    public static String getVariantSetId(Client client) throws AvroRemoteException {
+    public static String getVariantSetId(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchVariantSetsRequest req =
                 SearchVariantSetsRequest.newBuilder()
                                         .setDatasetId(TestData.getDatasetId())
                                         .build();
         final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
 
-        final List<VariantSet> variantSets = resp.getVariantSets();
+        final List<VariantSet> variantSets = resp.getVariantSetsList();
         assertThat(variantSets).isNotEmpty();
         return variantSets.get(0).getId();
     }
@@ -298,14 +323,16 @@ public class Utils {
      * @param start the start of the range to search
      * @param end the end of the range to search
      * @return the {@link List} of results
-     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     public static List<Variant> getAllVariantsInRange(Client client,
                                                       String variantSetId,
-                                                      long start, long end) throws AvroRemoteException {
+                                                      long start, long end) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         // get all variants in the range
         final List<Variant> result = new LinkedList<>();
-        String pageToken = null;
+        String pageToken = "";
 
         do {
             final SearchVariantsRequest vReq =
@@ -318,8 +345,8 @@ public class Utils {
                                          .build();
             final SearchVariantsResponse vResp = client.variants.searchVariants(vReq);
             pageToken = vResp.getNextPageToken();
-            result.addAll(vResp.getVariants());
-        } while (pageToken != null);
+            result.addAll(vResp.getVariantsList());
+        } while (pageToken != null && !pageToken.equals(""));
 
         return result;
     }
@@ -329,12 +356,14 @@ public class Utils {
      *
      * @param client the connection to the server
      * @return the {@link List} of results
-     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
-    public static List<VariantSet> getAllVariantSets(Client client) throws AvroRemoteException {
+    public static List<VariantSet> getAllVariantSets(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final List<VariantSet> result = new LinkedList<>();
-        String pageToken = null;
+        String pageToken = "";
         do {
             final SearchVariantSetsRequest req =
                     SearchVariantSetsRequest.newBuilder()
@@ -344,8 +373,8 @@ public class Utils {
                                             .build();
             final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
             pageToken = resp.getNextPageToken();
-            result.addAll(resp.getVariantSets());
-        } while (pageToken != null);
+            result.addAll(resp.getVariantSetsList());
+        } while (pageToken != null && !pageToken.equals(""));
 
         return result;
     }
@@ -356,12 +385,13 @@ public class Utils {
      * @param client the connection to the server
      * @param variantSetId the ID of the {@link VariantSet}
      * @return the {@link List} of results
-     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
-    public static List<CallSet> getAllCallSets(Client client,
-                                               String variantSetId) throws AvroRemoteException {
+    public static List<CallSet> getAllCallSets(Client client, String variantSetId) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<CallSet> result = new LinkedList<>();
-        String pageToken = null;
+        String pageToken = "";
         do {
             final SearchCallSetsRequest callSetsSearchRequest =
                     SearchCallSetsRequest.newBuilder()
@@ -371,8 +401,8 @@ public class Utils {
                                          .build();
             final SearchCallSetsResponse csResp = client.variants.searchCallSets(callSetsSearchRequest);
             pageToken = csResp.getNextPageToken();
-            result.addAll(csResp.getCallSets());
-        } while (pageToken != null);
+            result.addAll(csResp.getCallSetsList());
+        } while (pageToken != null && !pageToken.equals(""));
 
         return result;
     }
@@ -381,10 +411,13 @@ public class Utils {
      * Retrieve all {@link ReferenceSet}s.
      * @param client the connection to the server
      * @return a {@link List} of all {@link Reference}s in the first {@link ReferenceSet}
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
-    public static List<ReferenceSet> getAllReferenceSets(Client client) throws AvroRemoteException {
+    public static List<ReferenceSet> getAllReferenceSets(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<ReferenceSet> result = new LinkedList<>();
-        String pageToken = null;
+        String pageToken = "";
         do {
             final SearchReferenceSetsRequest refSetsReq =
                     SearchReferenceSetsRequest.newBuilder()
@@ -394,8 +427,8 @@ public class Utils {
             final SearchReferenceSetsResponse refSetsResp =
                     client.references.searchReferenceSets(refSetsReq);
             pageToken = refSetsResp.getNextPageToken();
-            result.addAll(refSetsResp.getReferenceSets());
-        } while (pageToken != null);
+            result.addAll(refSetsResp.getReferenceSetsList());
+        } while (pageToken != null && !pageToken.equals(""));
 
         return result;
     }
@@ -406,11 +439,13 @@ public class Utils {
      * @param client   the connection to the server
      * @param refSetId the ID of the {@link ReferenceSet} we're using
      * @return a {@link List} of all {@link Reference}s in the first {@link ReferenceSet}
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
-    public static List<Reference> getAllReferences(Client client,
-                                                   String refSetId) throws AvroRemoteException {
+    public static List<Reference> getAllReferences(Client client,String refSetId) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<Reference> result = new LinkedList<>();
-        String pageToken = null;
+        String pageToken = "";
         do {
             final SearchReferencesRequest refsReq =
                     SearchReferencesRequest.newBuilder()
@@ -420,8 +455,8 @@ public class Utils {
                                            .build();
             final SearchReferencesResponse refsResp = client.references.searchReferences(refsReq);
             pageToken = refsResp.getNextPageToken();
-            result.addAll(refsResp.getReferences());
-        } while (pageToken != null);
+            result.addAll(refsResp.getReferencesList());
+        } while (pageToken != null && !pageToken.equals(""));
 
         return result;
     }
@@ -432,23 +467,24 @@ public class Utils {
      * @param referenceId the ID of the {@link Reference} we're using
      * @param readGroupId the ID of the {@link ReadGroup} we're using
      * @return all the {@link ReadAlignment} objects that match
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
-    public static List<ReadAlignment> getAllReads(Client client, String referenceId,
-                                                  String readGroupId) throws AvroRemoteException {
-
+    public static List<ReadAlignment> getAllReads(Client client, String referenceId, String readGroupId) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<ReadAlignment> result = new LinkedList<>();
-        String pageToken = null;
+        String pageToken = "";
         do {
             final SearchReadsRequest req = SearchReadsRequest.newBuilder()
                                                              .setReferenceId(referenceId)
-                                                             .setReadGroupIds(aSingle(readGroupId))
+                                                             .addAllReadGroupIds(aSingle(readGroupId))
                                                              .setPageToken(pageToken)
                                                              .setPageSize(100)
                                                              .build();
             final SearchReadsResponse resp = client.reads.searchReads(req);
-            result.addAll(resp.getAlignments());
+            result.addAll(resp.getAlignmentsList());
             pageToken = resp.getNextPageToken();
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
 
         return result;
     }
@@ -457,20 +493,23 @@ public class Utils {
      * Retrieve all {@link Dataset}s we're allowed to access.
      * @param client the connection to the server
      * @return all the {@link Dataset}s
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
-    public static List<Dataset> getAllDatasets(Client client) throws AvroRemoteException {
+    public static List<Dataset> getAllDatasets(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final List<Dataset> result = new LinkedList<>();
-        String pageToken = null;
+        String pageToken = "";
         do {
             final SearchDatasetsRequest req =
                     SearchDatasetsRequest.newBuilder()
                                          .setPageSize(100)
                                          .setPageToken(pageToken)
                                          .build();
-            final SearchDatasetsResponse resp = client.reads.searchDatasets(req);
+            final SearchDatasetsResponse resp = client.metadata.searchDatasets(req);
             pageToken = resp.getNextPageToken();
-            result.addAll(resp.getDatasets());
-        } while (pageToken != null);
+            result.addAll(resp.getDatasetsList());
+        } while (pageToken != null && !pageToken.equals(""));
         return result;
     }
 
@@ -535,6 +574,181 @@ public class Utils {
             fail("Expected but did not receive GAWrapperException");
         }
         return maybeAnException;
+    }
+
+    /**
+     * Search for and return all {@link VariantAnnotation} objects in the {@link VariantAnnotationSet} with ID <tt>variantAnnotationSetId</tt>, from
+     * <tt>start</tt> to <tt>end</tt>.
+     *
+     * @param client                 the connection to the server
+     * @param variantAnnotationSetId the ID of the {@link VariantAnnotationSet}
+     * @param start                  the start of the range to search
+     * @param end                    the end of the range to search
+     * @return the {@link List} of results
+     * @throws GAWrapperException             if the server finds the request invalid in some way
+     * @throws UnirestException               if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    public static List<VariantAnnotation> getAllVariantAnnotationsInRange(Client client,
+                                                                          String variantAnnotationSetId,
+                                                                          long start, long end)
+            throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        // get all variantAnnotations in the range
+        final List<VariantAnnotation> result = new LinkedList<>();
+        String pageToken = "";
+
+        do {
+            final SearchVariantAnnotationsRequest vReq =
+                    SearchVariantAnnotationsRequest.newBuilder()
+                            .setVariantAnnotationSetId(variantAnnotationSetId)
+                            .setReferenceName(TestData.VARIANT_ANNOTATION_REFERENCE_NAME)
+                            .setStart(start).setEnd(end)
+                            .setPageSize(100)
+                            .setPageToken(pageToken)
+                            .build();
+            final SearchVariantAnnotationsResponse vResp = client.variantAnnotations.searchVariantAnnotations(vReq);
+            pageToken = vResp.getNextPageToken();
+            result.addAll(vResp.getVariantAnnotationsList());
+        } while (!pageToken.equals(""));
+
+        return result;
+    }
+
+    /**
+     * Utility method to fetch alist of {@link VariantAnnotationSet} given the ID of a {@link dataset}.
+     * @param client the connection to the server
+     * @return a list of {@link VariantAnnotationSet}
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    public static List<VariantAnnotationSet> getAllVariantAnnotationSets(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        // Get all compliance variant sets.
+        final List<VariantSet> variantSetsCompliance = getAllVariantSets(client);
+
+        //Check some sets are available.
+        assertThat(variantSetsCompliance).isNotEmpty();
+
+        // Build a list of VariantAnnotationSets.
+        final List<VariantAnnotationSet> result = new LinkedList<>();
+
+        // there may be multiple variantSets to check
+        for (final VariantSet variantSet : variantSetsCompliance) {
+            final SearchVariantAnnotationSetsRequest req =
+                    SearchVariantAnnotationSetsRequest.newBuilder()
+                            .setVariantSetId(variantSet.getId())
+                            .build();
+
+            final SearchVariantAnnotationSetsResponse resp = client.variantAnnotations.searchVariantAnnotationSets(req);
+            if (resp.getVariantAnnotationSetsList() != null) {
+                result.addAll(resp.getVariantAnnotationSetsList());
+            }
+
+        }
+        return result;
+    }
+
+    /**
+     * Utility method to fetch the Id of a {@link VariantAnnotationSet} for the compliance dataset.
+     * @param client the connection to the server
+     * @return the ID of a {@link VariantAnnotationSet}
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    public static String getVariantAnnotationSetId(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+
+        // get all compliance variant annotation sets
+        final List<VariantAnnotationSet> variantAnnotationSets = getAllVariantAnnotationSets(client);
+        return variantAnnotationSets.get(0).getId();
+    }
+
+
+    /**
+     * Given a name return the variant annotation set corresponding to that name. When that name
+     * is not found returns the first annotation set found.
+     * @param client the connection to the server
+     * @param name the string name of the annotation set
+     * @return a {@link VariantAnnotationSet} with the requested name
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    public static VariantAnnotationSet getVariantAnnotationSetByName(Client client, String name) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+
+        // get all compliance variant annotation sets
+        final List<VariantAnnotationSet> variantAnnotationSets = getAllVariantAnnotationSets(client);
+        for (VariantAnnotationSet vas : variantAnnotationSets) {
+            if (vas.getName().equals(name)) {
+                return vas;
+            }
+        }
+        return variantAnnotationSets.get(0);
+    }
+
+    /**
+     * Search for and return all {@link FeatureSet}s.
+     *
+     * @param client the connection to the server
+     * @return the {@link List} of results
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    public static List<FeatureSet> getAllFeatureSets(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+
+        final List<FeatureSet> result = new LinkedList<>();
+        String pageToken = "";
+        do {
+            final SearchFeatureSetsRequest req =
+                    SearchFeatureSetsRequest.newBuilder()
+                            .setDatasetId(TestData.getDatasetId())
+                            .setPageSize(100)
+                            .setPageToken(pageToken)
+                            .build();
+            final SearchFeatureSetsResponse resp = client.sequenceAnnotations.searchFeatureSets(req);
+            pageToken = resp.getNextPageToken();
+            result.addAll(resp.getFeatureSetsList());
+        } while (!pageToken.equals(""));
+
+        return result;
+    }
+
+    /**
+     * Utility method to fetch the Id of a {@link FeatureSet} for the compliance dataset.
+     * @param client the connection to the server
+     * @return the ID of a {@link FeatureSet}
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    public static String getFeatureSetId(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+
+        // get all compliance feature sets
+        final List<FeatureSet> featureSets = getAllFeatureSets(client);
+        return featureSets.get(0).getId();
+    }
+
+    /**
+     * Given a name, return the feature set corresponding to that name. When that name
+     * is not found returns the first feature set found.
+     * @param client the connection to the server
+     * @param name the string name of the annotation set
+     * @return a {@link FeatureSet} with the requested name
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    public static FeatureSet getFeatureSetByName(Client client, String name) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+
+        // get all compliance feature sets
+        final List<FeatureSet> featureSets = getAllFeatureSets(client);
+        for (FeatureSet fs : featureSets) {
+            if (fs.getName().equals(name)) {
+                return fs;
+            }
+        }
+        return featureSets.get(0);
     }
 
 }

@@ -4,7 +4,7 @@ import org.assertj.core.api.ThrowableAssert;
 import org.ga4gh.ctk.testcategories.CoreTests;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.GAException;
+import ga4gh.Common.GAException;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -62,7 +62,8 @@ public class CatchExceptionsIT {
      * Throw a {@link GAWrapperException}.
      */
     private void throwGAWrapperException() throws GAWrapperException {
-        throw new GAWrapperException(new GAException("synthetic"), HttpURLConnection.HTTP_NOT_FOUND);
+        throw new GAWrapperException(GAException.newBuilder().setMessage("synthetic").build(),
+                HttpURLConnection.HTTP_NOT_FOUND);
     }
 
 }

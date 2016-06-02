@@ -1,11 +1,12 @@
 package org.ga4gh.ctk.config;
 
 import org.junit.*;
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.test.context.*;
-import org.springframework.test.context.junit4.rules.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.rules.SpringClassRule;
+import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Props Tester.
