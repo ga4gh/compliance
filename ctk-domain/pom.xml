@@ -16,25 +16,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.ga4gh</groupId>
-            <artifactId>ctk-schemas</artifactId>
-            <version>${ga4gh.schema.local.version}</version>
-            <!-- example if you want to build with link to a local schema jar file -->
-            <!--
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/ga4gh-format-${ga4gh.schema.local.version}.jar
-            </systemPath>
-            -->
-        </dependency>
-        <dependency>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro</artifactId>
-            <version>${avro.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro-ipc</artifactId>
-            <version>${avro.version}</version>
+            <groupId>com.github.ga4gh</groupId>
+            <artifactId>schemas</artifactId>
+            <version>${ga4gh.schema.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -45,6 +29,11 @@
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
         <!-- need BCEL during site build -->
         <dependency>
@@ -85,7 +74,33 @@
                     </execution>
                 </executions>
             </plugin>
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.github.ga4gh</groupId>
+                                    <artifactId>schemas</artifactId>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                                    <includes>**/*.class</includes>
+                                    <excludes>**/*test.class</excludes>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-assertions-generator-maven-plugin</artifactId>
@@ -101,19 +116,13 @@
                 </executions>
                 <configuration>
                     <packages>
-                        <param>org.ga4gh</param>
+                        <param>ga4gh</param>
                     </packages>
-                    <includes>
-                        <!-- assert about the GA4GH data exchanged -->
-                        <param>org\.ga4gh\..*</param>
-                    </includes>
                     <excludes>
-                        <param>org\.ga4gh\.models\.Common.*</param>
+                        <param>ga4gh\.Common.*</param>
                     </excludes>
                     <entryPointClassPackage>org.ga4gh.ctk.asserts</entryPointClassPackage>
-
                     <targetDir>${project.basedir}/src/main/assertj-assertions</targetDir>
-
                 </configuration>
             </plugin>
         </plugins>

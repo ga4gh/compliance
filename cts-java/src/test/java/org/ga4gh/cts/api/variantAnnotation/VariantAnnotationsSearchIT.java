@@ -1,25 +1,29 @@
 package org.ga4gh.cts.api.variantAnnotation;
 
-import org.apache.avro.AvroRemoteException;
+import com.google.protobuf.InvalidProtocolBufferException;
+
+import com.mashape.unirest.http.exceptions.UnirestException;
+
 import org.ga4gh.ctk.CtkLogs;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.*;
-import org.ga4gh.models.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.net.HttpURLConnection;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
+import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsRequest;
+import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsResponse;
+import ga4gh.AlleleAnnotations.TranscriptEffect;
+import ga4gh.AlleleAnnotations.VariantAnnotation;
+import ga4gh.Metadata.OntologyTerm;
+import ga4gh.Variants.Variant;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.ga4gh.cts.api.Utils.catchGAWrapperException;
-import static org.ga4gh.cts.api.Utils.aSingle;
 
 /**
  * Tests dealing with searching for VariantAnnotations.
@@ -37,7 +41,7 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
 
     /**
      * For every {@link VariantAnnotation} in the {@link List}, call the {@link Consumer}.
-     * @param list of variantannotations to test
+     * @param variantAnnotations list of variantannotations to test
      * @param cons the test ({@link Consumer}) to run
      */
     private void checkAllVariantAnnotations(List<VariantAnnotation> variantAnnotations, Consumer<VariantAnnotation> cons) {
@@ -47,22 +51,23 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
 
     /**
      * For every {@link TranscriptEffect} in the {@link VariantAnnotation}s in the {@link List}, call the {@link Consumer}.
-     * @param list of VariantAnnotations to test
+     * @param variantAnnotations list of VariantAnnotations to test
      * @param cons the test ({@link Consumer}) to run
      */
     private void checkAllTranscriptEffects(List<VariantAnnotation> variantAnnotations, Consumer<TranscriptEffect> cons) {
-        variantAnnotations.stream().forEach(v -> v.getTranscriptEffects()
+        variantAnnotations.stream().forEach(v -> v.getTranscriptEffectsList()
                                         .stream()
                                         .forEach(cons::accept));
     }
 
     /**
      * Check VariantAnnotation results.
-     *
-     *@throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
-    */
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
     @Test
-    public void checkSearchingVariantAnnotations() throws AvroRemoteException {
+    public void checkSearchingVariantAnnotations() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
  
         // Obtain a VariantAnnotationSet from the compliance dataset.
         final String variantAnnotationSetId =
@@ -80,7 +85,7 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
 
         final SearchVariantAnnotationsResponse resp = client.variantAnnotations.searchVariantAnnotations(req);
         
-        final List<VariantAnnotation> variantAnnotations = resp.getVariantAnnotations();
+        final List<VariantAnnotation> variantAnnotations = resp.getVariantAnnotationsList();
 
         //Check something was returned
         assertThat(variantAnnotations).isNotEmpty();
@@ -105,10 +110,12 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
     /**
      * Check TranscriptEffects records have the appropriate mandatory data.
      *
-     *@throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
-    */
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
     @Test
-    public void checkTranscriptEffects() throws AvroRemoteException {
+    public void checkTranscriptEffects() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         // Obtain a VariantAnnotationSet from the compliance dataset.
         final String variantAnnotationSetId = Utils.getVariantAnnotationSetId(client);
@@ -125,12 +132,12 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
 
         final SearchVariantAnnotationsResponse resp = client.variantAnnotations.searchVariantAnnotations(req);
 
-        final List<VariantAnnotation> variantAnnotations = resp.getVariantAnnotations();
+        final List<VariantAnnotation> variantAnnotations = resp.getVariantAnnotationsList();
 
         //Check transcriptEffect record has values for required fields for all annotations in the list.
         checkAllTranscriptEffects(variantAnnotations, t -> assertThat(t.getFeatureId()).isNotNull());
         checkAllTranscriptEffects(variantAnnotations, t -> assertThat(t.getAlternateBases()).isNotNull());
-        checkAllTranscriptEffects(variantAnnotations, t -> assertThat(t.getEffects()).isNotNull());
+        checkAllTranscriptEffects(variantAnnotations, t -> assertThat(t.getEffectsList()).isNotNull());
 
     }
 // To be re-instated when features are available
@@ -173,10 +180,12 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
     /**
      * Check returned annotation at specific location
      *
-     *@throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
-    */
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
     @Test
-    public void checkSearchingSingleVariantAnnotation() throws AvroRemoteException {
+    public void checkSearchingSingleVariantAnnotation() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         // Obtain a VariantAnnotationSet from the compliance dataset.
         final String variantAnnotationSetId =
@@ -196,7 +205,7 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
 
         final SearchVariantAnnotationsResponse resp = client.variantAnnotations.searchVariantAnnotations(req);
 
-        final List<VariantAnnotation> variantAnnotations = resp.getVariantAnnotations();
+        final List<VariantAnnotation> variantAnnotations = resp.getVariantAnnotationsList();
         assertThat(variantAnnotations).hasSize(1);
 
         //Check transcriptEffect records all contain the expected data.
@@ -214,17 +223,19 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getHgvsAnnotation().getGenomic()).isEqualTo(hgvsg));
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getHgvsAnnotation().getTranscript()).isEqualTo(hgvsc));
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getHgvsAnnotation().getProtein()).isEqualTo(hgvsp));
-        checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getCDNALocation().getStart()).isEqualTo(cdnaStart));
-        checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getCDSLocation().getStart()).isEqualTo(cdsStart));
+        checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getCdnaLocation().getStart()).isEqualTo(cdnaStart));
+        checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getCdsLocation().getStart()).isEqualTo(cdsStart));
         checkAllTranscriptEffects(variantAnnotations, t-> assertThat(t.getProteinLocation().getStart()).isEqualTo(proteinStart));
     }
     /**
      * Check the VariantIds contained in VariantAnnotations records return Variant records.
      *
-     *@throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
-    */
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
     @Test
-    public void checkVariantAnnotationVariants() throws AvroRemoteException {
+    public void checkVariantAnnotationVariants() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         // Obtain a VariantAnnotationSet from the compliance dataset.
         final String variantAnnotationSetId =
@@ -240,9 +251,9 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
                                                .build();
 
         final SearchVariantAnnotationsResponse resp = client.variantAnnotations.searchVariantAnnotations(req);
-        assertThat(resp.getVariantAnnotations()).isNotEmpty();
+        assertThat(resp.getVariantAnnotationsList()).isNotEmpty();
         //Check a valid variant id is returned for each record.
-        for( VariantAnnotation variantAnn : resp.getVariantAnnotations() ){
+        for( VariantAnnotation variantAnn : resp.getVariantAnnotationsList() ){
             final String  variantId = variantAnn.getVariantId();
 
             // Look up Variant by id to check it exists
@@ -256,12 +267,13 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
     /**
      * Check whether filtering by effect ID finds the expected annotations.
      *
-     *@throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void checkFilteringByEffectTerm() throws AvroRemoteException {
-
-        final OntologyTerm term = new OntologyTerm("SO:0001819", "synonymous_variant", "source", "0");
+    public void checkFilteringByEffectTerm() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final OntologyTerm term = OntologyTerm.newBuilder().setId("SO:0001819").setTerm("synonymous_variant").setSourceName("source").setSourceVersion("0").build();
         // Obtain a VariantAnnotationSet from the compliance dataset.
         final String variantAnnotationSetId =
                 Utils.getVariantAnnotationSetByName(client, TestData.VARIANT_ANNOTATION_SET_NAMES.get(1)).getId();
@@ -273,16 +285,16 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
                         .setReferenceName(TestData.VARIANT_ANNOTATION_REFERENCE_NAME)
                         .setStart(0)
                         .setEnd(100000)
-                        .setEffects(Arrays.asList(term))
+                        .addEffects(term)
                         .build();
 
         final SearchVariantAnnotationsResponse resp = client.variantAnnotations.searchVariantAnnotations(req);
 
         // There are 7 records with the "synonymous_variant" term in the test data.
-        assertThat(resp.getVariantAnnotations()).hasSize(7);
+        assertThat(resp.getVariantAnnotationsList()).hasSize(7);
         //Check the transcript effect field is not empty for each annotation.
-        for( VariantAnnotation variantAnn : resp.getVariantAnnotations() ){
-            assertThat(variantAnn.getTranscriptEffects()).isNotEmpty();
+        for( VariantAnnotation variantAnn : resp.getVariantAnnotationsList() ){
+            assertThat(variantAnn.getTranscriptEffectsList()).isNotEmpty();
         }
     }
 

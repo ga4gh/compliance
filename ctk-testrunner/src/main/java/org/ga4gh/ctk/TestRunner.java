@@ -5,7 +5,7 @@ import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildListener;
 import org.ga4gh.ctk.config.Props;
 import org.ga4gh.ctk.transport.URLMAPPING;
-import org.ga4gh.ctk.transport.avrojson.AvroJson;
+import org.ga4gh.ctk.transport.protobuf.Base;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -142,7 +142,7 @@ public class TestRunner implements BuildListener {
        /* ******* post-Test reporting ********* */
         // ant file runs junitreporter, so those reports are done
         // just log the traffic, until we write the coverage-tests
-        for (Table.Cell<String, String, Integer> cell : AvroJson.getMessages().cellSet()) {
+        for (Table.Cell<String, String, Integer> cell : Base.getMessages().cellSet()) {
             trafficlog.info(cell.getRowKey() + " " + cell.getColumnKey() + " " + cell.getValue());
         }
         String todir = event.getProject().getUserProperty("ctk.todir");

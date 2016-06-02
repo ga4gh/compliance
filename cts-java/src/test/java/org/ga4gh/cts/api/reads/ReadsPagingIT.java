@@ -1,15 +1,15 @@
 package org.ga4gh.cts.api.reads;
 
-import org.apache.avro.AvroRemoteException;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import ga4gh.ReadServiceOuterClass.SearchReadGroupSetsRequest;
+import ga4gh.ReadServiceOuterClass.SearchReadsRequest;
+import ga4gh.ReadServiceOuterClass.SearchReadsResponse;
+import ga4gh.Reads.ReadAlignment;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.GAException;
-import org.ga4gh.methods.SearchReadGroupSetsRequest;
-import org.ga4gh.methods.SearchReadsRequest;
-import org.ga4gh.methods.SearchReadsResponse;
-import org.ga4gh.models.ReadAlignment;
-import org.ga4gh.models.Reference;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -39,10 +39,13 @@ public class ReadsPagingIT {
      * server-imposed limits.  The 1-by-1 paging must enumerate them all, however.  The set of "all"
      * must be a subset of those gathered one-by-one.
      * </p>
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     *
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void checkPagingOneByOneThroughReads() throws AvroRemoteException {
+    public void checkPagingOneByOneThroughReads() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final String referenceId = Utils.getValidReferenceId(client);
         final String readGroupId = Utils.getReadGroupId(client);
@@ -57,22 +60,22 @@ public class ReadsPagingIT {
 
         final Set<ReadAlignment> setOfReadsGathered1By1 = new HashSet<>(setOfExpectedReads.size());
         // page through the ReadAlignments using the same query parameters and collect them
-        String pageToken = null;
+        String pageToken = "";
         do {
             final SearchReadsRequest pageReq =
                     SearchReadsRequest.newBuilder()
                                       .setReferenceId(referenceId)
-                                      .setReadGroupIds(aSingle(readGroupId))
+                                      .addAllReadGroupIds(aSingle(readGroupId))
                                       .setPageSize(1)
                                       .setPageToken(pageToken)
                                       .build();
             final SearchReadsResponse pageResp = client.reads.searchReads(pageReq);
-            final List<ReadAlignment> pageOfReads = pageResp.getAlignments();
+            final List<ReadAlignment> pageOfReads = pageResp.getAlignmentsList();
             pageToken = pageResp.getNextPageToken();
 
             assertThat(pageOfReads).hasSize(1);
             setOfReadsGathered1By1.add(pageOfReads.get(0));
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
 
         assertThat(setOfReadsGathered1By1).containsAll(setOfExpectedReads);
     }
@@ -83,10 +86,12 @@ public class ReadsPagingIT {
      * {@link org.ga4gh.ctk.transport.protocols.Client.Reads#searchReads(SearchReadsRequest)}, and
      * compare the collections of objects at the end.  They should be identical.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void checkTwoSimultaneousPagingSequencesThroughReads() throws AvroRemoteException {
+    public void checkTwoSimultaneousPagingSequencesThroughReads() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final String referenceId = Utils.getValidReferenceId(client);
         final String readGroupId = Utils.getReadGroupId(client);
@@ -96,52 +101,52 @@ public class ReadsPagingIT {
 
         // page through the ReadAlignments using the same query parameters, and collect them
 
-        String pageToken0 = null;
-        String pageToken1 = null;
+        String pageToken0 = "";
+        String pageToken1 = "";
         do {
             final SearchReadsRequest page0Req =
                     SearchReadsRequest.newBuilder()
                                       .setReferenceId(referenceId)
-                                      .setReadGroupIds(aSingle(readGroupId))
+                                      .addAllReadGroupIds(aSingle(readGroupId))
                                       .setPageSize(1)
                                       .setPageToken(pageToken0)
                                       .build();
             final SearchReadsRequest page1Req =
                     SearchReadsRequest.newBuilder()
                                       .setReferenceId(referenceId)
-                                      .setReadGroupIds(aSingle(readGroupId))
+                                      .addAllReadGroupIds(aSingle(readGroupId))
                                       .setPageSize(1)
                                       .setPageToken(pageToken1)
                                       .build();
             final SearchReadsResponse page0Resp = client.reads.searchReads(page0Req);
-            final List<ReadAlignment> pageOfReads0 = page0Resp.getAlignments();
-            setOfReads0.addAll(page0Resp.getAlignments());
+            final List<ReadAlignment> pageOfReads0 = page0Resp.getAlignmentsList();
+            setOfReads0.addAll(page0Resp.getAlignmentsList());
             pageToken0 = page0Resp.getNextPageToken();
 
             final SearchReadsResponse page1Resp = client.reads.searchReads(page1Req);
-            final List<ReadAlignment> pageOfReads1 = page0Resp.getAlignments();
-            setOfReads1.addAll(page1Resp.getAlignments());
+            final List<ReadAlignment> pageOfReads1 = page0Resp.getAlignmentsList();
+            setOfReads1.addAll(page1Resp.getAlignmentsList());
             pageToken1 = page1Resp.getNextPageToken();
 
             assertThat(pageOfReads0).hasSameSizeAs(pageOfReads1);
-            assertBothAreNullOrBothAreNot(pageToken0, pageToken1);
-        } while (pageToken0 != null);
+            assertBothAreEmptyOrBothAreNot(pageToken0, pageToken1);
+        } while (pageToken0 != null && !pageToken0.equals(""));
 
         assertThat(setOfReads0).containsAll(setOfReads1);
         assertThat(setOfReads1).containsAll(setOfReads0);
     }
 
     /**
-     * Assert that both string arguments are null, or neither is.
+     * Assert that both string arguments are empty, or neither is.
      * @param token0 a string to test
      * @param token1 a string to test
      */
-    private void assertBothAreNullOrBothAreNot(String token0, String token1) {
-        if (token0 == null) {
-            assertThat(token1).isNull();
+    private void assertBothAreEmptyOrBothAreNot(String token0, String token1) {
+        if ("".equals(token0)) {
+            assertThat(token1).isEmpty();
         }
-        if (token1 == null) {
-            assertThat(token0).isNull();
+        if ("".equals(token1)) {
+            assertThat(token0).isEmpty();
         }
     }
 
@@ -150,10 +155,13 @@ public class ReadsPagingIT {
      * we receive from
      * {@link org.ga4gh.ctk.transport.protocols.Client.Reads#searchReadGroupSets(SearchReadGroupSetsRequest)} using
      * two different chunk sizes.
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     *
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void checkPagingByRelativelyPrimeChunksOfReads() throws AvroRemoteException {
+    public void checkPagingByRelativelyPrimeChunksOfReads() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final int pageSize0 = 3;
         final int pageSize1 = 7;
@@ -163,41 +171,41 @@ public class ReadsPagingIT {
 
         final Set<ReadAlignment> firstSetOfReads = new HashSet<>();
         // page through the ReadAlignments using the same query parameters and collect them
-        String pageToken = null;
+        String pageToken = "";
         // page by pageSize0
         do {
             final SearchReadsRequest pageReq =
                     SearchReadsRequest.newBuilder()
-                                      .setReadGroupIds(aSingle(readGroupId))
+                                      .addAllReadGroupIds(aSingle(readGroupId))
                                       .setReferenceId(referenceId)
                                       .setPageSize(pageSize0)
                                       .setPageToken(pageToken)
                                       .build();
             final SearchReadsResponse pageResp = client.reads.searchReads(pageReq);
-            final List<ReadAlignment> pageOfReads = pageResp.getAlignments();
+            final List<ReadAlignment> pageOfReads = pageResp.getAlignmentsList();
             pageToken = pageResp.getNextPageToken();
 
             firstSetOfReads.addAll(pageOfReads);
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
 
         final Set<ReadAlignment> secondSetOfReads = new HashSet<>();
         // page through the ReadAlignments again using the same query parameters and collect them
-        pageToken = null;
+        pageToken = "";
         // page by pageSize1
         do {
             final SearchReadsRequest pageReq =
                     SearchReadsRequest.newBuilder()
-                                      .setReadGroupIds(aSingle(readGroupId))
+                                      .addAllReadGroupIds(aSingle(readGroupId))
                                       .setReferenceId(referenceId)
                                       .setPageSize(pageSize1)
                                       .setPageToken(pageToken)
                                       .build();
             final SearchReadsResponse pageResp = client.reads.searchReads(pageReq);
-            final List<ReadAlignment> pageOfReads = pageResp.getAlignments();
+            final List<ReadAlignment> pageOfReads = pageResp.getAlignmentsList();
             pageToken = pageResp.getNextPageToken();
 
             secondSetOfReads.addAll(pageOfReads);
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
 
         // assert that the sets contain the identical elements
         assertThat(secondSetOfReads).containsAll(firstSetOfReads);
@@ -210,31 +218,31 @@ public class ReadsPagingIT {
      * {@link org.ga4gh.ctk.transport.protocols.Client.Reads#searchReads(SearchReadsRequest)}
      * using <tt>pageSize</tt> as the page size.
      *
-     * @param refId         the ID of the {@link Reference}
-     * @param readGroupId   the ID of the {@link org.ga4gh.models.ReadGroup}
+     * @param refId         the ID of the {@link ga4gh.References}
+     * @param readGroupId   the ID of the {@link ga4gh.Reads.ReadGroup}
      * @param pageSize      the page size we'll request
      * @param expectedReads all of the {@link ReadAlignment} objects we expect to receive
-     * @throws AvroRemoteException if there's a communication problem or server exception
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     private void checkSinglePageOfReads(String refId,
                                         String readGroupId,
                                         int pageSize,
-                                        List<ReadAlignment> expectedReads)
-            throws AvroRemoteException {
-
+                                        List<ReadAlignment> expectedReads) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReadsRequest pageReq =
                 SearchReadsRequest.newBuilder()
                                   .setReferenceId(refId)
-                                  .setReadGroupIds(aSingle(readGroupId))
+                                  .addAllReadGroupIds(aSingle(readGroupId))
                                   .setPageSize(pageSize)
                                   .build();
         final SearchReadsResponse pageResp = client.reads.searchReads(pageReq);
-        final List<ReadAlignment> pageOfReads = pageResp.getAlignments();
+        final List<ReadAlignment> pageOfReads = pageResp.getAlignmentsList();
         final String pageToken = pageResp.getNextPageToken();
 
         assertThat(pageOfReads).hasSize(expectedReads.size());
         assertThat(expectedReads).containsAll(pageOfReads);
 
-        assertThat(pageToken).isNull();
+        assertThat(pageToken).isEmpty();
     }
 }

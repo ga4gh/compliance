@@ -46,15 +46,15 @@ public class RawEndpointsIT {
      */
     private String[] allSearchUrlsThatAcceptPost() {
         return new String[] {
-                makeFullUrl(urls.getSearchCallsets()),
-                makeFullUrl(urls.getSearchDatasets()),
+                makeFullUrl(urls.getSearchCallSets()),
+                makeFullUrl(urls.getSearchDataSets()),
                 makeFullUrl(urls.getSearchReadGroupSets()),
                 makeFullUrl(urls.getSearchReads()),
                 makeFullUrl(urls.getSearchReferences()),
                 /*
                 makeFullUrl(urls.getSearchReferenceBases()), // uses GET, not POST!
                 */
-                makeFullUrl(urls.getSearchReferencesets()),
+                makeFullUrl(urls.getSearchReferenceSets()),
                 makeFullUrl(urls.getSearchVariants()),
                 makeFullUrl(urls.getSearchVariantSets())
         };
