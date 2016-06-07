@@ -9,6 +9,8 @@ import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsRequest;
 import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsResponse;
 import ga4gh.AlleleAnnotations.VariantAnnotation;
 import ga4gh.AlleleAnnotations.VariantAnnotationSet;
+import ga4gh.RnaQuantificationOuterClass.*;
+import ga4gh.RnaQuantificationServiceOuterClass.*;
 import ga4gh.Reads.*;
 import ga4gh.ReadServiceOuterClass.*;
 import ga4gh.Reads.ReadGroup.Program;
@@ -517,16 +519,19 @@ public class Utils {
      * Utility method to fetch the ID of an arbitrary {@link RnaQuantification}.
      * @param client the connection to the server
      * @return the ID of a {@link RnaQuantification}
-     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+
      */
-    public static String getRnaQuantificationId(Client client) throws AvroRemoteException {
-        final SearchRnaQuantificationRequest req =
-                SearchRnaQuantificationRequest.newBuilder()
+    public static String getRnaQuantificationId(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final SearchRnaQuantificationsRequest req =
+                SearchRnaQuantificationsRequest.newBuilder()
                         .setDatasetId(TestData.getDatasetId())
                         .build();
-        final SearchRnaQuantificationResponse resp = client.rnaquantifications.searchRnaQuantification(req);
+        final SearchRnaQuantificationsResponse resp = client.rnaquantifications.searchRnaQuantification(req);
 
-        final List<RnaQuantification> rnaQuantifications = resp.getRnaQuantification();
+        final List<RnaQuantification> rnaQuantifications = resp.getRnaQuantificationsList();
         assertThat(rnaQuantifications).isNotEmpty();
         return rnaQuantifications.get(0).getId();
     }
@@ -534,22 +539,22 @@ public class Utils {
     /**
      * Given a reference ID, return all {@link RnaQuantification}s
      * @param client the connection to the server
-     * @param dataasetId the ID of the {@link Dataset} we're using
+     * @param referenceId the ID of the {@link Reference} we're using
      * @return all the {@link RnaQuantification} objects that match
      */
     public static List<RnaQuantification> getAllRnaQuantifications(Client client,
-                                                                   String referenceId) throws AvroRemoteException {
+                                                                   String referenceId) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final List<RnaQuantification> result = new LinkedList<>();
         String pageToken = null;
         do {
-            final SearchRnaQuantificationRequest req = SearchRnaQuantificationRequest.newBuilder()
+            final SearchRnaQuantificationsRequest req = SearchRnaQuantificationsRequest.newBuilder()
                     .setDatasetId(referenceId)
                     .setPageToken(pageToken)
                     .setPageSize(100)
                     .build();
-            final SearchRnaQuantificationResponse resp = client.rnaquantifications.searchRnaQuantification(req);
-            result.addAll(resp.getRnaQuantification());
+            final SearchRnaQuantificationsResponse resp = client.rnaquantifications.searchRnaQuantification(req);
+            result.addAll(resp.getRnaQuantificationsList());
             pageToken = resp.getNextPageToken();
         } while (pageToken != null);
 
