@@ -22,6 +22,8 @@ import ga4gh.Reads.ReadGroupSet;
 import ga4gh.ReferenceServiceOuterClass.*;
 import ga4gh.References.Reference;
 import ga4gh.References.ReferenceSet;
+import ga4gh.RnaQuantificationOuterClass.*;
+import ga4gh.RnaQuantificationServiceOuterClass.*;
 import ga4gh.SequenceAnnotationServiceOuterClass;
 import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeatureSetsRequest;
 import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeatureSetsResponse;
@@ -548,93 +550,66 @@ public class Client {
      * makes it a little easier for someone writing tests to use their IDE's auto-complete
      * to type method names.
      */
-    public class RnaQuantifications implements RnaQuantificationMethods {
+    public class RnaQuantifications {
         /**
          * Gets a {@link RnaQuantification} by ID.
          * <tt>GET /rnaquantification/{id}</tt> returns a {@link RnaQuantification}.
          *
          * @param id the rna quantification ID
-         * @throws AvroRemoteException if there's a communication problem
          */
-        @Override
-        public RnaQuantification getRnaQuantification(String id) throws AvroRemoteException {
+        public RnaQuantification getRnaQuantification(String id) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getGetRnaQuantification();
-            RnaQuantification response = new RnaQuantification();
-            final AvroJson aj = new AvroJson<>(response, urls.getUrlRoot(), path, wireTracker);
-            response = (RnaQuantification)aj.doGetResp(id);
-            return response;
+            RnaQuantification.Builder builder = RnaQuantification.newBuilder();
+            new Get<>(urls.getUrlRoot(), path, id, null, builder, wireTracker).performQuery();
+            return builder.build();
         }
 
         /**
          * Gets a list of {@link ExpressionLevel} matching the search criteria.
          * <p>
-         * <tt>POST /expressionlevel/search</tt> accepts a {@link SearchExpressionLevelRequest}
-         * and returns a {@link SearchExpressionLevelResponse}.
+         * <tt>POST /expressionlevel/search</tt> accepts a {@link SearchExpressionLevelsRequest}
+         * and returns a {@link SearchExpressionLevelsResponse}.
          *
-         * @param request Avro object to be serialized as JSON to the server
-         * @throws AvroRemoteException if there's a communication problem
+         * @param request protobuf object to be serialized as JSON to the server
          */
-        @Override
-        public SearchExpressionLevelResponse searchExpressionLevel(SearchExpressionLevelRequest request)
-                throws AvroRemoteException {
+        public SearchExpressionLevelsResponse searchExpressionLevel(SearchExpressionLevelsRequest request)
+                throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getSearchExpressionLevel();
-            // we use an empty concrete response class to pass into the Parameterized AvroJson
-            // as a quick way to get the class name and such; this object actually gets replaced
-            // with the filled-in Response object constructed in AvroJson and passed back
-            SearchExpressionLevelResponse response = new SearchExpressionLevelResponse();
-            final AvroJson aj =
-                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (SearchExpressionLevelResponse)aj.doPostResp();
-
-            return response;
+            SearchExpressionLevelsResponse.Builder responseBuilder = SearchExpressionLevelsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
         }
 
         /**
-         * Gets a list of {@link FeatureGroup} matching the search criteria.
+         * Gets a list of {@link QuantificationGroup} matching the search criteria.
          * <p>
-         * <tt>POST /featuregroup/search</tt> accepts a {@link SearchFeatureGroupRequest}
-         * and returns a {@link SearchFeatureGroupResponse}.
+         * <tt>POST /featuregroup/search</tt> accepts a {@link SearchQuantificationGroupsRequest}
+         * and returns a {@link SearchQuantificationGroupsResponse}.
          *
-         * @param request Avro object to be serialized as JSON to the server
-         * @throws AvroRemoteException if there's a communication problem
+         * @param request protobuf object to be serialized as JSON to the server
          */
-        @Override
-        public SearchFeatureGroupResponse searchFeatureGroup(SearchFeatureGroupRequest request)
-                throws AvroRemoteException {
+        public SearchQuantificationGroupsResponse searchFeatureGroup(SearchQuantificationGroupsRequest request)
+                throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getSearchFeatureGroup();
-            // we use an empty concrete response class to pass into the Parameterized AvroJson
-            // as a quick way to get the class name and such; this object actually gets replaced
-            // with the filled-in Response object constructed in AvroJson and passed back
-            SearchFeatureGroupResponse response = new SearchFeatureGroupResponse();
-            final AvroJson aj =
-                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (SearchFeatureGroupResponse)aj.doPostResp();
-
-            return response;
+            SearchQuantificationGroupsResponse.Builder responseBuilder = SearchQuantificationGroupsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
         }
 
         /**
          * Gets a list of {@link RnaQuantifications} matching the search criteria.
          * <p>
-         * <tt>POST /rnaquantification/search</tt> accepts a {@link SearchRnaQuantificationRequest}
-         * and returns a {@link SearchRnaQuantificationResponse}.
+         * <tt>POST /rnaquantifications/search</tt> accepts a {@link SearchRnaQuantificationsRequest}
+         * and returns a {@link SearchRnaQuantificationsResponse}.
          *
-         * @param request Avro object to be serialized as JSON to the server
-         * @throws AvroRemoteException if there's a communication problem
+         * @param request protobuf object to be serialized as JSON to the server
          */
-        @Override
-        public SearchRnaQuantificationResponse searchRnaQuantification(SearchRnaQuantificationRequest request)
-                throws AvroRemoteException {
+        public SearchRnaQuantificationsResponse searchRnaQuantification(SearchRnaQuantificationsRequest request)
+                throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getSearchRnaQuantification();
-            // we use an empty concrete response class to pass into the Parameterized AvroJson
-            // as a quick way to get the class name and such; this object actually gets replaced
-            // with the filled-in Response object constructed in AvroJson and passed back
-            SearchRnaQuantificationResponse response = new SearchRnaQuantificationResponse();
-            final AvroJson aj =
-                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (SearchRnaQuantificationResponse)aj.doPostResp();
-
-            return response;
+            SearchRnaQuantificationsResponse.Builder responseBuilder = SearchRnaQuantificationsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
         }
     }
 
