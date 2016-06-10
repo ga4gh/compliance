@@ -28,7 +28,13 @@
         <Logger name="org.ga4gh.ctk.transport.URLMAPPINGImpl" level="info" additivity="false">
             <AppenderRef ref="STDOUT"/>
         </Logger>
-        <Logger name="org.ga4gh.ctk.transport.avrojson.AvroJson" level="WARN" additivity="false">
+        <Logger name="org.ga4gh.ctk.transport.protobufjson.Base" level="WARN" additivity="false">
+            <AppenderRef ref="STDOUT"/>
+        </Logger>
+        <Logger name="org.ga4gh.ctk.transport.protobufjson.Get" level="WARN" additivity="false">
+            <AppenderRef ref="STDOUT"/>
+        </Logger>
+        <Logger name="org.ga4gh.ctk.transport.protobufjson.Post" level="WARN" additivity="false">
             <AppenderRef ref="STDOUT"/>
         </Logger>
         <!-- AntExecutor sets up Ant, runs the file named by $ctk.antfile

@@ -39,6 +39,11 @@
             <version>0.6.0a3</version>
             <classifier>tests</classifier>
         </dependency>
+        <dependency>
+            <groupId>com.github.ga4gh</groupId>
+            <artifactId>schemas</artifactId>
+            <version>${ga4gh.schema.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

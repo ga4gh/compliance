@@ -1,12 +1,14 @@
 package org.ga4gh.cts.api.variantAnnotation;
 
-import org.apache.avro.AvroRemoteException;
+import com.google.protobuf.InvalidProtocolBufferException;
+
+import com.mashape.unirest.http.exceptions.UnirestException;
+
 import org.ga4gh.ctk.CtkLogs;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.*;
-import org.ga4gh.models.VariantAnnotationSet;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -15,7 +17,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import ga4gh.AlleleAnnotations.VariantAnnotationSet;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests dealing with searching for VariantAnnotationSets.
@@ -29,10 +33,13 @@ public class VariantAnnotationSetsSearchIT implements CtkLogs {
     /**
      * Check VariantAnnotationSets contain some analysis data and return the expected VariantSetId.
      *
-     *@throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
+
     @Test
-    public void checkSearchingVariantAnnotationSets() throws AvroRemoteException {
+    public void checkSearchingVariantAnnotationSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         // Seek a list of VariantAnnotationSets for the compliance dataset.
         final List<VariantAnnotationSet> variantAnnotationSets =  Utils.getAllVariantAnnotationSets(client);
@@ -55,10 +62,13 @@ public class VariantAnnotationSetsSearchIT implements CtkLogs {
     /**
      * Check to see if variant annotation sets can be gotten by their ID.
      *
-     *@throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
+
     @Test
-    public void checkGetVariantAnnotationSetById() throws AvroRemoteException {
+    public void checkGetVariantAnnotationSetById() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         // Find a compliance variant annotation set ID using search
         final String variantAnnotationSetId = Utils.getVariantAnnotationSetId(client);
 
@@ -72,10 +82,12 @@ public class VariantAnnotationSetsSearchIT implements CtkLogs {
     /**
      * Check to see if a variant annotation set contains the expected analysis infromation.
      *
-     *@throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void checkVariantAnnotationAnalysis() throws AvroRemoteException, ParseException {
+    public void checkVariantAnnotationAnalysis() throws ParseException, InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         // Seek a list of VariantAnnotationSets for the compliance dataset.
         final List<VariantAnnotationSet> variantAnnotationSets =  Utils.getAllVariantAnnotationSets(client);
@@ -97,7 +109,7 @@ public class VariantAnnotationSetsSearchIT implements CtkLogs {
         assertThat(vSet.getAnalysis().getName()).isEqualTo(name);
         assertThat(vSet.getAnalysis().getDescription()).isEqualTo(description);
         assertThat(df2.parse(vSet.getAnalysis().getCreateDateTime())).isEqualTo(df1.parse(created));
-        assertThat(vSet.getAnalysis().getSoftware().get(0)).isEqualTo(software);
+        assertThat(vSet.getAnalysis().getSoftware(0)).isEqualTo(software);
 
     }
 }

@@ -1,13 +1,14 @@
 package org.ga4gh.cts.api.datasets;
 
-import org.apache.avro.AvroRemoteException;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import ga4gh.Metadata.Dataset;
+import ga4gh.MetadataServiceOuterClass.SearchDatasetsRequest;
+import ga4gh.MetadataServiceOuterClass.SearchDatasetsResponse;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.GAException;
-import org.ga4gh.methods.SearchDatasetsRequest;
-import org.ga4gh.methods.SearchDatasetsResponse;
-import org.ga4gh.models.Dataset;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -28,15 +29,16 @@ public class DatasetsPagingIT {
     private static Client client = new Client(URLMAPPING.getInstance());
 
     /**
-     * Check that we can page 1 by 1 through the {@link org.ga4gh.models.Dataset}s
+     * Check that we can page 1 by 1 through the {@link ga4gh.MetadataServiceOuterClass}s
      * we receive from
      * {@link org.ga4gh.ctk.transport.protocols.Client.Metadata#searchDatasets(SearchDatasetsRequest)}.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link
-     * GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void checkPagingOneByOneThroughDatasets() throws AvroRemoteException {
+    public void checkPagingOneByOneThroughDatasets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         // retrieve all the datasets
         final List<Dataset> listOfDatasets = Utils.getAllDatasets(client);
@@ -47,7 +49,7 @@ public class DatasetsPagingIT {
         assertThat(listOfDatasets).hasSize(setOfDatasets.size());
 
         // page through the Datasets using the same query parameters
-        String pageToken = null;
+        String pageToken = "";
         for (Dataset ignored : listOfDatasets) {
             final SearchDatasetsRequest pageReq =
                     SearchDatasetsRequest.newBuilder()
@@ -55,7 +57,7 @@ public class DatasetsPagingIT {
                                          .setPageToken(pageToken)
                                          .build();
             final SearchDatasetsResponse pageResp = client.metadata.searchDatasets(pageReq);
-            final List<Dataset> pageOfDatasets = pageResp.getDatasets();
+            final List<Dataset> pageOfDatasets = pageResp.getDatasetsList();
             pageToken = pageResp.getNextPageToken();
 
             assertThat(pageOfDatasets).hasSize(1);
@@ -64,7 +66,7 @@ public class DatasetsPagingIT {
             setOfDatasets.remove(pageOfDatasets.get(0));
         }
 
-        assertThat(pageToken).isNull();
+        assertThat(pageToken).isEmpty();
         assertThat(setOfDatasets).isEmpty();
     }
 

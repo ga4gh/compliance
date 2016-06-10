@@ -3,7 +3,7 @@ package org.ga4gh.cts.api;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.SetMultimap;
-import org.ga4gh.models.ReferenceSet;
+import ga4gh.References.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -90,7 +90,7 @@ public class TestData {
             EXPECTED_READGROUPSET_READGROUP_NAMES.keys();
 
     /**
-     * The names of all known {@link org.ga4gh.models.ReadGroup} objects, obtained from
+     * The names of all known {@link ga4gh.Reads.ReadGroup} objects, obtained from
      * {@link #EXPECTED_READGROUPSET_READGROUP_NAMES}.
      */
     public static final List<String> EXPECTED_READGROUP_NAMES =

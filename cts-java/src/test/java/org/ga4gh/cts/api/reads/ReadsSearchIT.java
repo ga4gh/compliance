@@ -1,16 +1,15 @@
 package org.ga4gh.cts.api.reads;
 
-import org.apache.avro.AvroRemoteException;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import org.ga4gh.ctk.CtkLogs;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.*;
-import org.ga4gh.models.ReadAlignment;
-import org.ga4gh.models.ReadGroup;
-import org.ga4gh.models.ReadGroupSet;
+import ga4gh.ReadServiceOuterClass.*;
+import ga4gh.Reads.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -18,10 +17,12 @@ import java.net.HttpURLConnection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.ga4gh.cts.api.Utils.aSingle;
 import static org.ga4gh.cts.api.Utils.catchGAWrapperException;
+import static org.ga4gh.cts.api.Utils.getReadGroupId;
 
 /**
  * Verify that data returned from <tt>/reads/search</tt> queries meets expectations.
@@ -35,10 +36,12 @@ public class ReadsSearchIT implements CtkLogs {
      * Call <tt>/reads/search</tt> with a range that contains zero reads, and verify that it returns none.
      * (Adapted from an old JavaScript test.)
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void searchRangeWithNoReadsReturnsZeroResults() throws AvroRemoteException {
+    public void searchRangeWithNoReadsReturnsZeroResults() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final String refId = Utils.getValidReferenceId(client);
 
         final long emptyRangeStart = 0; // is this range actually empty?
@@ -47,13 +50,13 @@ public class ReadsSearchIT implements CtkLogs {
         final SearchReadsRequest srReq =
                 SearchReadsRequest.newBuilder()
                         .setReferenceId(refId)
-                        .setReadGroupIds(aSingle(Utils.getReadGroupId(client)))
+                        .addAllReadGroupIds(aSingle(getReadGroupId(client)))
                         .setStart(emptyRangeStart)
                         .setEnd(emptyRangeEnd)
                         .build();
         final SearchReadsResponse srResp = client.reads.searchReads(srReq);
 
-        final List<ReadAlignment> alignments = srResp.getAlignments();
+        final List<ReadAlignment> alignments = srResp.getAlignmentsList();
         assertThat(alignments).isEmpty();
     }
 
@@ -62,11 +65,12 @@ public class ReadsSearchIT implements CtkLogs {
      * they are well-formed.
      * (Adapted from an old JavaScript test.)
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void searchReadsProducesWellFormedReads() throws AvroRemoteException {
-
+    public void searchReadsProducesWellFormedReads() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         // first get a valid reference
         final String refId = Utils.getValidReferenceId(client);
 
@@ -76,31 +80,31 @@ public class ReadsSearchIT implements CtkLogs {
         final SearchReadsRequest srReq =
                 SearchReadsRequest.newBuilder()
                                   .setReferenceId(refId)
-                                  .setReadGroupIds(aSingle(Utils.getReadGroupId(client)))
+                                  .addAllReadGroupIds(aSingle(getReadGroupId(client)))
                                   .setStart(start)
                                   .setEnd(end)
                                   .build();
         final SearchReadsResponse srResp = client.reads.searchReads(srReq);
 
-        final List<ReadAlignment> alignments = srResp.getAlignments();
+        final List<ReadAlignment> alignments = srResp.getAlignmentsList();
         alignments.stream().forEach(read -> assertThat(read.getNextMatePosition()).isNotNull());
         alignments.stream()
                   .forEach(read -> assertThat(read.getNextMatePosition()
                                                   .getReferenceName()).isEqualTo(TestData.REFERENCE_NAME));
         alignments.stream().forEach(read -> assertThat(read.getAlignment()).isNotNull());
-        alignments.stream().forEach(read -> assertThat(read.getAlignment().getCigar()).isNotNull());
+        alignments.stream().forEach(read -> assertThat(read.getAlignment().getCigarList()).isNotNull());
     }
 
     /**
      * Fetch every {@link ReadGroupSet} named in {@link TestData#EXPECTED_READGROUP_NAMES} using
      * <tt>searchReadGroupSets</tt> and verify that it returns the expected {@link ReadGroupSet}.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void searchReadGroupSetsMustReturnReadGroupSetsWithExpectedNames() throws
-            AvroRemoteException {
-
+    public void searchReadGroupSetsMustReturnReadGroupSetsWithExpectedNames() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         for (String expectedReadGroupSetName : TestData.EXPECTED_READGROUPSETS_NAMES) {
 
             final SearchReadGroupSetsRequest req =
@@ -110,7 +114,7 @@ public class ReadsSearchIT implements CtkLogs {
                                               .build();
             final SearchReadGroupSetsResponse resp = client.reads.searchReadGroupSets(req);
 
-            final List<ReadGroupSet> readGroupSets = resp.getReadGroupSets();
+            final List<ReadGroupSet> readGroupSets = resp.getReadGroupSetsList();
 
             assertThat(readGroupSets).hasSize(1);
             final ReadGroupSet readGroupSet = readGroupSets.get(0);
@@ -133,43 +137,44 @@ public class ReadsSearchIT implements CtkLogs {
 
         final SearchReadsRequest request =
                 SearchReadsRequest.newBuilder()
-                                  .setReadGroupIds(Collections.emptyList())
+                                  .addAllReadGroupIds(Collections.emptyList())
                                   .setStart(0L)
                                   .setEnd(150L)
                                   .setReferenceId(refId)
                                   .build();
 
         final GAWrapperException t = catchGAWrapperException(() -> client.reads.searchReads(request));
-        assertThat(t.getHttpStatusCode()).isEqualTo(HttpURLConnection.HTTP_NOT_IMPLEMENTED);
+        assertThat(t.getHttpStatusCode()).isEqualTo(HttpURLConnection.HTTP_BAD_REQUEST);
     }
 
     /**
      * Verify that passing one read group name in a {@link SearchReadsRequest}
      * returns valid reads.
      *
-     * @throws Exception if there's a problem
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void searchReadsWithOneReadGroupIdSucceeds() throws Exception {
-
+    public void searchReadsWithOneReadGroupIdSucceeds() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         // first get a valid reference
         final String refId = Utils.getValidReferenceId(client);
 
         // get a ReadGroup id
-        final String readGroupId = Utils.getReadGroupId(client);
+        final String readGroupId = getReadGroupId(client);
 
         final SearchReadsRequest request =
                 SearchReadsRequest.newBuilder()
-                                  .setReadGroupIds(aSingle(readGroupId))
+                                  .addAllReadGroupIds(aSingle(readGroupId))
                                   .setStart(0L)
                                   .setEnd(150L)
                                   .setReferenceId(refId)
                                   .build();
         final SearchReadsResponse response = client.reads.searchReads(request);
 
-        assertThat(response.getAlignments()).isNotNull();
+        assertThat(response.getAlignmentsList()).isNotNull();
 
-        response.getAlignments().stream()
+        response.getAlignmentsList().stream()
                 .forEach(readAlignment ->
                                  assertThat(readAlignment.getAlignedSequence()).isNotNull()
                                                                                .matches(TestData.ALIGNED_SEQUENCE_CONTENTS_PATTERN));
@@ -179,10 +184,12 @@ public class ReadsSearchIT implements CtkLogs {
      * Verify that passing all known read group names in a {@link SearchReadsRequest}
      * returns all matching read groups.
      *
-     * @throws Exception if there's a problem
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void searchReadsWithAllIdsReturnsReadsForEach() throws Exception {
+    public void searchReadsWithAllIdsReturnsReadsForEach() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         // first get a valid reference
         final String refId = Utils.getValidReferenceId(client);
 
@@ -193,23 +200,23 @@ public class ReadsSearchIT implements CtkLogs {
         final List<String> allReadGroupIds =
                 allReadGroupSets.stream()
                                 .flatMap(readGroupSet ->
-                                                 readGroupSet.getReadGroups()
+                                                 readGroupSet.getReadGroupsList()
                                                              .stream())
                                 .map(ReadGroup::getId)
                                 .collect(Collectors.toList());
 
         final SearchReadsRequest request =
                 SearchReadsRequest.newBuilder()
-                                  .setReadGroupIds(allReadGroupIds)
+                                  .addAllReadGroupIds(allReadGroupIds)
                                   .setStart(0L)
                                   .setEnd(150L)
                                   .setReferenceId(refId)
                                   .build();
         final SearchReadsResponse response = client.reads.searchReads(request);
 
-        assertThat(response.getAlignments()).isNotNull();
+        assertThat(response.getAlignmentsList()).isNotNull();
 
-        response.getAlignments().stream()
+        response.getAlignmentsList().stream()
                 .forEach(readAlignment ->
                                  assertThat(readAlignment.getAlignedSequence()).isNotNull()
                                                                                .matches(TestData.ALIGNED_SEQUENCE_CONTENTS_PATTERN));
@@ -221,10 +228,12 @@ public class ReadsSearchIT implements CtkLogs {
      * the <tt>alignedSequence</tt> field can only contain
      * {@link TestData#ALIGNED_SEQUENCE_CONTENTS_PATTERN}.
      *
-     * @throws Exception if there's a problem
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void readsResponseMatchesACTGNPattern() throws Exception {
+    public void readsResponseMatchesACTGNPattern() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final String refId = Utils.getValidReferenceId(client);
 
@@ -233,16 +242,16 @@ public class ReadsSearchIT implements CtkLogs {
                 final String readGroupId = Utils.getReadGroupIdForName(client, readGroupSetName, readGroupName);
                 final SearchReadsRequest request =
                         SearchReadsRequest.newBuilder()
-                                          .setReadGroupIds(aSingle(readGroupId))
+                                          .addAllReadGroupIds(aSingle(readGroupId))
                                           .setReferenceId(refId)
                                           .setStart(0L)
                                           .setEnd(150L)
                                           .build();
                 final SearchReadsResponse response = client.reads.searchReads(request);
 
-                assertThat(response.getAlignments()).isNotNull();
+                assertThat(response.getAlignmentsList()).isNotNull();
 
-                response.getAlignments().stream()
+                response.getAlignmentsList().stream()
                         .forEach(readAlignment ->
                                          assertThat(readAlignment.getAlignedSequence()).isNotNull()
                                                                                        .matches(TestData.ALIGNED_SEQUENCE_CONTENTS_PATTERN));
@@ -250,4 +259,36 @@ public class ReadsSearchIT implements CtkLogs {
         }
     }
 
+    /**
+     * Verifies that a request for all the readGroupIds in a Read Group Set
+     * returns only alignments with those readgroupIds.
+     *
+     * @throws Exception if there's a problem
+     */
+    @Test
+    public void testSearchReadsMultipleReadGroupsInReadGroupSet() throws Exception {
+        final String referenceId = Utils.getValidReferenceId(client);
+        final List<ReadGroupSet> allReadGroupSets = Utils.getAllReadGroupSets(client);
+        final ReadGroupSet readGroupSet = allReadGroupSets.get(0);
+        final List<ReadGroup> readGroups = readGroupSet.getReadGroupsList();
+        final List<String> readGroupIds = readGroups
+            .stream()
+            .map(readGroup -> readGroup.getId())
+            .collect(Collectors.toList());
+        SearchReadsRequest.Builder builder = SearchReadsRequest.newBuilder();
+        IntStream.range(0, readGroupIds.size()).forEach(index -> builder.addReadGroupIds(readGroupIds.get(index)));
+        final SearchReadsRequest request = builder
+                                  .setStart(0L)
+                                  .setEnd(150L)
+                                  .setReferenceId(referenceId)
+                                  .build();
+        final SearchReadsResponse response = client.reads.searchReads(request);
+        assertThat(response.getAlignmentsList()).isNotNull();
+        for (ReadAlignment readAlignment : response.getAlignmentsList()) {
+            final String readGroupId = readAlignment.getReadGroupId();
+            assertThat(readGroupId).isIn(readGroupIds);
+            assertThat(readAlignment.getAlignedSequence()).isNotNull()
+                .matches(TestData.ALIGNED_SEQUENCE_CONTENTS_PATTERN);
+        }
+    }
 }

@@ -56,21 +56,21 @@ public class URLMAPPINGImpl implements URLMAPPING {
         defaultEndpoints.put("ctk.tgt.searchReads", "reads/search");
         defaultEndpoints.put("ctk.tgt.searchReadGroupSets", "readgroupsets/search");
         defaultEndpoints.put("ctk.tgt.searchReferences", "references/search");
-        defaultEndpoints.put("ctk.tgt.searchReferencesets", "referencesets/search");
+        defaultEndpoints.put("ctk.tgt.searchReferenceSets", "referencesets/search");
         defaultEndpoints.put("ctk.tgt.searchVariantSets", "variantsets/search");
         defaultEndpoints.put("ctk.tgt.searchVariants", "variants/search");
-        defaultEndpoints.put("ctk.tgt.searchCallsets", "callsets/search");
+        defaultEndpoints.put("ctk.tgt.searchCallSets", "callsets/search");
         defaultEndpoints.put("ctk.tgt.getReferences", "references/{id}");
-        defaultEndpoints.put("ctk.tgt.getReferencesets", "referencesets/{id}");
+        defaultEndpoints.put("ctk.tgt.getReferenceSets", "referencesets/{id}");
         defaultEndpoints.put("ctk.tgt.getReferencesBases", "references/{id}/bases");
 
         defaultEndpoints.put("ctk.tgt.getReadGroupSet", "readgroupsets/{id}");
         defaultEndpoints.put("ctk.tgt.getReadGroup", "readgroups/{id}");
-        defaultEndpoints.put("ctk.tgt.searchDatasets", "datasets/search");
-        defaultEndpoints.put("ctk.tgt.getDataset", "datasets/{id}");
+        defaultEndpoints.put("ctk.tgt.searchDataSets", "datasets/search");
+        defaultEndpoints.put("ctk.tgt.getDataSet", "datasets/{id}");
         defaultEndpoints.put("ctk.tgt.getVariant", "variants/{id}");
         defaultEndpoints.put("ctk.tgt.getVariantSet", "variantsets/{id}");
-        defaultEndpoints.put("ctk.tgt.getCallset", "callsets/{id}");
+        defaultEndpoints.put("ctk.tgt.getCallSet", "callsets/{id}");
 
         defaultEndpoints.put("ctk.tgt.searchVariantAnnotationSets", "variantannotationsets/search");
         defaultEndpoints.put("ctk.tgt.searchVariantAnnotations", "variantannotations/search");
@@ -81,6 +81,10 @@ public class URLMAPPINGImpl implements URLMAPPING {
 
         defaultEndpoints.put("ctk.tgt.searchIndividuals", "individuals/search");
         defaultEndpoints.put("ctk.tgt.getIndividual", "individuals/{id}");
+        defaultEndpoints.put("ctk.tgt.searchFeatureSets", "featuresets/search");
+        defaultEndpoints.put("ctk.tgt.getFeatureSets", "featuresets/{id}");
+        defaultEndpoints.put("ctk.tgt.searchFeatures", "features/search");
+        defaultEndpoints.put("ctk.tgt.getFeatures", "features/{id}");
 
         dumpToStdOut = Boolean.getBoolean("ctk.tgt.urlmapper.dump"); // so, -Dctk.tgt.urlmapper.dump=true
 
@@ -273,23 +277,23 @@ public class URLMAPPINGImpl implements URLMAPPING {
     }
 
     @Override
-    public String getSearchDatasets() {
-        return endpoints.get("ctk.tgt.searchDatasets");
+    public String getSearchDataSets() {
+        return endpoints.get("ctk.tgt.searchDataSets");
     }
 
     @Override
-    public void setSearchDatasets(String searchDatasets) {
-        endpoints.put("ctk.tgt.searchDatasets", searchDatasets);
+    public void setSearchDataSets(String searchDataSets) {
+        endpoints.put("ctk.tgt.searchDataSets", searchDataSets);
     }
 
     @Override
-    public String getGetDataset() {
-        return endpoints.get("ctk.tgt.getDataset");
+    public String getGetDataSet() {
+        return endpoints.get("ctk.tgt.getDataSet");
     }
 
     @Override
-    public void setGetDataset(String getDataset) {
-        endpoints.put("ctk.tgt.getDataset", getDataset);
+    public void setGetDataSet(String getDataSet) {
+        endpoints.put("ctk.tgt.getDataSet", getDataSet);
     }
 
     @Override
@@ -324,12 +328,12 @@ public class URLMAPPINGImpl implements URLMAPPING {
 
     @Override
     public String getReferenceSets() {
-        return endpoints.get("ctk.tgt.getReferencesets");
+        return endpoints.get("ctk.tgt.getReferenceSets");
     }
 
     @Override
     public void setReferenceSets(String referenceSets) {
-        endpoints.put("ctk.tgt.getReferencesets", referenceSets);
+        endpoints.put("ctk.tgt.getReferenceSets", referenceSets);
     }
 
     @Override
@@ -353,13 +357,13 @@ public class URLMAPPINGImpl implements URLMAPPING {
     }
 
     @Override
-    public String getSearchReferencesets() {
-        return endpoints.get("ctk.tgt.searchReferencesets");
+    public String getSearchReferenceSets() {
+        return endpoints.get("ctk.tgt.searchReferenceSets");
     }
 
     @Override
-    public void setSearchReferencesets(String searchReferencesets) {
-        endpoints.put("ctk.tgt.searchReferencesets", searchReferencesets);
+    public void setSearchReferenceSets(String searchReferenceSets) {
+        endpoints.put("ctk.tgt.searchReferenceSets", searchReferenceSets);
     }
 
     @Override
@@ -403,23 +407,23 @@ public class URLMAPPINGImpl implements URLMAPPING {
     }
 
     @Override
-    public String getSearchCallsets() {
-        return endpoints.get("ctk.tgt.searchCallsets");
+    public String getSearchCallSets() {
+        return endpoints.get("ctk.tgt.searchCallSets");
     }
 
     @Override
-    public void setSearchCallsets(String searchCallsets) {
-        endpoints.put("ctk.tgt.searchCallsets", searchCallsets);
+    public void setSearchCallSets(String searchCallSets) {
+        endpoints.put("ctk.tgt.searchCallSets", searchCallSets);
     }
 
     @Override
-    public String getGetCallset() {
-        return endpoints.get("ctk.tgt.getCallset");
+    public String getGetCallSet() {
+        return endpoints.get("ctk.tgt.getCallSet");
     }
 
     @Override
-    public void setGetCallset(String getCallset) {
-        endpoints.put("ctk.tgt.getCallset", getCallset);
+    public void setGetCallSet(String getCallSet) {
+        endpoints.put("ctk.tgt.getCallSet", getCallSet);
     }
 
 
@@ -491,6 +495,46 @@ public class URLMAPPINGImpl implements URLMAPPING {
     @Override
     public void setGetVariantAnnotationSet(String getVariantAnnotationSet) {
         endpoints.put("ctk.tgt.getVariantAnnotationSet", getVariantAnnotationSet);
+    }
+
+    @Override
+    public String getSearchFeatureSets() {
+        return endpoints.get("ctk.tgt.searchFeatureSets");
+    }
+
+    @Override
+    public void setSearchFeatureSets(String searchFeatureSets) {
+        endpoints.put("ctk.tgt.searchFeatureSets", searchFeatureSets);
+    }
+
+    @Override
+    public void setGetFeatureSet(String getFeatureSets) {
+        endpoints.put("ctk.tgt.getFeatureSets", getFeatureSets);
+    }
+
+    @Override
+    public String getGetFeatureSet() {
+        return endpoints.get("ctk.tgt.getFeatureSets");
+    }
+
+    @Override
+    public String getSearchFeatures() {
+        return endpoints.get("ctk.tgt.searchFeatures");
+    }
+
+    @Override
+    public void setSearchFeatures(String searchFeatures) {
+        endpoints.put("ctk.tgt.searchFeatures", searchFeatures);
+    }
+
+    @Override
+    public void setGetFeature(String getFeatures) {
+        endpoints.put("ctk.tgt.getFeatures", getFeatures);
+    }
+
+    @Override
+    public String getGetFeature() {
+        return endpoints.get("ctk.tgt.getFeatures");
     }
 
     @Override

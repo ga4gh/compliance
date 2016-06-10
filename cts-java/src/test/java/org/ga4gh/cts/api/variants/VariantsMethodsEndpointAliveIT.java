@@ -5,9 +5,8 @@ import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.SearchCallSetsRequest;
-import org.ga4gh.models.CallSet;
-import org.ga4gh.models.VariantSet;
+import ga4gh.VariantServiceOuterClass.*;
+import ga4gh.Variants.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 

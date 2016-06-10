@@ -1,14 +1,14 @@
 package org.ga4gh.cts.api.references;
 
-import org.apache.avro.AvroRemoteException;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import ga4gh.ReferenceServiceOuterClass.ListReferenceBasesRequest;
+import ga4gh.ReferenceServiceOuterClass.ListReferenceBasesResponse;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.GAException;
-import org.ga4gh.methods.ListReferenceBasesRequest;
-import org.ga4gh.methods.ListReferenceBasesResponse;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -29,10 +29,12 @@ public class ReferenceBasesPagingIT {
      * we receive from
      * {@link org.ga4gh.ctk.transport.protocols.Client.References#getReferenceBases(String, ListReferenceBasesRequest)}.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void checkPagingOneByOneThroughReferenceBases() throws AvroRemoteException {
+    public void checkPagingOneByOneThroughReferenceBases() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final String refId = Utils.getValidReferenceId(client);
 
@@ -67,9 +69,11 @@ public class ReferenceBasesPagingIT {
     /**
      * Request and return the full base sequence.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
-    private String getFullSequence() throws AvroRemoteException {
+    private String getFullSequence() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final String refId = Utils.getValidReferenceId(client);
 
         final ListReferenceBasesRequest req = ListReferenceBasesRequest.newBuilder()
@@ -85,10 +89,12 @@ public class ReferenceBasesPagingIT {
      * ListReferenceBasesRequest)}
      * using a size equal to the size of the full sequence, and receive the full sequence.
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void checkRequestingRightSizedBaseSequence() throws AvroRemoteException {
+    public void checkRequestingRightSizedBaseSequence() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final String fullSequence = getFullSequence();
         checkChunkOfBases(TestData.REFERENCE_BRCA1_LENGTH, fullSequence);
@@ -101,11 +107,13 @@ public class ReferenceBasesPagingIT {
      * using a size larger than the full sequence, it fails with an exception with HTTP status
      * "Requested Range Not Satisfiable."
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Test
-    public void checkRequestingTooLargeBaseSequenceFails() throws AvroRemoteException {
+    public void checkRequestingTooLargeBaseSequenceFails() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final String fullSequence = getFullSequence();
 
@@ -130,12 +138,11 @@ public class ReferenceBasesPagingIT {
      *
      * @param chunkSize        the sequence length we'll request
      * @param expectedSequence the full base sequence we expect
-     * @throws AvroRemoteException if there's a communication problem or server exception
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
-    private void checkChunkOfBases(long chunkSize,
-                                   String expectedSequence)
-            throws AvroRemoteException {
-
+    private void checkChunkOfBases(long chunkSize, String expectedSequence) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final String refId = Utils.getValidReferenceId(client);
 
         final long sequenceStart = 0L;

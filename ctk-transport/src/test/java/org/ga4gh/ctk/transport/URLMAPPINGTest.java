@@ -88,11 +88,11 @@ public class URLMAPPINGTest {
     }
 
     /**
-     * Method: getSearchReferencesets()
+     * Method: getSearchReferenceSets()
      */
     @Test
     public void testGetSearchReferencesets() throws Exception {
-        assertThat(urlmapping.getSearchReferencesets()).isEqualTo("referencesets/search");
+        assertThat(urlmapping.getSearchReferenceSets()).isEqualTo("referencesets/search");
     }
 
     /**
@@ -112,11 +112,11 @@ public class URLMAPPINGTest {
     }
 
     /**
-     * Method: getSearchCallsets()
+     * Method: getSearchCallSets()
      */
     @Test
     public void testGetSearchCallsets() throws Exception {
-        assertThat(urlmapping.getSearchCallsets()).isEqualTo("callsets/search");
+        assertThat(urlmapping.getSearchCallSets()).isEqualTo("callsets/search");
     }
 
 } 

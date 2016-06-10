@@ -1,4 +1,4 @@
-package org.ga4gh.ctk.transport.avrojson;
+package org.ga4gh.ctk.transport.protobufjson;
 
 import org.ga4gh.ctk.transport.testcategories.TransportTests;
 import org.junit.experimental.categories.Categories;
@@ -10,6 +10,6 @@ import org.junit.runners.Suite;
  */
 @RunWith(Categories.class)
 @Categories.IncludeCategory(TransportTests.class)
-@Suite.SuiteClasses({AvroMakerTest.class, JsonMakerTest.class})
+@Suite.SuiteClasses({ProtobufJsonTest.class})
 public class TransportTestSuite {
 }
