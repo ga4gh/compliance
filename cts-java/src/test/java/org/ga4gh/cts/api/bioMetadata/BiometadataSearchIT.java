@@ -1,6 +1,9 @@
-package org.ga4gh.cts.api.biodata;
+package org.ga4gh.cts.api.bioMetadata;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import org.apache.avro.AvroRemoteException;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
@@ -14,20 +17,22 @@ import org.junit.experimental.categories.Category;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for the BioData endpoint
+ * Tests for the BioMetadata endpoints
  */
-@Category(BiodataTests.class)
-public class BiodataSearchIT {
+@Category(BioMetadataTests.class)
+public class BioMetadataSearchIT {
 
     private static Client client = new Client(URLMAPPING.getInstance());
 
     /**
      * Tests the /biosamples/search endpoint to ensure that searching
      * by name returns properly formed results.
-     * @throws AvroRemoteException
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void checkSearchBioSamplesByName() throws AvroRemoteException {
+    public void checkSearchBioSamplesByName() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         // search biosamples for a known name
         final SearchBioSamplesRequest req =
                 SearchBioSamplesRequest.newBuilder()
@@ -35,7 +40,7 @@ public class BiodataSearchIT {
                         .setName(TestData.BIOSAMPLE_NAME)
                         .build();
 
-        final SearchBioSamplesResponse resp = client.biodata.searchBiosamples(req);
+        final SearchBioSamplesResponse resp = client.bioMetadata.searchBiosamples(req);
         assertThat(resp).isNotNull();
         for (BioSample b : resp.getBiosamples()) {
             assertThat(b.getName()).isEqualTo(TestData.BIOSAMPLE_NAME);
@@ -49,7 +54,7 @@ public class BiodataSearchIT {
      * @throws AvroRemoteException
      */
     @Test
-    public void checkSearchBioSamplesByIndividual() throws AvroRemoteException {
+    public void checkSearchBioSamplesByIndividual() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         // search biosamples for a known name
         final SearchIndividualsRequest ireq =
                 SearchIndividualsRequest.newBuilder()
@@ -57,7 +62,7 @@ public class BiodataSearchIT {
                         .setName(TestData.INDIVIDUAL_NAME)
                         .build();
 
-        final SearchIndividualsResponse iresp = client.biodata.searchIndividuals(ireq);
+        final SearchIndividualsResponse iresp = client.bioMetadata.searchIndividuals(ireq);
         final String individualId = iresp.getIndividuals().get(0).getId();
 
         final SearchBioSamplesRequest req =
@@ -66,7 +71,7 @@ public class BiodataSearchIT {
                         .setIndividualId(individualId)
                         .build();
 
-        final SearchBioSamplesResponse resp = client.biodata.searchBiosamples(req);
+        final SearchBioSamplesResponse resp = client.bioMetadata.searchBiosamples(req);
         assertThat(resp).isNotNull();
         for (BioSample b : resp.getBiosamples()) {
             assertThat(b.getIndividualId()).isEqualTo(individualId);
@@ -78,16 +83,16 @@ public class BiodataSearchIT {
      * @throws AvroRemoteException
      */
     @Test
-    public void checkGetBioSample() throws AvroRemoteException {
+    public void checkGetBioSample() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchBioSamplesRequest req =
                 SearchBioSamplesRequest.newBuilder()
                         .setDatasetId(TestData.getDatasetId())
                         .build();
 
-        final SearchBioSamplesResponse resp = client.biodata.searchBiosamples(req);
+        final SearchBioSamplesResponse resp = client.bioMetadata.searchBiosamples(req);
         assertThat(resp).isNotNull();
         for (BioSample b : resp.getBiosamples()) {
-            final BioSample found = client.biodata.getBioSample(b.getId());
+            final BioSample found = client.bioMetadata.getBioSample(b.getId());
             assertThat(found).isEqualTo(b);
         }
     }
@@ -98,14 +103,14 @@ public class BiodataSearchIT {
      * @throws AvroRemoteException
      */
     @Test
-    public void checkSearchIndividualsByName() throws AvroRemoteException {
+    public void checkSearchIndividualsByName() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchIndividualsRequest req =
                 SearchIndividualsRequest.newBuilder()
                         .setDatasetId(TestData.getDatasetId())
                         .setName(TestData.INDIVIDUAL_NAME)
                         .build();
 
-        final SearchIndividualsResponse resp = client.biodata.searchIndividuals(req);
+        final SearchIndividualsResponse resp = client.bioMetadata.searchIndividuals(req);
         assertThat(resp).isNotNull();
         for (Individual i : resp.getIndividuals()) {
             assertThat(i.getName()).isEqualTo(TestData.INDIVIDUAL_NAME);
@@ -118,16 +123,16 @@ public class BiodataSearchIT {
      * @throws AvroRemoteException
      */
     @Test
-    public void checkGetIndividual() throws AvroRemoteException {
+    public void checkGetIndividual() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchIndividualsRequest req =
                 SearchIndividualsRequest.newBuilder()
                         .setDatasetId(TestData.getDatasetId())
                         .build();
 
-        final SearchIndividualsResponse resp = client.biodata.searchIndividuals(req);
+        final SearchIndividualsResponse resp = client.bioMetadata.searchIndividuals(req);
         assertThat(resp).isNotNull();
         for (Individual i : resp.getIndividuals()) {
-            final Individual found = client.biodata.getIndividual(i.getId());
+            final Individual found = client.bioMetadata.getIndividual(i.getId());
             assertThat(found).isEqualTo(i);
         }
     }

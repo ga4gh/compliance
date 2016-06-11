@@ -20,6 +20,8 @@ import ga4gh.Variants.*;
 import ga4gh.VariantServiceOuterClass.*;
 import ga4gh.Metadata.*;
 import ga4gh.MetadataServiceOuterClass.*;
+import ga4gh.BioMetadata.*;
+import ga4gh.BioMetadataServiceOuterClass.*;
 import org.assertj.core.api.ThrowableAssert;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.protocols.Client;
@@ -744,7 +746,7 @@ public class Utils {
                         .setName(name)
                         .build();
 
-        final SearchBioSamplesResponse resp = client.biodata.searchBiosamples(req);
+        final SearchBioSamplesResponse resp = client.bioMetadata.searchBiosamples(req);
         return (BioSample)resp.getBiosamples().get(0);
     }
 

@@ -32,6 +32,8 @@ import ga4gh.VariantServiceOuterClass.*;
 import ga4gh.Variants.CallSet;
 import ga4gh.Variants.Variant;
 import ga4gh.Variants.VariantSet;
+import ga4gh.BioMetadata.*;
+import ga4gh.BioMetadataServiceOuterClass.*;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.WireTracker;
@@ -111,7 +113,7 @@ public class Client {
     public final Metadata metadata = new Metadata();
 
 
-    public final Biodata biodata = new Biodata();
+    public final BioMetadata bioMetadata = new BioMetadata();
 
     /**
      * Create a new client that can make requests on a GA4GH server.
@@ -494,14 +496,13 @@ public class Client {
      * this makes it a little easier for someone writing tests to use their IDE's auto-complete
      * to type method names.
      */
-    public class Biodata implements BiodataMethods {
+    public class BioMetadata implements BioMetadataMethods {
         /**
          * Searches biosamples at the /biosamples/search endpoint using the given request.
          * @param request   A SearchBioSamples request
          * @return SearchBioSamplesResponse
          * @throws InvalidProtocolBufferException, GAWrapperException, UnirestException
          */
-        @Override
         public SearchBioSamplesResponse searchBiosamples(SearchBioSamplesRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getSearchBioSamples();
             SearchBioSamplesResponse.Builder responseBuilder = SearchBioSamplesResponse().newBuilder();
@@ -515,7 +516,6 @@ public class Client {
          * @return BioSample
          * @throws InvalidProtocolBufferException, GAWrapperException, UnirestException
          */
-        @Override
         public BioSample getBioSample(String id) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getGetBioSample();
             BioSample.Builder builder = BioSample.newBuilder();
@@ -529,7 +529,6 @@ public class Client {
          * @return SearchIndividualsResponse
          * @throws InvalidProtocolBufferException, GAWrapperException, UnirestException
          */
-        @Override
         public SearchIndividualsResponse searchIndividuals(SearchIndividualsRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getSearchIndividuals();
             SearchIndividualsResponse.Builder responseBuilder = SearchIndividualsResponse.newBuilder();
@@ -543,7 +542,6 @@ public class Client {
          * @return Individual
          * @throws InvalidProtocolBufferException, GAWrapperException, UnirestException
          */
-        @Override
         public Individual getIndividual(String id) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getGetIndividual();
             Individual.Builder builder = Individual.newBuilder();

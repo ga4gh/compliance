@@ -12,6 +12,8 @@ import org.ga4gh.cts.api.Utils;
 import ga4gh.Common.GAException;
 import ga4gh.ReadServiceOuterClass.*;
 import ga4gh.Reads.*;
+import ga4gh.BioMetadata.*
+import ga4gh.BioMetadataServiceOuterClass.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
