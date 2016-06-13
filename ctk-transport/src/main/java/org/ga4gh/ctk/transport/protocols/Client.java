@@ -33,7 +33,10 @@ import ga4gh.Variants.CallSet;
 import ga4gh.Variants.Variant;
 import ga4gh.Variants.VariantSet;
 import ga4gh.BioMetadata.*;
-import ga4gh.BioMetadataServiceOuterClass.*;
+import ga4gh.BioMetadataServiceOuterClass.SearchBioSamplesRequest;
+import ga4gh.BioMetadataServiceOuterClass.SearchBioSamplesResponse;
+import ga4gh.BioMetadataServiceOuterClass.SearchIndividualsRequest;
+import ga4gh.BioMetadataServiceOuterClass.SearchIndividualsResponse;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.WireTracker;
@@ -496,7 +499,7 @@ public class Client {
      * this makes it a little easier for someone writing tests to use their IDE's auto-complete
      * to type method names.
      */
-    public class BioMetadata implements BioMetadataMethods {
+    public class BioMetadata {
         /**
          * Searches biosamples at the /biosamples/search endpoint using the given request.
          * @param request   A SearchBioSamples request
@@ -505,7 +508,7 @@ public class Client {
          */
         public SearchBioSamplesResponse searchBiosamples(SearchBioSamplesRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getSearchBioSamples();
-            SearchBioSamplesResponse.Builder responseBuilder = SearchBioSamplesResponse().newBuilder();
+            SearchBioSamplesResponse.Builder responseBuilder = SearchBioSamplesResponse.newBuilder();
             new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
         }
@@ -533,7 +536,7 @@ public class Client {
             String path = urls.getSearchIndividuals();
             SearchIndividualsResponse.Builder responseBuilder = SearchIndividualsResponse.newBuilder();
             new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
-            return responseBuilder.build;
+            return responseBuilder.build();
         }
 
         /**

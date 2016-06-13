@@ -747,7 +747,7 @@ public class Utils {
                         .build();
 
         final SearchBioSamplesResponse resp = client.bioMetadata.searchBiosamples(req);
-        return (BioSample)resp.getBiosamples().get(0);
+        return (BioSample)resp.getBiosamplesList().get(0);
     }
 
 }

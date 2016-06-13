@@ -12,7 +12,7 @@ import org.ga4gh.cts.api.Utils;
 import ga4gh.Common.GAException;
 import ga4gh.ReadServiceOuterClass.*;
 import ga4gh.Reads.*;
-import ga4gh.BioMetadata.*
+import ga4gh.BioMetadata.*;
 import ga4gh.BioMetadataServiceOuterClass.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -229,10 +229,10 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
                         .setBioSampleId(b.getId())
                         .build();
         final SearchReadGroupSetsResponse resp = client.reads.searchReadGroupSets(req);
-        final List<ReadGroupSet> readGroupSets = resp.getReadGroupSets();
+        final List<ReadGroupSet> readGroupSets = resp.getReadGroupSetsList();
         assertThat(readGroupSets).isNotEmpty();
         for (ReadGroupSet readGroupSet : readGroupSets) {
-            for (ReadGroup readGroup : readGroupSet.getReadGroups()) {
+            for (ReadGroup readGroup : readGroupSet.getReadGroupsList()) {
                 assertThat(readGroup.getBioSampleId()).isEqualTo(b.getId());
             }
         }
