@@ -504,7 +504,9 @@ public class Client {
          * Searches biosamples at the /biosamples/search endpoint using the given request.
          * @param request   A SearchBioSamples request
          * @return SearchBioSamplesResponse
-         * @throws InvalidProtocolBufferException, GAWrapperException, UnirestException
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
         public SearchBioSamplesResponse searchBiosamples(SearchBioSamplesRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getSearchBioSamples();
@@ -517,7 +519,9 @@ public class Client {
          * Get a biosample by ID by getting the /biosamples/id endpoint
          * @param id
          * @return BioSample
-         * @throws InvalidProtocolBufferException, GAWrapperException, UnirestException
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
         public BioSample getBioSample(String id) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getGetBioSample();
@@ -530,7 +534,9 @@ public class Client {
          * Searches individuals at the /individuals/search endpoint using the given request.
          * @param request   A SearchIndividuals request
          * @return SearchIndividualsResponse
-         * @throws InvalidProtocolBufferException, GAWrapperException, UnirestException
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
         public SearchIndividualsResponse searchIndividuals(SearchIndividualsRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getSearchIndividuals();
@@ -543,7 +549,9 @@ public class Client {
          * Get an individual by ID by getting the /biosamples/id endpoint
          * @param id
          * @return Individual
-         * @throws InvalidProtocolBufferException, GAWrapperException, UnirestException
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
         public Individual getIndividual(String id) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getGetIndividual();

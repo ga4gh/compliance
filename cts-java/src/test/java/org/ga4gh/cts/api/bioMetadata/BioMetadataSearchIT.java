@@ -41,7 +41,7 @@ public class BioMetadataSearchIT {
                         .build();
 
         final SearchBioSamplesResponse resp = client.bioMetadata.searchBiosamples(req);
-        assertThat(resp).isNotNull();
+        assertThat(resp.getBiosamplesCount()).isGreaterThan(0);
         for (BioSample b : resp.getBiosamplesList()) {
             assertThat(b.getName()).isEqualTo(TestData.BIOSAMPLE_NAME);
             assertThat(b.getId()).isNotEmpty();
