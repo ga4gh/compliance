@@ -127,9 +127,6 @@ public class FeaturesSearchIT implements CtkLogs {
      */
     @Test
     public void checkFeaturesSearchByFeatureType() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
-        final long start = 0;
-        final long end = 100000000;
-        final String parentId = "";
         final String featureType = "gene";
         final int expectedNumberOfFeatures = 2;
 
@@ -138,9 +135,6 @@ public class FeaturesSearchIT implements CtkLogs {
         final SearchFeaturesRequest fReq =
                 SearchFeaturesRequest.newBuilder()
                                      .setFeatureSetId(id)
-                                     .setReferenceName(TestData.REFERENCE_NAME)
-                                     .setStart(start).setEnd(end)
-                                     .setParentId(parentId)
                                      .addFeatureTypes(featureType)
                                      .build();
         final SearchFeaturesResponse fResp = client.sequenceAnnotations.searchFeatures(fReq);
@@ -152,4 +146,53 @@ public class FeaturesSearchIT implements CtkLogs {
 
     }
 
+    /**
+     * Check that the features returned from a search by name return as expected
+     *
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    @Test
+    public void checkFeaturesSearchByName() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final int expectedNumberOfFeatures = 2;
+
+        final String id = Utils.getFeatureSetId(client);
+
+        final SearchFeaturesRequest fReq =
+                SearchFeaturesRequest.newBuilder()
+                        .setFeatureSetId(id)
+                        .setName("ENSG00000012048.15")
+                        .build();
+        final SearchFeaturesResponse fResp = client.sequenceAnnotations.searchFeatures(fReq);
+        final List<Feature> searchFeatures = fResp.getFeaturesList();
+
+        assertThat(searchFeatures.size()).isGreaterThan(0);
+        checkAllFeatures(searchFeatures, f -> assertThat(f.getName()).isEqualTo("ENSG00000012048.15"));
+    }
+
+    /**
+     * Check that the features returned from a search by gene symbol return as expected
+     *
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    @Test
+    public void checkFeaturesSearchByGeneSymbol() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final int expectedNumberOfFeatures = 2;
+
+        final String id = Utils.getFeatureSetId(client);
+
+        final SearchFeaturesRequest fReq =
+                SearchFeaturesRequest.newBuilder()
+                        .setFeatureSetId(id)
+                        .setGeneSymbol("BRCA1")
+                        .build();
+        final SearchFeaturesResponse fResp = client.sequenceAnnotations.searchFeatures(fReq);
+        final List<Feature> searchFeatures = fResp.getFeaturesList();
+
+        assertThat(searchFeatures.size()).isGreaterThan(0);
+        checkAllFeatures(searchFeatures, f -> assertThat(f.getGeneSymbol()).isEqualTo("BRCA1"));
+    }
 }
