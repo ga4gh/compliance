@@ -81,12 +81,11 @@ public class FeaturesSearchIT implements CtkLogs {
     public void checkFeaturesSearchByParentId() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final long start = 0;
         final long end = 100000000;
-        final int expectedNumberOfFeatures = 50;
+        final int expectedNumberOfFeatures = 14;
 
         final String id = Utils.getFeatureSetId(client);
 
         // first search: obtain the ID of the first transcript in the test range.
-        final String parentId1 = "";
         final String featureType1 = "transcript";
 
         final SearchFeaturesRequest fReq1 =
@@ -94,7 +93,6 @@ public class FeaturesSearchIT implements CtkLogs {
                         .setFeatureSetId(id)
                         .setReferenceName(TestData.REFERENCE_NAME)
                         .setStart(start).setEnd(end)
-                        .setParentId(parentId1)
                         .addFeatureTypes(featureType1)
                         .build();
         final SearchFeaturesResponse fResp1 = client.sequenceAnnotations.searchFeatures(fReq1);
