@@ -22,7 +22,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
 
-        <ga4gh.schema.version>0ff95ff</ga4gh.schema.version>
+        <ga4gh.schema.version>master-SNAPSHOT</ga4gh.schema.version>
         <ctk.tgt.urlRoot>http://localhost:8000</ctk.tgt.urlRoot>
 
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>

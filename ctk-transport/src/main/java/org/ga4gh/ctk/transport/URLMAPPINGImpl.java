@@ -76,6 +76,11 @@ public class URLMAPPINGImpl implements URLMAPPING {
         defaultEndpoints.put("ctk.tgt.searchVariantAnnotations", "variantannotations/search");
         defaultEndpoints.put("ctk.tgt.getVariantAnnotationSet", "variantannotationsets/{id}");
 
+        defaultEndpoints.put("ctk.tgt.searchBioSamples", "biosamples/search");
+        defaultEndpoints.put("ctk.tgt.getBioSample", "biosamples/{id}");
+
+        defaultEndpoints.put("ctk.tgt.searchIndividuals", "individuals/search");
+        defaultEndpoints.put("ctk.tgt.getIndividual", "individuals/{id}");
         defaultEndpoints.put("ctk.tgt.searchFeatureSets", "featuresets/search");
         defaultEndpoints.put("ctk.tgt.getFeatureSets", "featuresets/{id}");
         defaultEndpoints.put("ctk.tgt.searchFeatures", "features/search");
@@ -440,6 +445,46 @@ public class URLMAPPINGImpl implements URLMAPPING {
     @Override
     public void setSearchVariantAnnotationSets(String searchVariantAnnotationSets) {
         endpoints.put("ctk.tgt.searchVariantAnnotationSets", searchVariantAnnotationSets);
+    }
+
+    @Override
+    public String getGetBioSample() {
+        return endpoints.get("ctk.tgt.getBioSample");
+    }
+
+    @Override
+    public void setGetBioSample(String getBioSample) {
+        endpoints.put("ctk.tgt.getBioSample", getBioSample);
+    }
+
+    @Override
+    public String getSearchBioSamples() {
+        return endpoints.get("ctk.tgt.searchBioSamples");
+    }
+
+    @Override
+    public void setSearchBioSamples(String searchBioSamples) {
+        endpoints.put("ctk.tgt.searchBioSamples", searchBioSamples);
+    }
+
+    @Override
+    public String getGetIndividual() {
+        return endpoints.get("ctk.tgt.getIndividual");
+    }
+
+    @Override
+    public void setGetIndividual(String getIndividual) {
+        endpoints.put("ctk.tgt.getBioSample", getIndividual);
+    }
+
+    @Override
+    public String getSearchIndividuals() {
+        return endpoints.get("ctk.tgt.searchIndividuals");
+    }
+
+    @Override
+    public void setSearchIndividuals(String searchIndividuals) {
+        endpoints.put("ctk.tgt.searchIndividuals", searchIndividuals);
     }
 
     @Override

@@ -20,6 +20,8 @@ import ga4gh.Variants.*;
 import ga4gh.VariantServiceOuterClass.*;
 import ga4gh.Metadata.*;
 import ga4gh.MetadataServiceOuterClass.*;
+import ga4gh.BioMetadata.*;
+import ga4gh.BioMetadataServiceOuterClass.*;
 import org.assertj.core.api.ThrowableAssert;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.protocols.Client;
@@ -316,6 +318,27 @@ public class Utils {
     }
 
     /**
+     * Convenience function for getting a variant set by name. When no set is found
+     * matching the name returns the first variant set found.
+     * @param client
+     * @param name
+     * @return
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+
+    public static VariantSet getVariantSetByName(Client client, String name) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final List<VariantSet> variantSets = Utils.getAllVariantSets(client);
+        for (VariantSet v: variantSets) {
+            if (v.getName() == name) {
+                return v;
+            }
+        }
+        return variantSets.get(0);
+    }
+
+    /**
      * Search for and return all {@link Variant} objects in the {@link VariantSet} with ID
      * <tt>variantSetId</tt>, from <tt>start</tt> to <tt>end</tt>.
      * @param client the connection to the server
@@ -572,7 +595,7 @@ public class Utils {
     }
 
     /**
-     * Utility method to fetch alist of {@link VariantAnnotationSet} given the ID of a {@link dataset}.
+     * Utility method to fetch alist of {@link VariantAnnotationSet} given the ID of a {@link Dataset}.
      * @param client the connection to the server
      * @return a list of {@link VariantAnnotationSet}
      * @throws GAWrapperException if the server finds the request invalid in some way
@@ -706,6 +729,25 @@ public class Utils {
             }
         }
         return featureSets.get(0);
+    }
+    /**
+    * Sugar for getting the first BioSample result that matches the name search request.
+    * @param client
+    * @param name The name of the BioSample
+    * @return  BioSample
+    * @throws GAWrapperException if the server finds the request invalid in some way
+    * @throws UnirestException if there's a problem speaking HTTP to the server
+    * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+    */
+    public static BioSample getBioSampleByName(Client client, String name) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final SearchBioSamplesRequest req =
+                SearchBioSamplesRequest.newBuilder()
+                        .setDatasetId(TestData.getDatasetId())
+                        .setName(name)
+                        .build();
+
+        final SearchBioSamplesResponse resp = client.bioMetadata.searchBiosamples(req);
+        return (BioSample)resp.getBiosamplesList().get(0);
     }
 
 }

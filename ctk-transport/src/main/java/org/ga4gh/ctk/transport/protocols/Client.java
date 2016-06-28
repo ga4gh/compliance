@@ -32,6 +32,11 @@ import ga4gh.VariantServiceOuterClass.*;
 import ga4gh.Variants.CallSet;
 import ga4gh.Variants.Variant;
 import ga4gh.Variants.VariantSet;
+import ga4gh.BioMetadata.*;
+import ga4gh.BioMetadataServiceOuterClass.SearchBioSamplesRequest;
+import ga4gh.BioMetadataServiceOuterClass.SearchBioSamplesResponse;
+import ga4gh.BioMetadataServiceOuterClass.SearchIndividualsRequest;
+import ga4gh.BioMetadataServiceOuterClass.SearchIndividualsResponse;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.WireTracker;
@@ -109,6 +114,9 @@ public class Client {
      */
 
     public final Metadata metadata = new Metadata();
+
+
+    public final BioMetadata bioMetadata = new BioMetadata();
 
     /**
      * Create a new client that can make requests on a GA4GH server.
@@ -486,6 +494,72 @@ public class Client {
         }
 
     }
+    /**
+     * Inner class holding all biodata-related methods.  Gathering them in an inner class like
+     * this makes it a little easier for someone writing tests to use their IDE's auto-complete
+     * to type method names.
+     */
+    public class BioMetadata {
+        /**
+         * Searches biosamples at the /biosamples/search endpoint using the given request.
+         * @param request   A SearchBioSamples request
+         * @return SearchBioSamplesResponse
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+         */
+        public SearchBioSamplesResponse searchBiosamples(SearchBioSamplesRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getSearchBioSamples();
+            SearchBioSamplesResponse.Builder responseBuilder = SearchBioSamplesResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
+        }
+
+        /**
+         * Get a biosample by ID by getting the /biosamples/id endpoint
+         * @param id
+         * @return BioSample
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+         */
+        public BioSample getBioSample(String id) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getGetBioSample();
+            BioSample.Builder builder = BioSample.newBuilder();
+            new Get<>(urls.getUrlRoot(), path, id, null, builder, wireTracker).performQuery();
+            return builder.build();
+        }
+
+        /**
+         * Searches individuals at the /individuals/search endpoint using the given request.
+         * @param request   A SearchIndividuals request
+         * @return SearchIndividualsResponse
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+         */
+        public SearchIndividualsResponse searchIndividuals(SearchIndividualsRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getSearchIndividuals();
+            SearchIndividualsResponse.Builder responseBuilder = SearchIndividualsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
+        }
+
+        /**
+         * Get an individual by ID by getting the /biosamples/id endpoint
+         * @param id
+         * @return Individual
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+         */
+        public Individual getIndividual(String id) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getGetIndividual();
+            Individual.Builder builder = Individual.newBuilder();
+            new Get<>(urls.getUrlRoot(), path, id, null, builder, wireTracker).performQuery();
+            return builder.build();
+        }
+    }
 
     /**
      * Inner class holding all variant annotation-related methods.  Gathering them in an inner class like this makes it a little easier for someone writing
@@ -513,6 +587,7 @@ public class Client {
          */
         public VariantAnnotationSet getVariantAnnotationSet(String id) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getGetVariantAnnotationSet();
+
             VariantAnnotationSet.Builder builder = VariantAnnotationSet.newBuilder();
             new Get<>(urls.getUrlRoot(), path, id, null, builder, wireTracker).performQuery();
             return builder.build();
