@@ -52,7 +52,6 @@ public class FeaturesSearchIT implements CtkLogs {
     public void checkExpectedNumberOfFeatures() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final long start = 62162;
         final long end = 62239;
-        final String parentId = "";
         final int expectedNumberOfFeatures = 69;
 
         final String id = Utils.getFeatureSetId(client);
@@ -62,7 +61,6 @@ public class FeaturesSearchIT implements CtkLogs {
                                      .setFeatureSetId(id)
                                      .setReferenceName(TestData.REFERENCE_NAME)
                                      .setStart(start).setEnd(end)
-                                     .setParentId(parentId)
                                      .build();
         final SearchFeaturesResponse fResp = client.sequenceAnnotations.searchFeatures(fReq);
         final List<Feature> searchFeatures = fResp.getFeaturesList();
@@ -81,7 +79,7 @@ public class FeaturesSearchIT implements CtkLogs {
     public void checkFeaturesSearchByParentId() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final long start = 0;
         final long end = 100000000;
-        final int expectedNumberOfFeatures = 14;
+        final int expectedNumberOfFeatures = 50;
 
         final String id = Utils.getFeatureSetId(client);
 
