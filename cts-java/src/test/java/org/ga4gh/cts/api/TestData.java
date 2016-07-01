@@ -195,6 +195,46 @@ public class TestData {
     public static final String PHENOTYPE_NAME =  "GIST";
 
     /**
+     * GenotypePhenotype PHENOTYPE id.
+     */
+    public static final String PHENOTYPE_ID =  "http://ohsu.edu/cgd/30ebfd1a";
+
+    /**
+     * GenotypePhenotype PHENOTYPE ontology term id.
+     */
+    public static final String PHENOTYPE_ONTOLOGYTERM_ID = "http://ohsu.edu/cgd/5c895709";
+
+    /**
+     * GenotypePhenotype PHENOTYPE ontology term id for sensitivity qualifier.
+     */
+    public static final String PHENOTYPE_SENSITIVITY_ID = "http://purl.obolibrary.org/obo/PATO_0000396";
+
+    /**
+     * GenotypePhenotype PHENOTYPE description.
+     */
+    public static final String PHENOTYPE_DESCRIPTION = "Papillary thyroid carcinoma with sensitivity to therapy";
+
+    /**
+     * GenotypePhenotype PHENOTYPE description wildcard.
+     */
+    public static final String PHENOTYPE_DESCRIPTION_WILDCARD = ".*sensitivity.*";
+
+    /**
+     * GenotypePhenotype PHENOTYPE description for melanoma
+     */
+    public static final String PHENOTYPE_DESCRIPTION = "Melanoma, NOS with response to therapy";
+
+    /**
+     * GenotypePhenotype PHENOTYPE age of on set
+     */
+    public static final String PHENOTYPE_AGE_OF_ON_SET = "http://purl.obolibrary.org/obo/HP_0003581";
+
+    /**
+     * GenotypePhenotype GENOTYPE id
+     */
+    public static final String GENOTYPE_ID = "http://ohsu.edu/cgd/27d2169c";
+
+    /**
      * GenotypePhenotype EVIDENCE external database name.
      */
     public static final String EVIDENCE_DB = "http://www.drugbank.ca/drugs/";

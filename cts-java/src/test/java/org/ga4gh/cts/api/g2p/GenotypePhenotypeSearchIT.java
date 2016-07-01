@@ -1,18 +1,24 @@
 package org.ga4gh.cts.api.g2p;
 
-import org.apache.avro.AvroRemoteException;
+import com.google.protobuf.InvalidProtocolBufferException;
+
+import com.mashape.unirest.http.exceptions.UnirestException;
+
+import org.ga4gh.ctk.CtkLogs;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
-import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.ExternalIdentifierQuery;
-import org.ga4gh.methods.SearchGenotypePhenotypeRequest;
-import org.ga4gh.methods.SearchGenotypePhenotypeResponse;
-import org.ga4gh.models.ExternalIdentifier;
-import org.ga4gh.models.Evidence;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+
+import org.ga4gh.cts.api.TestData;
+
+import ga4gh.GenotypePhenotypeServiceOuterClass.ExternalIdentifierQuery;
+import ga4gh.GenotypePhenotypeServiceOuterClass.SearchGenotypePhenotypeRequest;
+import ga4gh.GenotypePhenotypeServiceOuterClass.SearchGenotypePhenotypeResponse;
+import ga4gh.GenotypePhenotype.ExternalIdentifier;
+import ga4gh.GenotypePhenotype.Evidence;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
@@ -27,16 +33,18 @@ import static org.ga4gh.cts.api.Utils.catchGAWrapperException;
  * @author Brian Walsh
  */
 @Category(GenotypePhenotypeTests.class)
-public class GenotypePhenotypeSearchIT {
+public class GenotypePhenotypeSearchIT implements CtkLogs {
 
     private static Client client = new Client(URLMAPPING.getInstance());
 
     /**
      * Ensure an error is thrown if no parameters are supplied.
-     * @throws AvroRemoteException if there's an unanticipated error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void ensureCatchNoParametersSearch() throws AvroRemoteException {
+    public void ensureCatchNoParametersSearch() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest
                 .newBuilder()
@@ -66,10 +74,13 @@ public class GenotypePhenotypeSearchIT {
 
     /**
      * Simple search for evidence, searches by drug name.
-     * @throws AvroRemoteException if there's an unanticipated error
+     *
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void simpleEvidenceSearch() throws AvroRemoteException {
+    public void simpleEvidenceSearch() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest
                 .newBuilder()
@@ -83,38 +94,176 @@ public class GenotypePhenotypeSearchIT {
 
     /**
      * Checks that evidence level is present, searches by drug name.
-     * @throws AvroRemoteException if there's an unanticipated error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void evidenceLevelCheck() throws AvroRemoteException {
+    public void evidenceLevelCheck() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest
                 .newBuilder()
                 .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
                 .build();
-        request.setFeature(TestData.FEATURE_NAME);
+        List<String> ids = new ArrayList<>();
+        ids.add(TestData.GENOTYPE_ID);
+        request.setGenotypeIds(ids);
         SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
-        assertThat(response.getAssociations()).isNotNull();
-        assertThat(response.getAssociations()).isNotEmpty();
-        Evidence evidence = response.getAssociations().get(0).getEvidence().get(0);
+        assertThat(response.getAssociations().get(0).getEvidence()).isNotNull();
+        assertThat(response.getAssociations().get(0).getEvidence()).isNotEmpty();
+        Evidence evidence = response.getAssociations()..get(0).getEvidence().get(0);
         assertThat(evidence.getDescription()).isEqualTo(TestData.EVIDENCE_LEVEL);
     }
 
     /**
      * Simple search for Phenotype, searches by disease name.
-     * @throws AvroRemoteException if there's an unanticipated error
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void simplePhenotypeSearch() throws AvroRemoteException {
+    public void phenotypeSearchById() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
-        SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest
+        SearchPhenotypesRequest request = SearchPhenotypesRequest
                 .newBuilder()
                 .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
                 .build();
-        request.setPhenotype(TestData.PHENOTYPE_NAME);
-        SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
-        assertThat(response.getAssociations()).isNotNull() ;
-        assertThat(response.getAssociations()).isNotEmpty() ;
+        request.setId(TestData.PHENOTYPE_ID);
+        SearchPhenotypesResponse response = client.genotypePhenotype.searchPhenotypes(request);
+        assertThat(response.getPhenotypes()).isNotNull();
+        assertThat(response.getPhenotypes()).isNotEmpty();
+    }
+
+    /**
+     * Search for Phenotype by OntologyTerm
+     *
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    @Test
+    public void phenotypeSearchByOntologyTerm() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
+        SearchPhenotypesRequest request = SearchPhenotypesRequest
+            .newBuilder()
+            .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
+            .build();
+        request.type.setId(TestData.PHENOTYPE_ONTOLOGYTERM_ID);
+        SearchPhenotypesResponse response = client.genotypePhenotype.searchPhenotypes(request);
+        assertThat(response.getPhenotypes()).isNotNull();
+        assertThat(response.getPhenotypes()).isNotEmpty();
+    }
+
+    /**
+     * Search for Phenotype by Qualifiers
+     *
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    @Test
+    public void phenotypeSearchQualifers() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
+        SearchPhenotypesRequest request = SearchPhenotypesRequest
+            .newBuilder()
+            .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
+            .build();
+        OntologyTerm ontologyterm = new OntologyTerm();
+        ontologyterm.setId(TestData.PHENOTYPE_SENSITIVITY_ID);
+        List<OntologyTerm> qualifiers = new ArrayList<>();
+        qualifiers.add(ontologyterm)
+        request.setQualifiers(qualifiers);
+        SearchPhenotypesResponse response = client.genotypePhenotype.searchPhenotypes(request);
+        assertThat(response.getPhenotypes()).isNotNull();
+        assertThat(response.getPhenotypes()).isNotEmpty();
+    }
+
+    /**
+     * Search for Phenotype by Multiple Qualifiers
+     *
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    @Test
+    public void phenotypeSearchMultipleQualifers() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
+        SearchPhenotypesRequest request = SearchPhenotypesRequest
+            .newBuilder()
+            .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
+            .build();
+        List<OntologyTerm> qualifiers = new ArrayList<>();
+        OntologyTerm ontologyterm1 = new OntologyTerm();
+        ontologyterm1.setId(TestData.PHENOTYPE_SENSITIVITY_ID);
+        qualifers.add(ontologyterm1);
+        OntologyTerm ontologyterm2 = new OntologyTerm();
+        ontologyterm2.setId(TestData.PHENOTYPE_SENSITIVITY_ID);
+        qualifers.add(ontologyterm2);
+        request.setQualifiers(qualifiers);
+        SearchPhenotypesResponse response = client.genotypePhenotype.searchPhenotypes(request);
+        assertThat(response.getPhenotypes()).isNotNull();
+        assertThat(response.getPhenotypes()).isNotEmpty();
+    }
+
+    /**
+     * Search for Phenotype by Qualifiers
+     *
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    @Test
+    public void phenotypeSearchDescription() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
+        SearchPhenotypesRequest request = SearchPhenotypesRequest
+            .newBuilder()
+            .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
+            .build();
+        request.setDescription(TestData.PHENOTYPE_DESCRIPTION);
+        SearchPhenotypesResponse response = client.genotypePhenotype.searchPhenotypes(request);
+        assertThat(response.getPhenotypes()).isNotNull();
+        assertThat(response.getPhenotypes()).isNotEmpty();
+    }
+
+    /**
+     * Search for Phenotype by Qualifiers
+     *
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    @Test
+    public void phenotypeSearchDescriptionWildcard() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
+        SearchPhenotypesRequest request = SearchPhenotypesRequest
+            .newBuilder()
+            .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
+            .build();
+        request.setDescription(TestData.PHENOTYPE_DESCRIPTION_WILDCARD);
+        SearchPhenotypesResponse response = client.genotypePhenotype.searchPhenotypes(request);
+        assertThat(response.getPhenotypes()).isNotNull();
+        assertThat(response.getPhenotypes().size()).isEqualTo(7);
+    }
+
+    /**
+     * Search for Phenotype by Qualifiers
+     *
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    @Test
+    public void phenotypeSearchMultipleTerms() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
+        SearchPhenotypesRequest request = SearchPhenotypesRequest
+            .newBuilder()
+            .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
+            .build();
+        request.setDescription(TestData.PHENOTYPE_DESCRIPTION_MELANOMA);
+        request.setAgeOfOnSet(TestData.PHENOTYPE_AGE_OF_ON_SET);
+        SearchPhenotypesResponse response = client.genotypePhenotype.searchPhenotypes(request);
+        assertThat(response.getPhenotypes()).isNotNull();
+        assertThat(response.getPhenotypes()).isNotEmpty();
     }
 
     /**
@@ -124,11 +273,11 @@ public class GenotypePhenotypeSearchIT {
     @Test
     public void simplePhenotypeSearchNoFind() throws AvroRemoteException {
         final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
-        SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest
+        SearchPhenotypeRequest request = SearchPhenotypeRequest
                 .newBuilder()
                 .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
                 .build();
-        request.setPhenotype(Utils.randomName());
+        request.setId(Utils.randomName());
         SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
         assertThat(response.getAssociations()).isNotNull() ;
         assertThat(response.getAssociations()).isEmpty();
@@ -216,18 +365,19 @@ public class GenotypePhenotypeSearchIT {
      * @throws AvroRemoteException if there's an unanticipated error
      */
     @Test
-    public void testGenotypePhenotypeSearchFeaturePagingOne() throws AvroRemoteException {
+    public void testGenotypePhenotypeSearchFeaturePagingOne() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
-        SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest
+        SearchGenotypesRequest request = SearchGenotypesRequest
                 .newBuilder()
                 .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
                 .build();
-        request.setFeature(TestData.FEATURE_NAME);
+        request.setReferenceName(TestData.FEATURE_NAME);
         request.setPageSize(1);
-        SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
+        SearchGenotypesResponse response = client.genotypePhenotype.searchGenotypes(request);
         assertThat(response).isNotNull();
-        assertThat(response.getAssociations()).isNotNull() ;
-        assertThat(response.getAssociations().size()).isEqualTo(1);
+        assertThat(response.getGenotypes()).isNotNull() ;
+        assertThat(response.getGenotypes().size()).isEqualTo(1);
+        assertThat(response.getNextPageToken().isNotNull());
     }
 
     /**
@@ -235,16 +385,17 @@ public class GenotypePhenotypeSearchIT {
      * @throws AvroRemoteException if there's an unanticipated error
      */
     @Test
-    public void testGenotypePhenotypeSearchFeaturePagingMore() throws AvroRemoteException {
+    public void testGenotypePhenotypeSearchFeaturePagingMore() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest
                 .newBuilder()
                 .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
                 .build();
-        request.setFeature(TestData.FEATURE_NAME);
-        SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
-        assertThat(response.getAssociations()).isNotNull();
-        assertThat(response.getAssociations().size()).isGreaterThan(1);
+        request.setReferenceName(TestData.FEATURE_NAME);
+        SearchGenotypesResponse response = client.genotypePhenotype.searchGenotypes(request);
+        assertThat(response.getGenotypes()).isNotNull();
+        assertThat(response.getGenotypes().size()).isGreaterThan(1);
+        assertThat(response.getNextPageToken().isEqualTo(''));
     }
 
     /**
@@ -252,13 +403,13 @@ public class GenotypePhenotypeSearchIT {
      * @throws AvroRemoteException if there's an unanticipated error
      */
     @Test
-    public void testGenotypePhenotypeSearchFeaturePagingAll() throws AvroRemoteException {
+    public void testGenotypePhenotypeSearchFeaturePagingAll() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
         SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest
                                                     .newBuilder()
                                                     .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
                                                     .build();
-        request.setFeature(TestData.FEATURE_NAME);
+        request.setReferenceName(TestData.FEATURE_NAME);
         request.setPageSize(1);
         SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
         assertThat(response.getAssociations()).isNotNull() ;
