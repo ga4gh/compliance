@@ -9,6 +9,12 @@ import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsRequest;
 import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsResponse;
 import ga4gh.AlleleAnnotations.VariantAnnotation;
 import ga4gh.AlleleAnnotations.VariantAnnotationSet;
+import ga4gh.GenotypePhenotypeServiceOuterClass.SearchPhenotypeAssociationSetsRequest;
+import ga4gh.GenotypePhenotypeServiceOuterClass.SearchPhenotypeAssociationSetsResponse;
+import ga4gh.GenotypePhenotypeServiceOuterClass.SearchPhenotypesRequest;
+import ga4gh.GenotypePhenotypeServiceOuterClass.SearchPhenotypesResponse;
+import ga4gh.GenotypePhenotypeServiceOuterClass.SearchGenotypePhenotypeRequest;
+import ga4gh.GenotypePhenotypeServiceOuterClass.SearchGenotypePhenotypeResponse;
 import ga4gh.Metadata.Dataset;
 import ga4gh.MetadataServiceOuterClass.SearchDatasetsRequest;
 import ga4gh.MetadataServiceOuterClass.SearchDatasetsResponse;
@@ -99,6 +105,22 @@ public class Client {
      */
     public final GenotypePhenotype genotypePhenotype = new GenotypePhenotype();
 
+
+    /**
+     * Provides access to variantannotations-related methods.  For example,
+     * <pre>
+     *     myClient.variantAnnotations.searchVariantAnnotations(...);
+     * </pre>
+     */
+    public final VariantAnnotations variantAnnotations = new VariantAnnotations();
+
+    /**
+     * Provides access to sequenceannotations-related methods.  For example,
+     * <pre>
+     *     myClient.sequenceAnnotations.searchFeatures(...);
+     * </pre>
+     */
+    public final SequenceAnnotations sequenceAnnotations = new SequenceAnnotations();
 
     /**
      * Provides access to metadata-related methods.  For example,
@@ -342,34 +364,6 @@ public class Client {
             ReadGroup.Builder responseBuilder = ReadGroup.newBuilder();
             new Get<>(urls.getUrlRoot(), urls.getGetReadGroup(), id, null, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
-        }
-    }
-
-    /**
-     * Inner class holding all GenotypePheotype-related methods.  Gathering them in an inner class like this
-     * makes it a little easier for someone writing tests to use their IDE's auto-complete
-     * to type method names.
-     */
-    public class GenotypePhenotype implements GenotypePhenotypeMethods {
-
-        @Override
-        public SearchGenotypePhenotypeResponse searchGenotypePhenotype(SearchGenotypePhenotypeRequest request) throws AvroRemoteException, GAException {
-            String path = urls.getSearchGenotypePhenotype();
-            SearchGenotypePhenotypeResponse response = new SearchGenotypePhenotypeResponse();
-            final AvroJson aj =
-                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (SearchGenotypePhenotypeResponse)aj.doPostResp();
-            return response;
-        }
-
-        @Override
-        public SearchPhenotypeAssociationSetsResponse searchPhenotypeAssociationSets(SearchPhenotypeAssociationSetsRequest request) throws AvroRemoteException, GAException {
-            String path = urls.getSearchPhenotypeAssociationSets();
-            SearchPhenotypeAssociationSetsResponse response = new SearchPhenotypeAssociationSetsResponse();
-            final AvroJson aj =
-                    new AvroJson<>(request, response, urls.getUrlRoot(), path, wireTracker);
-            response = (SearchPhenotypeAssociationSetsResponse)aj.doPostResp();
-            return response;
         }
     }
 
@@ -631,4 +625,38 @@ public class Client {
 
     }
 
+    /**
+     * Inner class holding all variant genotype-phenotype methods.
+     * Gathering them in an inner class like this makes it a little
+     * easier for someone writing tests to use their IDE's
+     * auto-complete to type method names.
+     */
+    public class GenotypePhenotype {
+        /**
+         * Gets a list of {@link Phenotype} matching the search criteria. <p> <tt>POST /phenotypes/search</tt> accepts a {@link
+         * SearchPhenotypesRequest} and returns a {@link SearchPhenotypesResponse}.
+         *
+         * @param request the {@link SearchPhenotypesRequest} we'll issue
+         */
+        public SearchPhenotypesResponse searchPhenotypes(SearchPhenotypesRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getPhenotypes();
+            SearchPhenotypesResponse.Builder builder = SearchPhenotypesResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, builder, wireTracker).performQuery();
+            return builder.build();
+        }
+
+        public SearchGenotypePhenotypeResponse searchGenotypePhenotypes(SearchGenotypePhenotypeRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getPhenotypes();
+            SearchGenotypePhenotypeResponse.Builder builder = SearchGenotypePhenotypeResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, builder, wireTracker).performQuery();
+            return builder.build();
+        }
+
+        public SearchPhenotypeAssociationSetsResponse searchPhenotypeAssociationSets(SearchPhenotypeAssociationSetsRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getPhenotypes();
+            SearchPhenotypeAssociationSetsResponse.Builder builder = SearchPhenotypeAssociationSetsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, builder, wireTracker).performQuery();
+            return builder.build();
+        }
+    }
 }

@@ -357,6 +357,12 @@ public class URLMAPPINGImpl implements URLMAPPING {
     public void setSearchReferenceSets(String searchReferenceSets) {
         endpoints.put("ctk.tgt.searchReferenceSets", searchReferenceSets);
     }
+
+    @Override
+    public String getSearchPhenotypes() {
+        return endpoints.get("ctk.tgt.searchPhenotypes");
+    }
+
     @Override
     public String getSearchGenotypePhenotype() {
         return endpoints.get("ctk.tgt.searchGenotypePhenotype");
