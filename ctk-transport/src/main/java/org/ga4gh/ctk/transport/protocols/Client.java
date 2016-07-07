@@ -639,21 +639,21 @@ public class Client {
          * @param request the {@link SearchPhenotypesRequest} we'll issue
          */
         public SearchPhenotypesResponse searchPhenotypes(SearchPhenotypesRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
-            String path = urls.getPhenotypes();
+            String path = urls.getSearchPhenotypes();
             SearchPhenotypesResponse.Builder builder = SearchPhenotypesResponse.newBuilder();
             new Post<>(urls.getUrlRoot(), path, request, builder, wireTracker).performQuery();
             return builder.build();
         }
 
         public SearchGenotypePhenotypeResponse searchGenotypePhenotypes(SearchGenotypePhenotypeRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
-            String path = urls.getPhenotypes();
+            String path = urls.getSearchPhenotypes();
             SearchGenotypePhenotypeResponse.Builder builder = SearchGenotypePhenotypeResponse.newBuilder();
             new Post<>(urls.getUrlRoot(), path, request, builder, wireTracker).performQuery();
             return builder.build();
         }
 
         public SearchPhenotypeAssociationSetsResponse searchPhenotypeAssociationSets(SearchPhenotypeAssociationSetsRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
-            String path = urls.getPhenotypes();
+            String path = urls.getSearchPhenotypes();
             SearchPhenotypeAssociationSetsResponse.Builder builder = SearchPhenotypeAssociationSetsResponse.newBuilder();
             new Post<>(urls.getUrlRoot(), path, request, builder, wireTracker).performQuery();
             return builder.build();
