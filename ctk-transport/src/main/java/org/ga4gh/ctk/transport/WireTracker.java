@@ -1,7 +1,7 @@
 package org.ga4gh.ctk.transport;
 
 import com.google.gson.Gson;
-import org.ga4gh.methods.GAException;
+import ga4gh.Common.GAException;
 import org.slf4j.Logger;
 
 import static org.slf4j.LoggerFactory.getLogger;

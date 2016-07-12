@@ -1,20 +1,23 @@
 package org.ga4gh.cts.api.rnaquantification;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import junitparams.JUnitParamsRunner;
-import org.apache.avro.AvroRemoteException;
+
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
-import org.ga4gh.methods.GAException;
-import org.ga4gh.methods.SearchRnaQuantificationRequest;
-import org.ga4gh.methods.SearchRnaQuantificationResponse;
-import org.ga4gh.methods.SearchExpressionLevelRequest;
-import org.ga4gh.methods.SearchExpressionLevelResponse;
-import org.ga4gh.methods.SearchFeatureGroupRequest;
-import org.ga4gh.methods.SearchFeatureGroupResponse;
-import org.ga4gh.models.RnaQuantification;
-import org.ga4gh.models.ExpressionLevel;
-import org.ga4gh.models.FeatureGroup;
+
+import ga4gh.RnaQuantificationServiceOuterClass.SearchRnaQuantificationsRequest;
+import ga4gh.RnaQuantificationServiceOuterClass.SearchRnaQuantificationsResponse;
+import ga4gh.RnaQuantificationServiceOuterClass.SearchExpressionLevelsRequest;
+import ga4gh.RnaQuantificationServiceOuterClass.SearchExpressionLevelsResponse;
+import ga4gh.RnaQuantificationServiceOuterClass.SearchQuantificationGroupsRequest;
+import ga4gh.RnaQuantificationServiceOuterClass.SearchQuantificationGroupsResponse;
+import ga4gh.RnaQuantificationOuterClass.RnaQuantification;
+import ga4gh.RnaQuantificationOuterClass.ExpressionLevel;
+import ga4gh.RnaQuantificationOuterClass.QuantificationGroup;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -35,17 +38,18 @@ public class RnaQuantificationSearchIT {
     /**
      * Helper function to get an rnaQuantificationId from the dataset.
      *
-     * @throws AvroRemoteException if there's a communication problem or
-     * server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
-    private String getTestDataRnaQuantificationId() throws AvroRemoteException {
-        final SearchRnaQuantificationRequest req =
-                SearchRnaQuantificationRequest.newBuilder()
+    private String getTestDataRnaQuantificationId() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final SearchRnaQuantificationsRequest req =
+                SearchRnaQuantificationsRequest.newBuilder()
                         .setDatasetId(TestData.getDatasetId())
                         .build();
-        final SearchRnaQuantificationResponse resp = client.rnaquantifications.searchRnaQuantification(req);
+        final SearchRnaQuantificationsResponse resp = client.rnaquantifications.searchRnaQuantification(req);
 
-        final List<RnaQuantification> rnaQuants = resp.getRnaQuantification();
+        final List<RnaQuantification> rnaQuants = resp.getRnaQuantificationsList();
         assertThat(rnaQuants).isNotEmpty();
         return rnaQuants.get(0).getId();
     }
@@ -54,20 +58,21 @@ public class RnaQuantificationSearchIT {
      * Fetch rna quantifications and count them.  The number must
      * equal what we're expecting by visual examination of the data.
      *
-     * @throws AvroRemoteException if there's a communication problem or
-     * server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void checkExpectedNumberOfRnaQuantifications() throws AvroRemoteException {
+    public void checkExpectedNumberOfRnaQuantifications() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final int expectedNumberOfRnaQuantifications = 4;
 
-        final SearchRnaQuantificationRequest req =
-                SearchRnaQuantificationRequest.newBuilder()
+        final SearchRnaQuantificationsRequest req =
+                SearchRnaQuantificationsRequest.newBuilder()
                         .setDatasetId(TestData.getDatasetId())
                         .build();
-        final SearchRnaQuantificationResponse resp = client.rnaquantifications.searchRnaQuantification(req);
+        final SearchRnaQuantificationsResponse resp = client.rnaquantifications.searchRnaQuantification(req);
 
-        final List<RnaQuantification> rnaQuants = resp.getRnaQuantification();
+        final List<RnaQuantification> rnaQuants = resp.getRnaQuantificationsList();
         assertThat(rnaQuants).hasSize(expectedNumberOfRnaQuantifications);
     }
 
@@ -75,20 +80,21 @@ public class RnaQuantificationSearchIT {
      * Fetch expression levels and count them.  The number must
      * equal what we're expecting by visual examination of the data.
      *
-     * @throws AvroRemoteException if there's a communication problem or
-     * server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void checkExpectedNumberOfExpressionLevels() throws AvroRemoteException {
+    public void checkExpectedNumberOfExpressionLevels() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final int expectedNumberOfExpressionLevels = 4;
 
-        final SearchExpressionLevelRequest req =
-                SearchExpressionLevelRequest.newBuilder()
+        final SearchExpressionLevelsRequest req =
+                SearchExpressionLevelsRequest.newBuilder()
                         .setRnaQuantificationId(getTestDataRnaQuantificationId())
                         .build();
-        final SearchExpressionLevelResponse resp = client.rnaquantifications.searchExpressionLevel(req);
+        final SearchExpressionLevelsResponse resp = client.rnaquantifications.searchExpressionLevel(req);
 
-        final List<ExpressionLevel> expressionLevels = resp.getExpressionLevel();
+        final List<ExpressionLevel> expressionLevels = resp.getExpressionLevelsList();
         assertThat(expressionLevels).hasSize(expectedNumberOfExpressionLevels);
     }
 
@@ -96,20 +102,21 @@ public class RnaQuantificationSearchIT {
      * Fetch feature groups and count them.  The number must
      * equal what we're expecting by visual examination of the data.
      *
-     * @throws AvroRemoteException if there's a communication problem or
-     * server exception ({@link GAException})
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void checkExpectedNumberOfFeatureGroups() throws AvroRemoteException {
+    public void checkExpectedNumberOfFeatureGroups() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final int expectedNumberOfFeatureGroups = 4;
 
-        final SearchFeatureGroupRequest req =
-                SearchFeatureGroupRequest.newBuilder()
+        final SearchQuantificationGroupsRequest req =
+                SearchQuantificationGroupsRequest.newBuilder()
                         .setRnaQuantificationId(getTestDataRnaQuantificationId())
                         .build();
-        final SearchFeatureGroupResponse resp = client.rnaquantifications.searchFeatureGroup(req);
+        final SearchQuantificationGroupsResponse resp = client.rnaquantifications.searchFeatureGroup(req);
 
-        final List<FeatureGroup> featureGroups = resp.getFeatureGroup();
+        final List<QuantificationGroup> featureGroups = resp.getQuantificationGroupsList();
         assertThat(featureGroups).hasSize(expectedNumberOfFeatureGroups);
     }
 }

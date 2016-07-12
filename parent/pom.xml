@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.ga4gh</groupId>
     <artifactId>ctk-parent</artifactId>
-    <version>0.5.1-SNAPSHOT</version>
+    <version>0.6.0a3</version>
 
     <packaging>pom</packaging>
 
@@ -29,7 +29,7 @@
 
 
     <properties>
-        <ga4gh.schema.local.version>0.5.1-SNAPSHOT</ga4gh.schema.local.version>
+        <ga4gh.schema.version>rna-SNAPSHOT</ga4gh.schema.version>
         <ctk.tgt.urlRoot>http://localhost:8000</ctk.tgt.urlRoot>
         <!-- Controls skipping of cts-java IT tests during build; skip the tests by passing
              a command line parameter, e.g. mvn -Dcts.skipITs=true install.  Run them by default. -->
@@ -41,8 +41,8 @@
 
         <ant.version>1.9.5</ant.version>
         <assertj.core.version>3.1.0</assertj.core.version>
-        <assertj.generator.version>1.6.0</assertj.generator.version>
-        <avro.version>1.7.7</avro.version>
+        <assertj.generator.version>2.0.0</assertj.generator.version>
+        <proto.version>3.0.0-beta-3</proto.version>
         <bcel.version>6.0-SNAPSHOT</bcel.version>
         <gson.version>2.3.1</gson.version>
         <guava.version>18.0</guava.version>
@@ -88,7 +88,10 @@
             <id>spring-milestones</id>
             <url>http://repo.spring.io/milestone</url>
         </repository>
-
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -118,12 +121,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
                 <version>${spring.boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ga4gh</groupId>
-                <!--<artifactId>ga4gh-format</artifactId>-->
-                <artifactId>ctk-schemas</artifactId>
-                <version>${ga4gh.schema.local.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -228,6 +225,13 @@
                 <artifactId>gson</artifactId>
                 <version>${gson.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.github.ga4gh</groupId>
+                <artifactId>schemas</artifactId>
+                <version>${ga4gh.schema.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

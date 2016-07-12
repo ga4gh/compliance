@@ -3,7 +3,7 @@ package org.ga4gh.cts.api;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.SetMultimap;
-import org.ga4gh.models.ReferenceSet;
+import ga4gh.References.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,6 +53,18 @@ public class TestData {
     public static final long REFERENCE_END = 81187;
 
     /**
+     * The name of the reference used for variant annotation in the standard test data.
+     */
+    public static final String VARIANT_ANNOTATION_REFERENCE_NAME = "1";
+
+
+    /**
+     * The names of the variant annotation sets used for variant annotation in the standard test data.
+     */
+    public static final List<String> VARIANT_ANNOTATION_SET_NAMES =
+            Arrays.asList("WASH7P", "OR4F");
+
+    /**
      * The names of known-good read groups.
      */
     public static final SetMultimap<String, String> EXPECTED_READGROUPSET_READGROUP_NAMES =
@@ -78,7 +90,7 @@ public class TestData {
             EXPECTED_READGROUPSET_READGROUP_NAMES.keys();
 
     /**
-     * The names of all known {@link org.ga4gh.models.ReadGroup} objects, obtained from
+     * The names of all known {@link ga4gh.Reads.ReadGroup} objects, obtained from
      * {@link #EXPECTED_READGROUPSET_READGROUP_NAMES}.
      */
     public static final List<String> EXPECTED_READGROUP_NAMES =
@@ -128,6 +140,12 @@ public class TestData {
      * The legal contents of an aligned sequence in the compliance data, as a Java regular expression.
      */
     public static final String ALIGNED_SEQUENCE_CONTENTS_PATTERN = "[ACTGN]+";
+
+
+    /**
+     * The call set name is used to test searching by call set name functionality.
+     */
+    public static final String CALL_SET_NAME = "HG00096";
 
     /**
      * Return the ID of the compliance dataset on the server being tested.

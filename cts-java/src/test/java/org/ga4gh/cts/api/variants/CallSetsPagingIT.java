@@ -1,13 +1,14 @@
 package org.ga4gh.cts.api.variants;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import junitparams.JUnitParamsRunner;
-import org.apache.avro.AvroRemoteException;
+import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.Utils;
-import org.ga4gh.methods.SearchCallSetsRequest;
-import org.ga4gh.methods.SearchCallSetsResponse;
-import org.ga4gh.models.CallSet;
+import ga4gh.VariantServiceOuterClass.*;
+import ga4gh.Variants.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -40,10 +41,12 @@ public class CallSetsPagingIT {
      * must be a subset of those gathered one-by-one.
      * </p>
      *
-     * @throws AvroRemoteException if there's a communication problem or server exception
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void checkPagingOneByOneThroughCallSets() throws AvroRemoteException {
+    public void checkPagingOneByOneThroughCallSets() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
 
         final String variantSetId = Utils.getVariantSetId(client);
         // retrieve them all
@@ -57,7 +60,7 @@ public class CallSetsPagingIT {
         final Set<CallSet> setOfCallSetsGathered1By1 = new HashSet<>(setOfExpectedCallSets.size());
 
         // page through the CallSets one at a time and collect them
-        String pageToken = null;
+        String pageToken = "";
         do {
             final SearchCallSetsRequest pageReq =
                     SearchCallSetsRequest.newBuilder()
@@ -67,13 +70,13 @@ public class CallSetsPagingIT {
                                          .build();
             final SearchCallSetsResponse pageResp =
                     client.variants.searchCallSets(pageReq);
-            final List<CallSet> pageOfCallSets = pageResp.getCallSets();
+            final List<CallSet> pageOfCallSets = pageResp.getCallSetsList();
             pageToken = pageResp.getNextPageToken();
 
             assertThat(pageOfCallSets).hasSize(1);
             setOfCallSetsGathered1By1.add(pageOfCallSets.get(0));
 
-        } while (pageToken != null);
+        } while (pageToken != null && !pageToken.equals(""));
 
         assertThat(setOfCallSetsGathered1By1).containsAll(setOfExpectedCallSets);
         assertThat(setOfExpectedCallSets).containsAll(setOfCallSetsGathered1By1);
