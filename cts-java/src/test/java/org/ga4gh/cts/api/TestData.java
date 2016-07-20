@@ -3,11 +3,12 @@ package org.ga4gh.cts.api;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.SetMultimap;
-import ga4gh.References.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import ga4gh.References.ReferenceSet;
 
 import static org.ga4gh.cts.api.Utils.aSingle;
 
@@ -222,7 +223,7 @@ public class TestData {
     /**
      * GenotypePhenotype PHENOTYPE description for melanoma
      */
-    public static final String PHENOTYPE_DESCRIPTION = "Melanoma, NOS with response to therapy";
+    public static final String PHENOTYPE_DESCRIPTION_MELANOMA = "Melanoma, NOS with response to therapy";
 
     /**
      * GenotypePhenotype PHENOTYPE age of on set

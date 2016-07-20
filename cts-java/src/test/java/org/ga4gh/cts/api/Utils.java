@@ -3,33 +3,60 @@ package org.ga4gh.cts.api;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
+import org.assertj.core.api.ThrowableAssert;
+import org.ga4gh.ctk.transport.GAWrapperException;
+import org.ga4gh.ctk.transport.protocols.Client;
+
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
+
 import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationSetsRequest;
 import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationSetsResponse;
 import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsRequest;
 import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsResponse;
 import ga4gh.AlleleAnnotations.VariantAnnotation;
 import ga4gh.AlleleAnnotations.VariantAnnotationSet;
-import ga4gh.Reads.*;
-import ga4gh.ReadServiceOuterClass.*;
-import ga4gh.References.*;
-import ga4gh.ReferenceServiceOuterClass.*;
+import ga4gh.BioMetadata.BioSample;
+import ga4gh.BioMetadataServiceOuterClass.SearchBioSamplesRequest;
+import ga4gh.BioMetadataServiceOuterClass.SearchBioSamplesResponse;
+import ga4gh.GenotypePhenotype.PhenotypeAssociationSet;
+import ga4gh.GenotypePhenotypeServiceOuterClass.SearchPhenotypeAssociationSetsRequest;
+import ga4gh.GenotypePhenotypeServiceOuterClass.SearchPhenotypeAssociationSetsResponse;
+import ga4gh.Metadata.Dataset;
+import ga4gh.MetadataServiceOuterClass.SearchDatasetsRequest;
+import ga4gh.MetadataServiceOuterClass.SearchDatasetsResponse;
+import ga4gh.ReadServiceOuterClass.SearchReadGroupSetsRequest;
+import ga4gh.ReadServiceOuterClass.SearchReadGroupSetsResponse;
+import ga4gh.ReadServiceOuterClass.SearchReadsRequest;
+import ga4gh.ReadServiceOuterClass.SearchReadsResponse;
+import ga4gh.Reads.ReadAlignment;
+import ga4gh.Reads.ReadGroup;
+import ga4gh.Reads.ReadGroup.Program;
+import ga4gh.Reads.ReadGroupSet;
+import ga4gh.ReferenceServiceOuterClass.SearchReferenceSetsRequest;
+import ga4gh.ReferenceServiceOuterClass.SearchReferenceSetsResponse;
+import ga4gh.ReferenceServiceOuterClass.SearchReferencesRequest;
+import ga4gh.ReferenceServiceOuterClass.SearchReferencesResponse;
+import ga4gh.References.Reference;
+import ga4gh.References.ReferenceSet;
 import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeatureSetsRequest;
-import ga4gh.SequenceAnnotations.*;
-import ga4gh.Variants.*;
-import ga4gh.VariantServiceOuterClass.*;
-import ga4gh.Metadata.*;
-import ga4gh.MetadataServiceOuterClass.*;
-import ga4gh.BioMetadata.*;
-import ga4gh.BioMetadataServiceOuterClass.*;
-import org.assertj.core.api.ThrowableAssert;
-import org.ga4gh.ctk.transport.GAWrapperException;
-import org.ga4gh.ctk.transport.protocols.Client;
+import ga4gh.SequenceAnnotations.FeatureSet;
+import ga4gh.VariantServiceOuterClass.SearchCallSetsRequest;
+import ga4gh.VariantServiceOuterClass.SearchCallSetsResponse;
+import ga4gh.VariantServiceOuterClass.SearchVariantSetsRequest;
+import ga4gh.VariantServiceOuterClass.SearchVariantSetsResponse;
+import ga4gh.VariantServiceOuterClass.SearchVariantsRequest;
+import ga4gh.VariantServiceOuterClass.SearchVariantsResponse;
+import ga4gh.Variants.CallSet;
+import ga4gh.Variants.Variant;
+import ga4gh.Variants.VariantSet;
 
-import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
-
-import static ga4gh.SequenceAnnotationServiceOuterClass.*;
+import static ga4gh.SequenceAnnotationServiceOuterClass.SearchFeatureSetsResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.StrictAssertions.catchThrowable;
 import static org.assertj.core.api.StrictAssertions.fail;
@@ -307,8 +334,8 @@ public class Utils {
     public static String getVariantSetId(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchVariantSetsRequest req =
                 SearchVariantSetsRequest.newBuilder()
-                                        .setDatasetId(TestData.getDatasetId())
-                                        .build();
+                        .setDatasetId(TestData.getDatasetId())
+                        .build();
         final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
 
         final List<VariantSet> variantSets = resp.getVariantSetsList();
@@ -317,18 +344,41 @@ public class Utils {
     }
 
     /**
+     * Convenience function for getting a variant set by name. When no set is found
+     * matching the name returns the first variant set found.
+     * @param client
+     * @param name
+     * @return
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+
+    public static VariantSet getVariantSetByName(Client client, String name) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final List<VariantSet> variantSets = Utils.getAllVariantSets(client);
+        for (VariantSet v: variantSets) {
+            if (v.getName() == name) {
+                return v;
+            }
+        }
+        return variantSets.get(0);
+    }
+
+    /**
      * Utility method to fetch the ID of an arbitrary {@link PhenotypeAssociationSet}.
      * @param client the connection to the server
      * @return the ID of a {@link PhenotypeAssociationSet}
-     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
-     */
-    public static String getPhenotypeAssociationSetId(Client client) throws AvroRemoteException {
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     **/
+    public static String getPhenotypeAssociationSetId(Client client) throws  InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchPhenotypeAssociationSetsRequest req =
                 SearchPhenotypeAssociationSetsRequest.newBuilder()
                         .setDatasetId(getDatasetId(client))
                         .build();
         final SearchPhenotypeAssociationSetsResponse resp = client.genotypePhenotype.searchPhenotypeAssociationSets(req);
-        final List<PhenotypeAssociationSet> phenotypeAssociationSets = resp.getPhenotypeAssociationSets();
+        final List<PhenotypeAssociationSet> phenotypeAssociationSets = resp.getPhenotypeAssociationSetsList();
         assertThat(phenotypeAssociationSets).isNotEmpty();
         return phenotypeAssociationSets.get(0).getId();
     }
@@ -337,15 +387,17 @@ public class Utils {
      * Utility method to fetch the ID of an arbitrary {@link PhenotypeAssociationSet}.
      * @param client the connection to the server
      * @return the ID of a {@link PhenotypeAssociationSet}
-     * @throws AvroRemoteException if the server throws an exception or there's an I/O error
-     */
-    public static String getDatasetId(Client client) throws AvroRemoteException {
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     **/
+    public static String getDatasetId(Client client) throws  InvalidProtocolBufferException, UnirestException, GAWrapperException  {
         final SearchDatasetsRequest req =
                 SearchDatasetsRequest.newBuilder()
                         .build();
         final SearchDatasetsResponse resp = client.metadata.searchDatasets(req);
-        assertThat(resp.getDatasets()).isNotEmpty();
-        return resp.getDatasets().get(0).getId() ;
+        assertThat(resp.getDatasetsList()).isNotEmpty();
+        return resp.getDatasets(0).getId() ;
     }
 
     /**
