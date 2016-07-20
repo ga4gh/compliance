@@ -11,7 +11,6 @@ import ga4gh.AlleleAnnotations.VariantAnnotation;
 import ga4gh.AlleleAnnotations.VariantAnnotationSet;
 import ga4gh.Reads.*;
 import ga4gh.ReadServiceOuterClass.*;
-import ga4gh.Reads.ReadGroup.Program;
 import ga4gh.References.*;
 import ga4gh.ReferenceServiceOuterClass.*;
 import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeatureSetsRequest;
