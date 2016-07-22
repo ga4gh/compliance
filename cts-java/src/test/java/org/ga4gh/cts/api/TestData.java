@@ -31,7 +31,7 @@ public class TestData {
      * The default ID of the dataset that holds the test data.  We use something readable so the
      * meaning is clear, but in reality the value of this is unlikely to be human-readable.
      */
-    public static final String DEFAULT_DATASET_ID = "compliance-dataset";
+    public static final String DEFAULT_DATASET_ID = "WyJicmNhMSJd";
 
     /**
      * The name of the Java system property that sets the ID of the compliance dataset.
@@ -209,6 +209,9 @@ public class TestData {
      * GenotypePhenotype PHENOTYPE ontology term id for sensitivity qualifier.
      */
     public static final String PHENOTYPE_SENSITIVITY_ID = "http://purl.obolibrary.org/obo/PATO_0000396";
+
+    public static final String PHENOTYPE_ABNORMAL_ID = "http://purl.obolibrary.org/obo/PATO_0000460";
+
 
     /**
      * GenotypePhenotype PHENOTYPE description.

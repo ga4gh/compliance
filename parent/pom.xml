@@ -227,10 +227,11 @@
             </dependency>
 
             <dependency>
-                <groupId>com.github.ga4gh</groupId>
-                <artifactId>schemas</artifactId>
+                <groupId>org.ga4gh</groupId>
+                <artifactId>ga4gh-schemas</artifactId>
                 <version>${ga4gh.schema.version}</version>
             </dependency>
+
 
         </dependencies>
     </dependencyManagement>

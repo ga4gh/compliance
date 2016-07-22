@@ -640,20 +640,23 @@ public class Client {
          */
         public SearchPhenotypesResponse searchPhenotypes(SearchPhenotypesRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getSearchPhenotypes();
+            assert( path != null );
             SearchPhenotypesResponse.Builder builder = SearchPhenotypesResponse.newBuilder();
             new Post<>(urls.getUrlRoot(), path, request, builder, wireTracker).performQuery();
             return builder.build();
         }
 
         public SearchGenotypePhenotypeResponse searchGenotypePhenotypes(SearchGenotypePhenotypeRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
-            String path = urls.getSearchPhenotypes();
+            String path = urls.getSearchGenotypePhenotype();
+            assert( path != null );
             SearchGenotypePhenotypeResponse.Builder builder = SearchGenotypePhenotypeResponse.newBuilder();
             new Post<>(urls.getUrlRoot(), path, request, builder, wireTracker).performQuery();
             return builder.build();
         }
 
         public SearchPhenotypeAssociationSetsResponse searchPhenotypeAssociationSets(SearchPhenotypeAssociationSetsRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
-            String path = urls.getSearchPhenotypes();
+            String path = urls.getSearchPhenotypeAssociationSets();
+            assert( path != null );
             SearchPhenotypeAssociationSetsResponse.Builder builder = SearchPhenotypeAssociationSetsResponse.newBuilder();
             new Post<>(urls.getUrlRoot(), path, request, builder, wireTracker).performQuery();
             return builder.build();

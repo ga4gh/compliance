@@ -27,6 +27,7 @@ import ga4gh.BioMetadataServiceOuterClass.SearchBioSamplesResponse;
 import ga4gh.GenotypePhenotype.PhenotypeAssociationSet;
 import ga4gh.GenotypePhenotypeServiceOuterClass.SearchPhenotypeAssociationSetsRequest;
 import ga4gh.GenotypePhenotypeServiceOuterClass.SearchPhenotypeAssociationSetsResponse;
+import ga4gh.Metadata;
 import ga4gh.Metadata.Dataset;
 import ga4gh.MetadataServiceOuterClass.SearchDatasetsRequest;
 import ga4gh.MetadataServiceOuterClass.SearchDatasetsResponse;
@@ -36,7 +37,6 @@ import ga4gh.ReadServiceOuterClass.SearchReadsRequest;
 import ga4gh.ReadServiceOuterClass.SearchReadsResponse;
 import ga4gh.Reads.ReadAlignment;
 import ga4gh.Reads.ReadGroup;
-import ga4gh.Reads.ReadGroup.Program;
 import ga4gh.Reads.ReadGroupSet;
 import ga4gh.ReferenceServiceOuterClass.SearchReferenceSetsRequest;
 import ga4gh.ReferenceServiceOuterClass.SearchReferenceSetsResponse;
@@ -87,7 +87,7 @@ public class Utils {
      * If we supply a typed value, the complaint goes away.
      * This is a null suitable for use where we might want to pass a {@link Program} to a varargs method.
      */
-    public static final Program nullProgram = null;
+    public static final Metadata.Program nullProgram = null;
 
     /**
      * Certain AssertJ methods accept a variable number of args: <tt>assertThat(Collection).doesNotContain(...)</tt>,
@@ -218,9 +218,9 @@ public class Utils {
     public static String getReadGroupIdForName(Client client, String readGroupSetName, String readGroupName) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReadGroupSetsRequest readGroupSetsReq =
                 SearchReadGroupSetsRequest.newBuilder()
-                                          .setDatasetId(TestData.getDatasetId())
-                                          .setName(readGroupSetName)
-                                          .build();
+                        .setDatasetId(TestData.getDatasetId())
+                        .setName(readGroupSetName)
+                        .build();
         final SearchReadGroupSetsResponse readGroupSetsResp =
                 client.reads.searchReadGroupSets(readGroupSetsReq);
         final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSetsList();
@@ -771,6 +771,20 @@ public class Utils {
         return featureSets.get(0).getId();
     }
 
+    /**
+     * Utility method to fetch the Id of a {@link FeatureSet} for the compliance dataset.
+     * @param client the connection to the server
+     * @return the ID of a {@link FeatureSet}
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    public static String getFeatureG2PSetId(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+
+        // get all compliance feature sets
+        final List<FeatureSet> featureSets = getAllFeatureSets(client);
+        return featureSets.get(1).getId();
+    }
     /**
      * Given a name, return the feature set corresponding to that name. When that name
      * is not found returns the first feature set found.

@@ -59,8 +59,7 @@ public class URLMAPPINGImpl implements URLMAPPING {
         defaultEndpoints.put("ctk.tgt.searchReferenceSets", "referencesets/search");
         defaultEndpoints.put("ctk.tgt.searchVariantSets", "variantsets/search");
         defaultEndpoints.put("ctk.tgt.searchVariants", "variants/search");
-        defaultEndpoints.put("ctk.tgt.searchCallsets", "callsets/search");
-        defaultEndpoints.put("ctk.tgt.searchGenotypePhenotype", "genotypephenotype/search");
+        defaultEndpoints.put("ctk.tgt.searchCallSets", "callsets/search");
         defaultEndpoints.put("ctk.tgt.getReferences", "references/{id}");
         defaultEndpoints.put("ctk.tgt.getReferenceSets", "referencesets/{id}");
         defaultEndpoints.put("ctk.tgt.getReferencesBases", "references/{id}/bases");
@@ -71,12 +70,25 @@ public class URLMAPPINGImpl implements URLMAPPING {
         defaultEndpoints.put("ctk.tgt.getDataSet", "datasets/{id}");
         defaultEndpoints.put("ctk.tgt.getVariant", "variants/{id}");
         defaultEndpoints.put("ctk.tgt.getVariantSet", "variantsets/{id}");
-        defaultEndpoints.put("ctk.tgt.getCallset", "callsets/{id}");
-        defaultEndpoints.put("ctk.tgt.getCallset", "callsets/{id}");
-        defaultEndpoints.put("ctk.tgt.getCallset", "callsets/{id}");
+        defaultEndpoints.put("ctk.tgt.getCallSet", "callsets/{id}");
 
-        defaultEndpoints.put("ctk.tgt.searchGenotypePhenotype", "genotypephenotype/search");
-        defaultEndpoints.put("ctk.tgt.searchPhenotypeAssociationSets", "phenotypeassociationsets/search");
+        defaultEndpoints.put("ctk.tgt.searchVariantAnnotationSets", "variantannotationsets/search");
+        defaultEndpoints.put("ctk.tgt.searchVariantAnnotations", "variantannotations/search");
+        defaultEndpoints.put("ctk.tgt.getVariantAnnotationSet", "variantannotationsets/{id}");
+
+        defaultEndpoints.put("ctk.tgt.searchBioSamples", "biosamples/search");
+        defaultEndpoints.put("ctk.tgt.getBioSample", "biosamples/{id}");
+
+        defaultEndpoints.put("ctk.tgt.searchIndividuals", "individuals/search");
+        defaultEndpoints.put("ctk.tgt.getIndividual", "individuals/{id}");
+        defaultEndpoints.put("ctk.tgt.searchFeatureSets", "featuresets/search");
+        defaultEndpoints.put("ctk.tgt.getFeatureSets", "featuresets/{id}");
+        defaultEndpoints.put("ctk.tgt.searchFeatures", "features/search");
+        defaultEndpoints.put("ctk.tgt.getFeatures", "features/{id}");
+        defaultEndpoints.put("ctk.tgt.searchPhenotypeAssociationSets","phenotypeassociationsets/search");
+
+        defaultEndpoints.put("ctk.tgt.searchGenotypePhenotype", "genotypephenotypes/search");
+        defaultEndpoints.put("ctk.tgt.searchPhenotypes", "phenotypes/search");
 
         dumpToStdOut = Boolean.getBoolean("ctk.tgt.urlmapper.dump"); // so, -Dctk.tgt.urlmapper.dump=true
 
@@ -359,34 +371,6 @@ public class URLMAPPINGImpl implements URLMAPPING {
     }
 
     @Override
-    public String getSearchPhenotypes() {
-        return endpoints.get("ctk.tgt.searchPhenotypes");
-    }
-
-    @Override
-    public void setSearchPhenotypes(String searchPhenotypes) {
-        endpoints.put("ctk.tgt.searchPhenotypes", searchPhenotypes);
-    }
-
-    @Override
-    public String getSearchGenotypePhenotype() {
-        return endpoints.get("ctk.tgt.searchGenotypePhenotype");
-    }
-
-    @Override
-    public void setSearchGenotypePhenotype(String searchGenotypePhenotype) {
-        endpoints.put("ctk.tgt.searchGenotypePhenotype", searchGenotypePhenotype);
-    }
-
-    @Override
-    public String getSearchPhenotypeAssociationSets() { return endpoints.get("ctk.tgt.searchPhenotypeAssociationSets"); }
-
-    @Override
-    public void setSearchPhenotypeAssociationSets(String searchPhenotypeAssociationSets) {
-        endpoints.put("ctk.tgt.searchPhenotypeAssociationSets", searchPhenotypeAssociationSets);
-    }
-
-    @Override
     public String getSearchVariantSets() {
         return endpoints.get("ctk.tgt.searchVariantSets");
     }
@@ -566,4 +550,34 @@ public class URLMAPPINGImpl implements URLMAPPING {
     public void setEndpoints(Map<String, String> newEndpoints) {
         endpoints = newEndpoints;
     }
+
+    @Override
+    public String getSearchPhenotypes() {
+        return endpoints.get("ctk.tgt.searchPhenotypes");
+    }
+
+    @Override
+    public void setSearchPhenotypes(String searchPhenotypes) {
+        endpoints.put("ctk.tgt.searchPhenotypes", searchPhenotypes);
+    }
+
+    @Override
+    public String getSearchGenotypePhenotype() {
+        return endpoints.get("ctk.tgt.searchGenotypePhenotype");
+    }
+
+    @Override
+    public void setSearchGenotypePhenotype(String searchGenotypePhenotype) {
+        endpoints.put("ctk.tgt.searchGenotypePhenotype", searchGenotypePhenotype);
+    }
+
+    @Override
+    public String getSearchPhenotypeAssociationSets() { return endpoints.get("ctk.tgt.searchPhenotypeAssociationSets"); }
+
+    @Override
+    public void setSearchPhenotypeAssociationSets(String searchPhenotypeAssociationSets) {
+        assert(searchPhenotypeAssociationSets != null);
+        endpoints.put("ctk.tgt.searchPhenotypeAssociationSets", searchPhenotypeAssociationSets);
+    }
+
 }
