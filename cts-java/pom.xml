@@ -16,9 +16,19 @@
     <packaging>jar</packaging>
 
     <dependencies>
+
+        <!--TODO - make switch between local and github driven by config variable-->
+        <!--Uncomment to use local schema build-->
+        <!--<dependency>-->
+        <!--<groupId>org.ga4gh</groupId>-->
+        <!--<artifactId>ga4gh-schemas</artifactId>-->
+        <!--<version>${ga4gh.schema.version}</version>-->
+        <!--</dependency>-->
+
+        <!--Comment to use local schema build-->
         <dependency>
-            <groupId>org.ga4gh</groupId>
-            <artifactId>ga4gh-schemas</artifactId>
+            <groupId>com.github.ga4gh</groupId>
+            <artifactId>schemas</artifactId>
             <version>${ga4gh.schema.version}</version>
         </dependency>
 
@@ -37,12 +47,13 @@
             <groupId>org.ga4gh</groupId>
             <artifactId>ctk-transport</artifactId>
             <version>0.6.0a3</version>
-            <exclusions>
-                <exclusion>  <!-- declare the exclusion here -->
-                    <groupId>com.github.ga4gh</groupId>
-                    <artifactId>schemas</artifactId>
-                </exclusion>
-            </exclusions>
+            <!--Uncomment to use local schema build-->
+            <!--<exclusions>-->
+                <!--<exclusion>  &lt;!&ndash; declare the exclusion here &ndash;&gt;-->
+                    <!--<groupId>com.github.ga4gh</groupId>-->
+                    <!--<artifactId>schemas</artifactId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

@@ -226,9 +226,19 @@
                 <version>${gson.version}</version>
             </dependency>
 
+
+            <!--TODO - make switch between local and github driven by config variable-->
+            <!--Uncomment to use local schema build-->
+            <!--<dependency>-->
+                <!--<groupId>org.ga4gh</groupId>-->
+                <!--<artifactId>ga4gh-schemas</artifactId>-->
+                <!--<version>${ga4gh.schema.version}</version>-->
+            <!--</dependency>-->
+
+            <!--Comment to use local schema build-->
             <dependency>
-                <groupId>org.ga4gh</groupId>
-                <artifactId>ga4gh-schemas</artifactId>
+                <groupId>com.github.ga4gh</groupId>
+                <artifactId>schemas</artifactId>
                 <version>${ga4gh.schema.version}</version>
             </dependency>
 
