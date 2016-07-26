@@ -26,7 +26,7 @@ public class RnaQuantificationGetByIdIT {
     private static Client client = new Client(URLMAPPING.getInstance());
 
     /**
-     * Verify that RnaQuantifications that we obtain by way of {@link ga4gh.RnaQuantificationServiceOuterClass.SearchQuantificationGroupsRequest} match the ones
+     * Verify that RnaQuantifications that we obtain by way of {@link ga4gh.RnaQuantificationServiceOuterClass.SearchFeatureGroupsRequest} match the ones
      * we get via <tt>GET /rnaquantification/{id}</tt>.
      * @throws GAWrapperException if the server finds the request invalid in some way
      * @throws UnirestException if there's a problem speaking HTTP to the server

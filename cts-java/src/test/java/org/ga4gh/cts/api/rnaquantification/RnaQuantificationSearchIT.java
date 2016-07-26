@@ -13,11 +13,11 @@ import ga4gh.RnaQuantificationServiceOuterClass.SearchRnaQuantificationsRequest;
 import ga4gh.RnaQuantificationServiceOuterClass.SearchRnaQuantificationsResponse;
 import ga4gh.RnaQuantificationServiceOuterClass.SearchExpressionLevelsRequest;
 import ga4gh.RnaQuantificationServiceOuterClass.SearchExpressionLevelsResponse;
-import ga4gh.RnaQuantificationServiceOuterClass.SearchQuantificationGroupsRequest;
-import ga4gh.RnaQuantificationServiceOuterClass.SearchQuantificationGroupsResponse;
+import ga4gh.RnaQuantificationServiceOuterClass.SearchFeatureGroupsRequest;
+import ga4gh.RnaQuantificationServiceOuterClass.SearchFeatureGroupsResponse;
 import ga4gh.RnaQuantificationOuterClass.RnaQuantification;
 import ga4gh.RnaQuantificationOuterClass.ExpressionLevel;
-import ga4gh.RnaQuantificationOuterClass.QuantificationGroup;
+import ga4gh.RnaQuantificationOuterClass.FeatureGroup;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -110,13 +110,13 @@ public class RnaQuantificationSearchIT {
     public void checkExpectedNumberOfFeatureGroups() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final int expectedNumberOfFeatureGroups = 4;
 
-        final SearchQuantificationGroupsRequest req =
-                SearchQuantificationGroupsRequest.newBuilder()
+        final SearchFeatureGroupsRequest req =
+                SearchFeatureGroupsRequest.newBuilder()
                         .setRnaQuantificationId(getTestDataRnaQuantificationId())
                         .build();
-        final SearchQuantificationGroupsResponse resp = client.rnaquantifications.searchFeatureGroup(req);
+        final SearchFeatureGroupsResponse resp = client.rnaquantifications.searchFeatureGroup(req);
 
-        final List<QuantificationGroup> featureGroups = resp.getQuantificationGroupsList();
+        final List<FeatureGroup> featureGroups = resp.getFeatureGroupsList();
         assertThat(featureGroups).hasSize(expectedNumberOfFeatureGroups);
     }
 }

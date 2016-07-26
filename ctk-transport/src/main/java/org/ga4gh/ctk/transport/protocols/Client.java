@@ -581,17 +581,17 @@ public class Client {
         }
 
         /**
-         * Gets a list of {@link QuantificationGroup} matching the search criteria.
+         * Gets a list of {@link FeatureGroup} matching the search criteria.
          * <p>
-         * <tt>POST /featuregroup/search</tt> accepts a {@link SearchQuantificationGroupsRequest}
-         * and returns a {@link SearchQuantificationGroupsResponse}.
+         * <tt>POST /featuregroup/search</tt> accepts a {@link SearchFeatureGroupsRequest}
+         * and returns a {@link SearchFeatureGroupsResponse}.
          *
          * @param request protobuf object to be serialized as JSON to the server
          */
-        public SearchQuantificationGroupsResponse searchFeatureGroup(SearchQuantificationGroupsRequest request)
+        public SearchFeatureGroupsResponse searchFeatureGroup(SearchFeatureGroupsRequest request)
                 throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getSearchFeatureGroup();
-            SearchQuantificationGroupsResponse.Builder responseBuilder = SearchQuantificationGroupsResponse.newBuilder();
+            SearchFeatureGroupsResponse.Builder responseBuilder = SearchFeatureGroupsResponse.newBuilder();
             new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
         }
