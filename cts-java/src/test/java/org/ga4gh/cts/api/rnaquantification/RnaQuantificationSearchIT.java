@@ -89,9 +89,7 @@ public class RnaQuantificationSearchIT {
         final int expectedNumberOfExpressionLevels = 4;
 
         final SearchExpressionLevelsRequest req =
-                SearchExpressionLevelsRequest.newBuilder()
-                        .setRnaQuantificationId(getTestDataRnaQuantificationId())
-                        .build();
+                SearchExpressionLevelsRequest.newBuilder().build();
         final SearchExpressionLevelsResponse resp = client.rnaquantifications.searchExpressionLevel(req);
 
         final List<ExpressionLevel> expressionLevels = resp.getExpressionLevelsList();
@@ -111,9 +109,7 @@ public class RnaQuantificationSearchIT {
         final int expectedNumberOfFeatureGroups = 4;
 
         final SearchFeatureGroupsRequest req =
-                SearchFeatureGroupsRequest.newBuilder()
-                        .setRnaQuantificationId(getTestDataRnaQuantificationId())
-                        .build();
+                SearchFeatureGroupsRequest.newBuilder().build();
         final SearchFeatureGroupsResponse resp = client.rnaquantifications.searchFeatureGroup(req);
 
         final List<FeatureGroup> featureGroups = resp.getFeatureGroupsList();
