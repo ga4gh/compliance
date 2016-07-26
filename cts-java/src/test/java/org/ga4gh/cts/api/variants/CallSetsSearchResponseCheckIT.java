@@ -11,6 +11,7 @@ import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
 import ga4gh.Variants.*;
 import ga4gh.VariantServiceOuterClass.*;
+import ga4gh.BioMetadata.*;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -161,5 +162,30 @@ public class CallSetsSearchResponseCheckIT implements CtkLogs {
         assertThat(gae.getHttpStatusCode()).isEqualTo(HttpURLConnection.HTTP_NOT_FOUND);
     }
 
+    /**
+     * Tests to ensure that when requesting callsets using the BioSample Id filter that
+     * only callsets with the given BioSample Id are returned.
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    @Test
+    public void searchCallSetsByBioSampleId() throws GAWrapperException, UnirestException, InvalidProtocolBufferException {
+        final BioSample bioSample = Utils.getBioSampleByName(client, TestData.BIOSAMPLE_NAME);
 
+        // grab the first VariantSet and use it as source of CallSets
+        final VariantSet variantSet = Utils.getVariantSetByName(client, TestData.VARIANTSET_NAME);
+        final String variantSetId = variantSet.getId();
+
+        final SearchCallSetsRequest callSetsSearchRequest =
+                SearchCallSetsRequest.newBuilder()
+                        .setVariantSetId(variantSetId)
+                        .setBioSampleId(bioSample.getId())
+                        .build();
+        final SearchCallSetsResponse csResp = client.variants.searchCallSets(callSetsSearchRequest);
+        assertThat(csResp.getCallSetsList()).isNotEmpty();
+        for (CallSet cs: csResp.getCallSetsList()) {
+            assertThat(cs.getBioSampleId()).isEqualTo(bioSample.getId());
+        }
+    }
 }
