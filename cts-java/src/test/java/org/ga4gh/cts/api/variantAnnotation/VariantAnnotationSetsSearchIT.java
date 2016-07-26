@@ -108,7 +108,7 @@ public class VariantAnnotationSetsSearchIT implements CtkLogs {
 
         assertThat(vSet.getAnalysis().getName()).isEqualTo(name);
         assertThat(vSet.getAnalysis().getDescription()).isEqualTo(description);
-        assertThat(df2.parse(vSet.getAnalysis().getCreateDateTime())).isEqualTo(df1.parse(created));
+        assertThat(df2.parse(vSet.getAnalysis().getCreated())).isEqualTo(df1.parse(created));
         assertThat(vSet.getAnalysis().getSoftware(0)).isEqualTo(software);
 
     }

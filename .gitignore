@@ -101,3 +101,7 @@ crashlytics-build.properties
 */testresults/
 /ctk-domain/src/main/assertj-assertions/*
 /ctk-transport/src/main/assertj-assertions/*
+
+# Eclipse
+.classpath
+.project

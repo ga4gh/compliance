@@ -12,6 +12,8 @@ import org.ga4gh.cts.api.Utils;
 import ga4gh.Common.GAException;
 import ga4gh.ReadServiceOuterClass.*;
 import ga4gh.Reads.*;
+import ga4gh.BioMetadata.*;
+import ga4gh.BioMetadataServiceOuterClass.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -207,6 +209,31 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
         for (ReadGroupSet readGroupSet : readGroupSets) {
             for (ReadGroup readGroup : readGroupSet.getReadGroupsList()) {
                 assertThat(readGroup.getId()).isNotNull();
+            }
+        }
+    }
+
+    /**
+     * Read group sets return a list of read groups that should all match the requested
+     * biosample ID.
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    @Test
+    public void checkBioSampleFilter() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final BioSample b = Utils.getBioSampleByName(client, TestData.BIOSAMPLE_NAME);
+        final SearchReadGroupSetsRequest req =
+                SearchReadGroupSetsRequest.newBuilder()
+                        .setDatasetId(TestData.getDatasetId())
+                        .setBioSampleId(b.getId())
+                        .build();
+        final SearchReadGroupSetsResponse resp = client.reads.searchReadGroupSets(req);
+        final List<ReadGroupSet> readGroupSets = resp.getReadGroupSetsList();
+        assertThat(readGroupSets).isNotEmpty();
+        for (ReadGroupSet readGroupSet : readGroupSets) {
+            for (ReadGroup readGroup : readGroupSet.getReadGroupsList()) {
+                assertThat(readGroup.getBioSampleId()).isEqualTo(b.getId());
             }
         }
     }
