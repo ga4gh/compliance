@@ -544,12 +544,12 @@ public class Utils {
      * @throws GAWrapperException if the server finds the request invalid in some way
      * @throws UnirestException if there's a problem speaking HTTP to the server
      * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
-
      */
-    public static String getRnaQuantificationId(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+    public static String getRnaQuantificationId(Client client, String rnaQuantificationSetId) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchRnaQuantificationsRequest req =
                 SearchRnaQuantificationsRequest.newBuilder()
                         .setDatasetId(TestData.getDatasetId())
+                        .setRnaQuantificationSetId(rnaQuantificationSetId)
                         .build();
         final SearchRnaQuantificationsResponse resp = client.rnaquantifications.searchRnaQuantification(req);
 
@@ -559,28 +559,22 @@ public class Utils {
     }
 
     /**
-     * Given a reference ID, return all {@link RnaQuantification}s
+     * Utility method to fetch the ID of an arbitrary {@link RnaQuantificationSet}.
      * @param client the connection to the server
-     * @param referenceId the ID of the {@link Reference} we're using
-     * @return all the {@link RnaQuantification} objects that match
+     * @return the ID of a {@link RnaQuantificationSet}
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
-    public static List<RnaQuantification> getAllRnaQuantifications(Client client,
-                                                                   String referenceId) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
-
-        final List<RnaQuantification> result = new LinkedList<>();
-        String pageToken = null;
-        do {
-            final SearchRnaQuantificationsRequest req = SearchRnaQuantificationsRequest.newBuilder()
-                    .setDatasetId(referenceId)
-                    .setPageToken(pageToken)
-                    .setPageSize(100)
-                    .build();
-            final SearchRnaQuantificationsResponse resp = client.rnaquantifications.searchRnaQuantification(req);
-            result.addAll(resp.getRnaQuantificationsList());
-            pageToken = resp.getNextPageToken();
-        } while (pageToken != null);
-
-        return result;
+    public static String getRnaQuantificationSetId(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final SearchRnaQuantificationSetsRequest req =
+            SearchRnaQuantificationSetsRequest.newBuilder()
+            .setDatasetId(TestData.getDatasetId())
+            .build();
+        final SearchRnaQuantificationSetsResponse resp = client.rnaquantifications.searchRnaQuantificationSets(req);
+        final List<RnaQuantificationSet> rnaQuantificationSets = resp.getRnaQuantificationSetsList();
+        assertThat(rnaQuantificationSets).isNotEmpty();
+        return rnaQuantificationSets.get(0).getId();
     }
 
     /**

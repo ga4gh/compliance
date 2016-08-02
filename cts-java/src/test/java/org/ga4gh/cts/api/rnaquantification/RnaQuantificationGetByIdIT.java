@@ -31,24 +31,14 @@ public class RnaQuantificationGetByIdIT {
      * @throws GAWrapperException if the server finds the request invalid in some way
      * @throws UnirestException if there's a problem speaking HTTP to the server
      * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
-
      */
     @Test
     public void checkRnaQuantificationGetResultsMatchSearchResults() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
-        final int expectedNumberOfRnaQuantifications = 1;
-
-        final String rnaQuantificationId = Utils.getRnaQuantificationId(client);
-        final List<RnaQuantification> rnaQuantifications = Utils.getAllRnaQuantifications(client, rnaQuantificationId);
-
-        assertThat(rnaQuantifications).hasSize(expectedNumberOfRnaQuantifications);
-
-        for (final RnaQuantification rnaQuantificationFromSearch : rnaQuantifications) {
-            final RnaQuantification rnaQuantificationFromGet = client.rnaquantifications.getRnaQuantification(rnaQuantificationFromSearch.getId());
-            assertThat(rnaQuantificationFromGet).isNotNull();
-
-            assertThat(rnaQuantificationFromGet).isEqualTo(rnaQuantificationFromSearch);
-        }
-
+        final String rnaQuantificationSetId = Utils.getRnaQuantificationSetId(client);
+        final String rnaQuantificationId = Utils.getRnaQuantificationId(client, rnaQuantificationSetId);
+        final RnaQuantification rnaQuantificationFromGet = client.rnaquantifications.getRnaQuantification(rnaQuantificationId);
+        assertThat(rnaQuantificationFromGet).isNotNull();
+        assertThat(rnaQuantificationFromGet.getId()).isEqualTo(rnaQuantificationId);
     }
 
 

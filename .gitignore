@@ -1,3 +1,8 @@
+*~
+*.swp
+*.swo
+*.db
+
 # Created by .ignore support plugin (hsz.mobi), updated by hand
 ### Java template
 *.class
