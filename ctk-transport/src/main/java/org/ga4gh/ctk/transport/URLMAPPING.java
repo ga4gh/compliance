@@ -143,10 +143,6 @@ public interface URLMAPPING {
 
     void setSearchRnaQuantification(String searchRnaQuantification);
 
-    String getSearchFeatureGroup();
-
-    void setSearchFeatureGroup(String searchFeatureGroup);
-
     String getSearchExpressionLevel();
 
     void setSearchExpressionLevel(String searchExpressionLevel);

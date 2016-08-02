@@ -13,11 +13,8 @@ import ga4gh.RnaQuantificationServiceOuterClass.SearchRnaQuantificationsRequest;
 import ga4gh.RnaQuantificationServiceOuterClass.SearchRnaQuantificationsResponse;
 import ga4gh.RnaQuantificationServiceOuterClass.SearchExpressionLevelsRequest;
 import ga4gh.RnaQuantificationServiceOuterClass.SearchExpressionLevelsResponse;
-import ga4gh.RnaQuantificationServiceOuterClass.SearchFeatureGroupsRequest;
-import ga4gh.RnaQuantificationServiceOuterClass.SearchFeatureGroupsResponse;
 import ga4gh.RnaQuantificationOuterClass.RnaQuantification;
 import ga4gh.RnaQuantificationOuterClass.ExpressionLevel;
-import ga4gh.RnaQuantificationOuterClass.FeatureGroup;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -96,23 +93,4 @@ public class RnaQuantificationSearchIT {
         assertThat(expressionLevels).hasSize(expectedNumberOfExpressionLevels);
     }
 
-    /**
-     * Fetch feature groups and count them.  The number must
-     * equal what we're expecting by visual examination of the data.
-     *
-     * @throws GAWrapperException if the server finds the request invalid in some way
-     * @throws UnirestException if there's a problem speaking HTTP to the server
-     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
-     */
-    @Test
-    public void checkExpectedNumberOfFeatureGroups() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
-        final int expectedNumberOfFeatureGroups = 4;
-
-        final SearchFeatureGroupsRequest req =
-                SearchFeatureGroupsRequest.newBuilder().build();
-        final SearchFeatureGroupsResponse resp = client.rnaquantifications.searchFeatureGroup(req);
-
-        final List<FeatureGroup> featureGroups = resp.getFeatureGroupsList();
-        assertThat(featureGroups).hasSize(expectedNumberOfFeatureGroups);
-    }
 }
