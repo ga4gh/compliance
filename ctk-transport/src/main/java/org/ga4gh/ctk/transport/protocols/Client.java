@@ -670,6 +670,22 @@ public class Client {
             new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
         }
+
+        /**
+         * Gets a list of {@link RnaQuantificationSets} matching the search criteria.
+         * <p>
+         * <tt>POST /rnaquantificationsets/search</tt> accepts a {@link SearchRnaQuantificationSetsRequest}
+         * and returns a {@link SearchRnaQuantificationSetsResponse}.
+         *
+         * @param request protobuf object to be serialized as JSON to the server
+         */
+        public SearchRnaQuantificationSetsResponse searchRnaQuantificationSets(SearchRnaQuantificationSetsRequest request)
+                throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getSearchRnaQuantificationSets();
+            SearchRnaQuantificationSetsResponse.Builder responseBuilder = SearchRnaQuantificationSetsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
+        }
     }
 
 }
