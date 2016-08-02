@@ -656,22 +656,6 @@ public class Client {
         }
 
         /**
-         * Gets a list of {@link FeatureGroup} matching the search criteria.
-         * <p>
-         * <tt>POST /featuregroup/search</tt> accepts a {@link SearchFeatureGroupsRequest}
-         * and returns a {@link SearchFeatureGroupsResponse}.
-         *
-         * @param request protobuf object to be serialized as JSON to the server
-         */
-        public SearchFeatureGroupsResponse searchFeatureGroup(SearchFeatureGroupsRequest request)
-                throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
-            String path = urls.getSearchFeatureGroup();
-            SearchFeatureGroupsResponse.Builder responseBuilder = SearchFeatureGroupsResponse.newBuilder();
-            new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
-            return responseBuilder.build();
-        }
-
-        /**
          * Gets a list of {@link RnaQuantifications} matching the search criteria.
          * <p>
          * <tt>POST /rnaquantifications/search</tt> accepts a {@link SearchRnaQuantificationsRequest}
