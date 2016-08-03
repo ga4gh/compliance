@@ -628,13 +628,26 @@ public class Client {
     public class RnaQuantifications {
         /**
          * Gets a {@link RnaQuantification} by ID.
-         * <tt>GET /rnaquantification/{id}</tt> returns a {@link RnaQuantification}.
+         * <tt>GET /rnaquantifications/{id}</tt> returns a {@link RnaQuantification}.
          *
          * @param id the rna quantification ID
          */
         public RnaQuantification getRnaQuantification(String id) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getGetRnaQuantification();
             RnaQuantification.Builder builder = RnaQuantification.newBuilder();
+            new Get<>(urls.getUrlRoot(), path, id, null, builder, wireTracker).performQuery();
+            return builder.build();
+        }
+
+        /**
+         * Gets a {@link RnaQuantificationSet} by ID.
+         * <tt>GET /rnaquantificationsets/{id}</tt> returns a {@link RnaQuantificationSet}.
+         *
+         * @param id the rna quantification set ID
+         */
+        public RnaQuantificationSet getRnaQuantificationSet(String id) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getGetRnaQuantificationSet();
+            RnaQuantificationSet.Builder builder = RnaQuantificationSet.newBuilder();
             new Get<>(urls.getUrlRoot(), path, id, null, builder, wireTracker).performQuery();
             return builder.build();
         }

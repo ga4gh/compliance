@@ -139,6 +139,10 @@ public interface URLMAPPING {
 
     void setGetRnaQuantification(String getRnaQuantification);
 
+    String getGetRnaQuantificationSet();
+
+    void setGetRnaQuantificationSet(String getRnaQuantificationSet);
+
     String getSearchRnaQuantification();
 
     void setSearchRnaQuantification(String searchRnaQuantification);

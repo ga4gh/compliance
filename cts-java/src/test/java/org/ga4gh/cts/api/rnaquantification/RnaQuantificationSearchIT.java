@@ -25,7 +25,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for <tt>GET /rnaquantification/search</tt>.
+ * Tests for <tt>GET /rnaquantifications/search</tt>.
  */
 @Category(RnaQuantificationTests.class)
 @RunWith(JUnitParamsRunner.class)
@@ -86,9 +86,13 @@ public class RnaQuantificationSearchIT {
     @Test
     public void checkExpectedNumberOfExpressionLevels() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final int expectedNumberOfExpressionLevels = 4;
+        final String rnaQuantificationSetId = Utils.getRnaQuantificationSetId(client);
+        final String rnaQuantificationId = Utils.getRnaQuantificationId(client, rnaQuantificationSetId);
 
         final SearchExpressionLevelsRequest req =
-                SearchExpressionLevelsRequest.newBuilder().build();
+                SearchExpressionLevelsRequest.newBuilder()
+                .setRnaQuantificationId(rnaQuantificationId)
+                .build();
         final SearchExpressionLevelsResponse resp = client.rnaquantifications.searchExpressionLevel(req);
 
         final List<ExpressionLevel> expressionLevels = resp.getExpressionLevelsList();

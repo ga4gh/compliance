@@ -67,6 +67,7 @@ public class URLMAPPINGImpl implements URLMAPPING {
         defaultEndpoints.put("ctk.tgt.getReferenceSets", "referencesets/{id}");
         defaultEndpoints.put("ctk.tgt.getReferencesBases", "references/{id}/bases");
         defaultEndpoints.put("ctk.tgt.getRnaQuantification", "rnaquantifications/{id}");
+        defaultEndpoints.put("ctk.tgt.getRnaQuantificationSet", "rnaquantificationsets/{id}");
 
         defaultEndpoints.put("ctk.tgt.getReadGroupSet", "readgroupsets/{id}");
         defaultEndpoints.put("ctk.tgt.getReadGroup", "readgroups/{id}");
@@ -547,6 +548,14 @@ public class URLMAPPINGImpl implements URLMAPPING {
     @Override
     public void setGetRnaQuantification(String getRnaQuantification) {
         endpoints.put("ctk.tgt.getRnaQuantification", getRnaQuantification);
+    }
+
+    @Override
+    public String getGetRnaQuantificationSet() { return endpoints.get("ctk.tgt.getRnaQuantificationSet"); }
+
+    @Override
+    public void setGetRnaQuantificationSet(String getRnaQuantificationSet) {
+        endpoints.put("ctk.tgt.getRnaQuantificationSet", getRnaQuantificationSet);
     }
 
     @Override
