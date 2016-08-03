@@ -63,6 +63,7 @@ public class URLMAPPINGImpl implements URLMAPPING {
         defaultEndpoints.put("ctk.tgt.searchRnaQuantification", "rnaquantifications/search");
         defaultEndpoints.put("ctk.tgt.searchRnaQuantificationSets", "rnaquantificationsets/search");
         defaultEndpoints.put("ctk.tgt.searchExpressionLevel", "expressionlevels/search");
+        defaultEndpoints.put("ctk.tgt.getExpressionLevel", "expressionlevels/{id}");
         defaultEndpoints.put("ctk.tgt.getReferences", "references/{id}");
         defaultEndpoints.put("ctk.tgt.getReferenceSets", "referencesets/{id}");
         defaultEndpoints.put("ctk.tgt.getReferencesBases", "references/{id}/bases");
@@ -580,6 +581,14 @@ public class URLMAPPINGImpl implements URLMAPPING {
     @Override
     public void setSearchExpressionLevel(String searchExpressionLevel) {
         endpoints.put("ctk.tgt.searchExpressionLevel", searchExpressionLevel);
+    }
+
+    @Override
+    public String getGetExpressionLevel() { return endpoints.get("ctk.tgt.getExpressionLevel"); }
+
+    @Override
+    public void setGetExpressionLevel(String getExpressionLevel) {
+        endpoints.put("ctk.tgt.getExpressionLevel", getExpressionLevel);
     }
 
     @Override

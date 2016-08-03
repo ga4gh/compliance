@@ -155,6 +155,10 @@ public interface URLMAPPING {
 
     void setSearchExpressionLevel(String searchExpressionLevel);
 
+    String getGetExpressionLevel();
+
+    void setGetExpressionLevel(String getExpressionLevel);
+
     Map<String, String> getEndpoints();
 
     void setEndpoints(Map<String, String> endpoints);

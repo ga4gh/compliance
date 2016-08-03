@@ -669,6 +669,21 @@ public class Client {
         }
 
         /**
+         * Gets a {@link ExpressionLevel} by ID
+         * <p>
+         * <tt>GET /expressionlevel/{id}</tt> returns a {@link ExpressionLevel}
+         *
+         * @param id the expression level id
+         */
+        public ExpressionLevel getExpressionLevel(String id)
+                throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getGetExpressionLevel();
+            ExpressionLevel.Builder builder = ExpressionLevel.newBuilder();
+            new Get<>(urls.getUrlRoot(), path, id, null, builder, wireTracker).performQuery();
+            return builder.build();
+        }
+
+        /**
          * Gets a list of {@link RnaQuantifications} matching the search criteria.
          * <p>
          * <tt>POST /rnaquantifications/search</tt> accepts a {@link SearchRnaQuantificationsRequest}
