@@ -8,6 +8,7 @@ import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
+import org.ga4gh.cts.api.Utils;
 
 import ga4gh.RnaQuantificationServiceOuterClass.SearchRnaQuantificationsRequest;
 import ga4gh.RnaQuantificationServiceOuterClass.SearchRnaQuantificationsResponse;
@@ -61,11 +62,12 @@ public class RnaQuantificationSearchIT {
      */
     @Test
     public void checkExpectedNumberOfRnaQuantifications() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
-        final int expectedNumberOfRnaQuantifications = 4;
-
+        final int expectedNumberOfRnaQuantifications = 1;
+        final String rnaQuantificationSetId = Utils.getRnaQuantificationSetId(client);
         final SearchRnaQuantificationsRequest req =
                 SearchRnaQuantificationsRequest.newBuilder()
                         .setDatasetId(TestData.getDatasetId())
+                        .setRnaQuantificationSetId(rnaQuantificationSetId)
                         .build();
         final SearchRnaQuantificationsResponse resp = client.rnaquantifications.searchRnaQuantification(req);
 
