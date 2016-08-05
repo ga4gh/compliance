@@ -139,6 +139,10 @@ public interface URLMAPPING {
 
     void setGetRnaQuantification(String getRnaQuantification);
 
+    String getGetRnaQuantificationSet();
+
+    void setGetRnaQuantificationSet(String getRnaQuantificationSet);
+
     String getSearchRnaQuantification();
 
     void setSearchRnaQuantification(String searchRnaQuantification);
@@ -150,6 +154,10 @@ public interface URLMAPPING {
     String getSearchExpressionLevel();
 
     void setSearchExpressionLevel(String searchExpressionLevel);
+
+    String getGetExpressionLevel();
+
+    void setGetExpressionLevel(String getExpressionLevel);
 
     Map<String, String> getEndpoints();
 

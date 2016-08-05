@@ -578,6 +578,26 @@ public class Utils {
     }
 
     /**
+     * Utility method to fetch the ID of an arbitrary {@link ExpressionLevel}.
+     * @param client the connection to the server
+     * @param rnaQuantificationId the id of the rna quantification
+     * @return the ID of a {@link ExpressionLevel}
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    public static String getExpressionLevelId(Client client, String rnaQuantificationId) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final SearchExpressionLevelsRequest req =
+            SearchExpressionLevelsRequest.newBuilder()
+            .setRnaQuantificationId(rnaQuantificationId)
+            .build();
+        final SearchExpressionLevelsResponse resp = client.rnaquantifications.searchExpressionLevel(req);
+        final List<ExpressionLevel> expressionLevels = resp.getExpressionLevelsList();
+        assertThat(expressionLevels).isNotEmpty();
+        return expressionLevels.get(0).getId();
+    }
+
+    /**
      * Convenience method to catch a {@link GAWrapperException} and cast the return value to that type.
      * <b>Only use this when you're expecting the enclosed code to throw that exception.</b>
      * If the enclosed code doesn't throw the expected {@link GAWrapperException}, this method calls
