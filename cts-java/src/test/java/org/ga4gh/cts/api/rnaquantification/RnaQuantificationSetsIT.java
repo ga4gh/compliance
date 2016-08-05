@@ -40,5 +40,22 @@ public class RnaQuantificationSetsIT {
         assertThat(rnaQuantificationSetFromGet.getId()).isEqualTo(rnaQuantificationSetId);
     }
 
+    /**
+     *
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    @Test
+    public void checkRnaQuantificationSetSearch() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+
+        // search by datasetid
+
+        // search using a bad dataset ID finds nothing
+        // search using a good dataset ID finds something
+        // assert response is well formed
+    }
+
+
 
 }
