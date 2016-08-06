@@ -7,15 +7,11 @@ import junitparams.JUnitParamsRunner;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
-import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
 
 import ga4gh.RnaQuantificationServiceOuterClass.SearchRnaQuantificationsRequest;
 import ga4gh.RnaQuantificationServiceOuterClass.SearchRnaQuantificationsResponse;
-import ga4gh.RnaQuantificationServiceOuterClass.SearchExpressionLevelsRequest;
-import ga4gh.RnaQuantificationServiceOuterClass.SearchExpressionLevelsResponse;
 import ga4gh.RnaQuantificationOuterClass.RnaQuantification;
-import ga4gh.RnaQuantificationOuterClass.ExpressionLevel;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
