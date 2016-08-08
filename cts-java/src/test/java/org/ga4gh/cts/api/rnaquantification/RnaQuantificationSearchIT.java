@@ -7,15 +7,11 @@ import junitparams.JUnitParamsRunner;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.protocols.Client;
-import org.ga4gh.cts.api.TestData;
 import org.ga4gh.cts.api.Utils;
 
 import ga4gh.RnaQuantificationServiceOuterClass.SearchRnaQuantificationsRequest;
 import ga4gh.RnaQuantificationServiceOuterClass.SearchRnaQuantificationsResponse;
-import ga4gh.RnaQuantificationServiceOuterClass.SearchExpressionLevelsRequest;
-import ga4gh.RnaQuantificationServiceOuterClass.SearchExpressionLevelsResponse;
 import ga4gh.RnaQuantificationOuterClass.RnaQuantification;
-import ga4gh.RnaQuantificationOuterClass.ExpressionLevel;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -34,25 +30,6 @@ public class RnaQuantificationSearchIT {
     private static Client client = new Client(URLMAPPING.getInstance());
 
     /**
-     * Helper function to get an rnaQuantificationId from the dataset.
-     *
-     * @throws GAWrapperException if the server finds the request invalid in some way
-     * @throws UnirestException if there's a problem speaking HTTP to the server
-     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
-     */
-    private String getTestDataRnaQuantificationId() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
-        final SearchRnaQuantificationsRequest req =
-                SearchRnaQuantificationsRequest.newBuilder()
-                        .setDatasetId(TestData.getDatasetId())
-                        .build();
-        final SearchRnaQuantificationsResponse resp = client.rnaquantifications.searchRnaQuantification(req);
-
-        final List<RnaQuantification> rnaQuants = resp.getRnaQuantificationsList();
-        assertThat(rnaQuants).isNotEmpty();
-        return rnaQuants.get(0).getId();
-    }
-
-    /**
      * Fetch rna quantifications and count them.  The number must
      * equal what we're expecting by visual examination of the data.
      *
@@ -66,37 +43,12 @@ public class RnaQuantificationSearchIT {
         final String rnaQuantificationSetId = Utils.getRnaQuantificationSetId(client);
         final SearchRnaQuantificationsRequest req =
                 SearchRnaQuantificationsRequest.newBuilder()
-                        .setDatasetId(TestData.getDatasetId())
                         .setRnaQuantificationSetId(rnaQuantificationSetId)
                         .build();
         final SearchRnaQuantificationsResponse resp = client.rnaquantifications.searchRnaQuantification(req);
 
         final List<RnaQuantification> rnaQuants = resp.getRnaQuantificationsList();
         assertThat(rnaQuants).hasSize(expectedNumberOfRnaQuantifications);
-    }
-
-    /**
-     * Fetch expression levels and count them.  The number must
-     * equal what we're expecting by visual examination of the data.
-     *
-     * @throws GAWrapperException if the server finds the request invalid in some way
-     * @throws UnirestException if there's a problem speaking HTTP to the server
-     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
-     */
-    @Test
-    public void checkExpectedNumberOfExpressionLevels() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
-        final int expectedNumberOfExpressionLevels = 4;
-        final String rnaQuantificationSetId = Utils.getRnaQuantificationSetId(client);
-        final String rnaQuantificationId = Utils.getRnaQuantificationId(client, rnaQuantificationSetId);
-
-        final SearchExpressionLevelsRequest req =
-                SearchExpressionLevelsRequest.newBuilder()
-                .setRnaQuantificationId(rnaQuantificationId)
-                .build();
-        final SearchExpressionLevelsResponse resp = client.rnaquantifications.searchExpressionLevel(req);
-
-        final List<ExpressionLevel> expressionLevels = resp.getExpressionLevelsList();
-        assertThat(expressionLevels).hasSize(expectedNumberOfExpressionLevels);
     }
 
 }

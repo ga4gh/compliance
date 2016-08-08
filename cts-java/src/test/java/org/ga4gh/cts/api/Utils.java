@@ -548,7 +548,6 @@ public class Utils {
     public static String getRnaQuantificationId(Client client, String rnaQuantificationSetId) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchRnaQuantificationsRequest req =
                 SearchRnaQuantificationsRequest.newBuilder()
-                        .setDatasetId(TestData.getDatasetId())
                         .setRnaQuantificationSetId(rnaQuantificationSetId)
                         .build();
         final SearchRnaQuantificationsResponse resp = client.rnaquantifications.searchRnaQuantification(req);
