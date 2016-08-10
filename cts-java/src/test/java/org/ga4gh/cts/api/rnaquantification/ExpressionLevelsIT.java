@@ -9,6 +9,8 @@ import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.cts.api.Utils;
 import ga4gh.RnaQuantificationOuterClass.ExpressionLevel;
+import ga4gh.SequenceAnnotationServiceOuterClass.*;
+
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -181,5 +183,27 @@ public class ExpressionLevelsIT {
         assertThat(resp.getExpressionLevels(0).getId()).isNotEqualTo(resp2.getExpressionLevels(0).getId());
 
     }
-
+    /**
+     * Check feature records exist for any feature IDs listed in expression level records.
+     *
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    @Test
+    public void checkFeatureForExpression() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final String rnaQuantificationSetId = Utils.getRnaQuantificationSetId(client);
+        final String rnaQuantificationId = Utils.getRnaQuantificationId(client, rnaQuantificationSetId);
+        final SearchExpressionLevelsRequest req =
+                SearchExpressionLevelsRequest.newBuilder()
+                        .setRnaQuantificationId(rnaQuantificationId)
+                        .build();
+        final SearchExpressionLevelsResponse resp = client.rnaquantifications.searchExpressionLevel(req);
+        assertThat(resp.getExpressionLevelsCount()).isGreaterThan(0);
+        for (ExpressionLevel expressionLevel: resp.getExpressionLevelsList()) {
+            assertThat(client.sequenceAnnotations.getFeature(expressionLevel.getFeatureId()).getId()).isEqualTo(expressionLevel.getFeatureId());
+        }
+        // for every returned expression level get a feature record
+        // assert that the feature returned and expression level feature ID equate
+    }
 }
