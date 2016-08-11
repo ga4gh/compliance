@@ -15,6 +15,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -54,13 +56,14 @@ public class ExpressionLevelsIT {
      */
     @Test
     public void checkExpectedNumberOfExpressionLevels() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
-        final int expectedNumberOfExpressionLevels = 8;
+        final int expectedNumberOfExpressionLevels = 6;  // The threshold defaults to 0 and removes 2 values
         final String rnaQuantificationSetId = Utils.getRnaQuantificationSetId(client);
         final String rnaQuantificationId = Utils.getRnaQuantificationId(client, rnaQuantificationSetId);
 
         final SearchExpressionLevelsRequest req =
                 SearchExpressionLevelsRequest.newBuilder()
                         .setRnaQuantificationId(rnaQuantificationId)
+                        .setPageSize(100)
                         .build();
         final SearchExpressionLevelsResponse resp = client.rnaquantifications.searchExpressionLevel(req);
 
