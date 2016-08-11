@@ -15,8 +15,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -56,7 +54,7 @@ public class ExpressionLevelsIT {
      */
     @Test
     public void checkExpectedNumberOfExpressionLevels() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
-        final int expectedNumberOfExpressionLevels = 4;
+        final int expectedNumberOfExpressionLevels = 8;
         final String rnaQuantificationSetId = Utils.getRnaQuantificationSetId(client);
         final String rnaQuantificationId = Utils.getRnaQuantificationId(client, rnaQuantificationSetId);
 
