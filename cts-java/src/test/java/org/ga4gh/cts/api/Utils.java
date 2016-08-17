@@ -9,6 +9,8 @@ import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsRequest;
 import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsResponse;
 import ga4gh.AlleleAnnotations.VariantAnnotation;
 import ga4gh.AlleleAnnotations.VariantAnnotationSet;
+import ga4gh.RnaQuantificationOuterClass.*;
+import ga4gh.RnaQuantificationServiceOuterClass.*;
 import ga4gh.Reads.*;
 import ga4gh.ReadServiceOuterClass.*;
 import ga4gh.References.*;
@@ -533,6 +535,65 @@ public class Utils {
             result.addAll(resp.getDatasetsList());
         } while (pageToken != null && !pageToken.equals(""));
         return result;
+    }
+
+    /**
+     * Utility method to fetch the ID of an arbitrary {@link RnaQuantification}.
+     * @param client the connection to the server
+     * @return the ID of a {@link RnaQuantification}
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    public static String getRnaQuantificationId(Client client, String rnaQuantificationSetId) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final SearchRnaQuantificationsRequest req =
+                SearchRnaQuantificationsRequest.newBuilder()
+                        .setRnaQuantificationSetId(rnaQuantificationSetId)
+                        .build();
+        final SearchRnaQuantificationsResponse resp = client.rnaquantifications.searchRnaQuantification(req);
+
+        final List<RnaQuantification> rnaQuantifications = resp.getRnaQuantificationsList();
+        assertThat(rnaQuantifications).isNotEmpty();
+        return rnaQuantifications.get(0).getId();
+    }
+
+    /**
+     * Utility method to fetch the ID of an arbitrary {@link RnaQuantificationSet}.
+     * @param client the connection to the server
+     * @return the ID of a {@link RnaQuantificationSet}
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    public static String getRnaQuantificationSetId(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final SearchRnaQuantificationSetsRequest req =
+            SearchRnaQuantificationSetsRequest.newBuilder()
+            .setDatasetId(TestData.getDatasetId())
+            .build();
+        final SearchRnaQuantificationSetsResponse resp = client.rnaquantifications.searchRnaQuantificationSets(req);
+        final List<RnaQuantificationSet> rnaQuantificationSets = resp.getRnaQuantificationSetsList();
+        assertThat(rnaQuantificationSets).isNotEmpty();
+        return rnaQuantificationSets.get(0).getId();
+    }
+
+    /**
+     * Utility method to fetch the ID of an arbitrary {@link ExpressionLevel}.
+     * @param client the connection to the server
+     * @param rnaQuantificationId the id of the rna quantification
+     * @return the ID of a {@link ExpressionLevel}
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    public static String getExpressionLevelId(Client client, String rnaQuantificationId) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final SearchExpressionLevelsRequest req =
+            SearchExpressionLevelsRequest.newBuilder()
+            .setRnaQuantificationId(rnaQuantificationId)
+            .build();
+        final SearchExpressionLevelsResponse resp = client.rnaquantifications.searchExpressionLevel(req);
+        final List<ExpressionLevel> expressionLevels = resp.getExpressionLevelsList();
+        assertThat(expressionLevels).isNotEmpty();
+        return expressionLevels.get(0).getId();
     }
 
     /**

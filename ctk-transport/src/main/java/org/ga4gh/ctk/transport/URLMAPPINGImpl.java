@@ -60,9 +60,15 @@ public class URLMAPPINGImpl implements URLMAPPING {
         defaultEndpoints.put("ctk.tgt.searchVariantSets", "variantsets/search");
         defaultEndpoints.put("ctk.tgt.searchVariants", "variants/search");
         defaultEndpoints.put("ctk.tgt.searchCallSets", "callsets/search");
+        defaultEndpoints.put("ctk.tgt.searchRnaQuantification", "rnaquantifications/search");
+        defaultEndpoints.put("ctk.tgt.searchRnaQuantificationSets", "rnaquantificationsets/search");
+        defaultEndpoints.put("ctk.tgt.searchExpressionLevel", "expressionlevels/search");
+        defaultEndpoints.put("ctk.tgt.getExpressionLevel", "expressionlevels/{id}");
         defaultEndpoints.put("ctk.tgt.getReferences", "references/{id}");
         defaultEndpoints.put("ctk.tgt.getReferenceSets", "referencesets/{id}");
         defaultEndpoints.put("ctk.tgt.getReferencesBases", "references/{id}/bases");
+        defaultEndpoints.put("ctk.tgt.getRnaQuantification", "rnaquantifications/{id}");
+        defaultEndpoints.put("ctk.tgt.getRnaQuantificationSet", "rnaquantificationsets/{id}");
 
         defaultEndpoints.put("ctk.tgt.getReadGroupSet", "readgroupsets/{id}");
         defaultEndpoints.put("ctk.tgt.getReadGroup", "readgroups/{id}");
@@ -535,6 +541,54 @@ public class URLMAPPINGImpl implements URLMAPPING {
     @Override
     public String getGetFeature() {
         return endpoints.get("ctk.tgt.getFeatures");
+    }
+
+    @Override
+    public String getGetRnaQuantification() { return endpoints.get("ctk.tgt.getRnaQuantification"); }
+
+    @Override
+    public void setGetRnaQuantification(String getRnaQuantification) {
+        endpoints.put("ctk.tgt.getRnaQuantification", getRnaQuantification);
+    }
+
+    @Override
+    public String getGetRnaQuantificationSet() { return endpoints.get("ctk.tgt.getRnaQuantificationSet"); }
+
+    @Override
+    public void setGetRnaQuantificationSet(String getRnaQuantificationSet) {
+        endpoints.put("ctk.tgt.getRnaQuantificationSet", getRnaQuantificationSet);
+    }
+
+    @Override
+    public String getSearchRnaQuantification() { return endpoints.get("ctk.tgt.searchRnaQuantification"); }
+
+    @Override
+    public void setSearchRnaQuantification(String searchRnaQuantification) {
+        endpoints.put("ctk.tgt.searchRnaQuantification", searchRnaQuantification);
+    }
+
+    @Override
+    public String getSearchRnaQuantificationSets() { return endpoints.get("ctk.tgt.searchRnaQuantificationSets"); }
+
+    @Override
+    public void setSearchRnaQuantificationSets(String searchRnaQuantificationSets) {
+        endpoints.put("ctk.tgt.searchRnaQuantificationSets", searchRnaQuantificationSets);
+    }
+
+    @Override
+    public String getSearchExpressionLevel() { return endpoints.get("ctk.tgt.searchExpressionLevel"); }
+
+    @Override
+    public void setSearchExpressionLevel(String searchExpressionLevel) {
+        endpoints.put("ctk.tgt.searchExpressionLevel", searchExpressionLevel);
+    }
+
+    @Override
+    public String getGetExpressionLevel() { return endpoints.get("ctk.tgt.getExpressionLevel"); }
+
+    @Override
+    public void setGetExpressionLevel(String getExpressionLevel) {
+        endpoints.put("ctk.tgt.getExpressionLevel", getExpressionLevel);
     }
 
     @Override

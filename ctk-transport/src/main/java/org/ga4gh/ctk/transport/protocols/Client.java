@@ -22,6 +22,8 @@ import ga4gh.Reads.ReadGroupSet;
 import ga4gh.ReferenceServiceOuterClass.*;
 import ga4gh.References.Reference;
 import ga4gh.References.ReferenceSet;
+import ga4gh.RnaQuantificationOuterClass.*;
+import ga4gh.RnaQuantificationServiceOuterClass.*;
 import ga4gh.SequenceAnnotationServiceOuterClass;
 import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeatureSetsRequest;
 import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeatureSetsResponse;
@@ -89,6 +91,14 @@ public class Client {
      * </pre>
      */
     public final References references = new References();
+
+    /**
+     * Provides access to rna quantification-related methods.  For example,
+     * <pre>
+     *     myClient.rnaquantification.searchRnaQuantification(...);
+     * </pre>
+     */
+    public final RnaQuantifications rnaquantifications = new RnaQuantifications();
 
     /**
      * Provides access to variantannotations-related methods.  For example,
@@ -607,6 +617,103 @@ public class Client {
             return builder.build();
         }
 
+    }
+
+    /**
+     * Inner class holding all rna quantification-related methods.  Gathering them in an inner class like
+     * this
+     * makes it a little easier for someone writing tests to use their IDE's auto-complete
+     * to type method names.
+     */
+    public class RnaQuantifications {
+        /**
+         * Gets a {@link RnaQuantification} by ID.
+         * <tt>GET /rnaquantifications/{id}</tt> returns a {@link RnaQuantification}.
+         *
+         * @param id the rna quantification ID
+         */
+        public RnaQuantification getRnaQuantification(String id) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getGetRnaQuantification();
+            RnaQuantification.Builder builder = RnaQuantification.newBuilder();
+            new Get<>(urls.getUrlRoot(), path, id, null, builder, wireTracker).performQuery();
+            return builder.build();
+        }
+
+        /**
+         * Gets a {@link RnaQuantificationSet} by ID.
+         * <tt>GET /rnaquantificationsets/{id}</tt> returns a {@link RnaQuantificationSet}.
+         *
+         * @param id the rna quantification set ID
+         */
+        public RnaQuantificationSet getRnaQuantificationSet(String id) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getGetRnaQuantificationSet();
+            RnaQuantificationSet.Builder builder = RnaQuantificationSet.newBuilder();
+            new Get<>(urls.getUrlRoot(), path, id, null, builder, wireTracker).performQuery();
+            return builder.build();
+        }
+
+        /**
+         * Gets a list of {@link ExpressionLevel} matching the search criteria.
+         * <p>
+         * <tt>POST /expressionlevel/search</tt> accepts a {@link SearchExpressionLevelsRequest}
+         * and returns a {@link SearchExpressionLevelsResponse}.
+         *
+         * @param request protobuf object to be serialized as JSON to the server
+         */
+        public SearchExpressionLevelsResponse searchExpressionLevel(SearchExpressionLevelsRequest request)
+                throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getSearchExpressionLevel();
+            SearchExpressionLevelsResponse.Builder responseBuilder = SearchExpressionLevelsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
+        }
+
+        /**
+         * Gets a {@link ExpressionLevel} by ID
+         * <p>
+         * <tt>GET /expressionlevel/{id}</tt> returns a {@link ExpressionLevel}
+         *
+         * @param id the expression level id
+         */
+        public ExpressionLevel getExpressionLevel(String id)
+                throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getGetExpressionLevel();
+            ExpressionLevel.Builder builder = ExpressionLevel.newBuilder();
+            new Get<>(urls.getUrlRoot(), path, id, null, builder, wireTracker).performQuery();
+            return builder.build();
+        }
+
+        /**
+         * Gets a list of {@link RnaQuantifications} matching the search criteria.
+         * <p>
+         * <tt>POST /rnaquantifications/search</tt> accepts a {@link SearchRnaQuantificationsRequest}
+         * and returns a {@link SearchRnaQuantificationsResponse}.
+         *
+         * @param request protobuf object to be serialized as JSON to the server
+         */
+        public SearchRnaQuantificationsResponse searchRnaQuantification(SearchRnaQuantificationsRequest request)
+                throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getSearchRnaQuantification();
+            SearchRnaQuantificationsResponse.Builder responseBuilder = SearchRnaQuantificationsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
+        }
+
+        /**
+         * Gets a list of {@link RnaQuantificationSets} matching the search criteria.
+         * <p>
+         * <tt>POST /rnaquantificationsets/search</tt> accepts a {@link SearchRnaQuantificationSetsRequest}
+         * and returns a {@link SearchRnaQuantificationSetsResponse}.
+         *
+         * @param request protobuf object to be serialized as JSON to the server
+         */
+        public SearchRnaQuantificationSetsResponse searchRnaQuantificationSets(SearchRnaQuantificationSetsRequest request)
+                throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getSearchRnaQuantificationSets();
+            SearchRnaQuantificationSetsResponse.Builder responseBuilder = SearchRnaQuantificationSetsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
+        }
     }
 
 }

@@ -1,3 +1,8 @@
+*~
+*.swp
+*.swo
+*.db
+
 # Created by .ignore support plugin (hsz.mobi), updated by hand
 ### Java template
 *.class
@@ -101,3 +106,7 @@ crashlytics-build.properties
 */testresults/
 /ctk-domain/src/main/assertj-assertions/*
 /ctk-transport/src/main/assertj-assertions/*
+
+# Eclipse
+.classpath
+.project
