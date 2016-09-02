@@ -43,10 +43,17 @@ public class DatasetsSearchIT {
 
         assertThat(datasets).isNotNull();
         assertThat(datasets.size()).isGreaterThanOrEqualTo(1);
-
+        final Dataset dataset = datasets
+                .stream()
+                .filter(ds -> ds.getId().equals(TestData.getDatasetId()))
+                .findFirst().get();
+        assertThat(dataset.getName()).isNotNull();
+        assertThat(dataset.getInfo().get("version")).isNotNull();
+        assertThat(dataset.getDescription()).isNotNull();
         // check that there is exactly one dataset with the ID of the test data
         assertThat(datasets.stream().filter(ds -> ds.getId().equals(TestData.getDatasetId())).count())
                 .isEqualTo(1);
+
     }
 
     /**
