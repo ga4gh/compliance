@@ -303,7 +303,7 @@ public class GenotypePhenotypeSearchIT implements CtkLogs {
             .newBuilder()
             .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
             .setDescription(TestData.PHENOTYPE_DESCRIPTION_MELANOMA)
-            .setAgeOfOnSet(ontologyterm1)
+            .setAgeOfOnset(ontologyterm1)
             .build();
         SearchPhenotypesResponse response = client.genotypePhenotype.searchPhenotypes(request);
         assertThat(response.getPhenotypesList()).isNotNull();

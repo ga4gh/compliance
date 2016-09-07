@@ -1,0 +1,2 @@
+rna_quant_name	filename	type	feature_set_name	read_group_set_name	description	programs
+ENCFF786GKV	rna_brca1.tsv	rsem	gencodev19	HG00096	ENCODE test data from ENCSR000AEC	

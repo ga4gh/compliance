@@ -73,6 +73,17 @@ For example, to obtain compressed and indexed files for use with the reference s
 Please refer to [samtools](http://www.htslib.org/doc/samtools.html) and [tabix](http://www.htslib.org/doc/tabix.html) 
 for any further details on converting the data to your preferred indexed binary format.
 
+## The RNA Test Dataset
+
+The quantification data in this directory is extracted from the [ENCODE] (https://www.encodeproject.org/projects/ENCSR000AJW/)
+RNA Working Group evaluation dataset.
+
+It consists of long (>200bp) poly-adenelyated and total RNA from K562 and GM12878 growth sources.  In the full dataset the
+fastqs produced in each participating lab were cross-processed by the other three labs for comparison.
+
+For each dataset (i.e. set of read data) the following files are provides:
+* `<dataset>_expression.tsv` - the feature level quantifications (gene level in these datasets)
+* `<dataset>_rnasqe.tsv` - the rna quantification metadata
 
 ## License and contact
 

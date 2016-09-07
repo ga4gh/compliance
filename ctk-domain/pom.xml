@@ -18,8 +18,8 @@
         <dependency>
             <!--TODO - make switch between local and github driven by config variable-->
             <!--Uncomment to use local schema build-->
-            <!--<groupId>org.ga4gh</groupId>-->
-            <!--<artifactId>ga4gh-schemas</artifactId>-->
+            <!-- <groupId>org.ga4gh</groupId>
+            <artifactId>ga4gh-schemas</artifactId> -->
             <!--Comment to use local schema build-->
             <groupId>com.github.ga4gh</groupId>
             <artifactId>schemas</artifactId>
@@ -95,8 +95,8 @@
                                 <artifactItem>
                                     <!--TODO - make switch between local and github driven by config variable-->
                                     <!--Uncomment to use local schema build-->
-                                    <!--<groupId>org.ga4gh</groupId>-->
-                                    <!--<artifactId>ga4gh-schemas</artifactId>-->
+                                    <!-- <groupId>org.ga4gh</groupId>
+                                    <artifactId>ga4gh-schemas</artifactId> -->
                                     <!--Comment to use local schema build-->
                                     <groupId>com.github.ga4gh</groupId>
                                     <artifactId>schemas</artifactId>
