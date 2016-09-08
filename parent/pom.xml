@@ -29,7 +29,7 @@
 
 
     <properties>
-        <ga4gh.schema.version>master-SNAPSHOT</ga4gh.schema.version>
+        <ga4gh.schema.version>g2p-SNAPSHOT</ga4gh.schema.version>
         <ctk.tgt.urlRoot>http://localhost:8000</ctk.tgt.urlRoot>
         <!-- Controls skipping of cts-java IT tests during build; skip the tests by passing
              a command line parameter, e.g. mvn -Dcts.skipITs=true install.  Run them by default. -->
