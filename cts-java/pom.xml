@@ -17,7 +17,12 @@
 
     <dependencies>
 
-        <!--TODO - make switch between local and github driven by config variable-->
+        <!--TODO - make switch between local and github driven by config variable
+        Currently, the maven build system relies on a github hosted schema.  This can be cumbersome
+        when implementing schema changes.  The ga4gh/schemas project has a maven project which will
+        install the schemas in the local maven repo at org.ga4gh.ga4gh-schemas.  By having a dependency
+        on org.ga4gh the build will use the artifact from the local repo.
+        -->
         <!--Uncomment to use local schema build-->
         <!--<dependency>-->
         <!--<groupId>org.ga4gh</groupId>-->
