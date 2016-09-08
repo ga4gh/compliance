@@ -65,7 +65,7 @@ public class GenotypePhenotypeSearchIT implements CtkLogs {
       */
      @Test
      public void testGenotypesSearchByNameKIT() throws   InvalidProtocolBufferException, UnirestException, GAWrapperException  {
-         final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
+
          SearchFeaturesRequest request = SearchFeaturesRequest
                  .newBuilder()
                  .setFeatureSetId(Utils.getFeatureG2PSetId(client))
@@ -103,7 +103,6 @@ public class GenotypePhenotypeSearchIT implements CtkLogs {
     }
 
     /**
-     * TODO
      * Checks that evidence level is present, searches by drug name.
      *
      * @throws GAWrapperException if the server finds the request invalid in some way
@@ -113,7 +112,19 @@ public class GenotypePhenotypeSearchIT implements CtkLogs {
     @Test
     public void testGenotypePhenotypeSearchEnsureEvidence() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         // simulate user interacting with sequenceAnnotations
-        final String obfuscated = "WyJkYXRhc2V0MSIsImNnZCIsImh0dHA6Ly9vaHN1LmVkdS9jZ2QvMjdkMjE2OWMiXQ";
+        SearchFeaturesRequest featuresRequest = SearchFeaturesRequest
+                .newBuilder()
+                .setFeatureSetId(Utils.getFeatureG2PSetId(client))
+                .setName(TestData.FEATURE_NAME)
+                .build();
+
+        SequenceAnnotationServiceOuterClass.SearchFeaturesResponse featuresResponse = client.sequenceAnnotations.searchFeatures(featuresRequest);
+        assertThat(featuresResponse.getFeaturesList()).isNotNull() ;
+        assertThat(featuresResponse.getFeaturesList()).isNotEmpty() ;
+        assertThat(featuresResponse.getFeaturesList().size()).isEqualTo(3) ;
+
+        final String obfuscated = featuresResponse.getFeaturesList().get(2).getId(); //"WyJkYXRhc2V0MSIsImNnZCIsImh0dHA6Ly9vaHN1LmVkdS9jZ2QvMjdkMjE2OWMiXQ";
+
         // use obfuscated featureId in G2P request
         final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
         GenotypePhenotypeServiceOuterClass.SearchGenotypePhenotypeRequest request = GenotypePhenotypeServiceOuterClass.SearchGenotypePhenotypeRequest
@@ -330,84 +341,4 @@ public class GenotypePhenotypeSearchIT implements CtkLogs {
         assertThat(response.getPhenotypesList()).isEmpty();
     }
 
-    // /**
-    //  * Search for Feature , using for specific external identifier.  NOT IMPLEMENTED PER SCHEMA CHANGES- NOT SUPPORTED IN SEQUENCE ANNOTATIONS
-    //  * @throws AvroRemoteException if there's an unanticipated error
-    //  */
-    // @Test
-    // public void simpleFeatureSearchExternalIdentifier() throws AvroRemoteException {
-    //     final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
-    //     SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest
-    //             .newBuilder()
-    //             .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
-    //             .build();
-    //     ExternalIdentifier id = new ExternalIdentifier();
-    //     id.setDatabase(TestData.FEATURE_DB);
-    //     id.setIdentifier(TestData.FEATURE_DB_ID);
-    //     id.setVersion(TestData.FEATURE_DB_VERSION);
-    //     List<ExternalIdentifier> ids = new ArrayList<>();
-    //     ids.add(id) ;
-    //     ExternalIdentifierQuery feature = new ExternalIdentifierQuery();
-    //     feature.setIds(ids);
-    //     request.setFeature(feature);
-    //     SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
-    //     assertThat(response.getAssociations()).isNotNull() ;
-    //     assertThat(response.getAssociations().size()).isEqualTo(1);
-    // }
-
-
-//    /**
-//     * Simple search for Feature, test page size = null, expects more than one result in the page.
-//     *
-//     * @throws GAWrapperException if the server finds the request invalid in some way
-//     * @throws UnirestException if there's a problem speaking HTTP to the server
-//     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
-//     */
-//    @Test
-//    public void testGenotypePhenotypeSearchFeaturePagingMore() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
-//        final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
-//        SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest
-//                .newBuilder()
-//                .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
-//                .build();
-//        request.setReferenceName(TestData.FEATURE_NAME);
-//        SearchGenotypesResponse response = client.genotypePhenotype.searchGenotypes(request);
-//        assertThat(response.getGenotypes()).isNotNull();
-//        assertThat(response.getGenotypes().size()).isGreaterThan(1);
-//        assertThat(response.getNextPageToken().isEqualTo(''));
-//    }
-//
-//    /**
-//     * Simple search for Feature, test page size = 1, find all, expects a single result per page.
-//     *
-//     * @throws GAWrapperException if the server finds the request invalid in some way
-//     * @throws UnirestException if there's a problem speaking HTTP to the server
-//     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
-//     */
-//    @Test
-//    public void testGenotypePhenotypeSearchFeaturePagingAll() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
-//        final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
-//        SearchGenotypePhenotypeRequest request = SearchGenotypePhenotypeRequest
-//                                                    .newBuilder()
-//                                                    .setPhenotypeAssociationSetId(phenotypeAssociationSetId)
-//                                                    .build();
-//        request.setReferenceName(TestData.FEATURE_NAME);
-//        request.setPageSize(1);
-//        SearchGenotypePhenotypeResponse response = client.genotypePhenotype.searchGenotypePhenotype(request);
-//        assertThat(response.getAssociations()).isNotNull() ;
-//        assertThat(response.getAssociations().size()).isEqualTo(1);
-//        while(response.getNextPageToken() != null) {
-//            System.err.println(response.getNextPageToken());
-//            String previous_id = response.getAssociations().get(0).getId();
-//            request = SearchGenotypePhenotypeRequest.newBuilder().setPhenotypeAssociationSetId(phenotypeAssociationSetId).build();
-//            request.setFeature(TestData.FEATURE_NAME);
-//            request.setPageSize(1);
-//            request.setPageToken(response.getNextPageToken());
-//            response = client.genotypePhenotype.searchGenotypePhenotype(request);
-//            if (response.getNextPageToken() != null ) {
-//                assertThat(response.getAssociations()).isNotEmpty();
-//                assertThat(previous_id).isNotEqualTo(response.getAssociations().get(0).getId());
-//            }
-//        }
-//    }
 }
