@@ -31,7 +31,7 @@ public class TestData {
      * The default ID of the dataset that holds the test data.  We use something readable so the
      * meaning is clear, but in reality the value of this is unlikely to be human-readable.
      */
-    public static final String DEFAULT_DATASET_ID = "WyJicmNhMSJd";
+    public static final String DEFAULT_DATASET_ID = "compliance-dataset" ;
 
     /**
      * The name of the Java system property that sets the ID of the compliance dataset.
