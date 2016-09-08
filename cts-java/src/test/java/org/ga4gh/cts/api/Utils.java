@@ -848,9 +848,9 @@ public class Utils {
     }
 
     /**
-     * Utility method to fetch the ID of an arbitrary {@link PhenotypeAssociationSet}.
+     * Utility method to fetch the ID of an arbitrary {@link Dataset}.
      * @param client the connection to the server
-     * @return the ID of a {@link PhenotypeAssociationSet}
+     * @return the ID of a {@link Dataset}
      * @throws GAWrapperException if the server finds the request invalid in some way
      * @throws UnirestException if there's a problem speaking HTTP to the server
      * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
