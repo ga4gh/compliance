@@ -754,6 +754,12 @@ public class Client {
             return builder.build();
         }
 
+        /**
+         * Gets a list of {@link FeaturePhenotypeAssociation  } matching the search criteria. <p> <tt>POST /genotypephenotypes/search </tt> accepts a {@link
+         * SearchGenotypePhenotypeRequest} and returns a {@link SearchGenotypePhenotypeResponse}.
+         *
+         * @param request the {@link SearchGenotypePhenotypeRequest} we'll issue
+         */
         public SearchGenotypePhenotypeResponse searchGenotypePhenotypes(SearchGenotypePhenotypeRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getSearchGenotypePhenotype();
             assert( path != null );
@@ -762,6 +768,12 @@ public class Client {
             return builder.build();
         }
 
+        /**
+         * Gets a list of {@link PhenotypeAssociationSet  } matching the search criteria. <p> <tt>POST /phenotypeassociationsets/search </tt> accepts a {@link
+         * SearchPhenotypeAssociationSetsRequest} and returns a {@link SearchPhenotypeAssociationSetsResponse}.
+         *
+         * @param request the {@link SearchPhenotypeAssociationSetsRequest} we'll issue
+         */
         public SearchPhenotypeAssociationSetsResponse searchPhenotypeAssociationSets(SearchPhenotypeAssociationSetsRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getSearchPhenotypeAssociationSets();
             assert( path != null );
