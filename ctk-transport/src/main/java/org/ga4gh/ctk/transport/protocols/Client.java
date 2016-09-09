@@ -755,7 +755,7 @@ public class Client {
         }
 
         /**
-         * Gets a list of {@link FeaturePhenotypeAssociation  } matching the search criteria. <p> <tt>POST /genotypephenotypes/search </tt> accepts a {@link
+         * Gets a list of {@link FeaturePhenotypeAssociation  } matching the search criteria. <p> <tt>POST /featurephenotypeassociations/search </tt> accepts a {@link
          * SearchGenotypePhenotypeRequest} and returns a {@link SearchGenotypePhenotypeResponse}.
          *
          * @param request the {@link SearchGenotypePhenotypeRequest} we'll issue
