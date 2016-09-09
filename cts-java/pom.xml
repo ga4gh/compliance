@@ -41,12 +41,6 @@
             <groupId>org.ga4gh</groupId>
             <artifactId>ctk-domain</artifactId>
             <version>0.6.0a3</version>
-            <exclusions>
-                <exclusion>  <!-- declare the exclusion here -->
-                    <groupId>com.github.ga4gh</groupId>
-                    <artifactId>schemas</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.ga4gh</groupId>
