@@ -474,13 +474,9 @@ public class Client {
          * @throws UnirestException if there's a problem speaking HTTP to the server
          * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
-        public ListReferenceBasesResponse getReferenceBases(String id, ListReferenceBasesRequest request) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        public ListReferenceBasesResponse getReferenceBases(ListReferenceBasesRequest request) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
             ListReferenceBasesResponse.Builder responseBuilder = ListReferenceBasesResponse.newBuilder();
-            final Map<String, Object> params = new HashMap<>();
-            putInMapIfValueNotNull(params, "start", request.getStart());
-            putInMapIfValueNotNull(params, "end", request.getEnd());
-            putInMapIfValueNotNull(params, "pageToken", request.getPageToken());
-            new Get<>(urls.getUrlRoot(), urls.getSearchReferenceBases(), id, params, responseBuilder, wireTracker).performQuery();
+            new Post<>(urls.getUrlRoot(), urls.getSearchReferenceBases(), request, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
         }
     }

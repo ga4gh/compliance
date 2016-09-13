@@ -15,7 +15,7 @@ import org.junit.experimental.categories.Category;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test the <tt>/references/{id}/bases</tt> paging behavior.
+ * Test the <tt>/listreferencebases</tt> paging behavior.
  *
  * @author Herb Jellinek
  */
@@ -27,7 +27,7 @@ public class ReferenceBasesPagingIT {
     /**
      * Check that we can walk by single characters through the bases
      * we receive from
-     * {@link org.ga4gh.ctk.transport.protocols.Client.References#getReferenceBases(String, ListReferenceBasesRequest)}.
+     * {@link org.ga4gh.ctk.transport.protocols.Client.References#getReferenceBases(ListReferenceBasesRequest)}.
      *
      * @throws GAWrapperException if the server finds the request invalid in some way
      * @throws UnirestException if there's a problem speaking HTTP to the server
@@ -42,9 +42,10 @@ public class ReferenceBasesPagingIT {
         final long sequenceEnd = 15L;
 
         final ListReferenceBasesRequest req = ListReferenceBasesRequest.newBuilder()
+                .setReferenceId(refId)
                 .setStart(sequenceStart).setEnd(sequenceEnd)
                 .build();
-        final ListReferenceBasesResponse resp = client.references.getReferenceBases(refId, req);
+        final ListReferenceBasesResponse resp = client.references.getReferenceBases(req);
         final String expectedSequence = resp.getSequence();
         assertThat(expectedSequence).hasSize((int)(sequenceEnd - sequenceStart));
 
@@ -53,10 +54,11 @@ public class ReferenceBasesPagingIT {
         for (char expectedChar : expectedSequence.toCharArray()) {
             final ListReferenceBasesRequest pageReq =
                     ListReferenceBasesRequest.newBuilder()
-                                             .setStart(offset).setEnd(offset + 1)
-                                             .build();
+                            .setReferenceId(refId)
+                            .setStart(offset).setEnd(offset + 1)
+                            .build();
             final ListReferenceBasesResponse pageResp =
-                    client.references.getReferenceBases(refId, pageReq);
+                    client.references.getReferenceBases(pageReq);
             final String sequence = pageResp.getSequence();
             assertThat(sequence).hasSize(1);
             assertThat(sequence.charAt(0)).isEqualTo(expectedChar);
@@ -77,15 +79,16 @@ public class ReferenceBasesPagingIT {
         final String refId = Utils.getValidReferenceId(client);
 
         final ListReferenceBasesRequest req = ListReferenceBasesRequest.newBuilder()
-                                                                       .setStart(TestData.REFERENCE_START)
-                                                                       .build();
-        final ListReferenceBasesResponse resp = client.references.getReferenceBases(refId, req);
+                .setReferenceId(refId)
+                .setStart(TestData.REFERENCE_START)
+                .build();
+        final ListReferenceBasesResponse resp = client.references.getReferenceBases(req);
         return resp.getSequence();
     }
 
     /**
      * Check that we can request a sequence of bases from
-     * {@link org.ga4gh.ctk.transport.protocols.Client.References#getReferenceBases(String,
+     * {@link org.ga4gh.ctk.transport.protocols.Client.References#getReferenceBases(
      * ListReferenceBasesRequest)}
      * using a size equal to the size of the full sequence, and receive the full sequence.
      *
@@ -102,7 +105,7 @@ public class ReferenceBasesPagingIT {
 
     /**
      * Check that if we request a sequence of bases from
-     * {@link org.ga4gh.ctk.transport.protocols.Client.References#getReferenceBases(String,
+     * {@link org.ga4gh.ctk.transport.protocols.Client.References#getReferenceBases(
      * ListReferenceBasesRequest)}
      * using a size larger than the full sequence, it fails with an exception with HTTP status
      * "Requested Range Not Satisfiable."
@@ -132,7 +135,7 @@ public class ReferenceBasesPagingIT {
     /**
      * Check that we receive expected results when we request a single
      * chunk of bases from zero to <tt>chunkSize</tt> from
-     * {@link org.ga4gh.ctk.transport.protocols.Client.References#getReferenceBases(String,
+     * {@link org.ga4gh.ctk.transport.protocols.Client.References#getReferenceBases(
      * ListReferenceBasesRequest)}
      * using <tt>chunkSize</tt> as the sequence length.
      *
@@ -148,10 +151,11 @@ public class ReferenceBasesPagingIT {
         final long sequenceStart = 0L;
 
         final ListReferenceBasesRequest req = ListReferenceBasesRequest.newBuilder()
-                                                                       .setStart(sequenceStart)
-                                                                       .setEnd(chunkSize)
-                                                                       .build();
-        final ListReferenceBasesResponse resp = client.references.getReferenceBases(refId, req);
+                .setReferenceId(refId)
+                .setStart(sequenceStart)
+                .setEnd(chunkSize)
+                .build();
+        final ListReferenceBasesResponse resp = client.references.getReferenceBases(req);
         final String sequence = resp.getSequence();
         assertThat(sequence).isEqualTo(expectedSequence);
     }
