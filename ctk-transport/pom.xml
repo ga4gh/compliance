@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.ga4gh</groupId>
         <artifactId>ctk-parent</artifactId>
-        <version>0.6.0a3</version>
+        <version>${compliance.version}</version>
         <relativePath>../parent</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -96,15 +96,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.ga4gh</groupId>
-            <artifactId>schemas</artifactId>
-            <version>${ga4gh.schema.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.ga4gh</groupId>
             <artifactId>ctk-domain</artifactId>
-            <version>0.6.0a3</version>
+            <version>${compliance.version}</version>
         </dependency>
 
         <!-- do we want to put slf4j-log4j12.jar on the path? or is OK it's supplied at runtime?-->

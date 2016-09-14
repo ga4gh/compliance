@@ -23,13 +23,13 @@
     <description>CLI app to drive tests of GA4GH data server v0.5.1</description>
 
     <artifactId>ctk-cli</artifactId>
-    <version>0.6.0a3</version>
+    <version>${compliance.version}</version>
     <packaging>jar</packaging>
 
     <parent>
         <groupId>org.ga4gh</groupId>
         <artifactId>ctk-parent</artifactId>
-        <version>0.6.0a3</version>
+        <version>${compliance.version}</version>
         <relativePath>../parent</relativePath>
     </parent>
     <!--
@@ -149,19 +149,14 @@
             <artifactId>bcel</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.ga4gh</groupId>
-            <artifactId>schemas</artifactId>
-            <version>${ga4gh.schema.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.ga4gh</groupId>
             <artifactId>ctk-transport</artifactId>
-            <version>0.6.0a3</version>
+            <version>${compliance.version}</version>
         </dependency>
         <dependency>
             <groupId>org.ga4gh</groupId>
             <artifactId>ctk-testrunner</artifactId>
-            <version>0.6.0a3</version>
+            <version>${compliance.version}</version>
         </dependency>
 
     </dependencies>

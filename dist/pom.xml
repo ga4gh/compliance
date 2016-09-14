@@ -5,7 +5,7 @@
     <parent>
         <artifactId>ctk-parent</artifactId>
         <groupId>org.ga4gh</groupId>
-        <version>0.6.0a3</version>
+        <version>${compliance.version}</version>
         <relativePath>../parent</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -26,23 +26,23 @@
         <dependency>
             <groupId>org.ga4gh</groupId>
             <artifactId>ctk-cli</artifactId>
-            <version>0.6.0a3</version>
+            <version>${compliance.version}</version>
         </dependency>
         <dependency>
             <groupId>org.ga4gh</groupId>
             <artifactId>ctk-server</artifactId>
-            <version>0.6.0a3</version>
+            <version>${compliance.version}</version>
         </dependency>
         <dependency>
             <groupId>org.ga4gh</groupId>
             <artifactId>cts-java</artifactId>
-            <version>0.6.0a3</version>
+            <version>${compliance.version}</version>
             <classifier>tests</classifier>
         </dependency>
         <dependency>
-            <groupId>com.github.ga4gh</groupId>
-            <artifactId>schemas</artifactId>
-            <version>${ga4gh.schema.version}</version>
+            <groupId>${ga4gh.schemas.groupId}</groupId>
+            <artifactId>${ga4gh.schemas.artifactId}</artifactId>
+            <version>${ga4gh.schemas.version}</version>
         </dependency>
     </dependencies>
 

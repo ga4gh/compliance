@@ -5,23 +5,22 @@
 
     <groupId>org.ga4gh</groupId>
     <artifactId>ctk-server</artifactId>
-    <version>0.6.0a3</version>
+    <version>${compliance.version}</version>
     <packaging>jar</packaging>
 
     <name>CTK Web Server</name>
     <description>Server wrapper for CTK</description>
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.3.0.M2</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <artifactId>ctk-parent</artifactId>
+        <groupId>org.ga4gh</groupId>
+        <version>${compliance.version}</version>
+        <relativePath>../parent</relativePath>
     </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <ga4gh.schema.version>master-SNAPSHOT</ga4gh.schema.version>
         <ctk.tgt.urlRoot>http://localhost:8000</ctk.tgt.urlRoot>
 
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -30,7 +29,7 @@
         <ant.version>1.9.5</ant.version>
         <assertj.core.version>3.1.0</assertj.core.version>
         <assertj.generator.version>1.6.0</assertj.generator.version>
-        <bcel.version>6.0-SNAPSHOT</bcel.version>
+        <bcel.version>6.0</bcel.version>
         <gson.version>2.3.1</gson.version>
         <guava.version>18.0</guava.version>
         <httpasyncclient.version>4.1</httpasyncclient.version>
@@ -81,22 +80,17 @@
         <dependency>
             <groupId>org.ga4gh</groupId>
             <artifactId>ctk-testrunner</artifactId>
-            <version>0.6.0a3</version>
+            <version>${compliance.version}</version>
         </dependency>
         <dependency>
             <groupId>org.ga4gh</groupId>
             <artifactId>ctk-domain</artifactId>
-            <version>0.6.0a3</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.ga4gh</groupId>
-            <artifactId>schemas</artifactId>
-            <version>${ga4gh.schema.version}</version>
+            <version>${compliance.version}</version>
         </dependency>
         <dependency>
             <groupId>org.ga4gh</groupId>
             <artifactId>ctk-transport</artifactId>
-            <version>0.6.0a3</version>
+            <version>${compliance.version}</version>
         </dependency>
         <!-- use tap4j to get Test Anything Protocol support -->
         <dependency>

@@ -1,82 +1,17 @@
 # Updating the Schemas
 
-When the [schemas](http://github.com/ga4gh/schemas) change, so must the The Compliance Test Kit.  It does not automatically
-sync with the [Schemas repo](http://github.com/ga4gh/schemas); we do that by hand.
+This software uses [jitpack](https://jitpack.io) to allow the GA4GH schemas repository to be added as a maven dependency. By default, the current schemas on the GA4GH github `master` branch.
 
-This is a quick description of the steps to follow to update the schemas contained in the test kit, and then to
-update the tests and test infrastructure to match.
+This setting can be overridden by editing `parent/pom.xml`. To point to a personal fork, simply change the line for the dependencies `groupId`.
 
-## Assumptions
+        <ga4gh.schemas.groupId>com.github.ga4gh</ga4gh.schemas.groupId>
 
-We assume the following:
+Will then become:
 
-- You have a local copy of the `ga4gh/schemas` repository stored in a local directory called
-`schemas`.
+        <ga4gh.schemas.groupId>com.github.david4096</ga4gh.schemas.groupId>
 
-- Your working copy of the Compliance Test Kit is stored in the directory `compliance`.
+Which points to the user `david4096`, instead of the GA4GH organization's fork. To use a specific branch from that fork, change the next property, `schemas.version`, to point at the branch name appended by the string "-SNAPSHOT".
 
-- You're using a Unixesque shell (command interpreter).
+        <ga4gh.schemas.version>dev-SNAPSHOT</ga4gh.schemas.version>
 
-- You have the [Maven](https://maven.apache.org/) command line program `mvn` installed.
-
-## Procedure
-
-### Install the Maven command line program
-
-If necessary, install Maven.  Execute this command to see if you already have it:
-
-    $ which mvn
-
-If the `which` program produces any output (e.g. `/usr/local/bin/mvn`), it's installed.  Otherwise...
-
-On OS X, you can use Brew to do it:
-
-    $ brew install maven
-
-On Ubuntu:
-
-    $ sudo apt-get install maven
-
-On Fedora/Redhat:
-
-    $ sudo yum install maven
-
-### Replace the Schema Files
-
-Remove all old schema (`.avdl`) files from the compliance project:
-
-    $ rm compliance/ctk-schemas/src/main/resources/avro/*.avdl
-
-Copy the new schema files from `schemas` to `compliance`:
-
-    $ cp schemas/src/main/resources/avro/*.avdl compliance/ctk-schemas/src/main/resources/avro
-
-### Clean the `compliance` project
-
-Change directories to the root of the `compliance` project and remove all compiled output.
-
-    $ cd compliance
-    $ mvn clean
-
-### Pull in project dependencies
-
-    $ (cd parent; mvn install)
-
-### Remove the source code generated for the previous Schemas version and generate it again
-
-    $ (cd ctk-schemas; mvn clean && mvn install)
-
-### Build everything!
-
-If everything went well in the previous steps, you're ready to compile the tests.  This is when you discover
-how the changes have affected the tests.
-
-    $ mvn package
-
-## Summary
-
-We detailed the steps required to update the schemas and compile the Compliance Test Kit.
-
-We did __not__ discuss how to handle the effects of the many different types of schema changes, as that's well
-beyond the scope of this document.
-
+This functionality can also be used to point to specific commit hashes or releases. For more information visit [jitpack](https://jitpack.io).

@@ -6,13 +6,13 @@
 
     <groupId>org.ga4gh</groupId>
     <artifactId>ctk-testrunner</artifactId>
-    <version>0.6.0a3</version>
+    <version>${compliance.version}</version>
     <name>CTK Test Runner</name>
     <description>Test-running module (not self-executable, requires a launcher)</description>
     <parent>
         <groupId>org.ga4gh</groupId>
         <artifactId>ctk-parent</artifactId>
-        <version>0.6.0a3</version>
+        <version>${compliance.version}</version>
         <relativePath>../parent</relativePath>
     </parent>
 
@@ -105,15 +105,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.ga4gh</groupId>
-            <artifactId>schemas</artifactId>
-            <version>${ga4gh.schema.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.ga4gh</groupId>
             <artifactId>ctk-transport</artifactId>
-            <version>0.6.0a3</version>
+            <version>${compliance.version}</version>
         </dependency>
         <!-- lombok saves us some typing in the COnfig class -->
         <dependency>
