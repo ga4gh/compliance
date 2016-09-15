@@ -9,6 +9,9 @@ import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsRequest;
 import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsResponse;
 import ga4gh.AlleleAnnotations.VariantAnnotation;
 import ga4gh.AlleleAnnotations.VariantAnnotationSet;
+import ga4gh.GenotypePhenotype.PhenotypeAssociationSet;
+import ga4gh.GenotypePhenotypeServiceOuterClass.SearchPhenotypeAssociationSetsRequest;
+import ga4gh.GenotypePhenotypeServiceOuterClass.SearchPhenotypeAssociationSetsResponse;
 import ga4gh.RnaQuantificationOuterClass.*;
 import ga4gh.RnaQuantificationServiceOuterClass.*;
 import ga4gh.Reads.*;
@@ -193,9 +196,9 @@ public class Utils {
     public static String getReadGroupIdForName(Client client, String readGroupSetName, String readGroupName) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchReadGroupSetsRequest readGroupSetsReq =
                 SearchReadGroupSetsRequest.newBuilder()
-                                          .setDatasetId(TestData.getDatasetId())
-                                          .setName(readGroupSetName)
-                                          .build();
+                        .setDatasetId(TestData.getDatasetId())
+                        .setName(readGroupSetName)
+                        .build();
         final SearchReadGroupSetsResponse readGroupSetsResp =
                 client.reads.searchReadGroupSets(readGroupSetsReq);
         final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSetsList();
@@ -267,8 +270,8 @@ public class Utils {
             final List<ReadGroupSet> readGroupSets = readGroupSetsResp.getReadGroupSetsList();
             assertThat(readGroupSets).isNotEmpty().isNotNull();
             result.addAll(readGroupSets.stream()
-                                       .flatMap(rgs -> rgs.getReadGroupsList().stream())
-                                       .collect(Collectors.toList()));
+                    .flatMap(rgs -> rgs.getReadGroupsList().stream())
+                    .collect(Collectors.toList()));
         } while (pageToken != null && !pageToken.equals(""));
 
         return result;
@@ -309,8 +312,8 @@ public class Utils {
     public static String getVariantSetId(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchVariantSetsRequest req =
                 SearchVariantSetsRequest.newBuilder()
-                                        .setDatasetId(TestData.getDatasetId())
-                                        .build();
+                        .setDatasetId(TestData.getDatasetId())
+                        .build();
         final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
 
         final List<VariantSet> variantSets = resp.getVariantSetsList();
@@ -361,12 +364,12 @@ public class Utils {
         do {
             final SearchVariantsRequest vReq =
                     SearchVariantsRequest.newBuilder()
-                                         .setVariantSetId(variantSetId)
-                                         .setReferenceName(TestData.REFERENCE_NAME)
-                                         .setStart(start).setEnd(end)
-                                         .setPageSize(100)
-                                         .setPageToken(pageToken)
-                                         .build();
+                            .setVariantSetId(variantSetId)
+                            .setReferenceName(TestData.REFERENCE_NAME)
+                            .setStart(start).setEnd(end)
+                            .setPageSize(100)
+                            .setPageToken(pageToken)
+                            .build();
             final SearchVariantsResponse vResp = client.variants.searchVariants(vReq);
             pageToken = vResp.getNextPageToken();
             result.addAll(vResp.getVariantsList());
@@ -391,10 +394,10 @@ public class Utils {
         do {
             final SearchVariantSetsRequest req =
                     SearchVariantSetsRequest.newBuilder()
-                                            .setDatasetId(TestData.getDatasetId())
-                                            .setPageSize(100)
-                                            .setPageToken(pageToken)
-                                            .build();
+                            .setDatasetId(TestData.getDatasetId())
+                            .setPageSize(100)
+                            .setPageToken(pageToken)
+                            .build();
             final SearchVariantSetsResponse resp = client.variants.searchVariantSets(req);
             pageToken = resp.getNextPageToken();
             result.addAll(resp.getVariantSetsList());
@@ -419,10 +422,10 @@ public class Utils {
         do {
             final SearchCallSetsRequest callSetsSearchRequest =
                     SearchCallSetsRequest.newBuilder()
-                                         .setPageSize(100)
-                                         .setPageToken(pageToken)
-                                         .setVariantSetId(variantSetId)
-                                         .build();
+                            .setPageSize(100)
+                            .setPageToken(pageToken)
+                            .setVariantSetId(variantSetId)
+                            .build();
             final SearchCallSetsResponse csResp = client.variants.searchCallSets(callSetsSearchRequest);
             pageToken = csResp.getNextPageToken();
             result.addAll(csResp.getCallSetsList());
@@ -445,9 +448,9 @@ public class Utils {
         do {
             final SearchReferenceSetsRequest refSetsReq =
                     SearchReferenceSetsRequest.newBuilder()
-                                              .setPageSize(100)
-                                              .setPageToken(pageToken)
-                                              .build();
+                            .setPageSize(100)
+                            .setPageToken(pageToken)
+                            .build();
             final SearchReferenceSetsResponse refSetsResp =
                     client.references.searchReferenceSets(refSetsReq);
             pageToken = refSetsResp.getNextPageToken();
@@ -473,10 +476,10 @@ public class Utils {
         do {
             final SearchReferencesRequest refsReq =
                     SearchReferencesRequest.newBuilder()
-                                           .setReferenceSetId(refSetId)
-                                           .setPageSize(100)
-                                           .setPageToken(pageToken)
-                                           .build();
+                            .setReferenceSetId(refSetId)
+                            .setPageSize(100)
+                            .setPageToken(pageToken)
+                            .build();
             final SearchReferencesResponse refsResp = client.references.searchReferences(refsReq);
             pageToken = refsResp.getNextPageToken();
             result.addAll(refsResp.getReferencesList());
@@ -500,11 +503,11 @@ public class Utils {
         String pageToken = "";
         do {
             final SearchReadsRequest req = SearchReadsRequest.newBuilder()
-                                                             .setReferenceId(referenceId)
-                                                             .addAllReadGroupIds(aSingle(readGroupId))
-                                                             .setPageToken(pageToken)
-                                                             .setPageSize(100)
-                                                             .build();
+                    .setReferenceId(referenceId)
+                    .addAllReadGroupIds(aSingle(readGroupId))
+                    .setPageToken(pageToken)
+                    .setPageSize(100)
+                    .build();
             final SearchReadsResponse resp = client.reads.searchReads(req);
             result.addAll(resp.getAlignmentsList());
             pageToken = resp.getNextPageToken();
@@ -527,9 +530,9 @@ public class Utils {
         do {
             final SearchDatasetsRequest req =
                     SearchDatasetsRequest.newBuilder()
-                                         .setPageSize(100)
-                                         .setPageToken(pageToken)
-                                         .build();
+                            .setPageSize(100)
+                            .setPageToken(pageToken)
+                            .build();
             final SearchDatasetsResponse resp = client.metadata.searchDatasets(req);
             pageToken = resp.getNextPageToken();
             result.addAll(resp.getDatasetsList());
@@ -567,9 +570,9 @@ public class Utils {
      */
     public static String getRnaQuantificationSetId(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchRnaQuantificationSetsRequest req =
-            SearchRnaQuantificationSetsRequest.newBuilder()
-            .setDatasetId(TestData.getDatasetId())
-            .build();
+                SearchRnaQuantificationSetsRequest.newBuilder()
+                        .setDatasetId(TestData.getDatasetId())
+                        .build();
         final SearchRnaQuantificationSetsResponse resp = client.rnaquantifications.searchRnaQuantificationSets(req);
         final List<RnaQuantificationSet> rnaQuantificationSets = resp.getRnaQuantificationSetsList();
         assertThat(rnaQuantificationSets).isNotEmpty();
@@ -587,9 +590,9 @@ public class Utils {
      */
     public static String getExpressionLevelId(Client client, String rnaQuantificationId) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchExpressionLevelsRequest req =
-            SearchExpressionLevelsRequest.newBuilder()
-            .setRnaQuantificationId(rnaQuantificationId)
-            .build();
+                SearchExpressionLevelsRequest.newBuilder()
+                        .setRnaQuantificationId(rnaQuantificationId)
+                        .build();
         final SearchExpressionLevelsResponse resp = client.rnaquantifications.searchExpressionLevel(req);
         final List<ExpressionLevel> expressionLevels = resp.getExpressionLevelsList();
         assertThat(expressionLevels).isNotEmpty();
@@ -791,14 +794,14 @@ public class Utils {
         return featureSets.get(0);
     }
     /**
-    * Sugar for getting the first BioSample result that matches the name search request.
-    * @param client
-    * @param name The name of the BioSample
-    * @return  BioSample
-    * @throws GAWrapperException if the server finds the request invalid in some way
-    * @throws UnirestException if there's a problem speaking HTTP to the server
-    * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
-    */
+     * Sugar for getting the first BioSample result that matches the name search request.
+     * @param client
+     * @param name The name of the BioSample
+     * @return  BioSample
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
     public static BioSample getBioSampleByName(Client client, String name) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         final SearchBioSamplesRequest req =
                 SearchBioSamplesRequest.newBuilder()
@@ -810,4 +813,54 @@ public class Utils {
         return (BioSample)resp.getBiosamplesList().get(0);
     }
 
+    /**
+     * Utility method to fetch the Id of a {@link FeatureSet} for the compliance dataset.
+     * @param client the connection to the server
+     * @return the ID of a {@link FeatureSet}
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    public static String getFeatureG2PSetId(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+
+        // get all compliance feature sets
+        final List<FeatureSet> featureSets = getAllFeatureSets(client);
+        return featureSets.get(1).getId();
+    }
+
+    /**
+     * Utility method to fetch the ID of an arbitrary {@link PhenotypeAssociationSet}.
+     * @param client the connection to the server
+     * @return the ID of a {@link PhenotypeAssociationSet}
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     **/
+    public static String getPhenotypeAssociationSetId(Client client) throws  InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final SearchPhenotypeAssociationSetsRequest req =
+                SearchPhenotypeAssociationSetsRequest.newBuilder()
+                        .setDatasetId(getDatasetId(client))
+                        .build();
+        final SearchPhenotypeAssociationSetsResponse resp = client.genotypePhenotype.searchPhenotypeAssociationSets(req);
+        final List<PhenotypeAssociationSet> phenotypeAssociationSets = resp.getPhenotypeAssociationSetsList();
+        assertThat(phenotypeAssociationSets).isNotEmpty();
+        return phenotypeAssociationSets.get(0).getId();
+    }
+
+    /**
+     * Utility method to fetch the ID of an arbitrary {@link Dataset}.
+     * @param client the connection to the server
+     * @return the ID of a {@link Dataset}
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     **/
+    public static String getDatasetId(Client client) throws  InvalidProtocolBufferException, UnirestException, GAWrapperException  {
+        final SearchDatasetsRequest req =
+                SearchDatasetsRequest.newBuilder()
+                        .build();
+        final SearchDatasetsResponse resp = client.metadata.searchDatasets(req);
+        assertThat(resp.getDatasetsList()).isNotEmpty();
+        return resp.getDatasets(0).getId() ;
+    }
 }

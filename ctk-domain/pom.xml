@@ -16,6 +16,11 @@
 
     <dependencies>
         <dependency>
+            <!--TODO - make switch between local and github driven by config variable-->
+            <!--Uncomment to use local schema build-->
+            <!-- <groupId>org.ga4gh</groupId>
+            <artifactId>ga4gh-schemas</artifactId> -->
+            <!--Comment to use local schema build-->
             <groupId>com.github.ga4gh</groupId>
             <artifactId>schemas</artifactId>
             <version>${ga4gh.schema.version}</version>
@@ -88,8 +93,14 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
+                                    <!--TODO - make switch between local and github driven by config variable-->
+                                    <!--Uncomment to use local schema build-->
+                                    <!-- <groupId>org.ga4gh</groupId>
+                                    <artifactId>ga4gh-schemas</artifactId> -->
+                                    <!--Comment to use local schema build-->
                                     <groupId>com.github.ga4gh</groupId>
                                     <artifactId>schemas</artifactId>
+
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/classes</outputDirectory>

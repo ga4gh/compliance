@@ -39,7 +39,7 @@ public class FeatureSetsGetByIdIT {
      */
     @Test
     public void checkFeatureSetsGetResults() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
-        final int expectedNumberOfFeatureSets = 1;
+        final int expectedNumberOfFeatureSets = 2;
 
         final List<FeatureSet> featureSets = Utils.getAllFeatureSets(client);
 

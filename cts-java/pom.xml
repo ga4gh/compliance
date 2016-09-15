@@ -16,6 +16,27 @@
     <packaging>jar</packaging>
 
     <dependencies>
+
+        <!--TODO - make switch between local and github driven by config variable
+        Currently, the maven build system relies on a github hosted schema.  This can be cumbersome
+        when implementing schema changes.  The ga4gh/schemas project has a maven project which will
+        install the schemas in the local maven repo at org.ga4gh.ga4gh-schemas.  By having a dependency
+        on org.ga4gh the build will use the artifact from the local repo.
+        -->
+        <!--Uncomment to use local schema build-->
+        <!--<dependency>-->
+        <!--<groupId>org.ga4gh</groupId>-->
+        <!--<artifactId>ga4gh-schemas</artifactId>-->
+        <!--<version>${ga4gh.schema.version}</version>-->
+        <!--</dependency>-->
+
+        <!--Comment to use local schema build-->
+        <dependency>
+            <groupId>com.github.ga4gh</groupId>
+            <artifactId>schemas</artifactId>
+            <version>${ga4gh.schema.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.ga4gh</groupId>
             <artifactId>ctk-domain</artifactId>
@@ -25,11 +46,13 @@
             <groupId>org.ga4gh</groupId>
             <artifactId>ctk-transport</artifactId>
             <version>0.6.0a3</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.ga4gh</groupId>
-            <artifactId>schemas</artifactId>
-            <version>${ga4gh.schema.version}</version>
+            <!--Uncomment to use local schema build-->
+            <!--<exclusions>-->
+                <!--<exclusion>  &lt;!&ndash; declare the exclusion here &ndash;&gt;-->
+                    <!--<groupId>com.github.ga4gh</groupId>-->
+                    <!--<artifactId>schemas</artifactId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

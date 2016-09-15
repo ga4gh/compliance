@@ -9,6 +9,12 @@ import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsRequest;
 import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsResponse;
 import ga4gh.AlleleAnnotations.VariantAnnotation;
 import ga4gh.AlleleAnnotations.VariantAnnotationSet;
+import ga4gh.GenotypePhenotypeServiceOuterClass.SearchPhenotypeAssociationSetsRequest;
+import ga4gh.GenotypePhenotypeServiceOuterClass.SearchPhenotypeAssociationSetsResponse;
+import ga4gh.GenotypePhenotypeServiceOuterClass.SearchPhenotypesRequest;
+import ga4gh.GenotypePhenotypeServiceOuterClass.SearchPhenotypesResponse;
+import ga4gh.GenotypePhenotypeServiceOuterClass.SearchGenotypePhenotypeRequest;
+import ga4gh.GenotypePhenotypeServiceOuterClass.SearchGenotypePhenotypeResponse;
 import ga4gh.Metadata.Dataset;
 import ga4gh.MetadataServiceOuterClass.SearchDatasetsRequest;
 import ga4gh.MetadataServiceOuterClass.SearchDatasetsResponse;
@@ -92,6 +98,16 @@ public class Client {
      */
     public final References references = new References();
 
+
+    /**
+     * Provides access to GenotypePhenotype-related methods.  For example,
+     * <pre>
+     *     myClient.genotypePhenotype.searchReferenceSets(...);
+     * </pre>
+     */
+    public final GenotypePhenotype genotypePhenotype = new GenotypePhenotype();
+
+
     /**
      * Provides access to rna quantification-related methods.  For example,
      * <pre>
@@ -107,7 +123,7 @@ public class Client {
      * </pre>
      */
     public final VariantAnnotations variantAnnotations = new VariantAnnotations();
-    
+
     /**
      * Provides access to sequenceannotations-related methods.  For example,
      * <pre>
@@ -619,7 +635,7 @@ public class Client {
 
     }
 
-    /**
+     /**
      * Inner class holding all rna quantification-related methods.  Gathering them in an inner class like
      * this
      * makes it a little easier for someone writing tests to use their IDE's auto-complete
@@ -716,4 +732,54 @@ public class Client {
         }
     }
 
+
+    /**
+     * Inner class holding all variant genotype-phenotype methods.
+     * Gathering them in an inner class like this makes it a little
+     * easier for someone writing tests to use their IDE's
+     * auto-complete to type method names.
+     */
+    public class GenotypePhenotype {
+        /**
+         * Gets a list of {@link Phenotype} matching the search criteria. <p> <tt>POST /phenotypes/search</tt> accepts a {@link
+         * SearchPhenotypesRequest} and returns a {@link SearchPhenotypesResponse}.
+         *
+         * @param request the {@link SearchPhenotypesRequest} we'll issue
+         */
+        public SearchPhenotypesResponse searchPhenotypes(SearchPhenotypesRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getSearchPhenotypes();
+            assert( path != null );
+            SearchPhenotypesResponse.Builder builder = SearchPhenotypesResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, builder, wireTracker).performQuery();
+            return builder.build();
+        }
+
+        /**
+         * Gets a list of {@link FeaturePhenotypeAssociation  } matching the search criteria. <p> <tt>POST /featurephenotypeassociations/search </tt> accepts a {@link
+         * SearchGenotypePhenotypeRequest} and returns a {@link SearchGenotypePhenotypeResponse}.
+         *
+         * @param request the {@link SearchGenotypePhenotypeRequest} we'll issue
+         */
+        public SearchGenotypePhenotypeResponse searchGenotypePhenotypes(SearchGenotypePhenotypeRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getSearchGenotypePhenotype();
+            assert( path != null );
+            SearchGenotypePhenotypeResponse.Builder builder = SearchGenotypePhenotypeResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, builder, wireTracker).performQuery();
+            return builder.build();
+        }
+
+        /**
+         * Gets a list of {@link PhenotypeAssociationSet  } matching the search criteria. <p> <tt>POST /phenotypeassociationsets/search </tt> accepts a {@link
+         * SearchPhenotypeAssociationSetsRequest} and returns a {@link SearchPhenotypeAssociationSetsResponse}.
+         *
+         * @param request the {@link SearchPhenotypeAssociationSetsRequest} we'll issue
+         */
+        public SearchPhenotypeAssociationSetsResponse searchPhenotypeAssociationSets(SearchPhenotypeAssociationSetsRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getSearchPhenotypeAssociationSets();
+            assert( path != null );
+            SearchPhenotypeAssociationSetsResponse.Builder builder = SearchPhenotypeAssociationSetsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, builder, wireTracker).performQuery();
+            return builder.build();
+        }
+    }
 }

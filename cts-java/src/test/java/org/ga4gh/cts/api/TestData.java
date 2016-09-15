@@ -3,11 +3,12 @@ package org.ga4gh.cts.api;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.SetMultimap;
-import ga4gh.References.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import ga4gh.References.ReferenceSet;
 
 import static org.ga4gh.cts.api.Utils.aSingle;
 
@@ -30,7 +31,7 @@ public class TestData {
      * The default ID of the dataset that holds the test data.  We use something readable so the
      * meaning is clear, but in reality the value of this is unlikely to be human-readable.
      */
-    public static final String DEFAULT_DATASET_ID = "compliance-dataset";
+    public static final String DEFAULT_DATASET_ID = "compliance-dataset" ;
 
     /**
      * The name of the Java system property that sets the ID of the compliance dataset.
@@ -175,5 +176,110 @@ public class TestData {
             return DEFAULT_DATASET_ID;
         }
     }
+    /**
+     * GenotypePhenotype PHENOTYPE external database name.
+     */
+    public static final String PHENOTYPE_DB = "http://ohsu.edu/cgd/";
 
+    /**
+     * GenotypePhenotype PHENOTYPE external database identifier.
+     */
+    public static final String PHENOTYPE_DB_ID = "032c97e8";//"37da8697";
+
+    /**
+     * GenotypePhenotype PHENOTYPE external database Version.
+     */
+    public static final String PHENOTYPE_DB_VERSION = "*";
+    /**
+     * GenotypePhenotype PHENOTYPE name.
+     */
+    public static final String PHENOTYPE_NAME =  "GIST";
+
+    /**
+     * GenotypePhenotype PHENOTYPE id.
+     */
+    public static final String PHENOTYPE_ID =  "http://ohsu.edu/cgd/30ebfd1a";
+
+    /**
+     * GenotypePhenotype PHENOTYPE ontology term id.
+     */
+    public static final String PHENOTYPE_ONTOLOGYTERM_ID = "http://ohsu.edu/cgd/5c895709";
+
+    /**
+     * GenotypePhenotype PHENOTYPE ontology term id for sensitivity qualifier.
+     */
+    public static final String PHENOTYPE_SENSITIVITY_ID = "http://purl.obolibrary.org/obo/PATO_0000396";
+
+    public static final String PHENOTYPE_ABNORMAL_ID = "http://purl.obolibrary.org/obo/PATO_0000460";
+
+
+    /**
+     * GenotypePhenotype PHENOTYPE description.
+     */
+    public static final String PHENOTYPE_DESCRIPTION = "Papillary thyroid carcinoma with sensitivity to therapy";
+
+    /**
+     * GenotypePhenotype PHENOTYPE description wildcard.
+     */
+    public static final String PHENOTYPE_DESCRIPTION_WILDCARD = ".*sensitivity.*";
+
+    /**
+     * GenotypePhenotype PHENOTYPE description for melanoma
+     */
+    public static final String PHENOTYPE_DESCRIPTION_MELANOMA = "Melanoma, NOS with response to therapy";
+
+    /**
+     * GenotypePhenotype PHENOTYPE age of on set
+     */
+    public static final String PHENOTYPE_AGE_OF_ON_SET = "http://purl.obolibrary.org/obo/HP_0003581";
+
+    /**
+     * GenotypePhenotype GENOTYPE id
+     */
+    public static final String GENOTYPE_ID = "http://ohsu.edu/cgd/27d2169c";
+
+    /**
+     * GenotypePhenotype EVIDENCE external database name.
+     */
+    public static final String EVIDENCE_DB = "http://www.drugbank.ca/drugs/";
+
+    /**
+     * GenotypePhenotype EVIDENCE external database identifier.
+     */
+    public static final String EVIDENCE_DB_ID = "DB00619";
+
+    /**
+     * GenotypePhenotype EVIDENCE external database Version.
+     */
+    public static final String EVIDENCE_DB_VERSION = "*";
+
+    /**
+     * GenotypePhenotype EVIDENCE name.
+     */
+    public static final String EVIDENCE_NAME =  "imatinib";
+
+    /**
+     * GenotypePhenotype EVIDENCE LEVEL.
+     */
+    public static final String EVIDENCE_LEVEL = "decreased_sensitivity";
+
+    /**
+     * GenotypePhenotype FEATURE external database name.
+     */
+    public static final String FEATURE_DB = "http://ohsu.edu/cgd/";
+
+    /**
+     * GenotypePhenotype FEATURE external database identifier.
+     */
+    public static final String FEATURE_DB_ID = "055b872c";//"4841bf74";
+
+    /**
+     * GenotypePhenotype FEATURE external database Version.
+     */
+    public static final String FEATURE_DB_VERSION = "*";
+
+    /**
+     * GenotypePhenotype FEATURE name.
+     */
+    public static final String FEATURE_NAME = "KIT *wild" ;
 }
