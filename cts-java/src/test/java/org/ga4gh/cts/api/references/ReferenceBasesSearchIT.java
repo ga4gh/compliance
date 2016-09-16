@@ -83,11 +83,12 @@ public class ReferenceBasesSearchIT {
 
         final ListReferenceBasesRequest basesReq =
                 ListReferenceBasesRequest.newBuilder()
+                        .setReferenceId(ref.getId())
                         .setStart(start)
                         .setEnd(end)
                         .build();
         final ListReferenceBasesResponse basesResp =
-                client.references.getReferenceBases(ref.getId(), basesReq);
+                client.references.getReferenceBases(basesReq);
         assertThat(basesResp.getOffset()).isEqualTo(expectedOffset);
         assertThat(basesResp.getSequence()).isEqualTo(referenceBrcaSubsequence150To159);
     }

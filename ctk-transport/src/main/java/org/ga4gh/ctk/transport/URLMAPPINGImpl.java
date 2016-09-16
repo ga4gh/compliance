@@ -66,7 +66,7 @@ public class URLMAPPINGImpl implements URLMAPPING {
         defaultEndpoints.put("ctk.tgt.getExpressionLevel", "expressionlevels/{id}");
         defaultEndpoints.put("ctk.tgt.getReferences", "references/{id}");
         defaultEndpoints.put("ctk.tgt.getReferenceSets", "referencesets/{id}");
-        defaultEndpoints.put("ctk.tgt.getReferencesBases", "references/{id}/bases");
+        defaultEndpoints.put("ctk.tgt.getReferencesBases", "listreferencebases");
         defaultEndpoints.put("ctk.tgt.getRnaQuantification", "rnaquantifications/{id}");
         defaultEndpoints.put("ctk.tgt.getRnaQuantificationSet", "rnaquantificationsets/{id}");
 
