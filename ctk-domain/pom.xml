@@ -5,7 +5,7 @@
     <parent>
         <artifactId>ctk-parent</artifactId>
         <groupId>org.ga4gh</groupId>
-        <version>0.6.0a3</version>
+        <version>${compliance.version}</version>
         <relativePath>../parent</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -16,14 +16,9 @@
 
     <dependencies>
         <dependency>
-            <!--TODO - make switch between local and github driven by config variable-->
-            <!--Uncomment to use local schema build-->
-            <!-- <groupId>org.ga4gh</groupId>
-            <artifactId>ga4gh-schemas</artifactId> -->
-            <!--Comment to use local schema build-->
-            <groupId>com.github.ga4gh</groupId>
-            <artifactId>schemas</artifactId>
-            <version>${ga4gh.schema.version}</version>
+            <groupId>${ga4gh.schemas.groupId}</groupId>
+            <artifactId>${ga4gh.schemas.artifactId}</artifactId>
+            <version>${ga4gh.schemas.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -93,14 +88,9 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <!--TODO - make switch between local and github driven by config variable-->
-                                    <!--Uncomment to use local schema build-->
-                                    <!-- <groupId>org.ga4gh</groupId>
-                                    <artifactId>ga4gh-schemas</artifactId> -->
-                                    <!--Comment to use local schema build-->
-                                    <groupId>com.github.ga4gh</groupId>
-                                    <artifactId>schemas</artifactId>
-
+                                    <groupId>${ga4gh.schemas.groupId}</groupId>
+                                    <artifactId>${ga4gh.schemas.artifactId}</artifactId>
+>>>>>>> Unify properties for jitpack and version
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/classes</outputDirectory>

@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.ga4gh</groupId>
     <artifactId>ctk-parent</artifactId>
-    <version>0.6.0a3</version>
+    <version>${compliance.version}</version>
 
     <packaging>pom</packaging>
 
@@ -29,11 +29,22 @@
 
 
     <properties>
-        <ga4gh.schema.version>master-SNAPSHOT</ga4gh.schema.version>
+        <compliance.version>0.6.0a7</compliance.version>
+        <!--
+          Use this section to indicate the repository and branch of schemas
+          your tests will be compiled against.
+          To use your own version of the schemas, change the groupId to your
+          github account (e.g. com.github.david4096).
+          Then change the schemas.version to be the commit hash, release, 
+          or branch snapshot you would like to test.
+        -->
+        <ga4gh.schemas.groupId>com.github.ga4gh</ga4gh.schemas.groupId>
+        <ga4gh.schemas.version>master-SNAPSHOT</ga4gh.schemas.version>
+        <ga4gh.schemas.artifactId>schemas</ga4gh.schemas.artifactId>
         <ctk.tgt.urlRoot>http://localhost:8000</ctk.tgt.urlRoot>
         <!-- Controls skipping of cts-java IT tests during build; skip the tests by passing
              a command line parameter, e.g. mvn -Dcts.skipITs=true install.  Run them by default. -->
-        <cts.skipITs>false</cts.skipITs>
+        <cts.skipITs>true</cts.skipITs>
 
         <java.version>1.8</java.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -239,7 +250,7 @@
             <dependency>
                 <groupId>com.github.ga4gh</groupId>
                 <artifactId>schemas</artifactId>
-                <version>${ga4gh.schema.version}</version>
+                <version>${ga4gh.schemas.version}</version>
             </dependency>
 
 

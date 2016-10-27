@@ -5,7 +5,7 @@
     <parent>
         <artifactId>ctk-parent</artifactId>
         <groupId>org.ga4gh</groupId>
-        <version>0.6.0a3</version>
+        <version>${compliance.version}</version>
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -16,22 +16,17 @@
         <dependency>
             <groupId>org.ga4gh</groupId>
             <artifactId>ctk-cli</artifactId>
-            <version>0.6.0a3</version>
+            <version>${compliance.version}</version>
         </dependency>
         <dependency>
             <groupId>org.ga4gh</groupId>
             <artifactId>ctk-transport</artifactId>
-            <version>0.6.0a3</version>
+            <version>${compliance.version}</version>
         </dependency>
         <dependency>
             <groupId>org.ga4gh</groupId>
             <artifactId>ctk-domain</artifactId>
-            <version>0.6.0a3</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.ga4gh</groupId>
-            <artifactId>schemas</artifactId>
-            <version>${ga4gh.schema.version}</version>
+            <version>${compliance.version}</version>
         </dependency>
         <!-- need BCEL during site build -->
         <dependency>
