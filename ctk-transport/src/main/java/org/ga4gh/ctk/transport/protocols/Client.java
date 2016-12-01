@@ -41,8 +41,8 @@ import ga4gh.Variants.CallSet;
 import ga4gh.Variants.Variant;
 import ga4gh.Variants.VariantSet;
 import ga4gh.BioMetadata.*;
-import ga4gh.BioMetadataServiceOuterClass.SearchBioSamplesRequest;
-import ga4gh.BioMetadataServiceOuterClass.SearchBioSamplesResponse;
+import ga4gh.BioMetadataServiceOuterClass.SearchBiosamplesRequest;
+import ga4gh.BioMetadataServiceOuterClass.SearchBiosamplesResponse;
 import ga4gh.BioMetadataServiceOuterClass.SearchIndividualsRequest;
 import ga4gh.BioMetadataServiceOuterClass.SearchIndividualsResponse;
 import org.ga4gh.ctk.transport.GAWrapperException;
@@ -524,15 +524,15 @@ public class Client {
     public class BioMetadata {
         /**
          * Searches biosamples at the /biosamples/search endpoint using the given request.
-         * @param request   A SearchBioSamples request
-         * @return SearchBioSamplesResponse
+         * @param request   A SearchBiosamples request
+         * @return SearchBiosamplesResponse
          * @throws GAWrapperException if the server finds the request invalid in some way
          * @throws UnirestException if there's a problem speaking HTTP to the server
          * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
-        public SearchBioSamplesResponse searchBiosamples(SearchBioSamplesRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
-            String path = urls.getSearchBioSamples();
-            SearchBioSamplesResponse.Builder responseBuilder = SearchBioSamplesResponse.newBuilder();
+        public SearchBiosamplesResponse searchBiosamples(SearchBiosamplesRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getSearchBiosamples();
+            SearchBiosamplesResponse.Builder responseBuilder = SearchBiosamplesResponse.newBuilder();
             new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
             return responseBuilder.build();
         }
@@ -540,14 +540,14 @@ public class Client {
         /**
          * Get a biosample by ID by getting the /biosamples/id endpoint
          * @param id
-         * @return BioSample
+         * @return Biosample
          * @throws GAWrapperException if the server finds the request invalid in some way
          * @throws UnirestException if there's a problem speaking HTTP to the server
          * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
          */
-        public BioSample getBioSample(String id) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
-            String path = urls.getGetBioSample();
-            BioSample.Builder builder = BioSample.newBuilder();
+        public Biosample getBiosample(String id) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getGetBiosample();
+            Biosample.Builder builder = Biosample.newBuilder();
             new Get<>(urls.getUrlRoot(), path, id, null, builder, wireTracker).performQuery();
             return builder.build();
         }
