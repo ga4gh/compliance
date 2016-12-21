@@ -221,19 +221,19 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
      * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void checkBioSampleFilter() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
-        final BioSample b = Utils.getBioSampleByName(client, TestData.BIOSAMPLE_NAME);
+    public void checkBiosampleFilter() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final Biosample b = Utils.getBiosampleByName(client, TestData.BIOSAMPLE_NAME);
         final SearchReadGroupSetsRequest req =
                 SearchReadGroupSetsRequest.newBuilder()
                         .setDatasetId(TestData.getDatasetId())
-                        .setBioSampleId(b.getId())
+                        .setBiosampleId(b.getId())
                         .build();
         final SearchReadGroupSetsResponse resp = client.reads.searchReadGroupSets(req);
         final List<ReadGroupSet> readGroupSets = resp.getReadGroupSetsList();
         assertThat(readGroupSets).isNotEmpty();
         for (ReadGroupSet readGroupSet : readGroupSets) {
             for (ReadGroup readGroup : readGroupSet.getReadGroupsList()) {
-                assertThat(readGroup.getBioSampleId()).isEqualTo(b.getId());
+                assertThat(readGroup.getBiosampleId()).isEqualTo(b.getId());
             }
         }
     }

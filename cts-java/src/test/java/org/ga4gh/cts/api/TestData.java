@@ -149,7 +149,7 @@ public class TestData {
     public static final String CALL_SET_NAME = "HG00096";
 
     /**
-     * The BioSample name is used to test searching by BioSample name functionality.
+     * The Biosample name is used to test searching by Biosample name functionality.
      */
     public static final String BIOSAMPLE_NAME = "HG00096";
 

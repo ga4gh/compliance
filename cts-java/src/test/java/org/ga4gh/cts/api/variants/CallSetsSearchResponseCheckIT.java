@@ -163,15 +163,15 @@ public class CallSetsSearchResponseCheckIT implements CtkLogs {
     }
 
     /**
-     * Tests to ensure that when requesting callsets using the BioSample Id filter that
-     * only callsets with the given BioSample Id are returned.
+     * Tests to ensure that when requesting callsets using the Biosample Id filter that
+     * only callsets with the given Biosample Id are returned.
      * @throws GAWrapperException if the server finds the request invalid in some way
      * @throws UnirestException if there's a problem speaking HTTP to the server
      * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void searchCallSetsByBioSampleId() throws GAWrapperException, UnirestException, InvalidProtocolBufferException {
-        final BioSample bioSample = Utils.getBioSampleByName(client, TestData.BIOSAMPLE_NAME);
+    public void searchCallSetsByBiosampleId() throws GAWrapperException, UnirestException, InvalidProtocolBufferException {
+        final Biosample biosample = Utils.getBiosampleByName(client, TestData.BIOSAMPLE_NAME);
 
         // grab the first VariantSet and use it as source of CallSets
         final VariantSet variantSet = Utils.getVariantSetByName(client, TestData.VARIANTSET_NAME);
@@ -180,12 +180,12 @@ public class CallSetsSearchResponseCheckIT implements CtkLogs {
         final SearchCallSetsRequest callSetsSearchRequest =
                 SearchCallSetsRequest.newBuilder()
                         .setVariantSetId(variantSetId)
-                        .setBioSampleId(bioSample.getId())
+                        .setBiosampleId(biosample.getId())
                         .build();
         final SearchCallSetsResponse csResp = client.variants.searchCallSets(callSetsSearchRequest);
         assertThat(csResp.getCallSetsList()).isNotEmpty();
         for (CallSet cs: csResp.getCallSetsList()) {
-            assertThat(cs.getBioSampleId()).isEqualTo(bioSample.getId());
+            assertThat(cs.getBiosampleId()).isEqualTo(biosample.getId());
         }
     }
 }

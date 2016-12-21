@@ -2,8 +2,8 @@ package org.ga4gh.cts.api.bioMetadata;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import ga4gh.BioMetadataServiceOuterClass.SearchBioSamplesRequest;
-import ga4gh.BioMetadataServiceOuterClass.SearchBioSamplesResponse;
+import ga4gh.BioMetadataServiceOuterClass.SearchBiosamplesRequest;
+import ga4gh.BioMetadataServiceOuterClass.SearchBiosamplesResponse;
 import ga4gh.BioMetadataServiceOuterClass.SearchIndividualsRequest;
 import ga4gh.BioMetadataServiceOuterClass.SearchIndividualsResponse;
 import ga4gh.BioMetadata.*;
@@ -32,17 +32,17 @@ public class BioMetadataSearchIT {
      * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void checkSearchBioSamplesByName() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+    public void checkSearchBiosamplesByName() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         // search biosamples for a known name
-        final SearchBioSamplesRequest req =
-                SearchBioSamplesRequest.newBuilder()
+        final SearchBiosamplesRequest req =
+                SearchBiosamplesRequest.newBuilder()
                         .setDatasetId(TestData.getDatasetId())
                         .setName(TestData.BIOSAMPLE_NAME)
                         .build();
 
-        final SearchBioSamplesResponse resp = client.bioMetadata.searchBiosamples(req);
+        final SearchBiosamplesResponse resp = client.bioMetadata.searchBiosamples(req);
         assertThat(resp.getBiosamplesCount()).isGreaterThan(0);
-        for (BioSample b : resp.getBiosamplesList()) {
+        for (Biosample b : resp.getBiosamplesList()) {
             assertThat(b.getName()).isEqualTo(TestData.BIOSAMPLE_NAME);
             assertThat(b.getId()).isNotEmpty();
         }
@@ -56,7 +56,7 @@ public class BioMetadataSearchIT {
      * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void checkSearchBioSamplesByIndividual() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+    public void checkSearchBiosamplesByIndividual() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
         // search biosamples for a known name
         final SearchIndividualsRequest ireq =
                 SearchIndividualsRequest.newBuilder()
@@ -67,36 +67,36 @@ public class BioMetadataSearchIT {
         final SearchIndividualsResponse iresp = client.bioMetadata.searchIndividuals(ireq);
         final String individualId = iresp.getIndividualsList().get(0).getId();
 
-        final SearchBioSamplesRequest req =
-                SearchBioSamplesRequest.newBuilder()
+        final SearchBiosamplesRequest req =
+                SearchBiosamplesRequest.newBuilder()
                         .setDatasetId(TestData.getDatasetId())
                         .setIndividualId(individualId)
                         .build();
 
-        final SearchBioSamplesResponse resp = client.bioMetadata.searchBiosamples(req);
+        final SearchBiosamplesResponse resp = client.bioMetadata.searchBiosamples(req);
         assertThat(resp).isNotNull();
-        for (BioSample b : resp.getBiosamplesList()) {
+        for (Biosample b : resp.getBiosamplesList()) {
             assertThat(b.getIndividualId()).isEqualTo(individualId);
         }
     }
     /**
-     * Tests that for each BioSample returned via search there exists an
+     * Tests that for each Biosample returned via search there exists an
      * equivalent record received by GET biosamples/id.
      * @throws GAWrapperException if the server finds the request invalid in some way
      * @throws UnirestException if there's a problem speaking HTTP to the server
      * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
     @Test
-    public void checkGetBioSample() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
-        final SearchBioSamplesRequest req =
-                SearchBioSamplesRequest.newBuilder()
+    public void checkGetBiosample() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final SearchBiosamplesRequest req =
+                SearchBiosamplesRequest.newBuilder()
                         .setDatasetId(TestData.getDatasetId())
                         .build();
 
-        final SearchBioSamplesResponse resp = client.bioMetadata.searchBiosamples(req);
+        final SearchBiosamplesResponse resp = client.bioMetadata.searchBiosamples(req);
         assertThat(resp).isNotNull();
-        for (BioSample b : resp.getBiosamplesList()) {
-            final BioSample found = client.bioMetadata.getBioSample(b.getId());
+        for (Biosample b : resp.getBiosamplesList()) {
+            final Biosample found = client.bioMetadata.getBiosample(b.getId());
             assertThat(found).isEqualTo(b);
         }
     }

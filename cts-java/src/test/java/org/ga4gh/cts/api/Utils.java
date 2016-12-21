@@ -794,23 +794,23 @@ public class Utils {
         return featureSets.get(0);
     }
     /**
-     * Sugar for getting the first BioSample result that matches the name search request.
+     * Sugar for getting the first Biosample result that matches the name search request.
      * @param client
-     * @param name The name of the BioSample
-     * @return  BioSample
+     * @param name The name of the Biosample
+     * @return  Biosample
      * @throws GAWrapperException if the server finds the request invalid in some way
      * @throws UnirestException if there's a problem speaking HTTP to the server
      * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
      */
-    public static BioSample getBioSampleByName(Client client, String name) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
-        final SearchBioSamplesRequest req =
-                SearchBioSamplesRequest.newBuilder()
+    public static Biosample getBiosampleByName(Client client, String name) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final SearchBiosamplesRequest req =
+                SearchBiosamplesRequest.newBuilder()
                         .setDatasetId(TestData.getDatasetId())
                         .setName(name)
                         .build();
 
-        final SearchBioSamplesResponse resp = client.bioMetadata.searchBiosamples(req);
-        return (BioSample)resp.getBiosamplesList().get(0);
+        final SearchBiosamplesResponse resp = client.bioMetadata.searchBiosamples(req);
+        return (Biosample)resp.getBiosamplesList().get(0);
     }
 
     /**
