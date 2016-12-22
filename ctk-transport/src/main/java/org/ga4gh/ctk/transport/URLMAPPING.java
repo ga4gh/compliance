@@ -113,13 +113,13 @@ public interface URLMAPPING {
 
     void setSearchVariantAnnotations(String searchVariantAnnotations);
 
-    String getSearchBioSamples();
+    String getSearchBiosamples();
 
-    void setSearchBioSamples(String searchBioSamples);
+    void setSearchBiosamples(String searchBiosamples);
 
-    String getGetBioSample();
+    String getGetBiosample();
 
-    void setGetBioSample(String getBioSamples);
+    void setGetBiosample(String getBiosamples);
 
     String getSearchIndividuals();
 
