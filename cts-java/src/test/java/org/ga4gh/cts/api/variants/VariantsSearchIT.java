@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test searching variants.
+ * Test searching variants. 
  */
 @Category(VariantsTests.class)
 public class VariantsSearchIT implements CtkLogs {
