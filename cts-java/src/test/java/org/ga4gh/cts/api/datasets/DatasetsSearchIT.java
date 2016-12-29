@@ -64,6 +64,22 @@ public class DatasetsSearchIT {
     }
 
     /**
+     * Check that we can retrieve the compliance dataset creation and update
+     * datetimes </tt>.
+     *
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    @Test
+    public void checkDatasetDateTimes() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+        final Dataset dataset = client.metadata.getDataset(TestData.getDatasetId());
+        assertThat(dataset).isNotNull();
+        assertThat(dataset.getCreateDateTime()).isEqualTo(TestData.CREATE_DATETIME);
+        assertThat(dataset.getUpdateDateTime()).isEqualTo(TestData.UPDATE_DATETIME);
+    }
+
+    /**
      * Try to fetch a dataset with a bogus ID and make sure it fails.
      */
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
