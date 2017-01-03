@@ -9,16 +9,18 @@ import org.ga4gh.ctk.transport.protocols.Client;
 import org.ga4gh.cts.api.TestData;
 import ga4gh.VariantServiceOuterClass.*;
 import ga4gh.Variants.*;
+import org.ga4gh.cts.api.Utils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test searching variants.
+ * Test searching variants. 
  */
 @Category(VariantsTests.class)
 public class VariantsSearchIT implements CtkLogs {
@@ -139,17 +141,22 @@ public class VariantsSearchIT implements CtkLogs {
         final List<VariantSet> variantSets = resp.getVariantSetsList();
         assertThat(variantSets).isNotEmpty();
         final String id = variantSets.get(0).getId();
+        final List<String> callSetIds = Utils.getAllCallSets(client, id)
+                .stream()
+                .map(callSet -> callSet.getId())
+                .collect(Collectors.toList());
 
         final SearchVariantsRequest vReq =
                 SearchVariantsRequest.newBuilder()
                                      .setVariantSetId(id)
                                      .setReferenceName(TestData.REFERENCE_NAME)
                                      .setStart(start).setEnd(end)
+                                     .addAllCallSetIds(callSetIds)
                                      .build();
         final SearchVariantsResponse vResp = client.variants.searchVariants(vReq);
         final List<Variant> searchVariants = vResp.getVariantsList();
-
-        checkAllCalls(searchVariants, c -> assertThat(c.getGenotypeList()).isNotNull().isNotEmpty());
+        searchVariants.stream().forEach(v -> assertThat(v.getCallsList()).isNotNull().isNotEmpty());
+        checkAllCalls(searchVariants, c -> assertThat(c.getGenotype().getValuesList()).isNotNull().isNotEmpty());
         checkAllCalls(searchVariants, c -> assertThat(c.getGenotypeLikelihoodList()).isNotNull());
         checkAllCalls(searchVariants, c -> {
             assertThat(c.getInfo()).isNotNull();
