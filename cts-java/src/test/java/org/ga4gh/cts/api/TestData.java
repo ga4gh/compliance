@@ -164,6 +164,16 @@ public class TestData {
     public static final String INDIVIDUAL_NAME = "HG00096";
 
     /**
+     * The creation DateTime in the test data.
+     */
+    public static final String CREATE_DATETIME = "2008-04-25T18:30:00+00:00";
+
+    /**
+     * The update DateTime in the test data.
+     */
+    public static final String UPDATE_DATETIME = "2016-05-15T17:34:00-01:00";
+
+    /**
      * Return the ID of the compliance dataset on the server being tested.
      * By default this is the value of {@link #DEFAULT_DATASET_ID}, but
      * you can override it by setting the Java property <tt>-Dctk.tgt.dataset_id</tt>.

@@ -149,7 +149,8 @@ public class VariantsSearchIT implements CtkLogs {
         final SearchVariantsResponse vResp = client.variants.searchVariants(vReq);
         final List<Variant> searchVariants = vResp.getVariantsList();
 
-        checkAllCalls(searchVariants, c -> assertThat(c.getGenotypeList()).isNotNull().isNotEmpty());
+        checkAllCalls(searchVariants, c -> assertThat(c.getGenotype()).isNotNull());
+        checkAllCalls(searchVariants, c -> assertThat(c.getGenotype().getValuesList()).isNotEmpty());
         checkAllCalls(searchVariants, c -> assertThat(c.getGenotypeLikelihoodList()).isNotNull());
         checkAllCalls(searchVariants, c -> {
             assertThat(c.getInfo()).isNotNull();
