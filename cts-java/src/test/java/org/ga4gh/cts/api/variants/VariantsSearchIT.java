@@ -159,11 +159,11 @@ public class VariantsSearchIT implements CtkLogs {
         checkAllCalls(searchVariants, c -> assertThat(c.getGenotype().getValuesList()).isNotNull().isNotEmpty());
         checkAllCalls(searchVariants, c -> assertThat(c.getGenotypeLikelihoodList()).isNotNull());
         checkAllCalls(searchVariants, c -> {
-            assertThat(c.getInfo()).isNotNull();
+            assertThat(c.getAttributes()).isNotNull();
             // check that the info map contains no null keys or values
-            c.getInfo().keySet().stream().forEach(key -> {
+            c.getAttributes().getAttr().keySet().stream().forEach(key -> {
                 assertThat(key).isNotNull();
-                assertThat(c.getInfo().get(key)).isNotNull();
+                assertThat(c.getAttributes().getAttr().get(key)).isNotNull();
             });
         });
     }

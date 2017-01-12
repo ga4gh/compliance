@@ -164,7 +164,7 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
     }
 
     /**
-     * Retrieve all {@link ReadGroup}s and make sure they all contain a non-null <tt>{@link ReadGroup#getInfo()}</tt>
+     * Retrieve all {@link ReadGroup}s and make sure they all contain a non-null <tt>{@link ReadGroup#getAttributes()}</tt>
      * field.  If it's non-null, it must perforce be a {@link Map}.  The contents of the {@link Map} don't concern
      * us.
      *
@@ -183,7 +183,7 @@ public class ReadGroupSetsSearchIT implements CtkLogs {
 
         for (ReadGroupSet readGroupSet : readGroupSets) {
             for (ReadGroup readGroup : readGroupSet.getReadGroupsList()) {
-                assertThat(readGroup.getInfo()).isNotNull();
+                assertThat(readGroup.getAttributes()).isNotNull();
             }
         }
     }
