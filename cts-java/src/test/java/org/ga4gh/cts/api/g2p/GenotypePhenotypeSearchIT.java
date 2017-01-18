@@ -212,7 +212,7 @@ public class GenotypePhenotypeSearchIT implements CtkLogs {
         final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
         OntologyTerm ontologyterm = OntologyTerm
                 .newBuilder()
-                .setId(TestData.PHENOTYPE_SENSITIVITY_ID)
+                .setTermId(TestData.PHENOTYPE_SENSITIVITY_ID)
                 .build();
         SearchPhenotypesRequest request = SearchPhenotypesRequest
             .newBuilder()
@@ -237,12 +237,12 @@ public class GenotypePhenotypeSearchIT implements CtkLogs {
 
         OntologyTerm ontologyterm1 = OntologyTerm
                 .newBuilder()
-                .setId(TestData.PHENOTYPE_SENSITIVITY_ID)
+                .setTermId(TestData.PHENOTYPE_SENSITIVITY_ID)
                 .build();
 
         OntologyTerm ontologyterm2 = OntologyTerm
                 .newBuilder()
-                .setId(TestData.PHENOTYPE_ABNORMAL_ID)
+                .setTermId(TestData.PHENOTYPE_ABNORMAL_ID)
                 .build();
 
         SearchPhenotypesRequest request = SearchPhenotypesRequest
@@ -308,7 +308,7 @@ public class GenotypePhenotypeSearchIT implements CtkLogs {
         final String phenotypeAssociationSetId = Utils.getPhenotypeAssociationSetId(client);
         OntologyTerm ontologyterm1 = OntologyTerm
                 .newBuilder()
-                .setTerm(TestData.PHENOTYPE_AGE_OF_ON_SET)
+                .setTermId(TestData.PHENOTYPE_AGE_OF_ON_SET)
                 .build();
         SearchPhenotypesRequest request = SearchPhenotypesRequest
             .newBuilder()
