@@ -82,8 +82,8 @@ public class URLMAPPINGImpl implements URLMAPPING {
         defaultEndpoints.put("ctk.tgt.searchVariantAnnotations", "variantannotations/search");
         defaultEndpoints.put("ctk.tgt.getVariantAnnotationSet", "variantannotationsets/{id}");
 
-        defaultEndpoints.put("ctk.tgt.searchBioSamples", "biosamples/search");
-        defaultEndpoints.put("ctk.tgt.getBioSample", "biosamples/{id}");
+        defaultEndpoints.put("ctk.tgt.searchBiosamples", "biosamples/search");
+        defaultEndpoints.put("ctk.tgt.getBiosample", "biosamples/{id}");
 
         defaultEndpoints.put("ctk.tgt.searchIndividuals", "individuals/search");
         defaultEndpoints.put("ctk.tgt.getIndividual", "individuals/{id}");
@@ -458,23 +458,23 @@ public class URLMAPPINGImpl implements URLMAPPING {
     }
 
     @Override
-    public String getGetBioSample() {
-        return endpoints.get("ctk.tgt.getBioSample");
+    public String getGetBiosample() {
+        return endpoints.get("ctk.tgt.getBiosample");
     }
 
     @Override
-    public void setGetBioSample(String getBioSample) {
-        endpoints.put("ctk.tgt.getBioSample", getBioSample);
+    public void setGetBiosample(String getBiosample) {
+        endpoints.put("ctk.tgt.getBiosample", getBiosample);
     }
 
     @Override
-    public String getSearchBioSamples() {
-        return endpoints.get("ctk.tgt.searchBioSamples");
+    public String getSearchBiosamples() {
+        return endpoints.get("ctk.tgt.searchBiosamples");
     }
 
     @Override
-    public void setSearchBioSamples(String searchBioSamples) {
-        endpoints.put("ctk.tgt.searchBioSamples", searchBioSamples);
+    public void setSearchBiosamples(String searchBiosamples) {
+        endpoints.put("ctk.tgt.searchBiosamples", searchBiosamples);
     }
 
     @Override
@@ -484,7 +484,7 @@ public class URLMAPPINGImpl implements URLMAPPING {
 
     @Override
     public void setGetIndividual(String getIndividual) {
-        endpoints.put("ctk.tgt.getBioSample", getIndividual);
+        endpoints.put("ctk.tgt.getBiosample", getIndividual);
     }
 
     @Override
