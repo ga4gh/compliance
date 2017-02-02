@@ -115,7 +115,7 @@ public class TestData {
     /**
      * Species OntologyTerm for the test {@link ReferenceSet} (the NCBI TaxonId for Homo Sapiens).
      */
-    public static final String REFERENCESET_SPECIES_ID = "9606";
+    public static final String REFERENCESET_SPECIES_ID = "NCBI:9606";
     public static final String REFERENCESET_SPECIES_TERM = "Homo sapiens";
 
     /**
