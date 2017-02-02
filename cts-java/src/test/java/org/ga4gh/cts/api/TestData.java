@@ -115,9 +115,8 @@ public class TestData {
     /**
      * Species OntologyTerm for the test {@link ReferenceSet} (the NCBI TaxonId for Homo Sapiens).
      */
-    public static final String REFERENCESET_SPECIES_ID = "9606";
+    public static final String REFERENCESET_SPECIES_ID = "NCBI:9606";
     public static final String REFERENCESET_SPECIES_TERM = "Homo sapiens";
-    public static final String REFERENCESET_SPECIES_SOURCE_NAME = "NCBI";
 
     /**
      * The name of the BRCA1 reference sequence.

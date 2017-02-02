@@ -161,10 +161,8 @@ public class ReferenceSetsSearchIT {
 
         refSets.stream().forEach(rs ->{ 
             OntologyTerm ot = rs.getSpecies();
-            assertThat(ot.getId()).isEqualTo(TestData.REFERENCESET_SPECIES_ID);
+            assertThat(ot.getTermId()).isEqualTo(TestData.REFERENCESET_SPECIES_ID);
             assertThat(ot.getTerm()).isEqualTo(TestData.REFERENCESET_SPECIES_TERM);
-            assertThat(ot.getSourceName()).isEqualTo(TestData.REFERENCESET_SPECIES_SOURCE_NAME);
-        }
-            );
+        });
     }
 }

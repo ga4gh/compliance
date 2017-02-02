@@ -112,7 +112,7 @@ public class FeaturesGetByIdIT {
         assertThat(gene.getStrand()).isEqualTo(Strand.NEG_STRAND);
 
         assertThat(gene.getFeatureType().getTerm()).isEqualTo("gene");
-        assertThat(gene.getFeatureType().getId()).isEqualTo("SO:0000704");
+        assertThat(gene.getFeatureType().getTermId()).isEqualTo("SO:0000704");
 
         assertThat(gene.getAttributes().getVals().get("gene_name").getValues(0).getStringValue()).isEqualTo("BRCA1");
         assertThat(gene.getAttributes().getVals().get("gene_id").getValues(0).getStringValue()).isEqualTo("ENSG00000012048.15");
