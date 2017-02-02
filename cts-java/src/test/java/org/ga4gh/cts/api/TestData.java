@@ -113,9 +113,11 @@ public class TestData {
     public static final String REFERENCESET_MD5_CHECKSUM = "12827085103f42e97428dc05a7f26fec";
 
     /**
-     * NCBI Taxonomy ID (identifies species) for the test {@link ReferenceSet} (the NCBI TaxonId for Homo Sapiens).
+     * Species OntologyTerm for the test {@link ReferenceSet} (the NCBI TaxonId for Homo Sapiens).
      */
-    public static final int REFERENCESET_TAXON_ID = 9606;
+    public static final String REFERENCESET_SPECIES_ID = "9606";
+    public static final String REFERENCESET_SPECIES_TERM = "Homo sapiens";
+    public static final String REFERENCESET_SPECIES_SOURCE_NAME = "NCBI";
 
     /**
      * The name of the BRCA1 reference sequence.
