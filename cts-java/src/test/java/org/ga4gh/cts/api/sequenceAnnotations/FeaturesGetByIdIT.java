@@ -114,8 +114,8 @@ public class FeaturesGetByIdIT {
         assertThat(gene.getFeatureType().getTerm()).isEqualTo("gene");
         assertThat(gene.getFeatureType().getTermId()).isEqualTo("SO:0000704");
 
-        assertThat(gene.getAttributes().getVals().get("gene_name").getValues(0).getStringValue()).isEqualTo("BRCA1");
-        assertThat(gene.getAttributes().getVals().get("gene_id").getValues(0).getStringValue()).isEqualTo("ENSG00000012048.15");
+        assertThat(gene.getAttributes().getAttr().get("gene_name").getValues(0).getStringValue()).isEqualTo("BRCA1");
+        assertThat(gene.getAttributes().getAttr().get("gene_id").getValues(0).getStringValue()).isEqualTo("ENSG00000012048.15");
     }
 
 }

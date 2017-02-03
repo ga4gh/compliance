@@ -20,7 +20,7 @@ import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsRequest;
 import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsResponse;
 import ga4gh.AlleleAnnotations.TranscriptEffect;
 import ga4gh.AlleleAnnotations.VariantAnnotation;
-import ga4gh.Metadata.OntologyTerm;
+import ga4gh.Common.OntologyTerm;
 import ga4gh.Variants.Variant;
 
 import static org.assertj.core.api.Assertions.assertThat;

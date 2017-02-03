@@ -21,7 +21,7 @@ import ga4gh.GenotypePhenotypeServiceOuterClass.SearchGenotypePhenotypeRequest;
 import ga4gh.GenotypePhenotypeServiceOuterClass.SearchGenotypePhenotypeResponse;
 import ga4gh.GenotypePhenotypeServiceOuterClass.SearchPhenotypesRequest;
 import ga4gh.GenotypePhenotypeServiceOuterClass.SearchPhenotypesResponse;
-import ga4gh.Metadata.OntologyTerm;
+import ga4gh.Common.OntologyTerm;
 import ga4gh.SequenceAnnotationServiceOuterClass;
 import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeaturesRequest;
 

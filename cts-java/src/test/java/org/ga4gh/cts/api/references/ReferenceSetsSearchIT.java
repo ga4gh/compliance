@@ -5,7 +5,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import ga4gh.ReferenceServiceOuterClass.SearchReferenceSetsRequest;
 import ga4gh.ReferenceServiceOuterClass.SearchReferenceSetsResponse;
 import ga4gh.References.ReferenceSet;
-import ga4gh.Metadata.OntologyTerm;
+import ga4gh.Common.OntologyTerm;
 import junitparams.JUnitParamsRunner;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
