@@ -38,8 +38,8 @@
           Then change the schemas.version to be the commit hash, release, 
           or branch snapshot you would like to test.
         -->
-        <ga4gh.schemas.groupId>com.github.ga4gh</ga4gh.schemas.groupId>
-        <ga4gh.schemas.version>master-SNAPSHOT</ga4gh.schemas.version>
+        <ga4gh.schemas.groupId>com.github.ejacox</ga4gh.schemas.groupId>
+        <ga4gh.schemas.version>bigwig-SNAPSHOT</ga4gh.schemas.version>
         <ga4gh.schemas.artifactId>schemas</ga4gh.schemas.artifactId>
         <ctk.tgt.urlRoot>http://localhost:8000</ctk.tgt.urlRoot>
         <!-- Controls skipping of cts-java IT tests during build; skip the tests by passing

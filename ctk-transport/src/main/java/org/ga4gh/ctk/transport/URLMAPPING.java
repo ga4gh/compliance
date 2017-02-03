@@ -146,6 +146,18 @@ public interface URLMAPPING {
 
     void setGetFeature(String getFeature);
 
+    String getSearchContinuousSets();
+
+    void setSearchContinuousSets(String searchContinuousSets);
+
+    String getGetContinuousSet();
+
+    void setGetContinuousSet(String getContinuousSet);
+
+    String getSearchContinuous();
+
+    void setSearchContinuous(String searchContinuous);
+
 
     String getGetRnaQuantification();
 
