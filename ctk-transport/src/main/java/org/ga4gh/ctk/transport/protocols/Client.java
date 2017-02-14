@@ -50,6 +50,8 @@ import ga4gh.BioMetadataServiceOuterClass.SearchBiosamplesRequest;
 import ga4gh.BioMetadataServiceOuterClass.SearchBiosamplesResponse;
 import ga4gh.BioMetadataServiceOuterClass.SearchIndividualsRequest;
 import ga4gh.BioMetadataServiceOuterClass.SearchIndividualsResponse;
+import ga4gh.PeerService.*;
+import ga4gh.PeersServiceOuterClass.*;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.WireTracker;
@@ -148,6 +150,9 @@ public class Client {
 
 
     public final BioMetadata bioMetadata = new BioMetadata();
+
+
+    public final BioMetadata peers = new Peers();
 
     /**
      * Create a new client that can make requests on a GA4GH server.
@@ -806,5 +811,55 @@ public class Client {
             new Post<>(urls.getUrlRoot(), path, request, builder, wireTracker).performQuery();
             return builder.build();
         }
+    }
+
+    /**
+     * Inner class holding all peer service related methods.
+     */
+    public class Peers {
+        /**
+         * Lists available peers at the /peers/list endpoint using the given request.
+         * @param request   A ListPeers request
+         * @return ListPeersResponse
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+         */
+        public ListPeersResponse listPeers(ListPeersRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getListPeers();
+            ListPeersResponse.Builder responseBuilder = ListPeersResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
+        }
+
+        /**
+         * Get info about the server at the /info endpoint.
+         * @return Info
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+         */
+        public GetInfoResponse getInfo() throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getInfo();
+            GetInfoResponse.Builder builder = GetInfoResponse.newBuilder();
+            new Get<>(urls.getUrlRoot(), path, "", null, builder, wireTracker).performQuery();
+            return builder.build();
+        }
+
+        /**
+         * Searches individuals at the /individuals/search endpoint using the given request.
+         * @param request   A SearchIndividuals request
+         * @return SearchIndividualsResponse
+         * @throws GAWrapperException if the server finds the request invalid in some way
+         * @throws UnirestException if there's a problem speaking HTTP to the server
+         * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+         */
+        public AnnouncePeerResponse announcePeer(AnnouncePeerRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getAnnounce();
+            AnnouncePeerResponse.Builder responseBuilder = AnnouncePeerResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
+        }
+
     }
 }
