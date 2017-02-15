@@ -29,7 +29,7 @@
 
 
     <properties>
-        <compliance.version>0.6.0a7</compliance.version>
+        <compliance.version>0.6.0a10</compliance.version>
         <!--
           Use this section to indicate the repository and branch of schemas
           your tests will be compiled against.
