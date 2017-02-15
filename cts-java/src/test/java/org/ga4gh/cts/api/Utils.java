@@ -15,6 +15,7 @@ import ga4gh.GenotypePhenotypeServiceOuterClass.SearchPhenotypeAssociationSetsRe
 import ga4gh.RnaQuantificationOuterClass.*;
 import ga4gh.RnaQuantificationServiceOuterClass.*;
 import ga4gh.Reads.*;
+import ga4gh.Common.*;
 import ga4gh.ReadServiceOuterClass.*;
 import ga4gh.References.*;
 import ga4gh.ReferenceServiceOuterClass.*;

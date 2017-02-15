@@ -20,7 +20,7 @@ import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsRequest;
 import ga4gh.AlleleAnnotationServiceOuterClass.SearchVariantAnnotationsResponse;
 import ga4gh.AlleleAnnotations.TranscriptEffect;
 import ga4gh.AlleleAnnotations.VariantAnnotation;
-import ga4gh.Metadata.OntologyTerm;
+import ga4gh.Common.OntologyTerm;
 import ga4gh.Variants.Variant;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -273,7 +273,10 @@ public class VariantAnnotationsSearchIT implements CtkLogs {
      */
     @Test
     public void checkFilteringByEffectTerm() throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
-        final OntologyTerm term = OntologyTerm.newBuilder().setId("SO:0001819").setTerm("synonymous_variant").setSourceName("source").setSourceVersion("0").build();
+        final OntologyTerm term = OntologyTerm.newBuilder()
+                .setTermId("SO:0001819")
+                .setTerm("synonymous_variant")
+                .build();
         // Obtain a VariantAnnotationSet from the compliance dataset.
         final String variantAnnotationSetId =
                 Utils.getVariantAnnotationSetByName(client, TestData.VARIANT_ANNOTATION_SET_NAMES.get(1)).getId();

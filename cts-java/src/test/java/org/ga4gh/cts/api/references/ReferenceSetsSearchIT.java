@@ -5,6 +5,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import ga4gh.ReferenceServiceOuterClass.SearchReferenceSetsRequest;
 import ga4gh.ReferenceServiceOuterClass.SearchReferenceSetsResponse;
 import ga4gh.References.ReferenceSet;
+import ga4gh.Common.OntologyTerm;
 import junitparams.JUnitParamsRunner;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
@@ -158,6 +159,10 @@ public class ReferenceSetsSearchIT {
         final List<ReferenceSet> refSets = resp.getReferenceSetsList();
         assertThat(refSets).isNotEmpty();
 
-        refSets.stream().forEach(rs -> assertThat(rs.getNcbiTaxonId()).isEqualTo(TestData.REFERENCESET_TAXON_ID));
+        refSets.stream().forEach(rs ->{ 
+            OntologyTerm ot = rs.getSpecies();
+            assertThat(ot.getTermId()).isEqualTo(TestData.REFERENCESET_SPECIES_ID);
+            assertThat(ot.getTerm()).isEqualTo(TestData.REFERENCESET_SPECIES_TERM);
+        });
     }
 }

@@ -2,7 +2,7 @@
   "assemblyId": "hg37",
   "description": "An artificial reference for use with compliance data, derived from GRCh37",
   "isDerived": true,
-  "ncbiTaxonId": 9606,
+  "species": {"termId":"NCBI:9606", "term":"Homo sapiens"},
   "sourceAccessions": ["GA4GH_CTS_01"],
   "sourceUri": "https://github.com/ga4gh/compliance/blob/master/test-data/",
   "references": ["ref_brca1"]
