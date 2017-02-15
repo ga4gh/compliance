@@ -41,6 +41,8 @@ public class PeersIT {
 
         final ListPeersResponse resp = client.peers.listPeers(req);
         assertThat(resp.getPeersCount()).isGreaterThan(0);
+        final Peer peer = Peer.newBuilder().setUri("http://1kgenomes.ga4gh.org").build();
+        assertThat(resp.getPeersList()).contains(peer);
     }
 
     /**
