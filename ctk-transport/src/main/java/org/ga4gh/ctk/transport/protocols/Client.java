@@ -847,9 +847,9 @@ public class Client {
         }
 
         /**
-         * Searches individuals at the /individuals/search endpoint using the given request.
-         * @param request   A SearchIndividuals request
-         * @return SearchIndividualsResponse
+         * Announces a peer to the /announce endpoint.
+         * @param request   A AnnouncePeer request
+         * @return AnnouncePeerResponse
          * @throws GAWrapperException if the server finds the request invalid in some way
          * @throws UnirestException if there's a problem speaking HTTP to the server
          * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
