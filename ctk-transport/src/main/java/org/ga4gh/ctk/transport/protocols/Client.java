@@ -50,8 +50,8 @@ import ga4gh.BioMetadataServiceOuterClass.SearchBiosamplesRequest;
 import ga4gh.BioMetadataServiceOuterClass.SearchBiosamplesResponse;
 import ga4gh.BioMetadataServiceOuterClass.SearchIndividualsRequest;
 import ga4gh.BioMetadataServiceOuterClass.SearchIndividualsResponse;
-import ga4gh.PeerService.*;
-import ga4gh.PeersServiceOuterClass.*;
+import ga4gh.PeerServiceOuterClass.Peer;
+import ga4gh.PeerServiceOuterClass.*;
 import org.ga4gh.ctk.transport.GAWrapperException;
 import org.ga4gh.ctk.transport.URLMAPPING;
 import org.ga4gh.ctk.transport.WireTracker;
@@ -152,7 +152,7 @@ public class Client {
     public final BioMetadata bioMetadata = new BioMetadata();
 
 
-    public final BioMetadata peers = new Peers();
+    public final Peers peers = new Peers();
 
     /**
      * Create a new client that can make requests on a GA4GH server.
@@ -842,7 +842,7 @@ public class Client {
         public GetInfoResponse getInfo() throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
             String path = urls.getInfo();
             GetInfoResponse.Builder builder = GetInfoResponse.newBuilder();
-            new Get<>(urls.getUrlRoot(), path, "", null, builder, wireTracker).performQuery();
+            new Get<>(urls.getUrlRoot(), path, null, null, builder, wireTracker).performQuery();
             return builder.build();
         }
 

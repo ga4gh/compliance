@@ -25,11 +25,19 @@ public class Get<T extends GeneratedMessage.Builder> extends Base<T> {
         if (log.isDebugEnabled()) {
             log.debug("begin jsonGet to " + url + " id = " + id);
         }
-        HttpResponse<JsonNode> response = Unirest.get(url)
-                .header("accept", "application/json")
-                .routeParam("id", id)
-                .queryString(queryParams)
-                .asJson();
+        HttpResponse<JsonNode> response;
+        if (id != null) {
+            response = Unirest.get(url)
+                    .header("accept", "application/json")
+                    .routeParam("id", id)
+                    .queryString(queryParams)
+                    .asJson();
+        } else {
+            response = Unirest.get(url)
+                    .header("accept", "application/json")
+                    .queryString(queryParams)
+                    .asJson();
+        }
         if (log.isDebugEnabled()) {
             log.debug("exit jsonGet to " + url + " with status " + response.getStatusText());
         }

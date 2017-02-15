@@ -101,7 +101,7 @@ public class URLMAPPINGImpl implements URLMAPPING {
 
         defaultEndpoints.put("ctk.tgt.listPeers", "peers/list");
         defaultEndpoints.put("ctk.tgt.announce", "announce");
-        defaultEndpoints.put("ctk.tgt.info", "info");
+        defaultEndpoints.put("ctk.tgt.getInfo", "info");
 
         dumpToStdOut = Boolean.getBoolean("ctk.tgt.urlmapper.dump"); // so, -Dctk.tgt.urlmapper.dump=true
 
