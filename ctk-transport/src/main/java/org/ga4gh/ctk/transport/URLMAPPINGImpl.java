@@ -91,6 +91,9 @@ public class URLMAPPINGImpl implements URLMAPPING {
         defaultEndpoints.put("ctk.tgt.getFeatureSets", "featuresets/{id}");
         defaultEndpoints.put("ctk.tgt.searchFeatures", "features/search");
         defaultEndpoints.put("ctk.tgt.getFeatures", "features/{id}");
+        defaultEndpoints.put("ctk.tgt.searchContinuousSets", "continuoussets/search");
+        defaultEndpoints.put("ctk.tgt.getContinuousSets", "continuoussets/{id}");
+        defaultEndpoints.put("ctk.tgt.searchContinuous", "continuous/search");
         defaultEndpoints.put("ctk.tgt.searchPhenotypeAssociationSets","phenotypeassociationsets/search");
 
         defaultEndpoints.put("ctk.tgt.searchGenotypePhenotype", "featurephenotypeassociations/search");
@@ -545,6 +548,36 @@ public class URLMAPPINGImpl implements URLMAPPING {
     @Override
     public String getGetFeature() {
         return endpoints.get("ctk.tgt.getFeatures");
+    }
+
+    @Override
+    public String getSearchContinuousSets() {
+        return endpoints.get("ctk.tgt.searchContinuousSets");
+    }
+
+    @Override
+    public void setSearchContinuousSets(String searchContinuousSets) {
+        endpoints.put("ctk.tgt.searchContinuousSets", searchContinuousSets);
+    }
+
+    @Override
+    public void setGetContinuousSet(String getContinuousSets) {
+        endpoints.put("ctk.tgt.getContinuousSets", getContinuousSets);
+    }
+
+    @Override
+    public String getGetContinuousSet() {
+        return endpoints.get("ctk.tgt.getContinuousSets");
+    }
+
+    @Override
+    public String getSearchContinuous() {
+        return endpoints.get("ctk.tgt.searchContinuous");
+    }
+
+    @Override
+    public void setSearchContinuous(String searchContinuous) {
+        endpoints.put("ctk.tgt.searchContinuouss", searchContinuous);
     }
 
     @Override

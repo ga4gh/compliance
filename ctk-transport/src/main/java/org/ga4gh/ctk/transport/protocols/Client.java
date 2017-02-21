@@ -36,6 +36,11 @@ import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeatureSetsResponse;
 import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeaturesResponse;
 import ga4gh.SequenceAnnotations.Feature;
 import ga4gh.SequenceAnnotations.FeatureSet;
+import ga4gh.SequenceAnnotationServiceOuterClass.SearchContinuousSetsRequest;
+import ga4gh.SequenceAnnotationServiceOuterClass.SearchContinuousSetsResponse;
+import ga4gh.SequenceAnnotationServiceOuterClass.SearchContinuousResponse;
+import ga4gh.SequenceAnnotations.Continuous;
+import ga4gh.SequenceAnnotations.ContinuousSet;
 import ga4gh.VariantServiceOuterClass.*;
 import ga4gh.Variants.CallSet;
 import ga4gh.Variants.Variant;
@@ -515,7 +520,31 @@ public class Client {
             return builder.build();
         }
 
+        public SearchContinuousSetsResponse searchContinuousSets(SearchContinuousSetsRequest request) throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getSearchContinuousSets();
+            SearchContinuousSetsResponse.Builder responseBuilder = SearchContinuousSetsResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
+        }
+
+
+        public ContinuousSet getContinuousSet(String id) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+            String path = urls.getGetContinuousSet();
+            ContinuousSet.Builder builder = ContinuousSet.newBuilder();
+            new Get<>(urls.getUrlRoot(), path, id, null, builder, wireTracker).performQuery();
+            return builder.build();
+        }
+
+        public SearchContinuousResponse searchContinuous(SequenceAnnotationServiceOuterClass.SearchContinuousRequest request)
+                throws InvalidProtocolBufferException, GAWrapperException, UnirestException {
+            String path = urls.getSearchContinuous();
+            SearchContinuousResponse.Builder responseBuilder = SearchContinuousResponse.newBuilder();
+            new Post<>(urls.getUrlRoot(), path, request, responseBuilder, wireTracker).performQuery();
+            return responseBuilder.build();
+        }
+
     }
+
     /**
      * Inner class holding all biodata-related methods.  Gathering them in an inner class like
      * this makes it a little easier for someone writing tests to use their IDE's auto-complete

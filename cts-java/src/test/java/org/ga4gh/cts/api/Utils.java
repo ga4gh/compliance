@@ -20,6 +20,7 @@ import ga4gh.ReadServiceOuterClass.*;
 import ga4gh.References.*;
 import ga4gh.ReferenceServiceOuterClass.*;
 import ga4gh.SequenceAnnotationServiceOuterClass.SearchFeatureSetsRequest;
+import ga4gh.SequenceAnnotationServiceOuterClass.SearchContinuousSetsRequest;
 import ga4gh.SequenceAnnotations.*;
 import ga4gh.Variants.*;
 import ga4gh.VariantServiceOuterClass.*;
@@ -794,6 +795,72 @@ public class Utils {
         }
         return featureSets.get(0);
     }
+
+    /**
+     * Search for and return all {@link ContinuousSet}s.
+     *
+     * @param client the connection to the server
+     * @return the {@link List} of results
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    public static List<ContinuousSet> getAllContinuousSets(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+
+        final List<ContinuousSet> result = new LinkedList<>();
+        String pageToken = "";
+        do {
+            final SearchContinuousSetsRequest req =
+                    SearchContinuousSetsRequest.newBuilder()
+                            .setDatasetId(TestData.getDatasetId())
+                            .setPageSize(100)
+                            .setPageToken(pageToken)
+                            .build();
+            final SearchContinuousSetsResponse resp = client.sequenceAnnotations.searchContinuousSets(req);
+            pageToken = resp.getNextPageToken();
+            result.addAll(resp.getContinuousSetsList());
+        } while (!pageToken.equals(""));
+
+        return result;
+    }
+
+    /**
+     * Utility method to fetch the Id of a {@link ContinuousSet} for the compliance dataset.
+     * @param client the connection to the server
+     * @return the ID of a {@link ContinuousSet}
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    public static String getContinuousSetId(Client client) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+
+        // get all compliance continuous sets
+        final List<ContinuousSet> continuousSets = getAllContinuousSets(client);
+        return continuousSets.get(0).getId();
+    }
+
+    /**
+     * Given a name, return the continuous  set corresponding to that name. When that name
+     * is not found returns the first continuous  set found.
+     * @param client the connection to the server
+     * @param name the string name of the annotation set
+     * @return a {@link ContinuousSet} with the requested name
+     * @throws GAWrapperException if the server finds the request invalid in some way
+     * @throws UnirestException if there's a problem speaking HTTP to the server
+     * @throws InvalidProtocolBufferException if there's a problem processing the JSON response from the server
+     */
+    public static ContinuousSet getContinuousSetByName(Client client, String name) throws InvalidProtocolBufferException, UnirestException, GAWrapperException {
+
+        // get all compliance continuous sets
+        final List<ContinuousSet> continuousSets = getAllContinuousSets(client);
+        for (ContinuousSet fs : continuousSets) {
+            if (fs.getName().equals(name)) {
+                return fs;
+            }
+        }
+        return continuousSets.get(0);
+    }
+
     /**
      * Sugar for getting the first Biosample result that matches the name search request.
      * @param client
