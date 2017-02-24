@@ -69,7 +69,7 @@ public class RawEndpointsIT {
      */
     private void tryMalformedSearchPayloads(final String fullUrl) throws UnirestException {
         // send some malformed requests and expect status == HTTP_BAD_REQUEST
-        final String[] requestBodies = {"", "JSON", "<xml/>", "{", "}", "{\"bad:\"", "{]"};
+        final String[] requestBodies = {"JSON", "<xml/>", "{", "}", "{\"bad:\"", "{]"};
         for (String datum : requestBodies) {
             assertThat(Unirest.post(fullUrl)
                               .header("Content-type", "application/json")
