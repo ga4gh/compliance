@@ -183,6 +183,18 @@ public interface URLMAPPING {
 
     void setGetExpressionLevel(String getExpressionLevel);
 
+    String getListPeers();
+
+    void setListPeers(String ListPeers);
+
+    String getAnnounce();
+
+    void setAnnounce(String getAnnounce);
+
+    String getInfo();
+
+    void setGetInfo(String getInfo);
+
     Map<String, String> getEndpoints();
 
     void setEndpoints(Map<String, String> endpoints);
